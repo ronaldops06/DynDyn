@@ -1,0 +1,310 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>DynDyn.API</name>
+    </assembly>
+    <members>
+        <member name="T:DynDyn.API.V1.Controller.CategoriaController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.#ctor(DynDyn.API.Data.IRepository,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="repository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.Get(DynDyn.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.Post(DynDyn.API.V1.Dtos.CategoriaRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="categoriaDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.Put(System.Int32,DynDyn.API.V1.Dtos.CategoriaRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="categoriaDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.CategoriaController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DynDyn.API.V1.Controller.ContaController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.#ctor(DynDyn.API.Data.IRepository,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="repository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.Get(DynDyn.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.Post(DynDyn.API.V1.Dtos.ContaRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="contaDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.Put(System.Int32,DynDyn.API.V1.Dtos.ContaRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="contaDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.ContaController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DynDyn.API.V1.Controller.MovimentoController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.#ctor(DynDyn.API.Data.IRepository,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="repository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.Get(DynDyn.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.Post(DynDyn.API.V1.Dtos.MovimentoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="movimentoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.Put(System.Int32,DynDyn.API.V1.Dtos.MovimentoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="movimentoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.MovimentoController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DynDyn.API.V1.Controller.OperacaoController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.#ctor(DynDyn.API.Data.IRepository,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="repository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.Get(DynDyn.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.Post(DynDyn.API.V1.Dtos.OperacaoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="operacaoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.Put(System.Int32,DynDyn.API.V1.Dtos.OperacaoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="operacaoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.OperacaoController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DynDyn.API.V1.Controller.SaldoController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.#ctor(DynDyn.API.Data.IRepository,AutoMapper.IMapper)">
+            <summary>
+            
+            </summary>
+            <param name="repository"></param>
+            <param name="mapper"></param>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.Get(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.Get(DynDyn.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.Post(DynDyn.API.V1.Dtos.SaldoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="saldoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.Put(System.Int32,DynDyn.API.V1.Dtos.SaldoRegistrarDTO)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <param name="saldoDto"></param>
+            <returns></returns>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.SaldoController.Delete(System.Int32)">
+            <summary>
+            
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="T:DynDyn.API.V1.Controller.UserController">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="M:DynDyn.API.V1.Controller.UserController.Authenticate(DynDyn.API.V1.Dtos.UserAuthDTO)">
+            <summary>
+            
+            </summary>
+            <param name="userAuthDto"></param>
+            <returns></returns>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.CategoriaDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.CategoriaRegistrarDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.ContaDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.ContaRegistrarDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.MovimentoDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.MovimentoRegistrarDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.OperacaoDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.OperacaoRegistrarDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.SaldoDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+        <member name="P:DynDyn.API.V1.Dtos.SaldoRegistrarDTO.ID">
+            <summary>
+            Identificador e chave do banco de dados
+            </summary>
+        </member>
+    </members>
+</doc>
