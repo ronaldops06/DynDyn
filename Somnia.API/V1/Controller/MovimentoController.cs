@@ -94,6 +94,7 @@ namespace Somnia.API.V1.Controller
                 _repository.UnchangedParentMovimento(movimento);
                 if (_repository.SaveChanges())
                 {
+                    ValidaMovimentoParcelado(movimento, movimentoDto.QuantidadeParcelas);
                     return Created($"/api/movimento/{movimento.ID}", _mapper.Map<MovimentoDTO>(movimento));
                 }
             }
@@ -230,6 +231,45 @@ namespace Somnia.API.V1.Controller
             if (_repository.SaveChanges())
             {
                 movimento.OperacaoID = operacao.ID;
+            }
+        }
+
+        private void ValidaMovimentoParcelado(Movimento movimento, int QuantidadeParcelas)
+        {
+            if (QuantidadeParcelas > 1)
+            {
+                for (var i = 2; i <= QuantidadeParcelas; i++)
+                {
+                    Movimento movimentoParcela = new Movimento();
+                    movimentoParcela.Valor = movimento.Valor;
+                    movimentoParcela.Observacao = movimento.Observacao;
+                    movimentoParcela.Parcela = i;
+                    movimentoParcela.TotalParcelas = QuantidadeParcelas;
+                    movimentoParcela.Consolidado = movimento.Consolidado;
+                    movimentoParcela.ContaID = movimento.ContaID;
+                    movimentoParcela.OperacaoID = movimento.OperacaoID;
+                    movimentoParcela.MovimentoPaiID = movimento.ID;
+                    movimentoParcela.DataCriacao = movimento.DataCriacao.AddMonths(i-1);
+                    movimentoParcela.DataAlteracao = movimento.DataAlteracao.AddMonths(i-1);
+
+                    _repository.Add(movimentoParcela);
+                    _repository.UnchangedParentMovimento(movimentoParcela);
+                    if (!_repository.SaveChanges())
+                    {
+                        throw new Exception($"Não foi possível criar o movimento da parcela {i}.");
+                    }
+                }
+
+                movimento.Parcela = 1;
+                movimento.TotalParcelas = QuantidadeParcelas;
+                movimento.Operacao = null;
+
+                _repository.Update(movimento);
+                _repository.UnchangedParentMovimento(movimento);
+                if (!_repository.SaveChanges())
+                {
+                    throw new Exception($"Não foi possível atualizar o movimento da parcela 1.");
+                }
             }
         }
     }

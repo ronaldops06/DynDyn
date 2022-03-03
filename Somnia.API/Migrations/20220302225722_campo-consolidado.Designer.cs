@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Somnia.API.Data;
 
 namespace Somnia.API.Migrations
 {
     [DbContext(typeof(SomniaContext))]
-    partial class SomniaContextModelSnapshot : ModelSnapshot
+    [Migration("20220302225722_campo-consolidado")]
+    partial class campoconsolidado
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -96,19 +98,10 @@ namespace Somnia.API.Migrations
                     b.Property<DateTime>("DataCriacao")
                         .HasColumnType("TEXT");
 
-                    b.Property<int?>("MovimentoPaiID")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Observacao")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("OperacaoID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("Parcela")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TotalParcelas")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("Valor")
@@ -119,8 +112,6 @@ namespace Somnia.API.Migrations
                     b.HasIndex("ContaDestinoID");
 
                     b.HasIndex("ContaID");
-
-                    b.HasIndex("MovimentoPaiID");
 
                     b.HasIndex("OperacaoID");
 
@@ -246,7 +237,7 @@ namespace Somnia.API.Migrations
                         {
                             ID = 1,
                             DataAlteracao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCriacao = new DateTime(2022, 3, 2, 20, 31, 34, 677, DateTimeKind.Local).AddTicks(3227),
+                            DataCriacao = new DateTime(2022, 3, 2, 19, 57, 21, 684, DateTimeKind.Local).AddTicks(430),
                             Login = "admin",
                             Name = "Admin",
                             Password = "pgadmin",
@@ -283,10 +274,6 @@ namespace Somnia.API.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Somnia.API.Models.Movimento", "MovimentoPai")
-                        .WithMany()
-                        .HasForeignKey("MovimentoPaiID");
-
                     b.HasOne("Somnia.API.Models.Operacao", "Operacao")
                         .WithMany()
                         .HasForeignKey("OperacaoID")
@@ -296,8 +283,6 @@ namespace Somnia.API.Migrations
                     b.Navigation("Conta");
 
                     b.Navigation("ContaDestino");
-
-                    b.Navigation("MovimentoPai");
 
                     b.Navigation("Operacao");
                 });

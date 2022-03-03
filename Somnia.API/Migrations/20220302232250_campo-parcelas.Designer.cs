@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Somnia.API.Data;
 
 namespace Somnia.API.Migrations
 {
     [DbContext(typeof(SomniaContext))]
-    partial class SomniaContextModelSnapshot : ModelSnapshot
+    [Migration("20220302232250_campo-parcelas")]
+    partial class campoparcelas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -103,12 +105,6 @@ namespace Somnia.API.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("OperacaoID")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("Parcela")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TotalParcelas")
                         .HasColumnType("INTEGER");
 
                     b.Property<double>("Valor")
@@ -246,7 +242,7 @@ namespace Somnia.API.Migrations
                         {
                             ID = 1,
                             DataAlteracao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCriacao = new DateTime(2022, 3, 2, 20, 31, 34, 677, DateTimeKind.Local).AddTicks(3227),
+                            DataCriacao = new DateTime(2022, 3, 2, 20, 22, 49, 917, DateTimeKind.Local).AddTicks(5622),
                             Login = "admin",
                             Name = "Admin",
                             Password = "pgadmin",

@@ -248,6 +248,7 @@ namespace Somnia.API.Data
 
             query = query.Include(ope => ope.Operacao);
             query = query.Include(cat => cat.Operacao.Categoria);
+            query = query.Include(mov => mov.MovimentoPai);
             query = query.Include(cta => cta.Conta);
             query = query.Include(cat => cat.Conta.Categoria);
             query = query.Include(cta => cta.ContaDestino);
@@ -266,6 +267,7 @@ namespace Somnia.API.Data
 
             query = query.Include(ope => ope.Operacao);
             query = query.Include(cat => cat.Operacao.Categoria);
+            query = query.Include(mov => mov.MovimentoPai);
             query = query.Include(cta => cta.Conta);
             query = query.Include(cat => cat.Conta.Categoria);
             query = query.Include(cta => cta.ContaDestino);
@@ -282,6 +284,7 @@ namespace Somnia.API.Data
 
             query = query.Include(ope => ope.Operacao);
             query = query.Include(cat => cat.Operacao.Categoria);
+            query = query.Include(mov => mov.MovimentoPai);
             query = query.Include(cta => cta.Conta);
             query = query.Include(cat => cat.Conta.Categoria);
             query = query.Include(cta => cta.ContaDestino);
@@ -317,6 +320,11 @@ namespace Somnia.API.Data
             if (movimento.ContaDestino != null)
             {
                 _context.Entry(movimento.ContaDestino).State = EntityState.Unchanged;
+            }
+
+            if (movimento.MovimentoPai != null)
+            {
+                _context.Entry(movimento.MovimentoPai).State = EntityState.Unchanged;
             }
         }
         #endregion
