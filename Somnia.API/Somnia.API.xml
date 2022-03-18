@@ -119,6 +119,13 @@
             <param name="id"></param>
             <returns></returns>
         </member>
+        <member name="M:Somnia.API.V1.Controller.MovimentoController.GetTotais(Somnia.API.Helpers.PageParams)">
+            <summary>
+            
+            </summary>
+            <param name="pageParams"></param>
+            <returns></returns>
+        </member>
         <member name="M:Somnia.API.V1.Controller.MovimentoController.Get(Somnia.API.Helpers.PageParams)">
             <summary>
             

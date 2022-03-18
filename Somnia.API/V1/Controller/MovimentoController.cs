@@ -59,6 +59,22 @@ namespace Somnia.API.V1.Controller
         /// </summary>
         /// <param name="pageParams"></param>
         /// <returns></returns>
+        [HttpGet("Totais")]
+        [Authorize]
+        public async Task<IActionResult> GetTotais([FromQuery] PageParams pageParams)
+        {
+            var totaisMovimentos = await _repository.GetTotaisMovimentosAsync(pageParams);
+
+            var totaisMovimentosDTO = ConvertGroupTotaisInDTO(totaisMovimentos);
+
+            return Ok(totaisMovimentosDTO);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="pageParams"></param>
+        /// <returns></returns>
         [HttpGet]
         [Authorize]
         public async Task<IActionResult> Get([FromQuery] PageParams pageParams)
@@ -94,7 +110,7 @@ namespace Somnia.API.V1.Controller
                 _repository.UnchangedParentMovimento(movimento);
                 if (_repository.SaveChanges())
                 {
-                    ValidaMovimentoParcelado(movimento, movimentoDto.QuantidadeParcelas);
+                    ValidaMovimentoParcelado(movimento);
                     return Created($"/api/movimento/{movimento.ID}", _mapper.Map<MovimentoDTO>(movimento));
                 }
             }
@@ -123,6 +139,8 @@ namespace Somnia.API.V1.Controller
                 {
                     return BadRequest("Movimento não encontrado.");
                 }
+                
+                SubstituiValoresNaoEditaveis(movimento, movimentoDto);
 
                 _mapper.Map(movimentoDto, movimento);
                 
@@ -161,8 +179,10 @@ namespace Somnia.API.V1.Controller
             {
                 return BadRequest("Movimento não encontrado.");
             }
+
             movimento.Operacao = null;
             movimento.ContaDestino = null;
+            movimento.MovimentoPai = null;
 
             _repository.Delete(movimento);
             if (_repository.SaveChanges())
@@ -173,9 +193,32 @@ namespace Somnia.API.V1.Controller
             return BadRequest("Movimento não deletado");
         }
 
+        private TotaisMovimentosDTO ConvertGroupTotaisInDTO(Dictionary<OperacaoTipo, double> totaisMovimentos)
+        {
+            TotaisMovimentosDTO totaisMovimentosDTO = new TotaisMovimentosDTO();
+
+            foreach (var total in totaisMovimentos)
+            {
+                switch (total.Key)
+                {
+                    case OperacaoTipo.Credito:
+                        totaisMovimentosDTO.Credito = total.Value;
+                        break;
+                    case OperacaoTipo.Debito:
+                        totaisMovimentosDTO.Debito = total.Value;
+                        break;
+                    case OperacaoTipo.Transferencia:
+                        totaisMovimentosDTO.Transferencia = total.Value;
+                        break;
+                }
+            }
+
+            return totaisMovimentosDTO;
+        }
+
         private void ValidaTransferencia(Movimento movimento)
         {
-            if (movimento.Operacao.Tipo == OperacaoTipo.Transferência)
+            if (movimento.Operacao.Tipo == OperacaoTipo.Transferencia)
             {
                 ExistsContaDestino(movimento.ContaDestinoID);
 
@@ -234,23 +277,19 @@ namespace Somnia.API.V1.Controller
             }
         }
 
-        private void ValidaMovimentoParcelado(Movimento movimento, int QuantidadeParcelas)
+        private void ValidaMovimentoParcelado(Movimento movimento)
         {
-            if (QuantidadeParcelas > 1)
+            if (movimento.TotalParcelas > 1)
             {
-                for (var i = 2; i <= QuantidadeParcelas; i++)
+                for (var i = 2; i <= movimento.TotalParcelas; i++)
                 {
-                    Movimento movimentoParcela = new Movimento();
-                    movimentoParcela.Valor = movimento.Valor;
-                    movimentoParcela.Observacao = movimento.Observacao;
+                    Movimento movimentoParcela = (Movimento) movimento.Clone();
+                    movimentoParcela.ID = 0;
                     movimentoParcela.Parcela = i;
-                    movimentoParcela.TotalParcelas = QuantidadeParcelas;
-                    movimentoParcela.Consolidado = movimento.Consolidado;
-                    movimentoParcela.ContaID = movimento.ContaID;
-                    movimentoParcela.OperacaoID = movimento.OperacaoID;
-                    movimentoParcela.MovimentoPaiID = movimento.ID;
                     movimentoParcela.DataCriacao = movimento.DataCriacao.AddMonths(i-1);
                     movimentoParcela.DataAlteracao = movimento.DataAlteracao.AddMonths(i-1);
+                    movimentoParcela.Operacao = null;
+                    movimentoParcela.MovimentoPaiID = movimento.ID;
 
                     _repository.Add(movimentoParcela);
                     _repository.UnchangedParentMovimento(movimentoParcela);
@@ -261,7 +300,6 @@ namespace Somnia.API.V1.Controller
                 }
 
                 movimento.Parcela = 1;
-                movimento.TotalParcelas = QuantidadeParcelas;
                 movimento.Operacao = null;
 
                 _repository.Update(movimento);
@@ -271,6 +309,13 @@ namespace Somnia.API.V1.Controller
                     throw new Exception($"Não foi possível atualizar o movimento da parcela 1.");
                 }
             }
+        }
+
+        private void SubstituiValoresNaoEditaveis(Movimento movimento, MovimentoRegistrarDTO movimentoDto)
+        {
+            movimentoDto.Parcela = movimento.Parcela;
+            movimentoDto.TotalParcelas = movimento.TotalParcelas;
+            movimentoDto.MovimentoPaiID = movimento.MovimentoPaiID;
         }
     }
 }

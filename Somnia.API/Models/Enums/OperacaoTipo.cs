@@ -2,8 +2,8 @@
 {
     public enum OperacaoTipo
     {
-        Crédito = 1,
-        Débito = 2,
-        Transferência = 3
+        Credito = 1,
+        Debito = 2,
+        Transferencia = 3
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System;
 using Somnia.API.Models.Enums;
+using System.Collections.Generic;
 
 namespace Somnia.API.Data
 {
@@ -303,6 +304,29 @@ namespace Somnia.API.Data
             }
 
             return await PageList<Movimento>.CreateAsync(query, pageParams.PageNumber, pageParams.PageSize);
+        }
+
+        public async Task<Dictionary<OperacaoTipo, double>> GetTotaisMovimentosAsync(PageParams pageParams)
+        {
+            IQueryable<Movimento> query = _context.Movimentos;
+
+            query = query.Include(ope => ope.Operacao);
+
+            if (pageParams.DataCriacaoInicio != null)
+            {
+                query = query.Where(a => a.DataCriacao >= pageParams.DataCriacaoInicio);
+            }
+
+            if (pageParams.DataCriacaoFim != null)
+            {
+                query = query.Where(a => a.DataCriacao <= pageParams.DataCriacaoFim);
+            }
+
+            var group = query.GroupBy(a => a.Operacao.Tipo)
+            .Select(g => new { tipo = g.Key, sum = g.Sum(s => s.Valor) })
+            .ToDictionary(k => k.tipo, i => i.sum);
+
+            return group;
         }
 
         public void UnchangedParentMovimento(Movimento movimento)

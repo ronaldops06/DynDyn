@@ -1,6 +1,7 @@
 ﻿using Somnia.API.Helpers;
 using Somnia.API.Models;
 using Somnia.API.Models.Enums;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace Somnia.API.Data
@@ -40,6 +41,7 @@ namespace Somnia.API.Data
         Movimento GetMovimentoById(int movimentoID);
         Movimento[] GetAllMovimentos();
         Task<PageList<Movimento>> GetAllMovimentosAsync(PageParams pageParams);
+        Task<Dictionary<OperacaoTipo, double>> GetTotaisMovimentosAsync(PageParams pageParams);
         void UnchangedParentMovimento(Movimento movimento);
 
         //Saldos
