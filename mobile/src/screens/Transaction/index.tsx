@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-community/async-storage';
 import Moment from 'moment';
 
 import { RootStackParamList } from '../RootStackPrams';
-import api from '../../services/api';
+import { getTransactions, getTotalsTransactions } from './transactions.api';
 import * as I from '../../interfaces/interfaces';
 import { TypesTransaction } from '../../enums/enums';
 import TransactionItem from '../../components/TransactionItem';
@@ -57,56 +57,22 @@ const Transaction = () => {
         }
     };
 
-    const getTransactions = async () => {
+    const loadTransactions = async (loadTotals: boolean = true) => {
         setLoading(true);
         
         if (selectedYear != 0 ) {
-            const token = await AsyncStorage.getItem('token');
-
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
             let mountDateFim= new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
             let params = `dataCriacaoInicio=${Moment(mountDateInicio, 'YYYY-MM-DD').format()}&dataCriacaoFim=${Moment(mountDateFim, 'YYYY-MM-DD').format()}&pageNumber=${pageNumber}`;
             
-            await api.get(`Movimento?${params}`, {
-                headers: { 'Authorization': 'Bearer ' + token ?? ""}
-            }).then(response => {
-                var pagination = response.headers.pagination;
-                var totalPages = pagination.split('totalPages":')[1].replace('}','');
-                
-                setTotalPages(Number(totalPages));
-                appendTransactions(response.data);                
-            }).catch((error) => {
-                if (error.response.status == 401){
-                    navigation.navigate("SignIn");
-                } else {
-                    Alert.alert(error.response.data);
-                }
-            });
-        }
-        setLoading(false);
-    };
+            let responseTransactions = await getTransactions(params, navigation);
+            setTotalPages(responseTransactions?.totalPages ?? 1);
+            appendTransactions(responseTransactions?.data ?? []);  
 
-    const getTransactionsTotals = async () => {
-        setLoading(true);
-        
-        if (selectedYear != 0 ) {
-            const token = await AsyncStorage.getItem('token');
-
-            let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
-            let mountDateFim= new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
-            let params = `dataCriacaoInicio=${Moment(mountDateInicio, 'YYYY-MM-DD').format()}&dataCriacaoFim=${Moment(mountDateFim, 'YYYY-MM-DD').format()}`;
-            
-            await api.get(`Movimento/Totais?${params}`, {
-                headers: { 'Authorization': 'Bearer ' + token ?? ""}
-            }).then(response => {
-                setTransactionTotals(response.data);             
-            }).catch((error) => {
-                if (error.response.status == 401){
-                    navigation.navigate("SignIn");
-                } else {
-                    Alert.alert(error.response.data);
-                }
-            });
+            if (loadTotals) {
+                let responseTotals = await getTotalsTransactions(params, navigation);
+                setTransactionTotals(responseTotals?.data);
+            }
         }
         setLoading(false);
     };
@@ -121,16 +87,16 @@ const Transaction = () => {
         navigation.addListener('focus', () => {
             setTransactions([]);
             setPageNumber(1);
-            getTransactions();
-            getTransactionsTotals();
+            loadTransactions();
+            //getTransactionsTotals();
         });
     }, [navigation]);
 
     useEffect(() => {
         setTransactions([]);
         setPageNumber(1);
-        getTransactions();
-        getTransactionsTotals();
+        loadTransactions();
+        //getTransactionsTotals();
     }, [selectedYear, selectedMonth]);
 
     const handleLeftDateClick = () => {
@@ -195,7 +161,7 @@ const Transaction = () => {
     const reloadPage = () => {
         if (pageNumber <= totalPages){
             setPageNumber(pageNumber + 1);
-            getTransactions();
+            loadTransactions(false);
         }
     }
 

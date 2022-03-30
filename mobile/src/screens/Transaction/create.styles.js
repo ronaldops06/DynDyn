@@ -44,7 +44,7 @@ export const transactionCreateStyle = StyleSheet.create({
     areaValue: {
         flexDirection: "row",
         width: "60%",
-        justifyContent: "space-between"
+        justifyContent: "center"
     },
     buttonMinus: {
         width: 35,
@@ -60,7 +60,7 @@ export const transactionCreateStyle = StyleSheet.create({
         color: "#6E8BB8"
     },
     inputValue: {
-        fontSize: 18,
+        fontSize: 24,
         fontFamily: "Open Sans",
         alignSelf: "center"
     },

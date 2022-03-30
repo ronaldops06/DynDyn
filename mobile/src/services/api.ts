@@ -5,7 +5,7 @@ import { Alert } from 'react-native';
 import * as I from '../interfaces/interfaces';
 
 const api = axios.create({
-    baseURL: "http://192.168.18.115:15866/api/v1/"
+    baseURL: "http://192.168.18.122:15866/api/v1/"
 });
 
 export const get = async (path: string) => {
@@ -20,9 +20,10 @@ export const get = async (path: string) => {
         responseRequest.success = true;
 
         var pagination = response.headers.pagination;
-        var totalPages = pagination.split('totalPages":')[1].replace('}','');
-
-        responseRequest.totalPages = Number(totalPages);
+        if (pagination){
+            var totalPages = pagination.split('totalPages":')[1].replace('}','');
+            responseRequest.totalPages = Number(totalPages);
+        }
     }).catch((error) => {
         responseRequest.error = error.response.data;
         responseRequest.status = error.response.status;
@@ -36,7 +37,7 @@ export const post = async (path: string, data: any) => {
     const token = await AsyncStorage.getItem('token');
     let responseRequest = {} as I.Response;
 
-    api.post(path, data, {
+    await api.post(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? ""}
     }).then(response => {
         responseRequest.data = response.data;
@@ -55,11 +56,11 @@ export const put = async (path: string, data: any) => {
     const token = await AsyncStorage.getItem('token');
     let responseRequest = {} as I.Response;
 
-    api.put(path, data, {
+    await api.put(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? ""}
     }).then(response => {
         responseRequest.data = response.data;
-        responseRequest.status = response.data.status;
+        responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
         responseRequest.error = error.response.data;
@@ -74,7 +75,7 @@ export const del = async (path: string) => {
     const token = await AsyncStorage.getItem('token');
     let responseRequest = {} as I.Response;
 
-    api.delete(path,{
+    await api.delete(path,{
         headers: { 'Authorization': 'Bearer ' + token ?? ""}
     }).then(response => {
         responseRequest.data = response.data;

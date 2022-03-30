@@ -1,3 +1,4 @@
+import React from 'react';
 import { get, post, put, del } from '../../services/api';
 import { TypesCategory, StatusHttp, Action } from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
@@ -8,7 +9,7 @@ export const validateResponse = (action: Action, response: I.Response, navigatio
         navigation.navigate("SignIn");
         return false;
     }
-
+    
     if (!response.success){
         Alert.alert("Erro!", response.error);
         return false;
@@ -34,7 +35,7 @@ export const getCategories = async (navigation: any) => {
     
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
-    return response.data;
+    return response;
 };
 
 export const getAccounts = async (navigation: any) => {
@@ -43,23 +44,7 @@ export const getAccounts = async (navigation: any) => {
     
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
-    return response.data;
-    /*const token = await AsyncStorage.getItem('token');
-    let data = null;
-
-    await api.get(`Conta`, {
-        headers: { 'Authorization': 'Bearer ' + token ?? ""}
-    }).then(response => {
-        data = response.data;
-    }).catch((error) => {
-        if (error.response.status == 401){
-            navigation.navigate("SignIn");
-        } else {
-            Alert.alert(error.response.data);
-        }
-    });
-
-    return data;*/
+    return response;
 };
 
 export const getTransactions = async(params: string, navigation: any) =>{
@@ -68,7 +53,17 @@ export const getTransactions = async(params: string, navigation: any) =>{
     
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
-    return response.data;
+    return response;
+};
+
+export const getTotalsTransactions = async(params: string, navigation: any) =>{
+    
+    let response = {} as I.Response;
+    response = await get(`Movimento/Totais?${params}`);
+    
+    if (!validateResponse(Action.Get, response, navigation)) return null;
+    
+    return response;
 };
 
 export const postTransaction = async(data: I.Transaction, navigation: any) => {
@@ -77,7 +72,7 @@ export const postTransaction = async(data: I.Transaction, navigation: any) => {
     
     if (!validateResponse(Action.Post, response, navigation)) return null;
 
-    return response.data;
+    return response;
 };
 
 export const putTransaction = async(data: I.Transaction, navigation: any) => {
@@ -86,7 +81,7 @@ export const putTransaction = async(data: I.Transaction, navigation: any) => {
     
     if (!validateResponse(Action.Put, response, navigation)) return null;
 
-    return response.data;
+    return response;
 };
 
 export const deleteTransaction = async(id: number, navigation: any) => {

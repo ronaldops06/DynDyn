@@ -6,7 +6,6 @@ import CheckBox from '@react-native-community/checkbox';
 import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Moment from 'moment';
-import AsyncStorage from '@react-native-community/async-storage';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/core';
 
 import { RootStackParamList } from '../RootStackPrams';
@@ -46,7 +45,10 @@ const radioButtonsData: RadioButtonProps[] = [{
     selected: false
 }];
 
-const TransactionCreate = () => {
+const TransactionCreate = () => { 
+    //let stepInput = React.createRef<CustomTextInput>();
+    const stepInput: React.RefObject<any> = React.createRef();
+
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
     const transactionID = route.params?.data.id ?? 0;
@@ -58,7 +60,7 @@ const TransactionCreate = () => {
     const [ mode, setMode ] = useState('date');
     const [ categories, setCategories ] = useState<I.Categoria[]>([]);
     const [ accounts, setAccounts ] = useState<I.Conta[]>([]);
-    const [ valueValue, setValueValue ] = useState(0);    
+    const [ valueValue, setValueValue ] = useState(0);  
     const [ operation, setOperation ] = useState<I.Operacao>(baseOperation);
     const [ valueDescription, setValueDescription ] = useState("");
     const [ valueDate, setValueDate ] = useState("");
@@ -74,8 +76,10 @@ const TransactionCreate = () => {
     const [ showModal, setShowModal ] = useState(false);
 
     const getLists = async () => {
-        setCategories(await getCategories(navigation) ?? []);
-        setAccounts(await getAccounts(navigation) ?? []);
+        let responseCategories = await getCategories(navigation);
+        let responseAccounts = await getAccounts(navigation);
+        setCategories(responseCategories?.data ?? []);
+        setAccounts(responseAccounts?.data ?? []);
     }
 
     const loadDataSreen = () => {
@@ -109,6 +113,7 @@ const TransactionCreate = () => {
     };
 
     useEffect(() => {
+        stepInput.current.focus();
         if (isEditing){
             loadDataSreen();
         }
@@ -263,39 +268,10 @@ const TransactionCreate = () => {
 
         if (isEditing){
             putTransaction(transactionDTO, navigation);
-            /*api.put(`Movimento/${transactionID}`, transactionDTO, {
-                headers: { 'Authorization': 'Bearer ' + token ?? ""}
-            }).then(response => {
-                Alert.alert("Sucesso!", "Transação atualizada com sucesso.")
-                navigation.goBack();
-            }).catch((error) => {
-                Alert.alert("Erro!", error.response.data);
-            });*/
         } else {
             postTransaction(transactionDTO, navigation);
-            /*api.post('Movimento', transactionDTO, {
-                headers: { 'Authorization': 'Bearer ' + token ?? ""}
-            }).then(response => {
-                Alert.alert("Sucesso!", "Transação cadastrada com sucesso.")
-                navigation.goBack();
-            }).catch((error) => {
-                Alert.alert("Erro!", error.response.data);
-            });*/
         }
     };
-
-    /*const deleteTransaction = async () => {
-        const token = await AsyncStorage.getItem('token');
-        
-        api.delete(`Movimento/${transactionID}`,{
-            headers: { 'Authorization': 'Bearer ' + token ?? ""}
-        }).then(response => {
-            Alert.alert("Sucesso!", "Transação excluída com sucesso.");
-            navigation.goBack();
-        }).catch((error) => {
-            Alert.alert("Erro!", error.response.data);
-        });
-    }*/
 
     return(
         <SafeAreaView style={[style.container,style.containerCadastro]}>
@@ -333,13 +309,8 @@ const TransactionCreate = () => {
                     </ButtonSelectBar>
                     <View style={transactionCreateStyle.areaFields} >
                         <View style={transactionCreateStyle.areaValue}>
-                            <TouchableOpacity
-                                style={transactionCreateStyle.buttonMinus}
-                                onPress={() => {}}
-                            >
-                                <Text style={transactionCreateStyle.textButtonMinus}>-</Text>
-                            </TouchableOpacity>
                             <CurrencyInput
+                                ref={stepInput}
                                 style={getTextValueStyle()}
                                 value={valueValue}
                                 onChangeValue={(value: number) => setValueValue(value)}
@@ -348,12 +319,6 @@ const TransactionCreate = () => {
                                 separator=","
                                 precision={2}
                             />
-                            <TouchableOpacity
-                                style={transactionCreateStyle.buttonPlus}
-                                onPress={() => {}}
-                            >
-                                <Text style={transactionCreateStyle.textButtonPlus}>+</Text>
-                            </TouchableOpacity>
                         </View>
                         {!typeSelectedIsTransference() &&
                             <>

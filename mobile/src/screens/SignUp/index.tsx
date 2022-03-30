@@ -6,7 +6,8 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 import { RootStackParamList } from '../RootStackPrams';
 import TextInput from '../../components/CustomTextInput';
-import api from '../../services/api';
+import * as I from '../../interfaces/interfaces';
+import { postUser } from './signup.api';
 
 import { style } from '../../styles/styles';
 import { signUpStyle } from './styles';
@@ -33,15 +34,13 @@ const SignUp = () => {
         if (valuePassword != valuePasswordConfirm){
             Alert.alert("Senha de confirmação não corresponde com a senha.");
         } else {
-            api.post('User', {
-                name: valueName,
-                login: valueEmail,
-                password: valuePasswordConfirm
-            }).then(response => {
-                setUser(response.data)
-            }).catch((error) => {
-                Alert.alert(error.response.data);
-            });
+            let userDTO = {} as I.User;
+            userDTO.name = valueName;
+            userDTO.login = valueEmail;
+            userDTO.password = valuePasswordConfirm;
+
+            const response = await postUser(userDTO, navigation);
+            setUser(response?.data);
             
             if (user.token){
                 await AsyncStorage.setItem('token', user.token);

@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Alert, Modal, TouchableOpacity, ActivityIndicator, View, ScrollView } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { Modal, TouchableOpacity, ActivityIndicator, View, ScrollView } from 'react-native';
 
 import TextItem from '../CustomTextInput';
 import OperationItem from '../OperationItem';
 import ExpandIcon from '../../assets/expand.svg';
 import * as I from '../../interfaces/interfaces';
-import api from '../../services/api';
+import { getOperations } from './operation.modal.api';
 
 import { style } from '../../styles/styles';
 import { operationModalStyle } from './styles';
@@ -24,27 +23,16 @@ const OperationModal = (props: OperationModalParams) => {
     const [ valueSearch, setValueSearch ] = useState("");
     const [ operations, setOperations ] = useState<I.Operacao[]>([]);
 
-    const getOperations = async () => {
+    const loadOperations = async () => {
         setLoading(true);
-        const token = await AsyncStorage.getItem('token');
 
-        await api.get(`Operacao?Tipo=${props.tipoOperation}`, {
-            headers: { 'Authorization': 'Bearer ' + token ?? ""}
-        }).then(response => {
-            setOperations(state => (response.data));
-        }).catch((error) => {
-            if (error.response.status == 401){
-                //navigation.navigate("SignIn");
-            } else {
-                Alert.alert(error.response.data);
-            }
-        });
-
+        let response = await getOperations(`Tipo=${props.tipoOperation}`);
+        setOperations(response?.data ?? []);
         setLoading(false);
     };
 
     useEffect(() => {
-        getOperations();
+        loadOperations();
     }, [props.show == true]);
 
     const handleCloseClick = () => {

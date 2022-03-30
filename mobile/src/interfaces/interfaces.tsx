@@ -15,6 +15,7 @@ export interface User {
     id: number,
     login: string,
     name: string,
+    password: string,
     token: string
 };
 
