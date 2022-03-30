@@ -148,7 +148,7 @@
             <param name="movimentoDto"></param>
             <returns></returns>
         </member>
-        <member name="M:Somnia.API.V1.Controller.MovimentoController.Delete(System.Int32)">
+        <member name="M:Somnia.API.V1.Controller.MovimentoController.Delete(System.Int32,Somnia.API.Helpers.PageParams)">
             <summary>
             
             </summary>

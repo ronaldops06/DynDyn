@@ -2,15 +2,17 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Somnia.API.Data;
 
 namespace Somnia.API.Migrations
 {
     [DbContext(typeof(SomniaContext))]
-    partial class SomniaContextModelSnapshot : ModelSnapshot
+    [Migration("20220330200028_remove-movimento-pai")]
+    partial class removemovimentopai
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -17,7 +17,6 @@ namespace Somnia.API.V1.Dtos
         public DateTime DataCriacao { get; set; }
         public DateTime DataAlteracao { get; set; }
         public int? MovimentoPaiID { get; set; }
-        public MovimentoRegistrarDTO MovimentoPai { get; set; }
         public int ContaID { get; set; }
         public ContaRegistrarDTO Conta { get; set; }
         public int? ContaDestinoID { get; set; }

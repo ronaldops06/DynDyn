@@ -15,5 +15,6 @@ namespace Somnia.API.Helpers
         public DateTime? DataCriacaoInicio { get; set; }
         public DateTime? DataCriacaoFim { get; set; }
         public int? Tipo { get; set; }
+        public int? MovimentoPaiID { get; set; }
     }
 }

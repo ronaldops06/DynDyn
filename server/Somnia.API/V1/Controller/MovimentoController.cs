@@ -172,7 +172,7 @@ namespace Somnia.API.V1.Controller
         /// <returns></returns>
         [HttpDelete("{id}")]
         [Authorize]
-        public IActionResult Delete(int id)
+        public IActionResult Delete(int id, [FromQuery] PageParams pageParams)
         {
             var movimento = _repository.GetMovimentoById(id);
             if (movimento == null)
@@ -182,11 +182,11 @@ namespace Somnia.API.V1.Controller
 
             movimento.Operacao = null;
             movimento.ContaDestino = null;
-            movimento.MovimentoPai = null;
 
             _repository.Delete(movimento);
             if (_repository.SaveChanges())
             {
+                ValidaExclusaoMovimentoParcelado(pageParams);
                 return Ok("Movimento deletado");
             }
 
@@ -307,6 +307,26 @@ namespace Somnia.API.V1.Controller
                 if (!_repository.SaveChanges())
                 {
                     throw new Exception($"Não foi possível atualizar o movimento da parcela 1.");
+                }
+            }
+        }
+
+        private async void ValidaExclusaoMovimentoParcelado(PageParams pageParams)
+        {
+            if (pageParams.MovimentoPaiID != null)
+            {
+                var movimentos = await _repository.GetAllMovimentosAsync(pageParams);
+                foreach (var movimento in movimentos)
+                {
+                    movimento.Operacao = null;
+                    movimento.ContaDestino = null;
+                    movimento.Conta = null;
+
+                    _repository.Delete(movimento);
+                    if (!_repository.SaveChanges())
+                    {
+                        throw new Exception($"Não foi possível excluir o movimento da parcela {movimento.Parcela}.");
+                    }
                 }
             }
         }

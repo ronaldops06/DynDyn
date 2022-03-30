@@ -10,7 +10,6 @@ namespace Somnia.API.Models
         public int? Parcela { get; set; }
         public int? TotalParcelas { get; set; }
         public int? MovimentoPaiID { get; set; }
-        public Movimento MovimentoPai { get; set; }
         public int ContaID { get; set; }
         public Conta Conta { get; set; }
         public int? ContaDestinoID { get; set; }
