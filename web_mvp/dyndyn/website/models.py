@@ -1,5 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.db.models import F
+from django.db.models.functions import Coalesce
 
 # Create your models here.
 class Codes(models.Model):
@@ -49,12 +51,14 @@ class Contas(models.Model):
         
     class Meta:
         ordering = ['nome']
-            
+        
+        
 class Operacoes(models.Model):
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=200, blank=True, null=True)
     tipo = models.IntegerField( blank=True, null=True)
     recorrente = models.IntegerField(default=0)
+    salario = models.IntegerField(default=0)
     status = models.IntegerField( blank=True, null=True)
     cat_id = models.ForeignKey(Categorias, on_delete=models.CASCADE, blank=True, null=True, verbose_name="categorias")
     dt_criacao = models.DateTimeField(default=timezone.now)
@@ -69,6 +73,19 @@ class Operacoes(models.Model):
         
     class Meta:
         ordering = ['nome']
+
+class ContasOperacoes(models.Model):
+    id = models.AutoField(primary_key=True)
+    conta = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="contas")
+    operacao = models.ForeignKey(Operacoes, on_delete=models.CASCADE, blank=True, null=True, verbose_name="operacoes")
+    tipo = models.IntegerField( blank=True, null=True)
+    dt_base = models.DateTimeField(blank=True, null=True)
+    dt_criacao = models.DateTimeField(default=timezone.now)
+    dt_alteracao = models.DateTimeField(blank=True, null=True)
+    
+    def publish(self):
+        self.dt_alteracao = timezone.now()
+        self.save()
     
 class Movimentos(models.Model):
     id = models.AutoField(primary_key=True)
@@ -77,7 +94,10 @@ class Movimentos(models.Model):
     cta_id = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="contas")
     ope_id = models.ForeignKey(Operacoes, on_delete=models.CASCADE, blank=True, null=True, verbose_name="operacoes")
     dt_criacao = models.DateTimeField(default=timezone.now)
-    dt_alteracao = models.DateTimeField(blank=True, null=True)
+    dt_alteracao = models.DateTimeField(blank=True, null=True, auto_now=True)
+    
+    def valor_convertido(self):
+        return self.valor * -1 if self.ope_id.tipo == 2 else self.valor
         
     def publish(self):
         self.dt_alteracao = timezone.now()
@@ -98,6 +118,8 @@ class Saldos(models.Model):
     vlr_rendimento = models.FloatField(blank=True, null=True)
     credito = models.FloatField(blank=True, null=True)
     debito = models.FloatField(blank=True, null=True)
+    credito_salario = models.FloatField(blank=True, null=True)
+    debito_salario = models.FloatField(blank=True, null=True)
     entrada = models.FloatField(blank=True, null=True)
     saida = models.FloatField(blank=True, null=True)
     cta_id = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="contas")
@@ -112,17 +134,25 @@ class Saldos(models.Model):
     def __str__(self):
         return self.cta_id.nome + "(" + self.dt_saldo.strftime('%d/%m/%Y') + ")"
         
+class SaldoProxy(Saldos):
+
+    class Meta:
+        proxy = True
+        verbose_name_plural = "Dashboard"
+        
 class SaldoSimulado(models.Model):
     id = models.AutoField(primary_key=True)
     vlr_real = models.FloatField(blank=True, null=True)
     vlr_diferenca = models.FloatField(blank=True, null=True)
     saldo = models.ForeignKey(Saldos, on_delete=models.CASCADE, blank=True, null=True, verbose_name="saldos")
+    ajusta = models.IntegerField(default=0)
     dt_criacao = models.DateTimeField(default=timezone.now)
     dt_alteracao = models.DateTimeField(blank=True, null=True)
     
-    def publish(self):
+    def save(self, *args, **kwargs):
         self.dt_alteracao = timezone.now()
-        self.save()
+        self.vlr_diferenca = round(self.vlr_real - self.saldo.vlr_acumulado, 2)
+        super(SaldoSimulado, self).save(*args, **kwargs)
         
     class Meta:
         ordering = ['saldo__dt_saldo']
@@ -133,9 +163,59 @@ class Execucoes(models.Model):
     dt_exec_saldo = models.DateField(blank=True, null=True)
     executa_recorrencia = models.IntegerField(default=0)
     dt_exec_rec = models.DateField(blank=True, null=True)
+    executa_saldo_sim = models.IntegerField(default=0)
+    dt_exec_saldo_sim = models.DateField(blank=True, null=True)
     dt_criacao = models.DateTimeField(default=timezone.now)
     dt_alteracao = models.DateTimeField(blank=True, null=True)
     
     def publish(self):
         self.dt_alteracao = timezone.now()
         self.save()
+
+class TiposAtivos(models.Model):
+    id = models.AutoField(primary_key=True)
+    codigo = models.CharField(max_length=5, blank=True, null=True)
+    descricao = models.CharField(max_length=50, blank=True, null=True)
+    conta = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="contas")
+    dt_criacao = models.DateTimeField(default=timezone.now)
+    dt_alteracao = models.DateTimeField(blank=True, null=True)
+    
+    def publish(self):
+        self.dt_alteracao = timezone.now()
+        self.save()
+        
+    def __str__(self):
+        return self.codigo
+        
+class Ativos(models.Model):
+    id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=200, blank=True, null=True) 
+    vlr_compra = models.FloatField(blank=True, null=True)
+    vlr_venda = models.FloatField(blank=True, null=True)
+    perc_irpf = models.FloatField(blank=True, null=True)
+    vlr_irpf = models.FloatField(blank=True, null=True)
+    vlr_despesas = models.FloatField(default=0.0)
+    vlr_retorno_bruto = models.FloatField(blank=True, null=True)
+    vlr_retorno_liq = models.FloatField(blank=True, null=True)
+    perc_retorno_liq = models.FloatField(default=0.0)
+    periodo_meses = models.IntegerField(blank=True, null=True)
+    dt_vencimento = models.DateTimeField(blank=True, null=True)
+    situacao = models.IntegerField(default=0)
+    tipo_ativo = models.ForeignKey(TiposAtivos, on_delete=models.CASCADE, blank=True, null=True, verbose_name="tipos_ativos")
+    dt_criacao = models.DateTimeField(default=timezone.now)
+    dt_alteracao = models.DateTimeField(blank=True, null=True)
+    
+    def save(self, *args, **kwargs):
+        self.dt_alteracao = timezone.now()
+        self.vlr_retorno_bruto = round(self.vlr_venda - self.vlr_compra, 2) if self.vlr_venda != None else 0.0
+        self.periodo_meses = (self.dt_vencimento.year - self.dt_criacao.year) * 12 + (self.dt_vencimento.month - self.dt_criacao.month) + round((self.dt_vencimento.day - self.dt_criacao.day) / 30) if self.dt_vencimento != None else 1
+        self.periodo_meses = self.periodo_meses if self.periodo_meses > 0 else 1
+        self.perc_irpf = (22.50 if self.periodo_meses < 6 else 20.00 if self.periodo_meses >= 6 and self.periodo_meses < 12 else 17.50) if self.tipo_ativo.codigo == 'CDB' else 0.0
+        self.vlr_irpf = round(self.vlr_retorno_bruto * (self.perc_irpf / 100), 2)
+        self.vlr_retorno_liq = round(self.vlr_retorno_bruto - self.vlr_irpf - self.vlr_despesas, 2)
+        self.perc_retorno_liq = round((self.vlr_retorno_liq * 100) / self.vlr_compra / self.periodo_meses * 12, 2)
+        super(Ativos, self).save(*args, **kwargs)
+
+    class Meta:
+        ordering = ['dt_vencimento']
+        

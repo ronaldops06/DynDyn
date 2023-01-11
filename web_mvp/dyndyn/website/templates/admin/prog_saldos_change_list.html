@@ -1,0 +1,223 @@
+<!-- dyndyn/templates/admin/saldos_change_list.html -->
+
+{% extends "admin/change_list.html" %}
+{% load static %}
+{% block content_title %}
+    <h1> Saldos </h1>
+{% endblock %}
+{% block extrahead %}
+    <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js"></script>
+    <script>
+		function addMonth(date, month) {
+			return date.setMonth(date.getMonth() + month);
+		}
+				
+		function formatDate(date) {
+			var d = new Date(date),
+				month = '' + (d.getMonth() + 1),
+				day = '' + d.getDate(),
+				year = d.getFullYear();
+
+			if (month.length < 2) 
+				month = '0' + month;
+			if (day.length < 2) 
+				day = '0' + day;
+
+			return String([year, month, day].join(''));
+		}
+
+        var randomColorGenerator = function () {
+            return '#' + (Math.random().toString(16) + '0000000').slice(2, 8);
+        };
+        var optionsLine = {
+            legend: {
+				display: true,
+				position: 'top',
+				labels: {
+					boxWidth: 80,
+					fontColor: 'black'
+				}
+			}
+        };
+		var optionsBarRendimentos = {
+			legend: {
+				display: false
+			},
+			tooltips: {
+				callbacks: {
+					label: function(tooltipItem, data) {
+						var valorTotalMesAnterior = 0;
+	
+						if (tooltipItem.index > 0) {
+							valorTotalMesAnterior = data.extra[tooltipItem.index-1];
+						}
+						return new Array('Base: R$ ' + valorTotalMesAnterior,
+										'R$ ' + tooltipItem.yLabel,
+										((tooltipItem.yLabel * 100) / valorTotalMesAnterior).toFixed(2) + '%',
+										);
+					}
+				}
+			}
+		};
+		
+		var optionsBarRendimentosPerc = {
+			legend: {
+				display: true
+			}
+		};
+		
+		var optionsBarGanhosGastos = {
+			legend: {
+				display: true
+			},
+			tooltips: {
+				callbacks: {
+					label: function(tooltipItem, data) {
+						var barCount = tooltipItem.index;
+						var barIndex = tooltipItem.datasetIndex;
+						var vlr_credito = data.datasets[0].data[barCount];
+						var vlr_debito = data.datasets[1].data[barCount];
+						var vlr_saldo = vlr_credito - vlr_debito;
+						var pct_saldo = (vlr_saldo * 100) / vlr_credito;
+						if (barIndex == 1){
+							return new Array('Débito:  R$ ' + tooltipItem.yLabel,
+											'Saldo: R$ ' + vlr_saldo.toFixed(2) ,
+											'Saldo(%): ' + pct_saldo.toFixed(2) + '%');
+						} else {
+							return new Array('Crédito:  R$ ' + tooltipItem.yLabel,
+											'Saldo: R$ ' + vlr_saldo.toFixed(2) ,
+											'Saldo(%): ' + pct_saldo.toFixed(2) + '%');
+						}
+					}
+				}
+			}
+		};
+		
+        window.onload = function () {
+            var ctx = document.getElementById("progreco-saldo-chart");
+            var lineChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [{% for x in saldos %}'{{ x.dt_saldo|date:"m/Y" }}',{% endfor %}],
+                    datasets: [
+						{
+							label: 'Estimado',
+							data: [{% for x in saldos %}'{{ x.vlr_estimado|floatformat:2 }}',{% endfor %}],
+							lineTension: 0,
+							fill: false,
+							borderColor: 'blue'
+						},
+						{
+							label: 'Realizado',
+							data: [{% for x in saldos %}'{{ x.vlr_acumulado|floatformat:2 }}',{% endfor %}],
+							lineTension: 0,
+							fill: false,
+							borderColor: 'red'
+						}
+					]
+                },
+                options: optionsLine
+            });
+			
+			var ctx2 = document.getElementById("rendimentos-saldo-chart");
+            var barChart = new Chart(ctx2, {
+                type: 'bar',
+                data: {
+                    labels: [{% for x in rendimentos %}'{{ x.dt_saldo|date:"m/Y" }}',{% endfor %}],
+                    datasets: [
+						{
+							data: [{% for x in rendimentos %}'{{ x.valor|floatformat:2 }}',{% endfor %}],
+							backgroundColor: [{% for x in rendimentos %}'{{ x.color }}',{% endfor %}]
+						}
+					],
+					extra: [{% for x in rendimentos %}'{{ x.vlr_saldo_conta|floatformat:2 }}',{% endfor %}]
+                },
+                options: optionsBarRendimentos
+            });
+			
+			
+			var dt = new Date();
+			var dt_inicio = formatDate(addMonth(dt, -6));
+			var dt_fim = formatDate(addMonth(dt, 12));
+			//var testes = [{% for x in saldos %}{% if x.dt_saldo|date:'Ymd' > '20220125' and x.dt_saldo|date:'Ymd' < '20230125' %} '{{ x.dt_saldo|date:"m/Y" }}',{% endif %}{% endfor %}]
+			var ctx3 = document.getElementById("ganhos-gastos-chart");
+            var barChart = new Chart(ctx3, {
+                type: 'bar',
+                data: {
+                    labels: [{% for x in saldos %}'{{ x.dt_saldo|date:"m/Y" }}',{% endfor %}],
+                    datasets: [
+						{
+							label: 'Crédito',
+							data: [{% for x in saldos %}'{{ x.credito|floatformat:2 }}'-'{{ x.debito_salario|floatformat:2 }}',{% endfor %}],
+							backgroundColor: 'blue'
+						},
+						{
+							label: 'Débito',
+							data: [{% for x in saldos %}'{{ x.debito|floatformat:2 }}'-'{{ x.debito_salario|floatformat:2 }}',{% endfor %}],
+							backgroundColor: 'red'
+						},
+					]
+                },
+				options: optionsBarGanhosGastos
+            });
+			
+			var ctx4 = document.getElementById("perc-rend-saldo-chart");
+            var mixedChart = new Chart(ctx4, {
+				type: 'bar',
+                data: {
+                    labels: [{% for x in rendimentos %}'{{ x.dt_saldo|date:"m/Y" }}',{% endfor %}],
+                    datasets: [
+						{
+							label: 'Percentual Rendimento',
+							type: 'bar',
+							data: [{% for x in rendimentos %}'{{ x.prc_rendimento|floatformat:2 }}',{% endfor %}],
+							backgroundColor: [{% for x in rendimentos %}'{{ x.color }}',{% endfor %}]
+						},
+						{
+							label: 'Média Percentual Rendimento',
+							type: 'line',
+							data: [{% for x in rendimentos %}'{{ x.prc_medio_rend|floatformat:2 }}',{% endfor %}],
+							fill: false,
+							borderColor: 'red'
+						}
+					]
+                },
+				options: optionsBarRendimentosPerc
+            });
+        }
+    </script>
+{% endblock %}
+{% block content %}
+	<h3>Saldo acumulado </h3>
+	<h6>Neste gráfico são apresentados os saldos acumulados e também o valor estimado para a data correspondente ao saldo. O valor estimado é calculado considerando um crescimento de 3.90% em relação ao mês anterior.<h6>
+    <div class="row">
+        <div class="col-sm-12">
+            <canvas id="progreco-saldo-chart" style="width: 300px !important;"></canvas>
+        </div>
+	</div>
+	</br></br>
+	<h3>Ganhos x Gastos</h3>
+	<h6>Nos ganhos e gastos são apresentados os valores de crédito e de debíto, no tooltip são mostrados os valores de saldo e percentuais de cada mês.</h6>
+	<div class="row">
+        <div class="col-sm-12">
+			<canvas id="ganhos-gastos-chart" style="width: 300px !important; height: 100px;"></canvas>
+        </div>
+	</div>
+	</br></br>
+	<h3>Rendimentos</h3>
+	<h6>Os rendimentos correspondem a soma dos valores de Dividendos e Rendimentos. Valorizações e desvalorizações de ativos não são consideradas neste gráfico</h6>
+	<div class="row">
+        <div class="col-sm-12">
+			<canvas id="rendimentos-saldo-chart" style="width: 300px !important; height: 100px;"></canvas>
+        </div>
+	</div>
+	<h3>Rendimentos(%)</h3>
+	<h6>Os rendimentos correspondem a soma dos valores de Dividendos e Rendimentos. Valorizações e desvalorizações de ativos não são consideradas neste gráfico</h6>
+	<div class="row">
+        <div class="col-sm-12">
+			<canvas id="perc-rend-saldo-chart" style="width: 300px !important; height: 100px;"></canvas>
+        </div>
+	</div>
+{% endblock %}
