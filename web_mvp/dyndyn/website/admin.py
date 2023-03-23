@@ -7,6 +7,7 @@ from rangefilter.filters import DateRangeFilter, DateTimeRangeFilter
 from admin_totals.admin import ModelAdminTotals
 from django.db.models import Sum, Min, Max, Q
 from django.db.models.functions import Coalesce
+from django.utils.html import format_html
 
 from .models import Codes, Categorias, Contas, Operacoes, Movimentos, Saldos, Execucoes, SaldoSimulado, ContasOperacoes, SaldoProxy, Ativos, TiposAtivos
 
@@ -58,6 +59,7 @@ class TipoStatusOperacaoForm(forms.ModelForm):
         choices = [
             (1, 'Crédito'),
             (2, 'Débito'),
+            (3, 'Transferência'),
         ],
         initial = 1,
         widget = forms.RadioSelect,
@@ -179,6 +181,17 @@ class SituacaoAtivoForm(forms.ModelForm):
         initial = 0,
         widget = forms.RadioSelect,
     )
+
+class MovimentosForm(forms.ModelForm):
+    consolidado = forms.ChoiceField(
+        label = 'Consolidado',
+        choices = [
+            (0, 'Não'),
+            (1, 'Sim')
+        ],
+        initial = 0,
+        widget = forms.RadioSelect
+    )
 ##-------------------------------------------------------------------------##
 @admin.register(Codes)
 class CodesAdmin(admin.ModelAdmin):
@@ -264,15 +277,33 @@ class MovimentosAdmin(ModelAdminTotals):
         return obj.valor if obj.ope_id.tipo == 1 else obj.valor * -1
     
     _valor.short_description = 'Valor' 
+
+    def conta_destino(self, obj):
+        return obj
+
+    conta_destino.short_description = 'Conta Destino'
+
+    def consolidado_color(self, obj):
+        text = 'Não'
+        color = 'red'
         
-    list_display = ('ope_id', 'cta_id', 'valor', 'observacao', 'data_criacao', 'valor_convertido')
+        if obj.consolidado == 1:
+            text = 'Sim'
+            color = 'green'
+        return format_html('<b style="color:{};">{}</b>',color,text,obj.consolidado)
+    
+    consolidado_color.short_description = 'Consolidado'
+        
+    list_display = ('ope_id', 'consolidado_color', 'cta_id', 'conta_destino', 'valor', 'observacao', 'data_criacao', 'valor_convertido')
+    #list_editable = ('consolidado',)
     date_hierarchy = 'dt_criacao'
     #list_totals = [('valor_convertido', lambda function: Sum('valor_convertido'))]
     list_filter = (
         ('dt_criacao', DateTimeRangeFilter),
         ('cta_id__nome'),
     )
-    fields = ['ope_id', 'cta_id', 'valor', 'observacao', 'dt_criacao']
+    form = MovimentosForm
+    fields = ['consolidado', 'ope_id', 'cta_id', 'conta_destino', 'valor', 'observacao', 'parcela', 'total_parcelas', 'dt_criacao']
     
 @admin.register(TiposAtivos)
 class TiposAtivosAdmin(admin.ModelAdmin):

@@ -3,6 +3,15 @@ from django.utils import timezone
 from django.db.models import F
 from django.db.models.functions import Coalesce
 
+class SimNao(models.IntegerChoices):
+    FALSE = 0, 'Não'
+    TRUE = 1, 'Sim'
+
+class TipoOperacao(models.IntegerChoices):
+    CREDITO = 1, 'Crédito'
+    DEBITO = 2, 'Débito'
+    TRANSFERENCIA = 3, 'Transferência'
+
 # Create your models here.
 class Codes(models.Model):
     id = models.AutoField(primary_key=True)
@@ -56,10 +65,10 @@ class Contas(models.Model):
 class Operacoes(models.Model):
     id = models.AutoField(primary_key=True)
     nome = models.CharField(max_length=200, blank=True, null=True)
-    tipo = models.IntegerField( blank=True, null=True)
-    recorrente = models.IntegerField(default=0)
-    salario = models.IntegerField(default=0)
-    status = models.IntegerField( blank=True, null=True)
+    tipo = models.IntegerField(choices=TipoOperacao.choices)
+    recorrente = models.IntegerField(default=0, choices=SimNao.choices)
+    salario = models.IntegerField(default=0, choices=SimNao.choices)
+    status = models.IntegerField(default=1, choices=SimNao.choices)
     cat_id = models.ForeignKey(Categorias, on_delete=models.CASCADE, blank=True, null=True, verbose_name="categorias")
     dt_criacao = models.DateTimeField(default=timezone.now)
     dt_alteracao = models.DateTimeField(blank=True, null=True)
@@ -91,8 +100,13 @@ class Movimentos(models.Model):
     id = models.AutoField(primary_key=True)
     valor = models.FloatField(blank=True, null=True)
     observacao = models.CharField(max_length=200, blank=True, null=True)
-    cta_id = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="contas")
-    ope_id = models.ForeignKey(Operacoes, on_delete=models.CASCADE, blank=True, null=True, verbose_name="operacoes")
+    consolidado = models.IntegerField(blank=True, null=True, choices=SimNao.choices)
+    parcela = models.IntegerField(blank=True, null=True)
+    total_parcelas = models.IntegerField(blank=True, null=True)
+    movimento_pai = models.ForeignKey('self', on_delete=models.CASCADE, blank=True, null=True, verbose_name="Movimento")
+    cta_id = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Conta")
+    conta_destino = models.ForeignKey(Contas, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Conta Destino", related_name="conta_destino")
+    ope_id = models.ForeignKey(Operacoes, on_delete=models.CASCADE, blank=True, null=True, verbose_name="Operação")
     dt_criacao = models.DateTimeField(default=timezone.now)
     dt_alteracao = models.DateTimeField(blank=True, null=True, auto_now=True)
     
