@@ -366,24 +366,27 @@ class AtivosAdmin(admin.ModelAdmin):
  
 @admin.register(Saldos)
 class SaldosAdmin(admin.ModelAdmin):
-            
-    def get_rangefilter_dt_saldo_default(self, request):
-        return (datetime.datetime.today, datetime.datetime.today)
+	def get_queryset(self, request):
+		qs = super(SaldosAdmin, self).get_queryset(request)
+		return qs.filter((Q(cta_id__status=0) & Q(vlr_acumulado__gt=0)) | Q(cta_id__status=1))
+		
+	def get_rangefilter_dt_saldo_default(self, request):
+		return (datetime.datetime.today, datetime.datetime.today)
 
-    def get_rangefilter_dt_saldo_title(self, request, field_path):
-        return 'Data do Saldo'
+	def get_rangefilter_dt_saldo_title(self, request, field_path):
+		return 'Data do Saldo'
         
-    def data_saldo(self, obj):
-        return obj.dt_saldo.strftime("%d/%m/%Y %H:%M:%S")
+	def data_saldo(self, obj):
+		return obj.dt_saldo.strftime("%d/%m/%Y %H:%M:%S")
         
-    data_saldo.short_description = 'Data Saldo' 
+	data_saldo.short_description = 'Data Saldo' 
     
-    list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
-    date_hierarchy = 'dt_saldo'
-    list_filter = (
-        ('dt_saldo', DateTimeRangeFilter),
-    )
-    fields = ['cta_id', 'dt_saldo', 'valor', 'vlr_acumulado', ('vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento'), ('credito', 'debito'), ('credito_salario', 'debito_salario')]
+	list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
+	date_hierarchy = 'dt_saldo'
+	list_filter = (
+		('dt_saldo', DateTimeRangeFilter),
+	)
+	fields = ['cta_id', 'dt_saldo', 'valor', 'vlr_acumulado', ('vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento'), ('credito', 'debito'), ('credito_salario', 'debito_salario')]
 
 @admin.register(Execucoes)
 class ExecucoesAdmin(admin.ModelAdmin):
