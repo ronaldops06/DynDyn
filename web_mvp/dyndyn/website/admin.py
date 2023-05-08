@@ -212,7 +212,7 @@ class CategoriasAdmin(admin.ModelAdmin):
     tipo_categoria.short_description = 'Tipo' 
     
     list_display = ('nome', 'tipo_categoria', 'status_categoria')
-	search_fields = ['nome']
+    search_fields = ['nome']
     form = TipoStatusCategoriaForm
     fields = ['nome', 'tipo', 'status']
 
@@ -230,7 +230,7 @@ class ContasAdmin(admin.ModelAdmin):
     conta_pai.short_description = 'Conta Principal' 
 
     list_display = ('nome', 'cat_id', 'conta_pai', 'status_conta')
-	search_fields = ['nome', 'cat_id__nome', 'conta_pai__nome']
+    search_fields = ['nome', 'cat_id__nome', 'conta_pai__nome']
     form = CategoriaStatusOperacaoForm
     fields = ['nome', 'cat_id', 'conta', 'status']
     
@@ -258,7 +258,7 @@ class OperacoesAdmin(admin.ModelAdmin):
     salario_operacao.short_description = 'Salário' 
     
     list_display = ('nome', 'cat_id', 'tipo_operacao', 'recorrente_operacao', 'status_operacao', 'salario_operacao')
-	search_fields = ['nome', 'cat_id__nome', 'tipo_operacao']
+    search_fields = ['nome', 'cat_id__nome', 'tipo_operacao']
     form = TipoStatusOperacaoForm
     fields = ['nome', ('tipo', 'recorrente'), 'cat_id', 'status', 'salario']
         
@@ -298,7 +298,7 @@ class MovimentosAdmin(ModelAdminTotals):
     consolidado_color.short_description = 'Consolidado'
         
     list_display = ('ope_id', 'consolidado_color', 'cta_id', 'conta_destino', 'valor', 'observacao', 'data_criacao', 'valor_convertido')
-	search_fields = ['ope_id__nome']
+    search_fields = ['ope_id__nome']
     #list_editable = ('consolidado',)
     date_hierarchy = 'dt_criacao'
     #list_totals = [('valor_convertido', lambda function: Sum('valor_convertido'))]
@@ -364,7 +364,7 @@ class AtivosAdmin(admin.ModelAdmin):
     vlr_liquido.short_description = 'Vlr Liq.'
         
     list_display = ('nome', 'vlr_compra', 'vlr_venda', 'data_criacao', 'data_vencimento', 'periodo', 'vlr_bruto', 'vlr_liquido', 'percentual_retorno_liq', 'percentual_retorno_liq_mes', 'irpf_vlr_and_perc', 'vlr_despesas' )
-	search_fields = ['nome']
+    search_fields = ['nome']
     readonly_fields = ['periodo_meses', 'vlr_retorno_bruto', 'vlr_retorno_liq', 'perc_retorno_liq', 'perc_irpf', 'vlr_irpf']
     form = SituacaoAtivoForm
     fields = ['situacao', 'tipo_ativo', 'nome', ('vlr_compra', 'vlr_venda'), ('dt_criacao', 'dt_vencimento'), 'vlr_despesas']
@@ -387,7 +387,7 @@ class SaldosAdmin(admin.ModelAdmin):
 	data_saldo.short_description = 'Data Saldo' 
     
 	list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
-	search_fields = ['cta_id__nome']
+    search_fields = ['cta_id__nome']
 	date_hierarchy = 'dt_saldo'
 	list_filter = (
 		('dt_saldo', DateTimeRangeFilter),
