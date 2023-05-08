@@ -387,7 +387,7 @@ class SaldosAdmin(admin.ModelAdmin):
 	data_saldo.short_description = 'Data Saldo' 
     
 	list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
-    search_fields = ['cta_id__nome']
+	search_fields = ['cta_id__nome']
 	date_hierarchy = 'dt_saldo'
 	list_filter = (
 		('dt_saldo', DateTimeRangeFilter),
