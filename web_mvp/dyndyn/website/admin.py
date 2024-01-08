@@ -512,7 +512,7 @@ class DashboardAdmin(admin.ModelAdmin):
                 v_vlr_estimado = saldo.vlr_acumulado
                 saldo.vlr_estimado = v_vlr_estimado
             else:
-                v_vlr_estimado = v_vlr_estimado + (v_vlr_estimado * 0.04)
+                v_vlr_estimado = v_vlr_estimado + (v_vlr_estimado * 0.028)
                 saldo.vlr_estimado = v_vlr_estimado
             
         response.context_data['saldos'] = saldos
