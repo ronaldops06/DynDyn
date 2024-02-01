@@ -83,10 +83,11 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'postgres',
-        'USER': 'postgres',
+        'USER': 'postgres.hvtayxnzubnmggkuaezu',
         'PASSWORD': '!4JVFrejvHKNZyz',
-        'HOST': 'db.hvtayxnzubnmggkuaezu.supabase.co',
-        'PORT': '5432',
+        'HOST': 'aws-0-sa-east-1.pooler.supabase.com',
+        'PORT': '6543',
+        'DISABLE_SERVER_SIDE_CURSORS': True
     }
 }
 '''
