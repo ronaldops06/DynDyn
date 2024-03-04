@@ -1,0 +1,42 @@
+﻿{
+  "$schema": "https://json.schemastore.org/launchsettings.json",
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:21947",
+      "sslPort": 44313
+    }
+  },
+  "profiles": {
+    "Application": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.wqnbswkzfreouptrmkex;Password=GalePostgres43#*5;Database=postgres",
+        "Seconds": "28800",
+        "DATABASE": "POSTGRES",
+        "Issuer": "ExemploIssuer",
+        "Audience": "ExemploAudience",
+        "MIGRATION": "APLICAR"
+      }
+    },
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "launchUrl": "swagger",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+      }
+    }
+  },
+  "TokenConfigurations": {
+    "Audience": "ExemploAudience",
+    "Issuer": "ExemploIssuer",
+    "Seconds": 28800
+  }
+}

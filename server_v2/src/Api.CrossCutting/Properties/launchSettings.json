@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "CrossCutting": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "DB_CONNECTION": "Host=db.wqnbswkzfreouptrmkex.supabase.co;Username=postgres;Password=root;Database=postgres",
+        "DATABASE": "POSTGRESS"
+      }
+    }
+  }
+}
