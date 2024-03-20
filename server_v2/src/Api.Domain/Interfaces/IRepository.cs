@@ -1,4 +1,6 @@
 ﻿using Domain.Entities;
+using Domain.Helpers;
+using Domain.Models;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -9,8 +11,9 @@ namespace Domain.Interfaces
         Task<T> InsertAsync(T item);
         Task<T> UpdateAsync(T item);
         Task<bool> DeleteAsync(int id);
-        Task<T> SelectAsync(int id);
+        Task<T> SelectByIdAsync(int id);
         Task<IEnumerable<T>> SelectAsync();
-        Task<bool> ExistsAsync(int id);        
+        Task<Data<T>> SelectByParamAsync(PageParams pageParams);
+        Task<bool> ExistsAsync(int id);
     }
 }

@@ -5,6 +5,7 @@ using Domain.Dtos.User;
 using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
+using System.Text;
 
 namespace Api.Integration.Test
 {
@@ -20,8 +21,8 @@ namespace Api.Integration.Test
 
         public BaseIntegration()
         {
-            HostApi = "http://localhost/api/v1";
-            
+            HostApi = "http://192.168.18.3:5000/api/v1";
+
             var builder = new WebHostBuilder()
                 .UseEnvironment("Testing")
                 .UseStartup<FakeStartup>();
@@ -45,13 +46,13 @@ namespace Api.Integration.Test
             var resultLogin = await PostJsonAsync(loginDto, $"{HostApi}/Login/Auth", Client);
             var jsonLogin = await resultLogin.Content.ReadAsStringAsync();
             var loginObject = JsonConvert.DeserializeObject<LoginResponseDto>(jsonLogin);
-            using (StreamWriter outputFile = new StreamWriter(Path.Combine(@"C:\tmp\", "WriteLines2.txt")))
+
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(BEARER_TOKEN, loginObject.AccessToken);
         }
 
         public static async Task<HttpResponseMessage> PostJsonAsync(object dataclass, string url, HttpClient client)
         {
-            return await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(dataclass), System.Text.Encoding.UTF8, "application/json"));
+            return await client.PostAsync(url, new StringContent(JsonConvert.SerializeObject(dataclass), Encoding.UTF8, "application/json"));
         }
 
         public void Dispose()
@@ -67,7 +68,7 @@ namespace Api.Integration.Test
         {
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
-                cfg.AddProfile(new DtoToModelProfile());                
+                cfg.AddProfile(new DtoToModelProfile());
                 cfg.AddProfile(new EntityToModelProfile());
             });
 

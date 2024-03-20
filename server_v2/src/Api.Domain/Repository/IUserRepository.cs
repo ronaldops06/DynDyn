@@ -1,7 +1,5 @@
 ﻿using Domain.Entities;
-using Domain.Helpers;
 using Domain.Interfaces;
-using Domain.Models;
 using System.Threading.Tasks;
 
 namespace Domain.Repository
@@ -11,7 +9,5 @@ namespace Domain.Repository
         Task<UserEntity> FindUsuarioByUsernamaAndPassword(string login, string password);
 
         Task<UserEntity> FindUsuarioByLogin(string login);
-
-        Task<Data<UserEntity>> FindAllUsuariosAsync(PageParams pageParams);
     }
 }

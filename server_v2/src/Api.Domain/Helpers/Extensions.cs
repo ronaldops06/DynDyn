@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using System;
+using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 
@@ -14,6 +15,11 @@ namespace Domain.Helpers
 
             response.Headers.Add("Pagination", JsonConvert.SerializeObject(paginationHeader, camelCaseFormatter));
             response.Headers.Add("Access-Control-Expose-Header", "Pagination");
+        }
+
+        public static T ToEnum<T>(this int enumValue)
+        {
+            return (T)Enum.ToObject(typeof(T), enumValue);
         }
     }
 }

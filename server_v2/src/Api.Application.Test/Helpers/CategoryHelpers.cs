@@ -1,0 +1,23 @@
+using Api.Domain.Enums;
+
+namespace Api.Application.Test.Helpers
+{
+    public class CategoryHelpers
+    {
+        public static CategoryType GetCategoryTypeRandom()
+        {
+            Array values = Enum.GetValues(typeof(CategoryType));
+
+            Random random = new Random();
+            return (CategoryType)values.GetValue(random.Next(values.Length));
+        }
+
+        public static StatusType GetStatusTypeRandom()
+        {
+            Array values = Enum.GetValues(typeof(StatusType));
+
+            Random random = new Random();
+            return (StatusType)values.GetValue(random.Next(values.Length));
+        }
+    }
+}

@@ -8,12 +8,14 @@ using Microsoft.EntityFrameworkCore;
 using Domain.Helpers;
 using System;
 using Domain.Models;
+using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Query;
 
 namespace Data.Repository
 {
     public class UserRepository : BaseRepository<UserEntity>, IUserRepository
     {
-        public UserRepository(SomniaContext context) : base(context) {}
+        public UserRepository(SomniaContext context) : base(context) { }
 
         public async Task<UserEntity> FindUsuarioByLogin(string login)
         {
@@ -47,7 +49,47 @@ namespace Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public async Task<Data<UserEntity>> FindAllUsuariosAsync(PageParams pageParams)
+        public override async Task<IEnumerable<UserEntity>> SelectAsync()
+        {
+            var result = new List<UserEntity>();
+
+            try
+            {
+                IQueryable<UserEntity> query = _context.Users;
+
+                query = query.AsNoTracking().OrderBy(a => a.Id);
+                result = query.ToList();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar o usuário: Erro.: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public override async Task<UserEntity> SelectByIdAsync(int id)
+        {
+            var result = new UserEntity();
+
+            try
+            {
+                IQueryable<UserEntity> query = _context.Users;
+
+                query = query.AsNoTracking()
+                             .Where(x => x.Id == id);
+
+                result = query.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar o usuário: Erro.: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public override async Task<Data<UserEntity>> SelectByParamAsync(PageParams pageParams)
         {
             IQueryable<UserEntity> query = _context.Users;
 

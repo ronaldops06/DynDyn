@@ -1,29 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Service\\Service.csproj": {}
+    "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Service/Service.csproj": {}
   },
   "projects": {
-    "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\Domain.csproj": {
+    "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\Domain.csproj",
+        "projectUniqueName": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/Domain.csproj",
         "projectName": "Domain",
-        "projectPath": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\Domain.csproj",
-        "packagesPath": "C:\\Users\\ronaldo.santos\\.nuget\\packages\\",
-        "outputPath": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\obj\\",
+        "projectPath": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/Domain.csproj",
+        "packagesPath": "/home/ronaldo/.nuget/packages/",
+        "outputPath": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ronaldo.santos\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/ronaldo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://tfs.focco.com.br/Desenvolvimento/_packaging/Focco/nuget/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
@@ -76,47 +73,53 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.10, 3.1.10]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.419\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.127/RuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Service\\Service.csproj": {
+    "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Service/Service.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Service\\Service.csproj",
+        "projectUniqueName": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Service/Service.csproj",
         "projectName": "Service",
-        "projectPath": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Service\\Service.csproj",
-        "packagesPath": "C:\\Users\\ronaldo.santos\\.nuget\\packages\\",
-        "outputPath": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Service\\obj\\",
+        "projectPath": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Service/Service.csproj",
+        "packagesPath": "/home/ronaldo/.nuget/packages/",
+        "outputPath": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Service/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\ronaldo.santos\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+          "/home/ronaldo/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
         ],
         "sources": {
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
-          "https://api.nuget.org/v3/index.json": {},
-          "https://tfs.focco.com.br/Desenvolvimento/_packaging/Focco/nuget/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "netcoreapp3.1": {
             "targetAlias": "netcoreapp3.1",
             "projectReferences": {
-              "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\Domain.csproj": {
-                "projectPath": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Domain\\Domain.csproj"
+              "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/Domain.csproj": {
+                "projectPath": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Domain/Domain.csproj"
               }
             }
           }
@@ -142,17 +145,26 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[3.1.10, 3.1.10]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[3.1.0, 3.1.0]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.419\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "/usr/lib/dotnet/sdk/6.0.127/RuntimeIdentifierGraph.json"
         }
       }
     }

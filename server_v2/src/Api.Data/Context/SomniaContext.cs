@@ -1,4 +1,6 @@
-﻿using Data.Mapping;
+﻿using Api.Data.Mapping;
+using Api.Domain.Entities;
+using Data.Mapping;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -8,6 +10,7 @@ namespace Data.Context
     public class SomniaContext : DbContext
     {
         public DbSet<UserEntity> Users { get; set; }
+        public DbSet<CategoryEntity> Category { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -15,6 +18,7 @@ namespace Data.Context
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserEntity>(new UserMap().Configure);
+            modelBuilder.Entity<CategoryEntity>(new CategoryMap().Configure);
 
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity

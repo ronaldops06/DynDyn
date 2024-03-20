@@ -13,8 +13,8 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "swagger",
-      "applicationUrl": "http://localhost:5000",
+      "launchUrl": "docs",
+      "applicationUrl": "http://192.168.18.3:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.wqnbswkzfreouptrmkex;Password=GalePostgres43#*5;Database=postgres",
@@ -28,7 +28,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "swagger",
+      "launchUrl": "docs",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
       }

@@ -4,9 +4,9 @@ using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
-namespace Api.Data.Test
+namespace Api.Data.Test.User
 {
-    public class UserCrudComplete : BaseTest, IClassFixture<DbTest>
+    public class UserCrudComplete : IClassFixture<DbTest>
     {
         private ServiceProvider _serviceProvider;
 
@@ -51,7 +51,7 @@ namespace Api.Data.Test
                 var _registroExiste = await _repositorio.ExistsAsync(_registroAtualizado.Id);
                 Assert.True(_registroExiste);
 
-                var _registroSelecionado = await _repositorio.SelectAsync(_registroAtualizado.Id);
+                var _registroSelecionado = await _repositorio.SelectByIdAsync(_registroAtualizado.Id);
                 Assert.NotNull(_registroSelecionado);
                 Assert.Equal(_registroAtualizado.Login, _registroSelecionado.Login);
                 Assert.Equal(_registroAtualizado.Name, _registroSelecionado.Name);
@@ -75,7 +75,7 @@ namespace Api.Data.Test
                 Assert.Equal("Administrador", _usuarioPadrao.Name);
                 Assert.Equal("pgadmin", _usuarioPadrao.Password);
 
-                _usuarioPadrao = await _repositorio.SelectAsync(1);
+                _usuarioPadrao = await _repositorio.SelectByIdAsync(1);
                 Assert.NotNull(_usuarioPadrao);
                 Assert.Equal("admin@gmail.com", _usuarioPadrao.Login);
                 Assert.Equal("Administrador", _usuarioPadrao.Name);

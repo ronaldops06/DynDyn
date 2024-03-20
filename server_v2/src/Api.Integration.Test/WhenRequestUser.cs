@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using Xunit;
 
-namespace Api.Integration.Test.User
+namespace Api.Integration.Test
 {
     public class WhenRequestUser : BaseIntegration
     {
@@ -41,7 +41,7 @@ namespace Api.Integration.Test.User
             };
 
             var userDto = new UserDto
-            {                
+            {
                 Role = userBase.UserRole,
             };
 

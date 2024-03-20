@@ -1,5 +1,6 @@
 ﻿using Data.Context;
 using Domain.Entities;
+using Domain.Helpers;
 using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
@@ -83,29 +84,11 @@ namespace Data.Repository
             return await _dataset.AnyAsync(x => x.Id.Equals(id));
         }
 
-        public async Task<T> SelectAsync(int id)
-        {
-            try
-            {
-                return await _dataset.SingleOrDefaultAsync(x => x.Id.Equals(id));
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        public virtual Task<T> SelectByIdAsync(int id) => null;
 
-        public async Task<IEnumerable<T>> SelectAsync()
-        {
-            try
-            {
-                return await _dataset.ToListAsync();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }
+        public virtual Task<IEnumerable<T>> SelectAsync() => null;
+
+        public virtual Task<Data<T>> SelectByParamAsync(PageParams pageParams) => null;
 
         protected async Task<Data<T>> ExecuteQueryAsync(IQueryable<T> source, int pageNumber, int pageSize)
         {

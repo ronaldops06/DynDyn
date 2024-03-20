@@ -1,20 +1,20 @@
 {
   "Version": 1,
-  "Hash": "feOIgopW2Dva7JjLqjMwpFEDp27aKAEsASJi1Pv9bUM=",
+  "Hash": "cVN/MJspDDMG3hmVuQQvZnG1AQQ2rPfPDXlMfjCtSKw=",
   "Source": "Api.Integration.Test",
   "BasePath": "_content/Api.Integration.Test",
   "Mode": "Default",
   "ManifestType": "Build",
   "ReferencedProjectsConfiguration": [
     {
-      "Identity": "C:\\Ronaldo\\DynDyn\\server_v2\\src\\Api.Application\\Application.csproj",
+      "Identity": "/home/ronaldo/Projetos/DynDyn/server_v2/src/Api.Application/Application.csproj",
       "Version": 2,
       "Source": "Application",
       "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
-      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishProperties": "",
       "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier",
       "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
-      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildProperties": "",
       "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework;RuntimeIdentifier"
     }
   ],

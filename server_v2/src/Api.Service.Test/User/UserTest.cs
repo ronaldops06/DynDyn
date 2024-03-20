@@ -1,5 +1,4 @@
-﻿using Domain.Dtos.User;
-using Domain.Helpers;
+﻿using Domain.Helpers;
 using Domain.Models;
 
 namespace Api.Service.Test.User
@@ -11,7 +10,7 @@ namespace Api.Service.Test.User
         public static string UserRole { get; set; }
         public static string UserNameUpdated { get; set; }
         public static string UserLoginUpdated { get; set; }
-        public static string UserRoleUpdated  { get; set; }
+        public static string UserRoleUpdated { get; set; }
         public static int UserId { get; set; }
 
         public List<UserModel> listUserModel = new List<UserModel>();

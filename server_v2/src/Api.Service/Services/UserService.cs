@@ -16,7 +16,7 @@ namespace Service.Services
         private readonly IMapper _mapper;
         private readonly ILoginService _loginService;
 
-        public UserService( IUserRepository repository
+        public UserService(IUserRepository repository
                           , IMapper mapper
                           , ILoginService loginService)
         {
@@ -39,7 +39,7 @@ namespace Service.Services
 
         public async Task<PageList<UserModel>> Get(PageParams pageParams)
         {
-            var data = await _repository.FindAllUsuariosAsync(pageParams);
+            var data = await _repository.SelectByParamAsync(pageParams);
             var itens = _mapper.Map<List<UserModel>>(data.Itens);
 
             return PageList<UserModel>.Create(pageParams, itens, data.Count);
@@ -57,7 +57,7 @@ namespace Service.Services
 
             userModel = _mapper.Map<UserModel>(userEntity);
             userModel.AccessToken = _loginService.GenerateToken(userModel);
-            
+
             return userModel;
         }
 
