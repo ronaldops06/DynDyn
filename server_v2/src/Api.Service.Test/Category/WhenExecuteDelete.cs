@@ -1,4 +1,6 @@
-﻿using Api.Domain.Interfaces.Services;
+﻿using Api.Domain.Entities;
+using Api.Domain.Interfaces.Services;
+using Api.Service.Services;
 using Moq;
 using Xunit;
 
@@ -6,24 +8,22 @@ namespace Api.Service.Test.Category
 {
     public class WhenExecuteDelete : CategoryTest
     {
-        private ICategoryService _service;
-        private Mock<ICategoryService> _serviceMock;
-
         [Fact(DisplayName = "É possível executar o método Delete.")]
         public async Task Eh_Possivel_Executar_Metodo_Delete()
         {
-            _serviceMock = new Mock<ICategoryService>();
-            _serviceMock.Setup(m => m.Delete(It.IsAny<int>())).ReturnsAsync(true);
-            _service = _serviceMock.Object;
+            var categoryEntity = Mapper.Map<CategoryEntity>(categoryModel);
 
-            var result = await _service.Delete(CategoryId);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntity);
+            RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
+            ICategoryService service = new CategoryService(RepositoryMock.Object, Mapper);
+
+            var result = await service.Delete(categoryModel.Id);
             Assert.True(result);
 
-            _serviceMock = new Mock<ICategoryService>();
-            _serviceMock.Setup(m => m.Delete(It.IsAny<int>())).ReturnsAsync(false);
-            _service = _serviceMock.Object;
+            RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(false);
+            service = new CategoryService(RepositoryMock.Object, Mapper);
 
-            result = await _service.Delete(99989);
+            result = await service.Delete(99989);
             Assert.False(result);
         }
     }

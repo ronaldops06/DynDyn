@@ -5,6 +5,7 @@ using Api.Domain.Models;
 using Domain.Helpers;
 using Xunit;
 using static Api.Service.Test.Helpers.CategoryHelpers;
+using static Api.Service.Test.Helpers.BaseHelper;
 
 namespace Api.Service.Test.AutoMapper
 {

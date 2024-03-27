@@ -1,4 +1,8 @@
-﻿using Api.Domain.Interfaces.Services;
+﻿using Api.Domain.Entities;
+using Api.Domain.Interfaces.Services;
+using Api.Service.Services;
+using Domain.Helpers;
+using Domain.Models;
 using Moq;
 using Xunit;
 
@@ -6,31 +10,25 @@ namespace Api.Service.Test.Category
 {
     public class WhenExecuteGet : CategoryTest
     {
-        private ICategoryService _service;
-        private Mock<ICategoryService> _serviceMock;
-
         [Fact(DisplayName = "É possível executar o método GET.")]
         public async Task Eh_Possivel_Executar_Metodo_Get()
         {
-            _serviceMock = new Mock<ICategoryService>();
-            _serviceMock.Setup(m => m.GetById(CategoryId)).ReturnsAsync(categoryModelResult);
-            _service = _serviceMock.Object;
+            var categoryEntityResult = Mapper.Map<CategoryEntity>(categoryModelResult);
+            var listCategoryEntity = Mapper.Map<List<CategoryEntity>>(listCategoryModelResult);
 
-            var resultById = await _service.GetById(CategoryId);
-            Assert.NotNull(resultById);
-            Assert.Equal(CategoryId, resultById.Id);
-            Assert.Equal(CategoryNome, resultById.Nome);
-            Assert.Equal(CategoryTipo, resultById.Tipo);
-            Assert.Equal(CategoryStatus, resultById.Status);
+            var data = new Data<CategoryEntity>(listCategoryEntity.Count, listCategoryEntity);
+
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
+            ICategoryService service = new CategoryService(RepositoryMock.Object, Mapper);
+
+            var resultById = await service.GetById(categoryModelResult.Id);
+            ApplyTest(categoryModelResult, resultById);
             Assert.NotEqual(2, resultById.Id);
 
-            _serviceMock = new Mock<ICategoryService>();
-            _serviceMock.Setup(m => m.Get(pageParams)).ReturnsAsync(pageListResult);
-            _service = _serviceMock.Object;
-
-            var result = await _service.Get(pageParams);
+            var result = await service.Get(pageParams);
             Assert.NotNull(result);
-            Assert.Equal(pageListResult, result);
+            Assert.True(result.Count() == pageParams.PageSize);
         }
     }
 }

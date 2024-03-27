@@ -1,32 +1,40 @@
 ﻿using Domain.Dtos.User;
+using Domain.Entities;
+using Domain.Helpers;
 using Domain.Interfaces.Services.User;
+using Domain.Models;
 using Moq;
+using Service.Services;
 using Xunit;
 
 namespace Api.Service.Test.User
 {
     public class WhenExecuteGet : UserTest
     {
-        private IUserService _service;
-        private Mock<IUserService> _serviceMock;
-
         [Fact(DisplayName = "É possível executar o método GET.")]
         public async Task Eh_Possivel_Executar_Metodo_Get()
         {
-            _serviceMock = new Mock<IUserService>();
-            _serviceMock.Setup(m => m.Get(pageParams)).ReturnsAsync(pageListResult);
-            _service = _serviceMock.Object;
+            LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<UserModel>())).Returns(AccessToken);
 
-            var result = await _service.Get(pageParams);
+            var userEntityResult = Mapper.Map<UserEntity>(userModelResult);
+            var listUserEntity = Mapper.Map<List<UserEntity>>(listUserModelResult);
+
+            var data = new Data<UserEntity>(listUserEntity.Count, listUserEntity);
+
+            RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
+            RepositoryMock.Setup(m => m.FindUsuarioByUsernamaAndPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(userEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+
+            var resultByLogin = await service.GetUsuarioByLogin(userModelResult.Login);
+            ApplyTest(userModelResult, resultByLogin);
+
+            var resultByUsernameAndPassword = await service.GetUsuarioByUsernameAndPassword(userModelResult);
+            ApplyTest(userModelResult, resultByUsernameAndPassword);
+
+            var result = await service.Get(pageParams);
             Assert.NotNull(result);
-            Assert.Equal(pageListResult, result);
-
-            /*_serviceMock = new Mock<IUserService>();
-            _serviceMock.Setup(m => m.Get(It.IsAny<int>())).Returns(Task.FromResult((UserResultDto)null));
-            _service = _serviceMock.Object;
-
-            var _record = await _service.Get(pageParams);
-            Assert.Null(_record);*/
+            Assert.True(result.Count() == pageParams.PageSize);
         }
     }
 }

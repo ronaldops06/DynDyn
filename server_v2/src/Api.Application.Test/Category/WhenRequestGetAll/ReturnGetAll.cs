@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Moq;
 using Xunit;
 using static Api.Application.Test.Helpers.CategoryHelpers;
+using static Api.Application.Test.Helpers.BaseHelper;
 
 namespace Api.Application.Test.Category.WhenRequestGetAll
 {

@@ -1,4 +1,6 @@
-﻿using Api.Domain.Interfaces.Services;
+﻿using Api.Domain.Entities;
+using Api.Domain.Interfaces.Services;
+using Api.Service.Services;
 using Moq;
 using Xunit;
 
@@ -6,21 +8,19 @@ namespace Api.Service.Test.Category
 {
     public class WhenExecuteCreate : CategoryTest
     {
-        private ICategoryService _service;
-        private Mock<ICategoryService> _serviceMock;
 
         [Fact(DisplayName = "É possível executar o método Create.")]
         public async Task Eh_Possivel_Executar_Metodo_Create()
         {
-            _serviceMock = new Mock<ICategoryService>();
-            _serviceMock.Setup(m => m.Post(categoryModel)).ReturnsAsync(categoryModelResult);
-            _service = _serviceMock.Object;
+            var categoryEntityResult = Mapper.Map<CategoryEntity>(categoryModelResult);
+            var categoryEntity = Mapper.Map<CategoryEntity>(categoryModel);
 
-            var result = await _service.Post(categoryModel);
-            Assert.NotNull(result);
-            Assert.Equal(CategoryNome, result.Nome);
-            Assert.Equal(CategoryTipo, result.Tipo);
-            Assert.Equal(CategoryStatus, result.Status);
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<string>())).ReturnsAsync(It.IsAny<CategoryEntity>());
+            RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<CategoryEntity>())).ReturnsAsync(categoryEntityResult);
+            ICategoryService service = new CategoryService(RepositoryMock.Object, Mapper);
+
+            var result = await service.Post(categoryModel);
+            ApplyTest(categoryModel, result);
         }
     }
 }

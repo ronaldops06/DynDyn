@@ -6,7 +6,6 @@ using Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System.Text;
 using Xunit;
 
 namespace Api.Application.Test.User.WhenRequestGetAll

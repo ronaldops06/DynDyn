@@ -1,36 +1,29 @@
-﻿using Domain.Interfaces.Services.User;
+﻿using Domain.Entities;
+using Domain.Interfaces.Services.User;
+using Domain.Models;
 using Moq;
+using Service.Services;
 using Xunit;
 
 namespace Api.Service.Test.User
 {
     public class WhenExecuteUpdate : UserTest
     {
-        private IUserService _service;
-        private Mock<IUserService> _serviceMock;
-
         [Fact(DisplayName = "É possível executar o método Update.")]
         public async Task Eh_Possivel_Executar_Metodo_Update()
         {
-            _serviceMock = new Mock<IUserService>();
-            _serviceMock.Setup(m => m.Post(userModel)).ReturnsAsync(userModelResult);
-            _service = _serviceMock.Object;
+            var userEntityUpdateResult = Mapper.Map<UserEntity>(userModelUpdateResult);
+            var userEntityUpdate = Mapper.Map<UserEntity>(userModelUpdate);
 
-            var result = await _service.Post(userModel);
-            Assert.NotNull(result);
-            Assert.Equal(UserLogin, result.Login);
-            Assert.Equal(UserName, result.Name);
-            Assert.Equal(UserRole, result.Role);
+            LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<UserModel>())).Returns(AccessToken);
 
-            _serviceMock = new Mock<IUserService>();
-            _serviceMock.Setup(m => m.Put(userModelUpdate)).ReturnsAsync(userModelUpdateResult);
-            _service = _serviceMock.Object;
+            RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityUpdate);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(userEntityUpdate);
+            RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<UserEntity>())).ReturnsAsync(userEntityUpdateResult);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
 
-            var resultUpdate = await _service.Put(userModelUpdate);
-            Assert.NotNull(resultUpdate);
-            Assert.Equal(UserNameUpdated, resultUpdate.Name);
-            Assert.Equal(UserLoginUpdated, resultUpdate.Login);
-            Assert.Equal(UserRoleUpdated, resultUpdate.Role);
+            var resultUpdate = await service.Put(userModelUpdate);
+            ApplyTest(userModelUpdate, resultUpdate);
         }
     }
 }

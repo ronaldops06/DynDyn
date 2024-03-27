@@ -1,34 +1,28 @@
 ﻿using Domain.Helpers;
+using Domain.Interfaces.Services.User;
 using Domain.Models;
+using Domain.Repository;
+using Moq;
+using Xunit;
 
 namespace Api.Service.Test.User
 {
-    public class UserTest
+    public class UserTest : BaseTestService
     {
-        public static string UserName { get; set; }
-        public static string UserLogin { get; set; }
-        public static string UserRole { get; set; }
-        public static string UserNameUpdated { get; set; }
-        public static string UserLoginUpdated { get; set; }
-        public static string UserRoleUpdated { get; set; }
-        public static int UserId { get; set; }
+        protected string AccessToken;
+        protected Mock<ILoginService> LoginServiceMock = new Mock<ILoginService>();
+        protected Mock<IUserRepository> RepositoryMock = new Mock<IUserRepository>();
+        protected List<UserModel> listUserModel = new List<UserModel>();
+        protected List<UserModel> listUserModelResult = new List<UserModel>();
+        protected UserModel userModel;
+        protected UserModel userModelResult;
+        protected UserModel userModelUpdate;
+        protected UserModel userModelUpdateResult;
+        protected PageParams pageParams;
 
-        public List<UserModel> listUserModel = new List<UserModel>();
-        public UserModel userModel;
-        public UserModel userModelResult;
-        public UserModel userModelUpdate;
-        public UserModel userModelUpdateResult;
-        public PageParams pageParams;
-        public PageList<UserModel> pageListResult;
-
-        public UserTest()
+        protected UserTest()
         {
-            UserId = 0;
-            UserName = Faker.Name.FullName();
-            UserLogin = Faker.Internet.Email();
-            UserRole = "";
-            UserNameUpdated = Faker.Name.FullName();
-            UserLoginUpdated = Faker.Internet.Email();
+            AccessToken = "kkjk3jjj3hhh3hh5h3kjhkjhdha.jh3hjhdhdjhdjhj";
 
             pageParams = new PageParams()
             {
@@ -43,7 +37,7 @@ namespace Api.Service.Test.User
                     Id = i,
                     Name = Faker.Name.FullName(),
                     Login = Faker.Internet.Email(),
-                    Role = "",
+                    Role = Faker.Lorem.GetFirstWord(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow
                 };
@@ -51,42 +45,54 @@ namespace Api.Service.Test.User
                 listUserModel.Add(dto);
             }
 
-            pageListResult = new PageList<UserModel>(listUserModel.Skip(0).Take(4).ToList(), 5, pageParams.PageNumber, pageParams.PageSize);
+            listUserModelResult = listUserModel.Skip((pageParams.PageNumber - 1) * pageParams.PageSize)
+                                               .Take(pageParams.PageSize)
+                                               .ToList();
 
             userModel = new UserModel
             {
-                Id = UserId,
-                Name = UserName,
-                Login = UserLogin,
-                Role = UserRole
+                Id = 1,
+                Name = Faker.Name.FullName(),
+                Login = Faker.Internet.Email(),
+                Role = Faker.Lorem.GetFirstWord()
             };
 
             userModelResult = new UserModel
             {
-                Id = UserId,
-                Name = UserName,
-                Login = UserLogin,
-                Role = UserRole,
+                Id = userModel.Id,
+                Name = userModel.Name,
+                Login = userModel.Login,
+                Role = userModel.Role,
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow
             };
 
             userModelUpdate = new UserModel
             {
-                Id = UserId,
-                Name = UserNameUpdated,
-                Login = UserLoginUpdated,
-                Role = UserRoleUpdated
+                Id = userModel.Id,
+                Name = Faker.Name.FullName(),
+                Login = Faker.Internet.Email(),
+                Role = Faker.Lorem.GetFirstWord()
             };
 
             userModelUpdateResult = new UserModel
             {
-                Id = UserId,
-                Name = UserNameUpdated,
-                Login = UserLoginUpdated,
+                Id = userModelUpdate.Id,
+                Name = userModelUpdate.Name,
+                Login = userModelUpdate.Login,
+                Role = userModelUpdate.Role,
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow
             };
+        }
+
+        protected void ApplyTest(UserModel userModelSource, UserModel userModelDest)
+        {
+            Assert.NotNull(userModelDest);
+            Assert.Equal(userModelSource.Id, userModelDest.Id);
+            Assert.Equal(userModelSource.Name, userModelDest.Name);
+            Assert.Equal(userModelSource.Login, userModelDest.Login);
+            Assert.Equal(userModelSource.Role, userModelDest.Role);
         }
     }
 }

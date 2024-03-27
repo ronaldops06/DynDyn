@@ -19,7 +19,7 @@ namespace Api.Integration.Test
         }
 
         [Fact(DisplayName = "CRUD de Categoria")]
-        public async Task Eh_Possivel_Realizar_Crud_Usuario()
+        public async Task Eh_Possivel_Realizar_Crud_Categoria()
         {
             await AdicionarToken();
 

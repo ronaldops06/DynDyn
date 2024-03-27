@@ -1,4 +1,5 @@
-﻿using Api.Domain.Repository;
+﻿using Api.Data.Repository;
+using Api.Domain.Repository;
 using Data.Context;
 using Data.Repository;
 using Domain.Interfaces;
@@ -16,6 +17,7 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
+            serviceCollection.AddScoped<IAccountRepository, AccountRepository>();
 
             if (Environment.GetEnvironmentVariable("DATABASE").ToLower() == "POSTGRES".ToLower())
                 serviceCollection.AddDbContext<SomniaContext>(

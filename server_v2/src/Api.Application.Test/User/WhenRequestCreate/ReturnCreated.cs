@@ -1,16 +1,10 @@
 ﻿using Application.V1.Controllers;
-using AutoMapper;
 using Domain.Dtos.User;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit;
 
 namespace Api.Application.Test.User.WhenRequestCreate

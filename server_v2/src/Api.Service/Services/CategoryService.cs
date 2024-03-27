@@ -24,7 +24,8 @@ namespace Api.Service.Services
         public async Task<CategoryModel> GetById(int id)
         {
             var entity = await _repository.SelectByIdAsync(id);
-            if (entity != null)
+
+            if (entity == null)
                 throw new Exception("Categoria não encontrada.");
 
             return _mapper.Map<CategoryModel>(entity);

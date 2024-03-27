@@ -3,31 +3,18 @@ using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
 using Domain.Helpers;
-using Domain.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
+using static Api.Data.Test.Helpers.CategoryHelper;
+using static Api.Data.Test.Helpers.BaseHelper;
 
 namespace Api.Data.Test.Category
 {
     public class CategoryExecuteGetAll : BaseTestGet<CategoryEntity>, IClassFixture<DbTest>
     {
+        private static readonly int RECORD_NUMBER = 35;
+
         public CategoryExecuteGetAll(DbTest dbTest) : base(dbTest) { }
-
-        public CategoryType GetCategoryTypeRandom()
-        {
-            Array values = Enum.GetValues(typeof(CategoryType));
-
-            Random random = new Random();
-            return (CategoryType)values.GetValue(random.Next(values.Length));
-        }
-
-        public StatusType GetStatusTypeRandom()
-        {
-            Array values = Enum.GetValues(typeof(StatusType));
-
-            Random random = new Random();
-            return (StatusType)values.GetValue(random.Next(values.Length));
-        }
 
         [Fact(DisplayName = "Get de Categoria")]
         [Trait("GET", "CategoryEntity")]
@@ -38,7 +25,7 @@ namespace Api.Data.Test.Category
                 CategoryRepository _repositorio = new CategoryRepository(context);
                 List<CategoryEntity> listCategoryDto = new List<CategoryEntity>();
 
-                for (int i = 1; i < 35; i++)
+                for (int i = 1; i < RECORD_NUMBER; i++)
                 {
                     CategoryEntity _entity = new CategoryEntity
                     {
@@ -50,11 +37,12 @@ namespace Api.Data.Test.Category
                     await _repositorio.InsertAsync(_entity);
                 }
 
-                base.RealizaGetPaginado(_repositorio);
+                await base.RealizaGetPaginado(_repositorio);
 
+                // Testes aplicando filtros espefícicos
                 PageParams pageParams = new PageParams
                 {
-                    PageSize = 35,
+                    PageSize = RECORD_NUMBER,
                     PageNumber = 1,
                     Tipo = (int)CategoryType.Conta
                 };

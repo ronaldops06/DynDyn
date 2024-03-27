@@ -1,26 +1,27 @@
-﻿using Domain.Interfaces.Services.User;
+﻿using Domain.Entities;
+using Domain.Models;
 using Moq;
+using Service.Services;
 using Xunit;
 
 namespace Api.Service.Test.User
 {
     public class WhenExecuteCreate : UserTest
     {
-        private IUserService _service;
-        private Mock<IUserService> _serviceMock;
-
         [Fact(DisplayName = "É possível executar o método Create.")]
         public async Task Eh_Possivel_Executar_Metodo_Create()
         {
-            _serviceMock = new Mock<IUserService>();
-            _serviceMock.Setup(m => m.Post(userModel)).ReturnsAsync(userModelResult);
-            _service = _serviceMock.Object;
+            var userEntityResult = Mapper.Map<UserEntity>(userModelResult);
+            var userEntity = Mapper.Map<UserEntity>(userModel);
 
-            var result = await _service.Post(userModel);
-            Assert.NotNull(result);
-            Assert.Equal(UserLogin, result.Login);
-            Assert.Equal(UserName, result.Name);
-            Assert.Equal(UserRole, result.Role);
+            LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<UserModel>())).Returns(AccessToken);
+
+            RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(It.IsAny<UserEntity>());
+            RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<UserEntity>())).ReturnsAsync(userEntityResult);
+            UserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+
+            var result = await service.Post(userModel);
+            ApplyTest(userModel, result);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace Service.Services
             _loginService = loginService;
         }
 
-        public async Task<UserModel> GetUsuarioByUsernamaAndPassword(UserModel user)
+        public async Task<UserModel> GetUsuarioByUsernameAndPassword(UserModel user)
         {
             var entity = await _repository.FindUsuarioByUsernamaAndPassword(user.Login, user.Password);
             return _mapper.Map<UserModel>(entity);

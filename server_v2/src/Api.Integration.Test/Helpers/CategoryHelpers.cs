@@ -11,13 +11,5 @@ namespace Api.Integration.Test.Helpers
             Random random = new Random();
             return (CategoryType)values.GetValue(random.Next(values.Length));
         }
-
-        public static StatusType GetStatusTypeRandom()
-        {
-            Array values = Enum.GetValues(typeof(StatusType));
-
-            Random random = new Random();
-            return (StatusType)values.GetValue(random.Next(values.Length));
-        }
     }
 }

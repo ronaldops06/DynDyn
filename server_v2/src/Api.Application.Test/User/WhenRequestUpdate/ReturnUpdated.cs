@@ -1,6 +1,4 @@
-﻿using Api.Application.Test.User.WhenRequestCreate;
-using Application.V1.Controllers;
-using AutoMapper;
+﻿using Application.V1.Controllers;
 using Domain.Dtos.User;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
@@ -35,7 +33,7 @@ namespace Api.Application.Test.User.WhenRequestUpdate
             serviceMock.Setup(m => m.Put(It.IsAny<UserModel>())).ReturnsAsync(userModel);
 
             _controller = new UserController(serviceMock.Object, Mapper);
-            
+
             var userRequestDtoUpdate = new UserRequestDto
             {
                 Id = 1,
