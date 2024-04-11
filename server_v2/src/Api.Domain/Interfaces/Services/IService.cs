@@ -19,15 +19,15 @@ namespace Api.Domain.Interfaces.Services
         /// Método responsável por realizar a inclusão do registro.
         /// </summary>
         /// <param name="model">Modelo a ser inserido</param>
-        /// <returns>Modelo da categoria inserida <see cref="CategoryModel"/>.</returns>
+        /// <returns>Modelo inserido.</returns>
         Task<T> Post(T model);
 
         /// <summary>
         /// Método responsável por realizar a atualização do registro.
         /// </summary>
-        /// <param name="category">Modelo da categoria a ser atualizada <see cref="CategoryModel"/>.</param>
-        /// <returns>Modelo da categoria atualizada <see cref="CategoryModel"/>.</returns>
-        Task<T> Put(T category);
+        /// <param name="model">Modelo a ser atualizado.</param>
+        /// <returns>Modelo atualizado.</returns>
+        Task<T> Put(T model);
 
         /// <summary>
         /// Método responsável por realizar a exclusão do registro.

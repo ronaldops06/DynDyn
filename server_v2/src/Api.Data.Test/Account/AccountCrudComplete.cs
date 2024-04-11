@@ -80,13 +80,13 @@ namespace Api.Data.Test.Account
                 _accountEntity.Status = StatusType.Inativo;
 
                 var _registroAtualizado = await _repositorio.UpdateAsync(_accountEntity);
-                AplicaTesteCampos(_accountEntity, _registroCriado);
+                AplicaTesteCampos(_accountEntity, _registroAtualizado);
 
                 var _registroExiste = await _repositorio.ExistsAsync(_registroAtualizado.Id);
                 Assert.True(_registroExiste);
 
                 var _registroSelecionado = await _repositorio.SelectByIdAsync(_registroAtualizado.Id);
-                AplicaTesteCampos(_accountEntity, _registroCriado);
+                AplicaTesteCampos(_accountEntity, _registroSelecionado);
 
                 var _todosRegistros = await _repositorio.SelectAsync();
                 Assert.NotNull(_todosRegistros);

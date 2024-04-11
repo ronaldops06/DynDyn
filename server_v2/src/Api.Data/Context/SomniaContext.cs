@@ -12,6 +12,7 @@ namespace Data.Context
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<CategoryEntity> Category { get; set; }
         public DbSet<AccountEntity> Account { get; set; }
+        public DbSet<OperationEntity> Operation { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -21,6 +22,7 @@ namespace Data.Context
             modelBuilder.Entity<UserEntity>(new UserMap().Configure);
             modelBuilder.Entity<CategoryEntity>(new CategoryMap().Configure);
             modelBuilder.Entity<AccountEntity>(new AccountMap().Configure);
+            modelBuilder.Entity<OperationEntity>(new OperationMap().Configure);
 
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity

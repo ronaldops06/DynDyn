@@ -14,6 +14,7 @@ namespace CrossCutting.Mappings
             CreateMap<UserEntity, UserModel>().ReverseMap();
             CreateMap<CategoryEntity, CategoryModel>().ReverseMap();
             CreateMap<AccountEntity, AccountModel>().ReverseMap();
+            CreateMap<OperationEntity, OperationModel>().ReverseMap();
         }
     }
 }

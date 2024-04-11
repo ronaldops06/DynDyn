@@ -15,9 +15,9 @@ namespace Api.Data.Test.Account
 
         public AccountExecuteGetAll(DbTest dbTest) : base(dbTest) { }
 
-        [Fact(DisplayName = "Get de Categoria")]
+        [Fact(DisplayName = "Get de Conta")]
         [Trait("GET", "AccountEntity")]
-        public async Task Eh_Possivel_Realizar_Get_Categoria()
+        public async Task Eh_Possivel_Realizar_Get_Conta()
         {
             using (var context = serviceProvider.GetService<SomniaContext>())
             {
@@ -73,7 +73,7 @@ namespace Api.Data.Test.Account
                     await _accountRepository.InsertAsync(_entity);
                 }
 
-                await base.RealizaGetPaginado(_accountRepository);
+                await RealizaGetPaginado(_accountRepository);
             }
         }
     }

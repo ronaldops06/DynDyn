@@ -30,6 +30,7 @@ namespace Api.Service.Services
 
             return _mapper.Map<AccountModel>(entity);
         }
+
         public async Task<PageList<AccountModel>> Get(PageParams pageParams)
         {
             var data = await _repository.SelectByParamAsync(pageParams);

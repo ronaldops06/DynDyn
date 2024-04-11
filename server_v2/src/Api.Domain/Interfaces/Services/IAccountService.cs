@@ -9,7 +9,7 @@ namespace Api.Domain.Interfaces.Services
     public interface IAccountService : IService<AccountModel>
     {
         /// <summary>
-        /// Método responsável por retornar a categoria com base no identificador.
+        /// Método responsável por retornar a conta com base no identificador.
         /// </summary>
         /// <param name="id">Identificador do registro.</param>
         /// <returns>Modelo da conta encontrada <see cref="AccountModel"/>.</returns>

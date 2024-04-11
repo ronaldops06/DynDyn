@@ -18,6 +18,7 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddScoped<IUserRepository, UserRepository>();
             serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
             serviceCollection.AddScoped<IAccountRepository, AccountRepository>();
+            serviceCollection.AddScoped<IOperationRepository, OperationRepository>();
 
             if (Environment.GetEnvironmentVariable("DATABASE").ToLower() == "POSTGRES".ToLower())
                 serviceCollection.AddDbContext<SomniaContext>(

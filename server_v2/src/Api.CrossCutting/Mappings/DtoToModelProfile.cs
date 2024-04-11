@@ -6,6 +6,7 @@ using AutoMapper;
 using Domain.Dtos.User;
 using Domain.Models;
 using Api.Domain.Dtos.Account;
+using Api.Domain.Dtos.Operation;
 
 namespace CrossCutting.Mappings
 {
@@ -17,18 +18,28 @@ namespace CrossCutting.Mappings
             CreateMap<LoginDto, UserModel>().ReverseMap();
             CreateMap<UserResponseDto, UserModel>().ReverseMap();
             CreateMap<UserRequestDto, UserModel>().ReverseMap();
+
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
             .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => src.Tipo.ToEnum<CategoryType>()));
             CreateMap<CategoryModel, CategoryResponseDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
             .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => (int)src.Tipo));
+
             CreateMap<AccountRequestDto, AccountModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
             .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id))
             .ForMember(dest => dest.ParentAccountId, opt => opt.MapFrom(src => src.ParentAccount.Id));
             CreateMap<AccountModel, AccountResponseDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
+
+            CreateMap<OperationRequestDto, OperationModel>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToEnum<OperationType>()))
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id));
+            CreateMap<OperationModel, OperationResponseDto>()
+            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (int)src.Type));
         }
     }
 }
