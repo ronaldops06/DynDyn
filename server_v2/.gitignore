@@ -427,3 +427,9 @@ API
 Training
 Blog
 About
+
+#Custom
+bin/
+obj/
+Debug/
+Release/
