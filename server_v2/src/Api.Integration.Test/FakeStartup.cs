@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Api.CrossCutting.Mappings;
+using AutoMapper;
 using CrossCutting.DependencyInjection;
 using CrossCutting.Mappings;
 using Data.Context;
@@ -45,6 +46,7 @@ namespace Api.Integration.Test
             {
                 cfg.AddProfile(new DtoToModelProfile());
                 cfg.AddProfile(new EntityToModelProfile());
+                cfg.AddProfile(new DictionaryToModelProfile());
             });
 
             IMapper mapper = config.CreateMapper();
@@ -112,7 +114,7 @@ namespace Api.Integration.Test
                 options.ReportApiVersions = true;
             });
 
-            services.AddAutoMapper(typeof(DtoToModelProfile), typeof(DtoToModelProfile)/*, typeof(ModelToEntityProfile)*/);
+            services.AddAutoMapper(typeof(DtoToModelProfile), typeof(DictionaryToModelProfile)/*, typeof(ModelToEntityProfile)*/);
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, SomniaContext context)

@@ -12,17 +12,17 @@ namespace Domain.Models
         /// </summary>
         public int Id { get; set; }
 
-        private DateTime _dataCriacao;
+        private DateTime? _dataCriacao;
 
         /// <summary>
         /// Data de criação do registro.
         /// </summary>
-        public DateTime DataCriacao
+        public DateTime? DataCriacao
         {
             get { return _dataCriacao; }
             set
             {
-                _dataCriacao = value == null ? DateTime.UtcNow : value;
+                _dataCriacao = value;
             }
         }
 
@@ -36,5 +36,7 @@ namespace Domain.Models
             get { return _dataAlteracao; }
             set { _dataAlteracao = value; }
         }
+
+        public object Clone() => this.MemberwiseClone();
     }
 }

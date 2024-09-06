@@ -17,7 +17,7 @@
       "applicationUrl": "http://192.168.18.3:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.wqnbswkzfreouptrmkex;Password=GalePostgres43#*5;Database=postgres",
+        "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.ldmjuumtcoaslaenmasw;Password=!4JVFrejvHKNZyz;Database=postgres",
         "Seconds": "28800",
         "DATABASE": "POSTGRES",
         "Issuer": "ExemploIssuer",

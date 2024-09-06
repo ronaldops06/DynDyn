@@ -1,4 +1,5 @@
 using Api.Domain.Entities;
+using Api.Domain.Enums;
 using Api.Service.Services;
 using Domain.Helpers;
 using Domain.Models;
@@ -19,6 +20,7 @@ namespace Api.Service.Test.Operation
 
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(operationEntityResult);
             RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(operationEntityResult);
             OperationService service = new OperationService(RepositoryMock.Object, Mapper);
 
             var resultById = await service.GetById(operationModelResult.Id);
@@ -28,6 +30,10 @@ namespace Api.Service.Test.Operation
             var result = await service.Get(pageParams);
             Assert.NotNull(result);
             Assert.True(result.Count() == pageParams.PageSize);
+
+            var resultByNameAndType = await service.GetByNameAndType(operationModelResult.Name, operationModelResult.Type);
+            ApplyTest(operationModelResult, resultByNameAndType);
+            Assert.NotEqual(1, resultByNameAndType.Id);
         }
     }
 }

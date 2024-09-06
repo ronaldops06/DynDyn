@@ -6,6 +6,7 @@ using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace Data.Repository
         {
             try
             {
-                item.DataCriacao = DateTime.UtcNow;
+                item.DataCriacao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
                 _dataset.Add(item);
                 await _context.SaveChangesAsync();
@@ -47,7 +48,7 @@ namespace Data.Repository
                 if (result == null)
                     throw new Exception("No data found");
 
-                item.DataAlteracao = DateTime.UtcNow;
+                item.DataAlteracao = DateTime.Now;
 
                 _context.Entry(result).CurrentValues.SetValues(item);
                 await _context.SaveChangesAsync();

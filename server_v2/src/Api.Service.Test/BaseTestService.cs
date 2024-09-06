@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Api.CrossCutting.Mappings;
+using AutoMapper;
 using CrossCutting.Mappings;
 
 namespace Api.Service.Test
@@ -21,6 +22,7 @@ namespace Api.Service.Test
             {
                 cfg.AddProfile(new DtoToModelProfile());
                 cfg.AddProfile(new EntityToModelProfile());
+                cfg.AddProfile(new DictionaryToModelProfile());
             });
 
             return config.CreateMapper();

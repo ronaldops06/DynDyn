@@ -1,3 +1,4 @@
+using Api.CrossCutting.Mappings;
 using AutoMapper;
 using CrossCutting.DependencyInjection;
 using CrossCutting.Mappings;
@@ -26,6 +27,7 @@ var config = new MapperConfiguration(cfg =>
 {
     cfg.AddProfile(new DtoToModelProfile());
     cfg.AddProfile(new EntityToModelProfile());
+    cfg.AddProfile(new DictionaryToModelProfile());
 });
 
 IMapper mapper = config.CreateMapper();
@@ -94,7 +96,7 @@ builder.Services.AddAuthorization(auth =>
         .RequireAuthenticatedUser().Build());
 });
 
-builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile));
+builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile), typeof(DictionaryToModelProfile));
 //</Custon
 
 var app = builder.Build();

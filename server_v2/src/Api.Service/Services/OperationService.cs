@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
+using Api.Domain.Enums;
 using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Api.Domain.Repository;
@@ -82,6 +83,13 @@ namespace Api.Service.Services
                 throw new Exception("Operação não encontrada.");
 
             return await _repository.DeleteAsync(id);
+        }
+
+        public async Task<OperationModel> GetByNameAndType(string name, OperationType type)
+        {
+            var entity = await _repository.SelectByUkAsync(name, type);
+
+            return _mapper.Map<OperationModel>(entity);
         }
     }
 }
