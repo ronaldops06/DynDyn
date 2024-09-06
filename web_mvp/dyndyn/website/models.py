@@ -130,6 +130,8 @@ class Saldos(models.Model):
     vlr_valorizacao = models.FloatField(blank=True, null=True)
     vlr_dividendo = models.FloatField(blank=True, null=True)
     vlr_rendimento = models.FloatField(blank=True, null=True)
+    perc_valorizacao = models.FloatField(blank=True, null=True)
+    perc_rendimento = models.FloatField(blank=True, null=True)
     credito = models.FloatField(blank=True, null=True)
     debito = models.FloatField(blank=True, null=True)
     credito_salario = models.FloatField(blank=True, null=True)

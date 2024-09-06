@@ -147,6 +147,14 @@ class ExecutaExecucoesForm(forms.ModelForm):
     )
 
 class TipoContaOperacaoForm(forms.ModelForm):
+    
+    class Meta:
+        model = Contas
+        fields = '__all__'
+        
+    def __init__(self, *args, **kwargs):
+        super(TipoContaOperacaoForm, self).__init__(*args, **kwargs)
+        self.fields['conta'].queryset = Contas.objects.filter(status=1)
         
     tipo = forms.ChoiceField(
         label = 'Tipo',
@@ -183,6 +191,15 @@ class SituacaoAtivoForm(forms.ModelForm):
     )
 
 class MovimentosForm(forms.ModelForm):
+    class Meta:
+        model = Contas
+        fields = '__all__'
+        
+    def __init__(self, *args, **kwargs):
+        super(MovimentosForm, self).__init__(*args, **kwargs)
+        self.fields['cta_id'].queryset = Contas.objects.filter(status=1)
+        self.fields['conta_destino'].queryset = Contas.objects.filter(status=1)
+        
     consolidado = forms.ChoiceField(
         label = 'Consolidado',
         choices = [
@@ -386,13 +403,13 @@ class SaldosAdmin(admin.ModelAdmin):
         
 	data_saldo.short_description = 'Data Saldo' 
     
-	list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
+	list_display = ('cta_id', 'data_saldo', 'valor', 'vlr_acumulado', 'vlr_valorizacao', 'perc_valorizacao', 'vlr_dividendo', 'vlr_rendimento', 'perc_rendimento', 'credito', 'debito', 'credito_salario', 'debito_salario')
 	search_fields = ['cta_id__nome']
 	date_hierarchy = 'dt_saldo'
 	list_filter = (
 		('dt_saldo', DateTimeRangeFilter),
 	)
-	fields = ['cta_id', 'dt_saldo', 'valor', 'vlr_acumulado', ('vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento'), ('credito', 'debito'), ('credito_salario', 'debito_salario')]
+	fields = ['cta_id', 'dt_saldo', 'valor', 'vlr_acumulado', ('vlr_valorizacao', 'vlr_dividendo', 'vlr_rendimento'), ('perc_valorizacao', 'perc_rendimento'), ('credito', 'debito'), ('credito_salario', 'debito_salario')]
 
 @admin.register(Execucoes)
 class ExecucoesAdmin(admin.ModelAdmin):
