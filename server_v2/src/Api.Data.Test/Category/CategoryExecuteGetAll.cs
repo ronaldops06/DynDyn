@@ -25,7 +25,7 @@ namespace Api.Data.Test.Category
                 CategoryRepository _repositorio = new CategoryRepository(context);
                 List<CategoryEntity> listCategoryDto = new List<CategoryEntity>();
 
-                for (int i = 1; i < RECORD_NUMBER; i++)
+                for (int i = 1; i <= RECORD_NUMBER; i++)
                 {
                     CategoryEntity _entity = new CategoryEntity
                     {

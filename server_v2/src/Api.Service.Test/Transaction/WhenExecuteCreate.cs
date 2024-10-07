@@ -40,7 +40,9 @@ namespace Api.Service.Test.Transaction
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
             var service = new TransactionService(RepositoryMock.Object, OperationServiceMock.Object, Mapper);
 
-            transactionModel.TotalInstallments = 2;
+            transactionModel.TotalInstallments = installmentTransactionModelResult.TotalInstallments;
+            transactionModel.Installment = installmentTransactionModelResult.Installment;
+
             var result = await service.Post(transactionModel);
             ApplyTest(installmentTransactionModelResult, result);
         }

@@ -36,8 +36,8 @@ namespace Api.Integration.Test.Transaction
         {
             PageParams = new PageParams()
             {
-                DataCriacaoInicio = DateTime.ParseExact("04/08/2024 00:00:00", "dd/MM/yyyy HH:mm:ss", CultureInfo.InvariantCulture),
-                DataCriacaoFim = DateTime.ParseExact("2024-09-05 23:59:59", "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                DataCriacaoInicio = DateTime.ParseExact("2024-09-01 23:59:59", "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
+                DataCriacaoFim = DateTime.ParseExact("2024-09-30 23:59:59", "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture),
                 PageNumber = 1,
                 PageSize = 3
             };

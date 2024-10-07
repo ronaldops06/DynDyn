@@ -32,6 +32,8 @@ namespace Api.Data.Test.Transaction
 
                 var dataInicial = DateTime.Now;
 
+                Thread.Sleep(1000);
+
                 //Crédito = 665.80
                 var operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Credito);
                 InsertTransaction(context, accountEntity, operationEntity, 15);
@@ -71,8 +73,8 @@ namespace Api.Data.Test.Transaction
 
                 var _registroSelecionado = await _repositorio.SelectTransactionsTotalsAsync(pageParams);
                 Assert.NotNull(_registroSelecionado);
-                Assert.Equal(665.80, _registroSelecionado.GetValueOrDefault(OperationType.Credito));
                 Assert.Equal(1586.90, _registroSelecionado.GetValueOrDefault(OperationType.Debito));
+                Assert.Equal(665.80, _registroSelecionado.GetValueOrDefault(OperationType.Credito));
             }
         }
 

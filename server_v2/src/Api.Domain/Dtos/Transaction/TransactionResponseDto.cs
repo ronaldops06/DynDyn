@@ -1,5 +1,7 @@
 using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
+using System.ComponentModel.DataAnnotations;
+using System;
 
 namespace Api.Domain.Dtos.Transaction
 {
@@ -32,6 +34,11 @@ namespace Api.Domain.Dtos.Transaction
         /// Número total de parcelas.
         /// </summary>
         public int? TotalInstallments { get; set; }
+
+        /// <summary>
+        /// Data de criação da transação.
+        /// </summary>        
+        public DateTime DataCriacao { get; set; }
 
         /// <summary>
         /// Movimento pai.

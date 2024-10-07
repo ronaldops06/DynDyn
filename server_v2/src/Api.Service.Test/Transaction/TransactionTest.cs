@@ -103,7 +103,7 @@ namespace Api.Service.Test.Transaction
                 Observation = transactionModel.Observation,
                 Consolidated = transactionModel.Consolidated,
                 Installment = 1,
-                TotalInstallments = transactionModel.TotalInstallments,
+                TotalInstallments = 3,
                 Account = transactionModel.Account,
                 AccountId = transactionModel.AccountId,
                 Operation = transactionModel.Operation,

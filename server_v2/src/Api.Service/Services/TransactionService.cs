@@ -170,14 +170,13 @@ namespace Api.Service.Services
                     transacaoParcelaModel.ParentTransactionId = transactionModel.Id;
                     transacaoParcelaModel.ParentTransaction = transactionModel;
 
-                    var transactionParcelaEntity = _mapper.Map<TransactionEntity>(transactionModel);
+                    var transactionParcelaEntity = _mapper.Map<TransactionEntity>(transacaoParcelaModel);
 
                     _repository.UnchangedParentTransaction(transactionParcelaEntity);
                     transactionParcelaEntity = await _repository.InsertAsync(transactionParcelaEntity);
                 }
 
                 transactionModel.Installment = 1;
-                transactionModel.Operation = null;
 
                 var transactionEntity = _mapper.Map<TransactionEntity>(transactionModel);
                 _repository.UnchangedParentTransaction(transactionEntity);

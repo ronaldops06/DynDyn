@@ -92,14 +92,14 @@ namespace Api.Integration.Test.Transaction
             Assert.Equal(TransactionRequestDto.Installment, registroPost.Installment);
             Assert.Equal(TransactionRequestDto.TotalInstallments, registroPost.TotalInstallments);
             Assert.Equal(TransactionRequestDto.Account.Id, registroPost.Account.Id);
-            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);
+            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);            
 
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Transaction");
 
             var query = HttpUtility.ParseQueryString(builder.Query);
-            query[nameof(PageParams.DataCriacaoInicio)] = "05/08/2024 00:00:00";
-            query[nameof(PageParams.DataCriacaoFim)] = $"{PageParams.DataCriacaoFim}";
+            query[nameof(PageParams.DataCriacaoInicio)] = $"{PageParams.DataCriacaoInicio.Value.ToString("yyyy-MM-dd HH:mm:ss")}";
+            query[nameof(PageParams.DataCriacaoFim)] = $"{PageParams.DataCriacaoFim.Value.ToString("yyyy-MM-dd HH:mm:ss")}";
             query[nameof(PageParams.PageNumber)] = $"{PageParams.PageNumber}";
             query[nameof(PageParams.PageSize)] = $"{PageParams.PageSize}";
 

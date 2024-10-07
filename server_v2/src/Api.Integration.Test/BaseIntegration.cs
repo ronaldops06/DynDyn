@@ -21,7 +21,7 @@ namespace Api.Integration.Test
 
         public BaseIntegration()
         {
-            HostApi = "http://192.168.18.3:5000/api/v1";
+            HostApi = "http://127.0.0.1:5000/api/v1";
 
             var builder = new WebHostBuilder()
                 .UseEnvironment("Testing")
