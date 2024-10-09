@@ -1,8 +1,7 @@
-import React, { useEffect, useRef } from 'react';
 import { Picker } from '@react-native-picker/picker';
-import { View, Text, Animated } from 'react-native';
+import React, { useEffect, useRef } from 'react';
+import { Animated, Text, View } from 'react-native';
 
-import * as I from '../../interfaces/interfaces';
 
 import { customPickerStyle } from './styles';
 
@@ -12,7 +11,7 @@ interface PickerParams {
     setValue: any,
     data: {
         id: number,
-        nome: string
+        name: string
     }[]
 }
 
@@ -21,9 +20,9 @@ const CustomPicker = (props: PickerParams) => {
     const moveText = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {
-        if (props.value !== 0){
+        if (props.value !== 0) {
             moveTextTop();
-        } else if (props.value === 0){
+        } else if (props.value === 0) {
             moveTextBottom();
         }
     }, [props.value]);
@@ -33,7 +32,7 @@ const CustomPicker = (props: PickerParams) => {
     };
 
     const onFocusHandler = () => {
-        if (props.value !== 0){
+        if (props.value !== 0) {
             moveTextTop();
         }
     };
@@ -79,9 +78,9 @@ const CustomPicker = (props: PickerParams) => {
                 translateX: xVal
             }
         ],
-    };   
+    };
 
-    return(
+    return (
         <View style={customPickerStyle.container}>
             <Animated.View style={[customPickerStyle.animatedStyle, animStyle]}>
                 <Text style={customPickerStyle.label}>{props.text}</Text>
@@ -91,7 +90,7 @@ const CustomPicker = (props: PickerParams) => {
                 selectedValue={props.value}
                 onValueChange={(itemValue, itemIndex) => props.setValue(itemValue)}>
                 {props.data.map((item, key) => (
-                    <Picker.Item key={key} label={item.nome} value={item.id} />
+                    <Picker.Item key={key} label={item.name} value={item.id} />
                 ))}
             </Picker>
         </View>

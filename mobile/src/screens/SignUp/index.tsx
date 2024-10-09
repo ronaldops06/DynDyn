@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { SafeAreaView, View, TouchableOpacity, Text, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
-import AsyncStorage from '@react-native-community/async-storage';
+import { MMKV } from 'react-native-mmkv';
 
 import { RootStackParamList } from '../RootStackPrams';
 import TextInput from '../../components/CustomTextInput';
@@ -43,7 +43,9 @@ const SignUp = () => {
             setUser(response?.data);
             
             if (user.token){
-                await AsyncStorage.setItem('token', user.token);
+                const storage = new MMKV();
+                await storage.set('token', user.token);
+                
                 navigation.reset({
                     routes:[{name:'MainTab'}]
                 })

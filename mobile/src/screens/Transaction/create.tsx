@@ -1,25 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, ScrollView, SafeAreaView, View, TouchableOpacity, Text, TextInput as Input } from 'react-native';
-import CurrencyInput from 'react-native-currency-input';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import CheckBox from '@react-native-community/checkbox';
-import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import { RouteProp, useNavigation, useRoute } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import Moment from 'moment';
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/core';
+import React, { useEffect, useState } from 'react';
+import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import CurrencyInput from 'react-native-currency-input';
+import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
 
-import { RootStackParamList } from '../RootStackPrams';
+import ClockIcon from '../../assets/clock.svg';
+import PrevIcon from '../../assets/nav_prev.svg';
+import TodayIcon from '../../assets/today.svg';
+import TrashIcon from '../../assets/trash.svg';
 import ButtonSelectBar from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
 import OperationModal from '../../components/OperationModal';
-import TodayIcon from '../../assets/today.svg';
-import ClockIcon from '../../assets/clock.svg';
-import PrevIcon from '../../assets/nav_prev.svg';
-import TrashIcon from '../../assets/trash.svg';
-import * as I from '../../interfaces/interfaces';
 import { TypesTransaction } from '../../enums/enums';
-import { getCategories, getAccounts, postTransaction, putTransaction, deleteTransaction } from './transactions.api';
+import * as I from '../../interfaces/interfaces';
+import { RootStackParamList } from '../RootStackPrams';
+import { deleteTransaction, getAccounts, getCategories, postTransaction, putTransaction } from './transactions.api';
 
 import { style } from '../../styles/styles';
 import { transactionCreateStyle } from './create.styles';
@@ -27,7 +27,7 @@ import { transactionCreateStyle } from './create.styles';
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
 
 const radioButtonsData: RadioButtonProps[] = [{
-    id: '1', 
+    id: '1',
     label: 'Repetir',
     value: 'repetir',
     color: '#6E8BB8',
@@ -45,7 +45,7 @@ const radioButtonsData: RadioButtonProps[] = [{
     selected: false
 }];
 
-const TransactionCreate = () => { 
+const TransactionCreate = () => {
     //let stepInput = React.createRef<CustomTextInput>();
     const stepInput: React.RefObject<any> = React.createRef();
 
@@ -53,27 +53,27 @@ const TransactionCreate = () => {
     const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
     const transactionID = route.params?.data.id ?? 0;
     const isEditing = route.params?.isEditing ?? false;
-    const baseOperation = {} as I.Operacao;
-    
-    const [ typeSelected, setTypeSelected ] = useState(1);    
-    const [ showDate, setShowDate ] = useState(false);
-    const [ mode, setMode ] = useState('date');
-    const [ categories, setCategories ] = useState<I.Categoria[]>([]);
-    const [ accounts, setAccounts ] = useState<I.Conta[]>([]);
-    const [ valueValue, setValueValue ] = useState(0);  
-    const [ operation, setOperation ] = useState<I.Operacao>(baseOperation);
-    const [ valueDescription, setValueDescription ] = useState("");
-    const [ valueDate, setValueDate ] = useState("");
-    const [ valueTime, setValueTime ] = useState("");
-    const [ valueCategory, setValueCategory ] = useState(0);
-    const [ valueAccount, setValueAccount ] = useState(0);
-    const [ valueDestAccount, setValueDestAccount ] = useState(0);
-    const [ valueNote, setValueNote ] = useState("");
-    const [ valueConsolidated, setValueConsolidated ] = useState(false);
-    const [ valueMultiply, setValeuMultiply ] = useState(false);
-    const [ valueRadioRepeat, setValueRadioRepeat ] = useState<RadioButtonProps[]>(radioButtonsData);
-    const [ valueTimes, setValueTimes ] = useState(1);
-    const [ showModal, setShowModal ] = useState(false);
+    const baseOperation = {} as I.Operation;
+
+    const [typeSelected, setTypeSelected] = useState(1);
+    const [showDate, setShowDate] = useState(false);
+    const [mode, setMode] = useState('date');
+    const [categories, setCategories] = useState<I.Category[]>([]);
+    const [accounts, setAccounts] = useState<I.Account[]>([]);
+    const [valueValue, setValueValue] = useState(0);
+    const [operation, setOperation] = useState<I.Operation>(baseOperation);
+    const [valueDescription, setValueDescription] = useState("");
+    const [valueDate, setValueDate] = useState("");
+    const [valueTime, setValueTime] = useState("");
+    const [valueCategory, setValueCategory] = useState(0);
+    const [valueAccount, setValueAccount] = useState(0);
+    const [valueDestAccount, setValueDestAccount] = useState(0);
+    const [valueNote, setValueNote] = useState("");
+    const [valueConsolidated, setValueConsolidated] = useState(false);
+    const [valueMultiply, setValeuMultiply] = useState(false);
+    const [valueRadioRepeat, setValueRadioRepeat] = useState<RadioButtonProps[]>(radioButtonsData);
+    const [valueTimes, setValueTimes] = useState(1);
+    const [showModal, setShowModal] = useState(false);
 
     const getLists = async () => {
         let responseCategories = await getCategories(navigation);
@@ -84,19 +84,19 @@ const TransactionCreate = () => {
 
     const loadDataSreen = () => {
         const data = route.params?.data;
-        if (data != undefined){
-            setTypeSelected(data.operacao.tipo);
-            setValueValue(data.valor);
-            setOperation(data.operacao);
-            setValueDescription(data.operacao.nome);
+        if (data != undefined) {
+            setTypeSelected(data.operation.type);
+            setValueValue(data.value);
+            setOperation(data.operation);
+            setValueDescription(data.operation.name);
             setValueDate(Moment(data.dataCriacao).local().format('DD/MM/YYYY'));
             setValueTime(Moment(data.dataCriacao).local().format('HH:mm:ss'));
-            setValueCategory(data.operacao.categoria.id);
-            setValueAccount(data.conta.id);
-            if (data.contaDestino)
-                setValueDestAccount(data.contaDestino.id);
-            setValueNote(data.observacao);
-            setValueConsolidated(data.consolidado == 1 ? true : false);
+            setValueCategory(data.operation.category.id);
+            setValueAccount(data.account.id);
+            if (data.destinationAccount)
+                setValueDestAccount(data.destinationAccount.id);
+            setValueNote(data.observation);
+            setValueConsolidated(data.consolidated == 1 ? true : false);
         }
     };
 
@@ -106,7 +106,7 @@ const TransactionCreate = () => {
 
     const setOperationDefault = () => {
         setValueDescription('Transferência');
-        var categoryTranference = categories.find(x => x.nome == 'Transferência');
+        var categoryTranference = categories.find(x => x.name == 'Transferência');
         if (categoryTranference !== undefined) {
             setValueCategory(categoryTranference.id);
         }
@@ -114,14 +114,14 @@ const TransactionCreate = () => {
 
     useEffect(() => {
         stepInput.current.focus();
-        if (isEditing){
+        if (isEditing) {
             loadDataSreen();
         }
-    },[])
+    }, [])
 
     useEffect(() => {
         setMode('date');
-        if (!isEditing){
+        if (!isEditing) {
             setValueDate(Moment(new Date()).format('DD/MM/YYYY'))
             setValueTime(Moment(new Date()).format('HH:mm:ss'));
         }
@@ -135,34 +135,34 @@ const TransactionCreate = () => {
 
     const validateRequiredFields = () => {
 
-        if (valueValue === 0){
+        if (valueValue === 0) {
             Alert.alert("Atenção!", "O valor deve ser informado.");
             return false;
         }
 
-        if (typeSelected !== TypesTransaction.Transference){
-            if (valueDescription === ""){
+        if (typeSelected !== TypesTransaction.Transference) {
+            if (valueDescription === "") {
                 Alert.alert("Atenção!", "A descrição deve ser informada.");
                 return false;
-            } 
-            
-            if (valueCategory === 0){
+            }
+
+            if (valueCategory === 0) {
                 Alert.alert("Atenção!", "A categoria deve ser selecionada.");
                 return false;
             }
-        }      
+        }
 
-        if (valueAccount === 0){
+        if (valueAccount === 0) {
             Alert.alert("Atenção!", "A conta deve ser selecionada.");
             return false;
         }
 
-        if (valueDestAccount == 0 && typeSelected === TypesTransaction.Transference){
+        if (valueDestAccount == 0 && typeSelected === TypesTransaction.Transference) {
             Alert.alert("Atenção!", "A conta de destino deve ser selecionada.");
             return false;
         }
 
-        if (valueRadioRepeat[1].selected && valueTimes == 0){
+        if (valueRadioRepeat[1].selected && valueTimes == 0) {
             Alert.alert("Atenção!", "A quantidade de vezes deve ser informada.");
             return false;
         }
@@ -177,12 +177,12 @@ const TransactionCreate = () => {
 
     const onChangeDate = (event: Event, date?: Date) => {
         setShowDate(false);
-        
+
         const currentDate = date;
-        
-        if (mode == 'date'){
+
+        if (mode == 'date') {
             setValueDate(Moment(currentDate).local().format('DD/MM/YYYY'));
-        } else { 
+        } else {
             setValueTime(Moment(currentDate).local().format('HH:mm:ss'));
         }
     };
@@ -200,8 +200,8 @@ const TransactionCreate = () => {
     };
 
     const getTextValueStyle = () => {
-        return [transactionCreateStyle.inputValue, (typeSelected == TypesTransaction.Revenue ? 
-            transactionCreateStyle.inputValueRevenue : 
+        return [transactionCreateStyle.inputValue, (typeSelected == TypesTransaction.Revenue ?
+            transactionCreateStyle.inputValueRevenue :
             (typeSelected == TypesTransaction.Transference ?
                 transactionCreateStyle.inputValueTransfer :
                 transactionCreateStyle.inputValueExpense))]
@@ -217,77 +217,77 @@ const TransactionCreate = () => {
 
     const handleTrashClick = async () => {
         Alert.alert("Atenção!",
-                    "Esta transação será excluída. Deseja continuar?",
-                    [
-                        {   
-                            text: "Não",
-                            style: "cancel"
-                        },
-                        {   
-                            text: "Sim",
-                            onPress: () => deleteTransaction(transactionID, navigation)
-                        }
-                    ],
-                    { cancelable: false }
-                    );
+            "Esta transação será excluída. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: () => deleteTransaction(transactionID, navigation)
+                }
+            ],
+            { cancelable: false }
+        );
     };
-    
+
     const handleOperationsClick = () => {
         setShowModal(true);
     };
 
-    const handleItemOperationClick = (item: I.Operacao) => {
+    const handleItemOperationClick = (item: I.Operation) => {
         setOperation(item);
-        setValueDescription(item.nome);
-        setValueCategory(item.categoria.id);
-    };  
+        setValueDescription(item.name);
+        setValueCategory(item.category.id);
+    };
 
     const handleSaveClick = async () => {
-        
+
         if (!validateRequiredFields()) return;
 
-        let operationDTO = {} as I.Operacao;
+        let operationDTO = {} as I.Operation;
         operationDTO.id = operation.id;
-        operationDTO.nome = valueDescription;
-        operationDTO.tipo = typeSelected;
+        operationDTO.name = valueDescription;
+        operationDTO.type = typeSelected;
         operationDTO.categoriaID = valueCategory;
-        operationDTO.recorrente = (valueRadioRepeat[0].selected) ? 1 : 0;
+        operationDTO.recurrent = (valueRadioRepeat[0].selected) ? 1 : 0;
         operationDTO.status = 1;
-        
+
         let transactionDTO = {} as I.Transaction;
         transactionDTO.id = transactionID;
-        transactionDTO.valor = valueValue;
-        transactionDTO.observacao = valueNote;
-        transactionDTO.consolidado = valueConsolidated ? 1 : 0;
-        transactionDTO.totalParcelas = valueTimes;
+        transactionDTO.value = valueValue;
+        transactionDTO.observation = valueNote;
+        transactionDTO.consolidated = valueConsolidated ? 1 : 0;
+        transactionDTO.totalInstallments = valueTimes;
         transactionDTO.dataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format());
         transactionDTO.contaID = valueAccount;
         transactionDTO.contaDestinoID = (valueDestAccount !== 0) ? valueDestAccount : undefined;
         transactionDTO.operacaoID = operation.id;
-        transactionDTO.operacao = operationDTO;
+        transactionDTO.operation = operationDTO;
 
-        if (isEditing){
+        if (isEditing) {
             putTransaction(transactionDTO, navigation);
         } else {
             postTransaction(transactionDTO, navigation);
         }
     };
 
-    return(
-        <SafeAreaView style={[style.container,style.containerCadastro]}>
+    return (
+        <SafeAreaView style={[style.container, style.containerCadastro]}>
             <ScrollView style={transactionCreateStyle.scroll} >
                 <View style={transactionCreateStyle.viewHeaderCadastro}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={transactionCreateStyle.buttonBack}
                         onPress={handleBackClick}>
-                            <PrevIcon width="40" height="40" fill="#F1F1F1" />
+                        <PrevIcon width="40" height="40" fill="#F1F1F1" />
                     </TouchableOpacity>
-                    {isEditing && 
-                    <TouchableOpacity 
-                        style={transactionCreateStyle.buttonTrash}
-                        onPress={handleTrashClick}>
+                    {isEditing &&
+                        <TouchableOpacity
+                            style={transactionCreateStyle.buttonTrash}
+                            onPress={handleTrashClick}>
                             <TrashIcon width="35" height="35" fill="#F1F1F1" />
-                    </TouchableOpacity>}
+                        </TouchableOpacity>}
                 </View>
                 <View style={transactionCreateStyle.viewBodyCadastro}>
                     <ButtonSelectBar>
@@ -296,12 +296,12 @@ const TransactionCreate = () => {
                             onPress={() => setTypeSelected(TypesTransaction.Revenue)}>
                             <Text style={getTextButtonStyle(TypesTransaction.Revenue)}>Receita</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={getButtonStyle(TypesTransaction.Transference)}
                             onPress={() => setTypeSelected(TypesTransaction.Transference)}>
                             <Text style={getTextButtonStyle(TypesTransaction.Transference)}>Transferência</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={getButtonStyle(TypesTransaction.Expense)}
                             onPress={() => setTypeSelected(TypesTransaction.Expense)}>
                             <Text style={getTextButtonStyle(TypesTransaction.Expense)}>Despesa</Text>
@@ -322,7 +322,7 @@ const TransactionCreate = () => {
                         </View>
                         {!typeSelectedIsTransference() &&
                             <>
-                                <Text 
+                                <Text
                                     style={transactionCreateStyle.textListOperations}
                                     onPress={handleOperationsClick}>
                                     Operações
@@ -336,27 +336,27 @@ const TransactionCreate = () => {
                             </>
                         }
                         <View style={transactionCreateStyle.areaDateTime} >
-                            <TextInput 
+                            <TextInput
                                 text={"Data"}
                                 isMoveText={false}
                                 value={valueDate}
                                 setValue={setValueDate}
-                                icon={<TodayIcon width={30} fill="#6E8BB8"/>}
+                                icon={<TodayIcon width={30} fill="#6E8BB8" />}
                                 onPressIcon={() => handleDateTimeClick(true, 'date')}
                                 width={"49%"}
                             />
-                            <TextInput 
+                            <TextInput
                                 text={"Hora"}
                                 isMoveText={false}
                                 value={valueTime}
                                 setValue={setValueTime}
-                                icon={<ClockIcon width={30} fill="#6E8BB8"/>}
+                                icon={<ClockIcon width={30} fill="#6E8BB8" />}
                                 onPressIcon={() => handleDateTimeClick(true, 'time')}
                                 width={"49%"}
                             />
-                            {showDate && <DateTimePicker 
+                            {showDate && <DateTimePicker
                                 testID="dateTimePicker"
-                                value={new Date(Number(valueDate.split('/')[2]), Number(valueDate.split('/')[1]) -1, Number(valueDate.split('/')[0]), Number(valueTime.split(':')[0]), Number(valueTime.split(':')[1]), Number(valueTime.split(':')[2]))}
+                                value={new Date(Number(valueDate.split('/')[2]), Number(valueDate.split('/')[1]) - 1, Number(valueDate.split('/')[0]), Number(valueTime.split(':')[0]), Number(valueTime.split(':')[1]), Number(valueTime.split(':')[2]))}
                                 mode={mode}
                                 is24Hour={true}
                                 display="default"
@@ -397,7 +397,7 @@ const TransactionCreate = () => {
                                     <CheckBox
                                         value={valueConsolidated}
                                         onValueChange={setValueConsolidated}
-                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                        tintColors={{ true: "#6E8BB8", false: "#6E8BB8" }}
                                     />
                                     <Text style={transactionCreateStyle.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
                                 </View>
@@ -407,15 +407,15 @@ const TransactionCreate = () => {
                                             <CheckBox
                                                 value={valueMultiply}
                                                 onValueChange={setValeuMultiply}
-                                                tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                                tintColors={{ true: "#6E8BB8", false: "#6E8BB8" }}
                                             />
                                             <Text style={transactionCreateStyle.textCheckbox}>Multiplicar</Text>
                                         </View>
-                                    
+
                                         {valueMultiply &&
                                             <View style={transactionCreateStyle.areaRepeat}>
-                                                <RadioGroup 
-                                                    radioButtons={valueRadioRepeat} 
+                                                <RadioGroup
+                                                    radioButtons={valueRadioRepeat}
                                                     onPress={setValueRadioRepeat}
                                                     layout="row"
                                                     containerStyle={transactionCreateStyle.radioRepeat}
@@ -428,9 +428,9 @@ const TransactionCreate = () => {
                                                             value={valueTimes.toString()}
                                                             setValue={setValueTimes}
                                                             width={"100%"}
-                                                            //messageText={(valueTimes != 0 ) ? (valueTimes.toString() + "x R$ " + (valueValue / valueTimes).toString()) : ""}                                    
-                                                            />
-                                                </View>}
+                                                        //messageText={(valueTimes != 0 ) ? (valueTimes.toString() + "x R$ " + (valueValue / valueTimes).toString()) : ""}                                    
+                                                        />
+                                                    </View>}
                                             </View>
                                         }
                                     </>
@@ -446,7 +446,7 @@ const TransactionCreate = () => {
                             <Text style={transactionCreateStyle.textButtonSave}>Salvar</Text>
                         </TouchableOpacity>
                     </View>
-                    <OperationModal 
+                    <OperationModal
                         show={showModal}
                         setShow={setShowModal}
                         setOperation={handleItemOperationClick}

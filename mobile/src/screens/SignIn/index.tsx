@@ -1,13 +1,13 @@
-import React, { useState, useEffect } from 'react';
-import { SafeAreaView, ScrollView, View, TouchableOpacity, Text, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
-import {StackNavigationProp} from '@react-navigation/stack';
-import AsyncStorage from '@react-native-community/async-storage';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import { MMKV } from 'react-native-mmkv';
 
-import { RootStackParamList } from '../RootStackPrams';
 import TextInput from '../../components/CustomTextInput';
-import { login } from './signin.api';
 import * as I from '../../interfaces/interfaces';
+import { RootStackParamList } from '../RootStackPrams';
+import { login } from './signin.api';
 
 import { style } from '../../styles/styles';
 import { signInStyle } from './styles';
@@ -16,25 +16,26 @@ type homeScreenProp = StackNavigationProp<RootStackParamList, 'SignIn'>;
 
 const SignIn = () => {
     const navigation = useNavigation<homeScreenProp>();
-    
+
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [user, setUser] = useState<I.User>();
 
     useEffect(() => {
-        
-        if (user != null){
+
+        if (user != null) {
             setToken();
             navigation.reset({
-                routes:[{name:'MainTab'}]
-            });    
+                routes: [{ name: 'MainTab' }]
+            });
         }
     }, [user]);
 
     const setToken = async () => {
-        await AsyncStorage.setItem('token', user != null ? user.token : "");
+        const storage = new MMKV();
+        storage.set('token', user != null ? user.accessToken : "");
     };
-    
+
     const handleSignClick = async () => {
         let loginDTO = {} as I.Login;
         loginDTO.login = valueEmail;
@@ -57,20 +58,20 @@ const SignIn = () => {
         navigation.navigate("SignUp");
     };
 
-    return(
-        <SafeAreaView style={[style.container,style.containerCadastro]}>
-            <Image 
-                style={style.viewHeaderCadastro} 
+    return (
+        <SafeAreaView style={[style.container, style.containerCadastro]}>
+            <Image
+                style={style.viewHeaderCadastro}
                 source={require('../../assets/header.jpg')}
             />
             <View style={signInStyle.viewBodyCadastro}>
                 <View style={signInStyle.areaFields}>
-                    <TextInput 
+                    <TextInput
                         text={"Email"}
                         value={valueEmail}
                         setValue={setValueEmail}
                     />
-                    <TextInput 
+                    <TextInput
                         text={"Senha"}
                         value={valuePassword}
                         setValue={setValuePassword}

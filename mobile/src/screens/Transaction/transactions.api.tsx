@@ -1,21 +1,19 @@
-import React from 'react';
-import { get, post, put, del } from '../../services/api';
-import { TypesCategory, StatusHttp, Action } from '../../enums/enums';
-import * as I from '../../interfaces/interfaces';
 import { Alert } from 'react-native';
+import { Action, StatusHttp, TypesCategory } from '../../enums/enums';
+import * as I from '../../interfaces/interfaces';
+import { del, get, post, put } from '../../services/api';
 
 export const validateResponse = (action: Action, response: I.Response, navigation: any) => {
     if (response.status == StatusHttp.Unauthorized) {
         navigation.navigate("SignIn");
         return false;
     }
-    
-    if (!response.success){
+    if (!response.success) {
         Alert.alert("Erro!", response.error);
         return false;
     }
 
-    if (response.status == StatusHttp.Created && action != Action.Get){
+    if (response.status == StatusHttp.Created && action != Action.Get) {
         if (action == Action.Post)
             Alert.alert("Sucesso!", "Transação cadastrada com sucesso.");
         else if (action == Action.Put)
@@ -31,8 +29,8 @@ export const validateResponse = (action: Action, response: I.Response, navigatio
 
 export const getCategories = async (navigation: any) => {
     let response = {} as I.Response;
-    response = await get(`Categoria?Tipo=${TypesCategory.Operation}`);
-    
+    response = await get(`Category?Tipo=${TypesCategory.Operation}`);
+
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
     return response;
@@ -40,53 +38,53 @@ export const getCategories = async (navigation: any) => {
 
 export const getAccounts = async (navigation: any) => {
     let response = {} as I.Response;
-    response = await get(`Conta`);
-    
+    response = await get(`Account`);
+
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
     return response;
 };
 
-export const getTransactions = async(params: string, navigation: any) =>{
+export const getTransactions = async (params: string, navigation: any) => {
     let response = {} as I.Response;
-    response = await get(`Movimento?${params}`);
-    
+    response = await get(`Transaction?${params}`);
+
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
     return response;
 };
 
-export const getTotalsTransactions = async(params: string, navigation: any) =>{
-    
+export const getTotalsTransactions = async (params: string, navigation: any) => {
+
     let response = {} as I.Response;
-    response = await get(`Movimento/Totais?${params}`);
-    
+    response = await get(`Transaction/Totais?${params}`);
+
     if (!validateResponse(Action.Get, response, navigation)) return null;
-    
+
     return response;
 };
 
-export const postTransaction = async(data: I.Transaction, navigation: any) => {
+export const postTransaction = async (data: I.Transaction, navigation: any) => {
     let response = {} as I.Response;
-    response = await post('Movimento', data);
-    
+    response = await post('Transaction', data);
+
     if (!validateResponse(Action.Post, response, navigation)) return null;
 
     return response;
 };
 
-export const putTransaction = async(data: I.Transaction, navigation: any) => {
+export const putTransaction = async (data: I.Transaction, navigation: any) => {
     let response = {} as I.Response;
-    response = await put(`Movimento/${data.id}`, data);
-    
+    response = await put(`Transaction/${data.id}`, data);
+
     if (!validateResponse(Action.Put, response, navigation)) return null;
 
     return response;
 };
 
-export const deleteTransaction = async(id: number, navigation: any) => {
+export const deleteTransaction = async (id: number, navigation: any) => {
     let response = {} as I.Response;
-    response = await del(`Movimento/${id}`);
-    
+    response = await del(`Transaction/${id}`);
+
     validateResponse(Action.Delete, response, navigation);
 };

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Alert, SafeAreaView, View, Image, Pressable } from 'react-native';
-import AsyncStorage from '@react-native-community/async-storage';
+import { MMKV } from 'react-native-mmkv'
 import { useNavigation } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -16,7 +16,9 @@ const Preload = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const checkToken = async () => {
-        const token = await AsyncStorage.getItem('token');
+        const storage = new MMKV();
+        const token = storage.getString('token')
+        
         if (token){
             await login(navigation);
         } else {

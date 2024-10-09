@@ -1,22 +1,21 @@
-import React, { useState, useEffect } from 'react';
-import { Alert, SafeAreaView, View, ScrollView, ActivityIndicator, Text, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/core';
-import AsyncStorage from '@react-native-community/async-storage';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+
 import Moment from 'moment';
 
-import { RootStackParamList } from '../RootStackPrams';
-import { getTransactions, getTotalsTransactions } from './transactions.api';
-import * as I from '../../interfaces/interfaces';
-import { TypesTransaction } from '../../enums/enums';
 import TransactionItem from '../../components/TransactionItem';
+import { TypesTransaction } from '../../enums/enums';
+import * as I from '../../interfaces/interfaces';
+import { RootStackParamList } from '../RootStackPrams';
+import { getTotalsTransactions, getTransactions } from './transactions.api';
 
-import NavPrevIcon from '../../assets/nav_prev.svg';
 import NavNextIcon from '../../assets/nav_next.svg';
+import NavPrevIcon from '../../assets/nav_prev.svg';
 import PlusIcon from '../../assets/plus.svg';
 import { style } from '../../styles/styles';
 import { transactionStyle } from './styles';
-import { transactionItemStyle } from '../../components/TransactionItem/styles';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Transaction'>;
 
@@ -37,19 +36,19 @@ const months = [
 
 const Transaction = () => {
     const navigation = useNavigation<homeScreenProp>();
-    
-    const [ loading, setLoading ] = useState(false);
-    const [ transactions, setTransactions ] = useState<I.Transaction[]>([]);
-    const [ transactionTotals, setTransactionTotals ] = useState<I.TransactionTotals>();
-    const [ selectedYear, setSelectedYear ] = useState(0);
-    const [ selectedMonth, setSelectedMonth ] = useState(0);
-    const [ pageNumber, setPageNumber ] = useState(1);
-    const [ totalPages, setTotalPages ] = useState(1);
-    const [ typeSelected, setTypeSelected ] = useState(-1);    
-    
+
+    const [loading, setLoading] = useState(false);
+    const [transactions, setTransactions] = useState<I.Transaction[]>([]);
+    const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>();
+    const [selectedYear, setSelectedYear] = useState(0);
+    const [selectedMonth, setSelectedMonth] = useState(0);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [typeSelected, setTypeSelected] = useState(-1);
+
     const appendTransactions = (data: I.Transaction[]) => {
         let transactionsNew = transactions;
-        if (data.length > 0){
+        if (data.length > 0) {
             data.map((item, key) => {
                 transactionsNew.push(item);
             });
@@ -59,15 +58,15 @@ const Transaction = () => {
 
     const loadTransactions = async (loadTotals: boolean = true) => {
         setLoading(true);
-        
-        if (selectedYear != 0 ) {
+
+        if (selectedYear != 0) {
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
-            let mountDateFim= new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
+            let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
             let params = `dataCriacaoInicio=${Moment(mountDateInicio, 'YYYY-MM-DD').format()}&dataCriacaoFim=${Moment(mountDateFim, 'YYYY-MM-DD').format()}&pageNumber=${pageNumber}`;
-            
+
             let responseTransactions = await getTransactions(params, navigation);
             setTotalPages(responseTransactions?.totalPages ?? 1);
-            appendTransactions(responseTransactions?.data ?? []);  
+            appendTransactions(responseTransactions?.data ?? []);
 
             if (loadTotals) {
                 let responseTotals = await getTotalsTransactions(params, navigation);
@@ -80,7 +79,7 @@ const Transaction = () => {
     useEffect(() => {
         let today = new Date();
         setDate(today);
-    },[]);
+    }, []);
 
     useEffect(() => {
         // Executado no goBack da tela seguinte
@@ -101,52 +100,52 @@ const Transaction = () => {
 
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
-        mountDate.setMonth( mountDate.getMonth() - 1 );
+        mountDate.setMonth(mountDate.getMonth() - 1);
         setDate(mountDate);
     }
 
     const handleRightDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
-        mountDate.setMonth( mountDate.getMonth() + 1 );
+        mountDate.setMonth(mountDate.getMonth() + 1);
         setDate(mountDate);
     }
 
     const handleTransactionItemClick = (data: I.Transaction) => {
-        navigation.navigate("TransactionCreate", {isEditing: true, data: data});
+        navigation.navigate("TransactionCreate", { isEditing: true, data: data });
     }
 
     const onSwipeLeft = (data: I.Transaction) => {
         Alert.alert("Atenção!",
-                    "Esta transação terá o status alterado. Deseja continuar?",
-                    [
-                        {   
-                            text: "Não",
-                            style: "cancel"
-                        },
-                        {   
-                            text: "Sim",
-                            onPress: () => {console.log("implementar")}
-                        }
-                    ],
-                    { cancelable: false }
-                );
+            "Esta transação terá o status alterado. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: () => { console.log("implementar") }
+                }
+            ],
+            { cancelable: false }
+        );
     }
 
     const onSwipeRight = (data: I.Transaction) => {
         Alert.alert("Atenção!",
-                    "Esta transação será excluída. Deseja continuar?",
-                    [
-                        {   
-                            text: "Não",
-                            style: "cancel"
-                        },
-                        {   
-                            text: "Sim",
-                            onPress: () => {console.log("implementar")}
-                        }
-                    ],
-                    { cancelable: false }
-                );
+            "Esta transação será excluída. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: () => { console.log("implementar") }
+                }
+            ],
+            { cancelable: false }
+        );
     }
 
     const handleNewClick = () => {
@@ -154,12 +153,12 @@ const Transaction = () => {
     }
 
     const setDate = (date: Date) => {
-        setSelectedYear( date.getFullYear() );
-        setSelectedMonth( date.getMonth() );
+        setSelectedYear(date.getFullYear());
+        setSelectedMonth(date.getMonth());
     }
 
     const reloadPage = () => {
-        if (pageNumber <= totalPages){
+        if (pageNumber <= totalPages) {
             setPageNumber(pageNumber + 1);
             loadTransactions(false);
         }
@@ -169,13 +168,13 @@ const Transaction = () => {
         let mHeight = event.nativeEvent.layoutMeasurement.height;
         let cSize = event.nativeEvent.contentSize.height;
         let Y = event.nativeEvent.contentOffset.y;
- 
+
         if (Math.ceil(mHeight + Y) >= cSize) return true;
         return false;
     }
-    
-    return(
-        <SafeAreaView style={[style.container,style.containerConsulta]}>
+
+    return (
+        <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsulta} >
                 <View style={transactionStyle.viewSelectDate}>
                     <TouchableOpacity onPress={handleLeftDateClick} style={transactionStyle.buttonPrev}>
@@ -194,45 +193,45 @@ const Transaction = () => {
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(TypesTransaction.Revenue)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelReceita]}>Receita</Text>
-                        <Text style={[transactionStyle.textTotais, transactionStyle.textReceita]}>R$ {transactionTotals?.credito.toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textReceita]}>R$ {transactionTotals?.credit?.toFixed(2)}</Text>
                     </View>
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(TypesTransaction.Expense)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelDespesa]}>Despesa</Text>
-                        <Text style={[transactionStyle.textTotais, transactionStyle.textDespesa]}>R$ {transactionTotals?.debito.toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textDespesa]}>R$ {transactionTotals?.debit?.toFixed(2)}</Text>
                     </View>
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(-1)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelSaldo]}>Saldo</Text>
-                        <Text style={[transactionStyle.textTotais,transactionStyle.textSaldo]}>R$ {((transactionTotals?.credito ?? 0) - (transactionTotals?.debito ?? 0)).toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textSaldo]}>R$ {((transactionTotals?.credit ?? 0) - (transactionTotals?.debit ?? 0)).toFixed(2)}</Text>
                     </View>
                 </View>
-                <ScrollView style={transactionStyle.scroll} 
+                <ScrollView style={transactionStyle.scroll}
                     onScroll={(event) => {
                         if (isEndScroll(event)) {
-                            if (!loading){
+                            if (!loading) {
                                 reloadPage();
                             }
                         }
                     }}>
                     <View style={transactionStyle.viewList}>
-                        {loading && 
+                        {loading &&
                             <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8" />
                         }
                         {transactions != null && transactions.filter((item) => {
-                                                    return typeSelected != -1 ? item.operacao.tipo == typeSelected : item;
-                                                }).map((item, key) => (
-                            <TransactionItem 
+                            return typeSelected != -1 ? item.operation.type == typeSelected : item;
+                        }).map((item, key) => (
+                            <TransactionItem
                                 key={key}
                                 data={item}
                                 onPress={handleTransactionItemClick}
                                 onSwipeLeft={onSwipeLeft}
-                                onSwipeRight={onSwipeRight}/>
+                                onSwipeRight={onSwipeRight} />
                         ))
                         }
                     </View>
                 </ScrollView>
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={transactionStyle.buttonPlus}
                     onPress={handleNewClick}>
                     <PlusIcon width="35" height="35" fill="#6E8BB8" />

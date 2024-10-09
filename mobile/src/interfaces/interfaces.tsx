@@ -16,50 +16,50 @@ export interface User {
     login: string,
     name: string,
     password: string,
-    token: string
+    accessToken: string
 };
 
-export interface Categoria {
+export interface Category {
     id: number,
-    nome: string
+    name: string
 };
 
-export interface Conta {
+export interface Account {
     id: number,
-    nome: string
+    name: string
 };
 
-export interface Operacao {
+export interface Operation {
     id: number,
-    nome: string,
-    tipo: number,
-    recorrente: number,
+    name: string,
+    type: number,
+    recurrent: number,
     status: number,
     categoriaID: number,
-    categoria: Categoria
+    category: Category
 };
 
 export interface Transaction {
     id: number,
-    valor: number,
-    observacao: string,
-    consolidado: number,
-    parcela: number,
-    totalParcelas: number,
+    value: number,
+    observation: string,
+    consolidated: number,
+    installment: number,
+    totalInstallments: number,
     contaID: number,
-    conta: Conta,
+    account: Account,
     contaDestinoID?: number,
-    contaDestino: Conta,
+    destinationAccount: Account,
     operacaoID: number,
-    operacao: Operacao,
+    operation: Operation,
     movimentoPaiID: number,
-    movimentoPai: Transaction,
+    parentTransaction: Transaction,
     dataCriacao: Date,
     dataAlteracao: Date
 };
 
 export interface TransactionTotals {
-    credito: number,
-    debito: number,
-    transferencia: number
+    credit: number,
+    debit: number,
+    transfer: number
 }
