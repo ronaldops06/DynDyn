@@ -13,14 +13,14 @@ namespace Api.Domain.Dtos.Category
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         [StringLength(100, ErrorMessage = "{0} deve ter no máximo {1} caracteres")]
-        public string Nome { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Tipo da categoria <see cref="CategoryType"/>.
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         [Range(1, 2, ErrorMessage = "{0} deve estar entre {1} e {2}")]
-        public int Tipo { get; set; }
+        public int Type { get; set; }
 
         /// <summary>
         /// Status da categoria <see cref="StatusType"/>.

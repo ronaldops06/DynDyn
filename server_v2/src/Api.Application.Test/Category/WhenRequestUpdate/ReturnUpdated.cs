@@ -25,8 +25,8 @@ namespace Api.Application.Test.Category.WhenRequestUpdate
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = nome,
-                Tipo = tipo,
+                Name = nome,
+                Type = tipo,
                 Status = status,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
@@ -39,8 +39,8 @@ namespace Api.Application.Test.Category.WhenRequestUpdate
             var categoryRequestDtoUpdate = new CategoryRequestDto
             {
                 Id = 1,
-                Nome = Faker.Name.FullName(),
-                Tipo = (int)GetCategoryTypeRandom(),
+                Name = Faker.Name.FullName(),
+                Type = (int)GetCategoryTypeRandom(),
                 Status = (int)GetStatusTypeRandom()
             };
 
@@ -50,8 +50,8 @@ namespace Api.Application.Test.Category.WhenRequestUpdate
             var resultValue = ((CreatedResult)result).Value as CategoryResponseDto;
             Assert.NotNull(resultValue);
             Assert.Equal(categoryRequestDtoUpdate.Id, resultValue.Id);
-            Assert.Equal(categoryRequestDtoUpdate.Nome, resultValue.Nome);
-            Assert.Equal(categoryRequestDtoUpdate.Tipo, resultValue.Tipo);
+            Assert.Equal(categoryRequestDtoUpdate.Name, resultValue.Name);
+            Assert.Equal(categoryRequestDtoUpdate.Type, resultValue.Type);
             Assert.Equal(categoryRequestDtoUpdate.Status, resultValue.Status);
         }
     }

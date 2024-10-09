@@ -25,8 +25,8 @@ namespace Api.Application.Test.Category.WhenRequestUpdate
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = nome,
-                Tipo = tipo,
+                Name = nome,
+                Type = tipo,
                 Status = status,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
@@ -40,8 +40,8 @@ namespace Api.Application.Test.Category.WhenRequestUpdate
             var categoryRequestDtoUpdate = new CategoryRequestDto
             {
                 Id = 1,
-                Nome = Faker.Name.FullName(),
-                Tipo = (int)GetCategoryTypeRandom(),
+                Name = Faker.Name.FullName(),
+                Type = (int)GetCategoryTypeRandom(),
                 Status = (int)GetStatusTypeRandom()
             };
 

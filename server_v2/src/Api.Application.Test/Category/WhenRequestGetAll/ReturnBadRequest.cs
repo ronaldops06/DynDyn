@@ -29,16 +29,16 @@ namespace Api.Application.Test.Category.WhenRequestGetAll
             {
                 new CategoryModel{
                     Id = 1,
-                    Nome = Faker.Name.FullName(),
-                    Tipo = GetCategoryTypeRandom(),
+                    Name = Faker.Name.FullName(),
+                    Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow
                 },
                  new CategoryModel{
                     Id = 2,
-                    Nome = Faker.Name.FullName(),
-                    Tipo = GetCategoryTypeRandom(),
+                    Name = Faker.Name.FullName(),
+                    Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow

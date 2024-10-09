@@ -15,8 +15,8 @@ namespace Api.Application.Test.AutoMapper
             var categoryRequestDto = new CategoryRequestDto
             {
                 Id = 1,
-                Nome = "Corrente",
-                Tipo = (int)CategoryType.Conta,
+                Name = "Corrente",
+                Type = (int)CategoryType.Conta,
                 Status = (int)StatusType.Ativo
             };
 
@@ -62,8 +62,8 @@ namespace Api.Application.Test.AutoMapper
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = "Corrente",
-                Tipo = CategoryType.Conta,
+                Name = "Corrente",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo
             };
 

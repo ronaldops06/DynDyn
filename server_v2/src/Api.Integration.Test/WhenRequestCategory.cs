@@ -39,8 +39,8 @@ namespace Api.Integration.Test
 
             var categoryRequestDto = new CategoryRequestDto
             {
-                Nome = null,
-                Tipo = 0,
+                Name = null,
+                Type = 0,
                 Status = 3
             };
 
@@ -49,12 +49,12 @@ namespace Api.Integration.Test
             var postResult = await response.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Contains("Nome é um campo obrigatório", postResult);
-            Assert.Contains("Tipo deve estar entre 1 e 2", postResult);
+            Assert.Contains("Name é um campo obrigatório", postResult);
+            Assert.Contains("Type deve estar entre 1 e 2", postResult);
             Assert.Contains("Status deve estar entre 0 e 1", postResult);
 
-            categoryRequestDto.Nome = categoryBase.CategoryNome;
-            categoryRequestDto.Tipo = (int)categoryBase.CategoryTipo;
+            categoryRequestDto.Name = categoryBase.CategoryNome;
+            categoryRequestDto.Type = (int)categoryBase.CategoryTipo;
             categoryRequestDto.Status = (int)categoryBase.CategoryStatus;
 
             //Post
@@ -64,8 +64,8 @@ namespace Api.Integration.Test
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroPost.Id == 0);
-            Assert.Equal(categoryBase.CategoryNome, registroPost.Nome);
-            Assert.Equal(categoryBase.CategoryTipo, registroPost.Tipo);
+            Assert.Equal(categoryBase.CategoryNome, registroPost.Name);
+            Assert.Equal(categoryBase.CategoryTipo, registroPost.Type);
             Assert.Equal(categoryBase.CategoryStatus, registroPost.Status);
 
             //GetAll
@@ -90,7 +90,7 @@ namespace Api.Integration.Test
 
             //PUT
             categoryRequestDto.Id = registroPost.Id;
-            categoryRequestDto.Nome = Faker.Name.FullName();
+            categoryRequestDto.Name = Faker.Name.FullName();
 
             var stringContent = new StringContent(JsonConvert.SerializeObject(categoryRequestDto), Encoding.UTF8, "application/json");
             response = await Client.PutAsync($"{HostApi}/Category", stringContent);
@@ -98,8 +98,8 @@ namespace Api.Integration.Test
             var registroUpdated = JsonConvert.DeserializeObject<CategoryResponseDto>(jsonResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
-            Assert.NotEqual(registroPost.Nome, registroUpdated.Nome);
-            Assert.Equal(categoryRequestDto.Nome, registroUpdated.Nome);
+            Assert.NotEqual(registroPost.Name, registroUpdated.Name);
+            Assert.Equal(categoryRequestDto.Name, registroUpdated.Name);
 
             //Delete
             response = await Client.DeleteAsync($"{HostApi}/Category/{registroUpdated.Id}");

@@ -65,7 +65,7 @@ namespace Data.Repository
             query = query.AsNoTracking().OrderBy(a => a.Id);
 
             if (pageParams.Tipo != null)
-                query = query.Where(a => ((int)a.Tipo) == pageParams.Tipo);
+                query = query.Where(a => ((int)a.Type) == pageParams.Tipo);
 
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
@@ -79,7 +79,7 @@ namespace Data.Repository
                 IQueryable<CategoryEntity> query = _context.Category;
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Nome == nome);
+                             .Where(x => x.Name == nome);
 
                 result = query.FirstOrDefault();
             }

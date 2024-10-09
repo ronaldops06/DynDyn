@@ -25,8 +25,8 @@ namespace Api.Application.Test.Category.WhenRequestCreate
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = nome,
-                Tipo = tipo,
+                Name = nome,
+                Type = tipo,
                 Status = status,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
@@ -43,8 +43,8 @@ namespace Api.Application.Test.Category.WhenRequestCreate
 
             var categoryRequestDto = new CategoryRequestDto
             {
-                Nome = nome,
-                Tipo = (int)tipo,
+                Name = nome,
+                Type = (int)tipo,
                 Status = (int)status
             };
 

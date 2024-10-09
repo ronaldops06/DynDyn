@@ -23,8 +23,8 @@ namespace Api.Application.Test.Category.WhenRequestGetAll
             var categoryModel = new CategoryModel
             {
                 Id = categoryId,
-                Nome = Faker.Name.FullName(),
-                Tipo = GetCategoryTypeRandom(),
+                Name = Faker.Name.FullName(),
+                Type = GetCategoryTypeRandom(),
                 Status = GetStatusTypeRandom(),
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow
@@ -43,8 +43,8 @@ namespace Api.Application.Test.Category.WhenRequestGetAll
             var resultValue = ((OkObjectResult)result).Value as CategoryResponseDto;
             Assert.NotNull(resultValue);
             Assert.Equal(resultValue.Id, categoryModel.Id);
-            Assert.Equal(resultValue.Nome, categoryModel.Nome);
-            Assert.Equal(resultValue.Tipo, (int)categoryModel.Tipo);
+            Assert.Equal(resultValue.Name, categoryModel.Name);
+            Assert.Equal(resultValue.Type, (int)categoryModel.Type);
             Assert.Equal(resultValue.Status, (int)categoryModel.Status);
         }
     }

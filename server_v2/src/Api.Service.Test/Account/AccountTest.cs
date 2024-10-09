@@ -26,8 +26,8 @@ namespace Api.Service.Test.Account
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = "Corrente",
-                Tipo = CategoryType.Conta,
+                Name = "Corrente",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo
             };
 

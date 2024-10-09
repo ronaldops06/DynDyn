@@ -25,10 +25,10 @@ namespace CrossCutting.Mappings
 
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
-            .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => src.Tipo.ToEnum<CategoryType>()));
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToEnum<CategoryType>()));
             CreateMap<CategoryModel, CategoryResponseDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
-            .ForMember(dest => dest.Tipo, opt => opt.MapFrom(src => (int)src.Tipo));
+            .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (int)src.Type));
 
             CreateMap<AccountRequestDto, AccountModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))

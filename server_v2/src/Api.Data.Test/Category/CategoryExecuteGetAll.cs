@@ -29,8 +29,8 @@ namespace Api.Data.Test.Category
                 {
                     CategoryEntity _entity = new CategoryEntity
                     {
-                        Nome = Faker.Name.FullName(),
-                        Tipo = GetCategoryTypeRandom(),
+                        Name = Faker.Name.FullName(),
+                        Type = GetCategoryTypeRandom(),
                         Status = GetStatusTypeRandom(),
                     };
 
@@ -50,16 +50,16 @@ namespace Api.Data.Test.Category
                 var categoriasSelecionadas = await _repositorio.SelectByParamAsync(pageParams);
                 Assert.NotNull(categoriasSelecionadas);
                 Assert.True(categoriasSelecionadas.Itens.Count > 0);
-                Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Tipo == CategoryType.Conta).Count > 0);
-                Assert.False(categoriasSelecionadas.Itens.FindAll(x => x.Tipo == CategoryType.Operação).Count > 0);
+                Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Conta).Count > 0);
+                Assert.False(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Operação).Count > 0);
 
                 pageParams.Tipo = (int)CategoryType.Operação;
 
                 categoriasSelecionadas = await _repositorio.SelectByParamAsync(pageParams);
                 Assert.NotNull(categoriasSelecionadas);
                 Assert.True(categoriasSelecionadas.Itens.Count > 0);
-                Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Tipo == CategoryType.Operação).Count > 0);
-                Assert.False(categoriasSelecionadas.Itens.FindAll(x => x.Tipo == CategoryType.Conta).Count > 0);
+                Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Operação).Count > 0);
+                Assert.False(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Conta).Count > 0);
             }
         }
     }

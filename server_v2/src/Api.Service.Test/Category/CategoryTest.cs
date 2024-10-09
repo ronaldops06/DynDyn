@@ -35,8 +35,8 @@ namespace Api.Service.Test.Category
                 var dto = new CategoryModel()
                 {
                     Id = i,
-                    Nome = Faker.Name.FullName(),
-                    Tipo = GetCategoryTypeRandom(),
+                    Name = Faker.Name.FullName(),
+                    Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow
@@ -52,16 +52,16 @@ namespace Api.Service.Test.Category
             categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = "Corrente",
-                Tipo = CategoryType.Conta,
+                Name = "Corrente",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo
             };
 
             categoryModelResult = new CategoryModel
             {
                 Id = categoryModel.Id,
-                Nome = categoryModel.Nome,
-                Tipo = categoryModel.Tipo,
+                Name = categoryModel.Name,
+                Type = categoryModel.Type,
                 Status = categoryModel.Status,
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow
@@ -70,16 +70,16 @@ namespace Api.Service.Test.Category
             categoryModelUpdate = new CategoryModel
             {
                 Id = categoryModel.Id,
-                Nome = "Lazer",
-                Tipo = CategoryType.Conta,
+                Name = "Lazer",
+                Type = CategoryType.Conta,
                 Status = StatusType.Inativo
             };
 
             categoryModelUpdateResult = new CategoryModel
             {
                 Id = categoryModelUpdate.Id,
-                Nome = categoryModelUpdate.Nome,
-                Tipo = categoryModelUpdate.Tipo,
+                Name = categoryModelUpdate.Name,
+                Type = categoryModelUpdate.Type,
                 Status = categoryModelUpdate.Status,
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow
@@ -90,8 +90,8 @@ namespace Api.Service.Test.Category
         {
             Assert.NotNull(categoryModelDest);
             Assert.Equal(categoryModelSource.Id, categoryModelDest.Id);
-            Assert.Equal(categoryModelSource.Nome, categoryModelDest.Nome);
-            Assert.Equal(categoryModelSource.Tipo, categoryModelDest.Tipo);
+            Assert.Equal(categoryModelSource.Name, categoryModelDest.Name);
+            Assert.Equal(categoryModelSource.Type, categoryModelDest.Type);
             Assert.Equal(categoryModelSource.Status, categoryModelDest.Status);
         }
     }

@@ -41,7 +41,7 @@ namespace Api.Service.Services
 
         public async Task<CategoryModel> Post(CategoryModel categoryModel)
         {
-            var categoryEntityAux = await _repository.SelectByUkAsync(categoryModel.Nome);
+            var categoryEntityAux = await _repository.SelectByUkAsync(categoryModel.Name);
 
             if (categoryEntityAux != null)
                 throw new Exception("Categoria não disponível.");
@@ -56,7 +56,7 @@ namespace Api.Service.Services
 
         public async Task<CategoryModel> Put(CategoryModel categoryModel)
         {
-            var categoryEntityAux = await _repository.SelectByUkAsync(categoryModel.Nome);
+            var categoryEntityAux = await _repository.SelectByUkAsync(categoryModel.Name);
 
             if (categoryEntityAux != null && categoryModel.Id != categoryEntityAux.Id)
                 throw new Exception("Categoria não disponível.");

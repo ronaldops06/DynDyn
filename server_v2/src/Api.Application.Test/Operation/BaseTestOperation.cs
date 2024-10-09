@@ -22,8 +22,8 @@ namespace Api.Application.Test.Operation
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = "Diversos",
-                Tipo = CategoryType.Operação,
+                Name = "Diversos",
+                Type = CategoryType.Operação,
                 Status = StatusType.Ativo
             };
 

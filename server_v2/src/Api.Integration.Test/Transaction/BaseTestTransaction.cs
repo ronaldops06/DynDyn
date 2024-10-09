@@ -71,8 +71,8 @@ namespace Api.Integration.Test.Transaction
             return new CategoryRequestDto()
             {
                 Id = id,
-                Nome = name,
-                Tipo = (int)type,
+                Name = name,
+                Type = (int)type,
                 Status = (int)StatusType.Ativo,
             };
         }

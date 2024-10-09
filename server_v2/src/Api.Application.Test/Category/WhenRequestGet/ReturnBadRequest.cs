@@ -22,8 +22,8 @@ namespace Api.Application.Test.Category.WhenRequestGet
             var categoryModel = new CategoryModel
             {
                 Id = categoryId,
-                Nome = Faker.Name.FullName(),
-                Tipo = GetCategoryTypeRandom(),
+                Name = Faker.Name.FullName(),
+                Type = GetCategoryTypeRandom(),
                 Status = GetStatusTypeRandom(),
                 DataCriacao = DateTime.UtcNow,
                 DataAlteracao = DateTime.UtcNow

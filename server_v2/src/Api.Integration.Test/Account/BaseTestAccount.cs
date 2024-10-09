@@ -77,9 +77,9 @@ namespace Api.Integration.Test.Account
             CategoryRequestDto = new CategoryRequestDto()
             {
                 Id = AccountBaseDto.AccountCategory.CategoryId,
-                Nome = AccountBaseDto.AccountCategory.CategoryNome,
+                Name = AccountBaseDto.AccountCategory.CategoryNome,
                 Status = AccountBaseDto.AccountCategory.CategoryStatus,
-                Tipo = AccountBaseDto.AccountCategory.CategoryTipo
+                Type = AccountBaseDto.AccountCategory.CategoryTipo
             };
 
             ParentAccountRequestDto = new AccountRequestDto

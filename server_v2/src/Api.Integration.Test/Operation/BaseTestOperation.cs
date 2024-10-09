@@ -71,9 +71,9 @@ namespace Api.Integration.Test.Operation
             CategoryRequestDto = new CategoryRequestDto()
             {
                 Id = OperationBaseDto.OperationCategory.CategoryId,
-                Nome = OperationBaseDto.OperationCategory.CategoryNome,
+                Name = OperationBaseDto.OperationCategory.CategoryNome,
                 Status = OperationBaseDto.OperationCategory.CategoryStatus,
-                Tipo = OperationBaseDto.OperationCategory.CategoryTipo
+                Type = OperationBaseDto.OperationCategory.CategoryTipo
             };
 
             OperationRequestDto = new OperationRequestDto

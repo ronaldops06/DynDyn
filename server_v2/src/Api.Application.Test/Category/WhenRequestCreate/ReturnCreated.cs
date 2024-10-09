@@ -26,8 +26,8 @@ namespace Api.Application.Test.Category.WhenRequestCreate
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = nome,
-                Tipo = tipo,
+                Name = nome,
+                Type = tipo,
                 Status = status,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
@@ -43,8 +43,8 @@ namespace Api.Application.Test.Category.WhenRequestCreate
 
             var categoryRequestDto = new CategoryRequestDto
             {
-                Nome = nome,
-                Tipo = (int)tipo,
+                Name = nome,
+                Type = (int)tipo,
                 Status = (int)status
             };
 
@@ -55,8 +55,8 @@ namespace Api.Application.Test.Category.WhenRequestCreate
 
             var resultValue = ((CreatedResult)result).Value as CategoryResponseDto;
             Assert.NotNull(resultValue);
-            Assert.Equal(categoryRequestDto.Nome, resultValue.Nome);
-            Assert.Equal(categoryRequestDto.Tipo, resultValue.Tipo);
+            Assert.Equal(categoryRequestDto.Name, resultValue.Name);
+            Assert.Equal(categoryRequestDto.Type, resultValue.Type);
             Assert.Equal(categoryRequestDto.Status, resultValue.Status);
         }
     }

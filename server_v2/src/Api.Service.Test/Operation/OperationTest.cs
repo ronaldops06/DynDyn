@@ -27,8 +27,8 @@ namespace Api.Service.Test.Operation
             var categoryModel = new CategoryModel
             {
                 Id = 1,
-                Nome = "Animais de Estimação",
-                Tipo = CategoryType.Conta,
+                Name = "Animais de Estimação",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo
             };
 

@@ -17,30 +17,30 @@ namespace Api.Service.Test.AutoMapper
             var dto = new CategoryRequestDto
             {
                 Id = 1,
-                Nome = Faker.Lorem.GetFirstWord(),
-                Tipo = (int)CategoryType.Conta,
+                Name = Faker.Lorem.GetFirstWord(),
+                Type = (int)CategoryType.Conta,
                 Status = (int)StatusType.Ativo,
             };
 
             //Dto -> Model
             var model = Mapper.Map<CategoryModel>(dto);
             Assert.Equal(model.Id, dto.Id);
-            Assert.Equal(model.Nome, dto.Nome);
-            Assert.Equal((int)model.Tipo, dto.Tipo);
+            Assert.Equal(model.Name, dto.Name);
+            Assert.Equal((int)model.Type, dto.Type);
             Assert.Equal((int)model.Status, dto.Status);
 
             //Model -> Entity
             var entity = Mapper.Map<CategoryEntity>(model);
             Assert.Equal(entity.Id, model.Id);
-            Assert.Equal(entity.Nome, model.Nome);
-            Assert.Equal(entity.Tipo, model.Tipo);
+            Assert.Equal(entity.Name, model.Name);
+            Assert.Equal(entity.Type, model.Type);
             Assert.Equal(entity.Status, model.Status);
 
             //Entity -> Model
             var categoryModel = Mapper.Map<CategoryModel>(entity);
             Assert.Equal(categoryModel.Id, entity.Id);
-            Assert.Equal(categoryModel.Nome, entity.Nome);
-            Assert.Equal(categoryModel.Tipo, entity.Tipo);
+            Assert.Equal(categoryModel.Name, entity.Name);
+            Assert.Equal(categoryModel.Type, entity.Type);
             Assert.Equal(categoryModel.Status, entity.Status);
             Assert.Equal(categoryModel.DataCriacao, entity.DataCriacao);
             Assert.Equal(categoryModel.DataAlteracao, entity.DataAlteracao);
@@ -48,8 +48,8 @@ namespace Api.Service.Test.AutoMapper
             //Model -> DtoResult
             var categoryResponseDto = Mapper.Map<CategoryResponseDto>(categoryModel);
             Assert.Equal(categoryResponseDto.Id, categoryModel.Id);
-            Assert.Equal(categoryResponseDto.Nome, categoryModel.Nome);
-            Assert.Equal(categoryResponseDto.Tipo, (int)categoryModel.Tipo);
+            Assert.Equal(categoryResponseDto.Name, categoryModel.Name);
+            Assert.Equal(categoryResponseDto.Type, (int)categoryModel.Type);
             Assert.Equal(categoryResponseDto.Status, (int)categoryModel.Status);
         }
 
@@ -62,8 +62,8 @@ namespace Api.Service.Test.AutoMapper
                 var item = new CategoryEntity
                 {
                     Id = i,
-                    Nome = Faker.Name.FullName(),
-                    Tipo = GetCategoryTypeRandom(),
+                    Name = Faker.Name.FullName(),
+                    Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow
@@ -80,9 +80,9 @@ namespace Api.Service.Test.AutoMapper
             for (int i = 0; i < listModel.Count(); i++)
             {
                 Assert.Equal(listModel[i].Id, listEntity[i].Id);
-                Assert.Equal(listModel[i].Nome, listEntity[i].Nome);
+                Assert.Equal(listModel[i].Name, listEntity[i].Name);
                 Assert.Equal(listModel[i].Status, listEntity[i].Status);
-                Assert.Equal(listModel[i].Tipo, listEntity[i].Tipo);
+                Assert.Equal(listModel[i].Type, listEntity[i].Type);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
             }
@@ -95,8 +95,8 @@ namespace Api.Service.Test.AutoMapper
             for (int i = 0; i < listDto.Count(); i++)
             {
                 Assert.Equal(listDto[i].Id, listModel[i].Id);
-                Assert.Equal(listDto[i].Nome, listModel[i].Nome);
-                Assert.Equal(listDto[i].Tipo, (int)listModel[i].Tipo);
+                Assert.Equal(listDto[i].Name, listModel[i].Name);
+                Assert.Equal(listDto[i].Type, (int)listModel[i].Type);
                 Assert.Equal(listDto[i].Status, (int)listModel[i].Status);
             }
 
@@ -110,8 +110,8 @@ namespace Api.Service.Test.AutoMapper
             for (int i = 0; i < listDto.Count(); i++)
             {
                 Assert.Equal(listResponseDto[i].Id, listModel[i].Id);
-                Assert.Equal(listResponseDto[i].Nome, listModel[i].Nome);
-                Assert.Equal(listResponseDto[i].Tipo, (int)listModel[i].Tipo);
+                Assert.Equal(listResponseDto[i].Name, listModel[i].Name);
+                Assert.Equal(listResponseDto[i].Type, (int)listModel[i].Type);
                 Assert.Equal(listResponseDto[i].Status, (int)listModel[i].Status);
             }
         }

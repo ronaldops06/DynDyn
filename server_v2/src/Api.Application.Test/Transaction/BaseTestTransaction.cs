@@ -118,8 +118,8 @@ namespace Api.Application.Test.Transaction
             return new CategoryModel()
             {
                 Id = id,
-                Nome = name,
-                Tipo = type,
+                Name = name,
+                Type = type,
                 Status = StatusType.Ativo,
             };
         }

@@ -25,27 +25,27 @@ namespace Api.Data.Test.Category
                 CategoryRepository _repositorio = new CategoryRepository(context);
                 CategoryEntity _categoryEntity = new CategoryEntity()
                 {
-                    Nome = Faker.Lorem.GetFirstWord(),
-                    Tipo = CategoryType.Conta,
+                    Name = Faker.Lorem.GetFirstWord(),
+                    Type = CategoryType.Conta,
                     Status = StatusType.Ativo,
                 };
 
                 var _registroCriado = await _repositorio.InsertAsync(_categoryEntity);
                 Assert.NotNull(_registroCriado);
                 Assert.True(_registroCriado.Id > 0);
-                Assert.Equal(_categoryEntity.Nome, _registroCriado.Nome);
-                Assert.Equal(_categoryEntity.Tipo, _registroCriado.Tipo);
+                Assert.Equal(_categoryEntity.Name, _registroCriado.Name);
+                Assert.Equal(_categoryEntity.Type, _registroCriado.Type);
                 Assert.Equal(_categoryEntity.Status, _registroCriado.Status);
 
-                _categoryEntity.Nome = Faker.Lorem.GetFirstWord();
-                _categoryEntity.Tipo = CategoryType.Operação;
+                _categoryEntity.Name = Faker.Lorem.GetFirstWord();
+                _categoryEntity.Type = CategoryType.Operação;
                 _categoryEntity.Status = StatusType.Inativo;
 
                 var _registroAtualizado = await _repositorio.UpdateAsync(_categoryEntity);
                 Assert.NotNull(_registroAtualizado);
                 Assert.Equal(_registroCriado.Id, _registroAtualizado.Id);
-                Assert.Equal(_categoryEntity.Nome, _registroAtualizado.Nome);
-                Assert.Equal(_categoryEntity.Tipo, _registroAtualizado.Tipo);
+                Assert.Equal(_categoryEntity.Name, _registroAtualizado.Name);
+                Assert.Equal(_categoryEntity.Type, _registroAtualizado.Type);
                 Assert.Equal(_categoryEntity.Status, _registroAtualizado.Status);
 
                 var _registroExiste = await _repositorio.ExistsAsync(_registroAtualizado.Id);
@@ -54,8 +54,8 @@ namespace Api.Data.Test.Category
                 var _registroSelecionado = await _repositorio.SelectByIdAsync(_registroAtualizado.Id);
                 Assert.NotNull(_registroSelecionado);
                 Assert.Equal(_registroCriado.Id, _registroSelecionado.Id);
-                Assert.Equal(_categoryEntity.Nome, _registroSelecionado.Nome);
-                Assert.Equal(_categoryEntity.Tipo, _registroSelecionado.Tipo);
+                Assert.Equal(_categoryEntity.Name, _registroSelecionado.Name);
+                Assert.Equal(_categoryEntity.Type, _registroSelecionado.Type);
                 Assert.Equal(_categoryEntity.Status, _registroSelecionado.Status);
 
                 var _todosRegistros = await _repositorio.SelectAsync();

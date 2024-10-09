@@ -15,14 +15,14 @@ namespace Api.Data.Mapping
 
             builder.HasKey(u => u.Id);
 
-            builder.HasIndex(u => u.Nome)
+            builder.HasIndex(u => u.Name)
                 .IsUnique();
 
-            builder.Property(u => u.Nome)
+            builder.Property(u => u.Name)
                 .IsRequired()
                 .HasMaxLength(100);
 
-            builder.Property(u => u.Tipo)
+            builder.Property(u => u.Type)
                 .IsRequired();
 
             builder.Property(u => u.Status)

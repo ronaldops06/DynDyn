@@ -37,16 +37,16 @@ namespace Api.Data.Test.Operation
                 CategoryRepository _repositorioCategory = new CategoryRepository(context);
                 CategoryEntity _categoryEntity = new CategoryEntity()
                 {
-                    Nome = "Corrente",
-                    Tipo = CategoryType.Conta,
+                    Name = "Corrente",
+                    Type = CategoryType.Conta,
                     Status = StatusType.Ativo,
                 };
 
                 var _categoryCreated = await _repositorioCategory.InsertAsync(_categoryEntity);
                 Assert.NotNull(_categoryCreated);
                 Assert.True(_categoryCreated.Id > 0);
-                Assert.Equal(_categoryEntity.Nome, _categoryCreated.Nome);
-                Assert.Equal(_categoryEntity.Tipo, _categoryCreated.Tipo);
+                Assert.Equal(_categoryEntity.Name, _categoryCreated.Name);
+                Assert.Equal(_categoryEntity.Type, _categoryCreated.Type);
                 Assert.Equal(_categoryEntity.Status, _categoryCreated.Status);
 
                 OperationRepository _repositorio = new OperationRepository(context);

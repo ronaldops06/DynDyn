@@ -76,15 +76,15 @@ namespace Api.Data.Test.Transaction
             CategoryRepository _repositorioCategory = new CategoryRepository(context);
             CategoryEntity _categoryEntity = new CategoryEntity()
             {
-                Nome = name,
-                Tipo = type,
+                Name = name,
+                Type = type,
                 Status = StatusType.Ativo,
             };
 
             var _registroCriado = await _repositorioCategory.InsertAsync(_categoryEntity);
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
-            Assert.Equal(_categoryEntity.Nome, _registroCriado.Nome);
+            Assert.Equal(_categoryEntity.Name, _registroCriado.Name);
 
             return _registroCriado;
         }

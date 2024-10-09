@@ -115,8 +115,8 @@ namespace Api.Service.Test.AutoMapper
             return new CategoryModel()
             {
                 Id = id,
-                Nome = name,
-                Tipo = type,
+                Name = name,
+                Type = type,
                 Status = StatusType.Ativo,
             };
         }

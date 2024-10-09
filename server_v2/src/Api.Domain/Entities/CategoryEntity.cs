@@ -11,12 +11,12 @@ namespace Api.Domain.Entities
         /// <summary>
         /// Nome da categoria.
         /// </summary>
-        public string Nome { get; set; }
+        public string Name { get; set; }
 
         /// <summary>
         /// Tipo da categoria <see cref="CategoryType"/>.
         /// </summary>
-        public CategoryType Tipo { get; set; }
+        public CategoryType Type { get; set; }
 
         /// <summary>
         /// Status da categoria <see cref="StatusType"/>

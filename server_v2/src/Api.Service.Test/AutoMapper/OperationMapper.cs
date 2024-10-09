@@ -12,8 +12,8 @@ namespace Api.Service.Test.AutoMapper
         {
             var categoryModel = new CategoryModel()
             {
-                Nome = "Corrente",
-                Tipo = CategoryType.Conta,
+                Name = "Corrente",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo,
             };
 
@@ -55,8 +55,8 @@ namespace Api.Service.Test.AutoMapper
         {
             var categoryEntity = new CategoryEntity()
             {
-                Nome = "Corrente",
-                Tipo = CategoryType.Conta,
+                Name = "Corrente",
+                Type = CategoryType.Conta,
                 Status = StatusType.Ativo,
             };
 
