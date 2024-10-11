@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Runtime.CompilerServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Api.Integration.Test")]
 var builder = WebApplication.CreateBuilder(args);
@@ -45,7 +47,11 @@ builder.Services.AddVersionedApiExplorer(options =>
     options.ReportApiVersions = true;
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+.AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.PropertyNamingPolicy = null;
+});
 
 builder.Services.AddSwaggerGen(c =>
 {
