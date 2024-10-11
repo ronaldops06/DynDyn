@@ -1,7 +1,0 @@
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.csproj.AssemblyReference.cache
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.GeneratedMSBuildEditorConfig.editorconfig
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.AssemblyInfoInputs.cache
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.AssemblyInfo.cs
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.csproj.CoreCompileInputs.cache
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.MvcApplicationPartsAssemblyInfo.cs
-C:\Ronaldo\DynDyn\server_v2\src\Api.Application\obj\Debug\net5.0\Application.MvcApplicationPartsAssemblyInfo.cache
