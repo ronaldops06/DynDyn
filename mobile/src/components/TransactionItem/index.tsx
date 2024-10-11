@@ -68,32 +68,32 @@ const TransactionItem = (props: TransactionItemParms) => {
                 onTouchMove={e => onTouchMove(e)}
             >
                 <View style={transactionItemStyle.rowHeader}>
-                    <Text style={transactionItemStyle.textHeader}>{Moment(props.data.dataCriacao).format('DD/MM/YYYY')}</Text>
-                    <Text style={transactionItemStyle.textHeader}>{props.data.totalInstallments > 1 && props.data.installment + "/" + props.data.totalInstallments}</Text>
+                    <Text style={transactionItemStyle.textHeader}>{Moment(props.data.DataCriacao).format('DD/MM/YYYY')}</Text>
+                    <Text style={transactionItemStyle.textHeader}>{props.data.TotalInstallments > 1 && props.data.Installment + "/" + props.data.TotalInstallments}</Text>
                     {/* <InfoIcon width="20" height="20" fill="#CCC84E" /> */}
                 </View>
                 <View style={transactionItemStyle.rowInfo}>
-                    <Text style={(props.data.operation?.type == 1) ?
+                    <Text style={(props.data.Operation?.Type == 1) ?
                         transactionItemStyle.textTransactionName :
-                        (props.data.operation?.type == 2) ?
+                        (props.data.Operation?.Type == 2) ?
                             transactionItemStyle.textTransactionNameExpense :
                             transactionItemStyle.textTransactionNameTransfer}>
-                        {props.data.operation?.name}
+                        {props.data.Operation?.Name}
                     </Text>
-                    <Text style={(props.data.operation?.type == 1) ?
+                    <Text style={(props.data.Operation?.Type == 1) ?
                         transactionItemStyle.textTransactionValue :
-                        (props.data.operation?.type == 1) ?
+                        (props.data.Operation?.Type == 1) ?
                             transactionItemStyle.textTransactionValueExpense :
                             transactionItemStyle.textTransactionValueTransfer}>
-                        R$ {props.data.value?.toFixed(2)}
+                        R$ {props.data.Value?.toFixed(2)}
                     </Text>
                 </View>
                 <View style={transactionItemStyle.rowFooter}>
                     <Text style={transactionItemStyle.textFooter}>
-                        {props.data.account?.name}
-                        {props.data.operation?.type == TypesTransaction.Transference && " -->> " + props.data.destinationAccount?.name}
+                        {props.data.Account?.Name}
+                        {props.data.Operation?.Type == TypesTransaction.Transference && " -->> " + props.data.DestinationAccount?.Name}
                     </Text>
-                    <DoneIcon width="20" height="20" fill={(props.data.consolidated == 1) ? "#00A519" : "#A4BCE3"} />
+                    <DoneIcon width="20" height="20" fill={(props.data.Consolidated == 1) ? "#00A519" : "#A4BCE3"} />
                 </View>
             </View>
         </View>

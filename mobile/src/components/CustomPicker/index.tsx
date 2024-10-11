@@ -10,8 +10,8 @@ interface PickerParams {
     value: number,
     setValue: any,
     data: {
-        id: number,
-        name: string
+        Id: number,
+        Name: string
     }[]
 }
 
@@ -90,7 +90,7 @@ const CustomPicker = (props: PickerParams) => {
                 selectedValue={props.value}
                 onValueChange={(itemValue, itemIndex) => props.setValue(itemValue)}>
                 {props.data.map((item, key) => (
-                    <Picker.Item key={key} label={item.name} value={item.id} />
+                    <Picker.Item key={key} label={item.Name} value={item.Id} />
                 ))}
             </Picker>
         </View>

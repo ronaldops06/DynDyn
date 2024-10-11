@@ -66,8 +66,9 @@ export const getTotalsTransactions = async (params: string, navigation: any) => 
 
 export const postTransaction = async (data: I.Transaction, navigation: any) => {
     let response = {} as I.Response;
-    response = await post('Transaction', data);
 
+    response = await post('Transaction', data);
+    console.log(response);
     if (!validateResponse(Action.Post, response, navigation)) return null;
 
     return response;
@@ -75,7 +76,7 @@ export const postTransaction = async (data: I.Transaction, navigation: any) => {
 
 export const putTransaction = async (data: I.Transaction, navigation: any) => {
     let response = {} as I.Response;
-    response = await put(`Transaction/${data.id}`, data);
+    response = await put(`Transaction/${data.Id}`, data);
 
     if (!validateResponse(Action.Put, response, navigation)) return null;
 

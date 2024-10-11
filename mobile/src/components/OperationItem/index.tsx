@@ -17,11 +17,11 @@ const OperationItem = (props: OperationItemParms) => {
             style={operationItemStyle.card}
             onTouchEndCapture={() => props.onPress(props.data)}>
             <View style={operationItemStyle.rowHeader}>
-                <Text style={operationItemStyle.textOperationName}>{props.data.name}</Text>
+                <Text style={operationItemStyle.textOperationName}>{props.data.Name}</Text>
             </View>
             <View style={operationItemStyle.rowInfo}>
                 <Text style={operationItemStyle.textCategoriaName} >
-                    {props.data.category.name}
+                    {props.data.Category.Name}
                 </Text>
             </View>
         </View>

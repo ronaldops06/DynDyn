@@ -33,13 +33,13 @@ const SignIn = () => {
 
     const setToken = async () => {
         const storage = new MMKV();
-        storage.set('token', user != null ? user.accessToken : "");
+        storage.set('token', user != null ? user.AccessToken : "");
     };
 
     const handleSignClick = async () => {
         let loginDTO = {} as I.Login;
-        loginDTO.login = valueEmail;
-        loginDTO.password = valuePassword;
+        loginDTO.Login = valueEmail;
+        loginDTO.Password = valuePassword;
 
         setUser(await login(loginDTO) ?? {} as I.User);
         /*

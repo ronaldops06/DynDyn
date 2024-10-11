@@ -37,17 +37,19 @@ export const get = async (path: string) => {
 
 export const post = async (path: string, data: any) => {
     const storage = new MMKV();
-    const token = await storage.getString('token');
-
+    const token = storage.getString('token');
+    console.log(token);
     let responseRequest = {} as I.Response;
 
     await api.post(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
+        console.log(response);
         responseRequest.data = response.data;
         responseRequest.status = response.data.status;
         responseRequest.success = true;
     }).catch((error) => {
+        console.log(error);
         responseRequest.error = error.response.data;
         responseRequest.status = error.response.status;
         responseRequest.success = false;
@@ -100,7 +102,7 @@ export const del = async (path: string) => {
 
 export const getLogin = async (path: string, navigation: any) => {
     const storage = new MMKV();
-    const token = await storage.getString('token');
+    const token = storage.getString('token');
 
     if (token) {
         api.get(path, {

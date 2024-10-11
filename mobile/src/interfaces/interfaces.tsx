@@ -7,59 +7,63 @@ export interface Response {
 };
 
 export interface Login {
-    login: string,
-    password: string
+    Login: string,
+    Password: string
 };
 
 export interface User {
-    id: number,
-    login: string,
-    name: string,
-    password: string,
-    accessToken: string
+    Id: number,
+    Login: string,
+    Name: string,
+    Password: string,
+    AccessToken: string
 };
 
 export interface Category {
-    id: number,
-    name: string
+    Id: number,
+    Name: string
+    Type: number,
+    Status: number
 };
 
 export interface Account {
-    id: number,
-    name: string
+    Id: number,
+    Name: string,
+    Status: number,
+    Category: Category
 };
 
 export interface Operation {
-    id: number,
-    name: string,
-    type: number,
-    recurrent: number,
-    status: number,
+    Id: number,
+    Name: string,
+    Type: number,
+    Recurrent: boolean,
+    Status: number,
     categoriaID: number,
-    category: Category
+    Category: Category
 };
 
 export interface Transaction {
-    id: number,
-    value: number,
-    observation: string,
-    consolidated: number,
-    installment: number,
-    totalInstallments: number,
-    contaID: number,
-    account: Account,
-    contaDestinoID?: number,
-    destinationAccount: Account,
+    Id: number,
+    Value: number,
+    Observation: string,
+    Consolidated: boolean,
+    Installment: number,
+    TotalInstallments: number,
+    ContaID: number,
+    Account: Account,
+    ContaDestinoID?: number,
+    DestinationAccount: Account | undefined,
     operacaoID: number,
-    operation: Operation,
+    Operation: Operation,
     movimentoPaiID: number,
-    parentTransaction: Transaction,
-    dataCriacao: Date,
-    dataAlteracao: Date
+    ParentTransaction: Transaction,
+    DataCriacao: Date,
+    DataAlteracao: Date
 };
 
 export interface TransactionTotals {
-    credit: number,
-    debit: number,
-    transfer: number
+    Credit: number,
+    Debit: number,
+    Tansfer: number
 }

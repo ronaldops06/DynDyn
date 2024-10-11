@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
-import { SafeAreaView, View, TouchableOpacity, Text, Image, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/core';
-import {StackNavigationProp} from '@react-navigation/stack';
+import { StackNavigationProp } from '@react-navigation/stack';
+import React, { useState } from 'react';
+import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
 
-import { RootStackParamList } from '../RootStackPrams';
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
+import { RootStackParamList } from '../RootStackPrams';
 import { postUser } from './signup.api';
 
 import { style } from '../../styles/styles';
@@ -28,26 +28,26 @@ const SignUp = () => {
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [valuePasswordConfirm, setValuePasswordConfirm] = useState("");
-    const [user, setUser] = useState<User>({id: 0, name: "", login: "", token: ""});
+    const [user, setUser] = useState<User>({ id: 0, name: "", login: "", token: "" });
 
     const handleRegisterClick = async () => {
-        if (valuePassword != valuePasswordConfirm){
+        if (valuePassword != valuePasswordConfirm) {
             Alert.alert("Senha de confirmação não corresponde com a senha.");
         } else {
             let userDTO = {} as I.User;
-            userDTO.name = valueName;
-            userDTO.login = valueEmail;
-            userDTO.password = valuePasswordConfirm;
+            userDTO.Name = valueName;
+            userDTO.Login = valueEmail;
+            userDTO.Password = valuePasswordConfirm;
 
             const response = await postUser(userDTO, navigation);
             setUser(response?.data);
-            
-            if (user.token){
+
+            if (user.token) {
                 const storage = new MMKV();
                 await storage.set('token', user.token);
-                
+
                 navigation.reset({
-                    routes:[{name:'MainTab'}]
+                    routes: [{ name: 'MainTab' }]
                 })
             }
         }
@@ -57,10 +57,10 @@ const SignUp = () => {
         navigation.navigate("SignIn");
     };
 
-    return(
-        <SafeAreaView style={[style.container,style.containerCadastro]}>
-            <Image 
-                style={style.viewHeaderCadastro} 
+    return (
+        <SafeAreaView style={[style.container, style.containerCadastro]}>
+            <Image
+                style={style.viewHeaderCadastro}
                 source={require('../../assets/header.jpg')}
             />
             <View style={signUpStyle.viewBodyCadastro}>
@@ -70,18 +70,18 @@ const SignUp = () => {
                         value={valueName}
                         setValue={setValueName}
                     />
-                    <TextInput 
+                    <TextInput
                         text={"Email"}
                         value={valueEmail}
                         setValue={setValueEmail}
                     />
-                    <TextInput 
+                    <TextInput
                         text={"Senha"}
                         value={valuePassword}
                         setValue={setValuePassword}
                         secureTextEntry={true}
                     />
-                    <TextInput 
+                    <TextInput
                         text={"Repetir a senha"}
                         value={valuePasswordConfirm}
                         setValue={setValuePasswordConfirm}

@@ -193,17 +193,17 @@ const Transaction = () => {
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(TypesTransaction.Revenue)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelReceita]}>Receita</Text>
-                        <Text style={[transactionStyle.textTotais, transactionStyle.textReceita]}>R$ {transactionTotals?.credit?.toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textReceita]}>R$ {transactionTotals?.Credit?.toFixed(2)}</Text>
                     </View>
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(TypesTransaction.Expense)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelDespesa]}>Despesa</Text>
-                        <Text style={[transactionStyle.textTotais, transactionStyle.textDespesa]}>R$ {transactionTotals?.debit?.toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textDespesa]}>R$ {transactionTotals?.Debit?.toFixed(2)}</Text>
                     </View>
                     <View style={transactionStyle.cardTotais}
                         onTouchEndCapture={() => setTypeSelected(-1)}>
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelSaldo]}>Saldo</Text>
-                        <Text style={[transactionStyle.textTotais, transactionStyle.textSaldo]}>R$ {((transactionTotals?.credit ?? 0) - (transactionTotals?.debit ?? 0)).toFixed(2)}</Text>
+                        <Text style={[transactionStyle.textTotais, transactionStyle.textSaldo]}>R$ {((transactionTotals?.Credit ?? 0) - (transactionTotals?.Debit ?? 0)).toFixed(2)}</Text>
                     </View>
                 </View>
                 <ScrollView style={transactionStyle.scroll}
@@ -219,7 +219,7 @@ const Transaction = () => {
                             <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8" />
                         }
                         {transactions != null && transactions.filter((item) => {
-                            return typeSelected != -1 ? item.operation.type == typeSelected : item;
+                            return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
                         }).map((item, key) => (
                             <TransactionItem
                                 key={key}

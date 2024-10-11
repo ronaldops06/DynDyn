@@ -51,7 +51,7 @@ const TransactionCreate = () => {
 
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
-    const transactionID = route.params?.data.id ?? 0;
+    const transactionID = route.params?.data.Id ?? 0;
     const isEditing = route.params?.isEditing ?? false;
     const baseOperation = {} as I.Operation;
 
@@ -85,18 +85,18 @@ const TransactionCreate = () => {
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
-            setTypeSelected(data.operation.type);
-            setValueValue(data.value);
-            setOperation(data.operation);
-            setValueDescription(data.operation.name);
-            setValueDate(Moment(data.dataCriacao).local().format('DD/MM/YYYY'));
-            setValueTime(Moment(data.dataCriacao).local().format('HH:mm:ss'));
-            setValueCategory(data.operation.category.id);
-            setValueAccount(data.account.id);
-            if (data.destinationAccount)
-                setValueDestAccount(data.destinationAccount.id);
-            setValueNote(data.observation);
-            setValueConsolidated(data.consolidated == 1 ? true : false);
+            setTypeSelected(data.Operation.Type);
+            setValueValue(data.Value);
+            setOperation(data.Operation);
+            setValueDescription(data.Operation.Name);
+            setValueDate(Moment(data.DataCriacao).local().format('DD/MM/YYYY'));
+            setValueTime(Moment(data.DataCriacao).local().format('HH:mm:ss'));
+            setValueCategory(data.Operation.Category.Id);
+            setValueAccount(data.Account.Id);
+            if (data.DestinationAccount)
+                setValueDestAccount(data.DestinationAccount.Id);
+            setValueNote(data.Observation);
+            setValueConsolidated(data.Consolidated);
         }
     };
 
@@ -106,9 +106,9 @@ const TransactionCreate = () => {
 
     const setOperationDefault = () => {
         setValueDescription('Transferência');
-        var categoryTranference = categories.find(x => x.name == 'Transferência');
+        var categoryTranference = categories.find(x => x.Name == 'Transferência');
         if (categoryTranference !== undefined) {
-            setValueCategory(categoryTranference.id);
+            setValueCategory(categoryTranference.Id);
         }
     };
 
@@ -238,8 +238,8 @@ const TransactionCreate = () => {
 
     const handleItemOperationClick = (item: I.Operation) => {
         setOperation(item);
-        setValueDescription(item.name);
-        setValueCategory(item.category.id);
+        setValueDescription(item.Name);
+        setValueCategory(item.Category.Id);
     };
 
     const handleSaveClick = async () => {
@@ -247,24 +247,27 @@ const TransactionCreate = () => {
         if (!validateRequiredFields()) return;
 
         let operationDTO = {} as I.Operation;
-        operationDTO.id = operation.id;
-        operationDTO.name = valueDescription;
-        operationDTO.type = typeSelected;
+        operationDTO.Id = operation.Id;
+        operationDTO.Name = valueDescription;
+        operationDTO.Type = typeSelected;
         operationDTO.categoriaID = valueCategory;
-        operationDTO.recurrent = (valueRadioRepeat[0].selected) ? 1 : 0;
-        operationDTO.status = 1;
+        operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
+        operationDTO.Recurrent = valueRadioRepeat[0].selected ?? false;
+        operationDTO.Status = 1;
 
         let transactionDTO = {} as I.Transaction;
-        transactionDTO.id = transactionID;
-        transactionDTO.value = valueValue;
-        transactionDTO.observation = valueNote;
-        transactionDTO.consolidated = valueConsolidated ? 1 : 0;
-        transactionDTO.totalInstallments = valueTimes;
-        transactionDTO.dataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format());
-        transactionDTO.contaID = valueAccount;
-        transactionDTO.contaDestinoID = (valueDestAccount !== 0) ? valueDestAccount : undefined;
-        transactionDTO.operacaoID = operation.id;
-        transactionDTO.operation = operationDTO;
+        transactionDTO.Id = transactionID;
+        transactionDTO.Value = valueValue;
+        transactionDTO.Observation = valueNote;
+        transactionDTO.Consolidated = valueConsolidated;
+        transactionDTO.TotalInstallments = valueTimes;
+        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format());
+        transactionDTO.ContaID = valueAccount;
+        transactionDTO.Account = accounts.find(x => x.Id === valueAccount) ?? {} as I.Account;
+        transactionDTO.DestinationAccount = accounts.find(x => x.Id === valueDestAccount);
+        //transactionDTO.contaDestinoID = (valueDestAccount !== 0) ? valueDestAccount : undefined;
+        transactionDTO.operacaoID = operation.Id;
+        transactionDTO.Operation = operationDTO;
 
         if (isEditing) {
             putTransaction(transactionDTO, navigation);
