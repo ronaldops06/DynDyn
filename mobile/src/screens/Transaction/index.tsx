@@ -1,19 +1,19 @@
 import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 
-import Moment from 'moment';
 
+import { CustomAlert } from '../../components/CustomAlert';
 import TransactionItem from '../../components/TransactionItem';
 import { TypesTransaction } from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
 import { RootStackParamList } from '../RootStackPrams';
-import { getTotalsTransactions, getTransactions } from './transactions.api';
 
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import PlusIcon from '../../assets/plus.svg';
+import { loadAndPersistAll, loadTotalsTransactions } from '../../controller/transaction.controller';
 import { style } from '../../styles/styles';
 import { transactionStyle } from './styles';
 
@@ -45,6 +45,7 @@ const Transaction = () => {
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [typeSelected, setTypeSelected] = useState(-1);
+    const [isScrolling, setIsScrolling] = useState(false);
 
     const appendTransactions = (data: I.Transaction[]) => {
         let transactionsNew = transactions;
@@ -62,15 +63,14 @@ const Transaction = () => {
         if (selectedYear != 0) {
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
             let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
-            let params = `dataCriacaoInicio=${Moment(mountDateInicio, 'YYYY-MM-DD').format()}&dataCriacaoFim=${Moment(mountDateFim, 'YYYY-MM-DD').format()}&pageNumber=${pageNumber}`;
 
-            let responseTransactions = await getTransactions(params, navigation);
+            let responseTransactions = await loadAndPersistAll(mountDateInicio, mountDateFim, pageNumber, navigation);
             setTotalPages(responseTransactions?.totalPages ?? 1);
             appendTransactions(responseTransactions?.data ?? []);
 
             if (loadTotals) {
-                let responseTotals = await getTotalsTransactions(params, navigation);
-                setTransactionTotals(responseTotals?.data);
+                let responseTotals = await loadTotalsTransactions(mountDateInicio, mountDateFim);
+                setTransactionTotals(responseTotals);
             }
         }
         setLoading(false);
@@ -85,18 +85,19 @@ const Transaction = () => {
         // Executado no goBack da tela seguinte
         navigation.addListener('focus', () => {
             setTransactions([]);
-            setPageNumber(1);
-            loadTransactions();
-            //getTransactionsTotals();
         });
     }, [navigation]);
 
     useEffect(() => {
         setTransactions([]);
-        setPageNumber(1);
-        loadTransactions();
-        //getTransactionsTotals();
     }, [selectedYear, selectedMonth]);
+
+    useEffect(() => {
+        if (transactions.length === 0) {
+            setPageNumber(1);
+            loadTransactions();
+        }
+    }, [transactions])
 
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
@@ -110,42 +111,21 @@ const Transaction = () => {
         setDate(mountDate);
     }
 
+    const handleTouchEnd = () => {
+        setTimeout(setIsScrolling, 2000, false);
+    }
+
     const handleTransactionItemClick = (data: I.Transaction) => {
-        navigation.navigate("TransactionCreate", { isEditing: true, data: data });
+        if (!isScrolling)
+            navigation.navigate("TransactionCreate", { isEditing: true, data: data });
     }
 
     const onSwipeLeft = (data: I.Transaction) => {
-        Alert.alert("Atenção!",
-            "Esta transação terá o status alterado. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: () => { console.log("implementar") }
-                }
-            ],
-            { cancelable: false }
-        );
+        CustomAlert("Atenção", "Esta transação terá o status alterado. Deseja continuar?", console.log("implementar"));
     }
 
     const onSwipeRight = (data: I.Transaction) => {
-        Alert.alert("Atenção!",
-            "Esta transação será excluída. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: () => { console.log("implementar") }
-                }
-            ],
-            { cancelable: false }
-        );
+        CustomAlert("Atenção", "Esta transação será excluída. Deseja continuar?", console.log("implementar"));
     }
 
     const handleNewClick = () => {
@@ -213,7 +193,11 @@ const Transaction = () => {
                                 reloadPage();
                             }
                         }
-                    }}>
+                    }}
+                    onTouchStart={(event) => setIsScrolling(false)}
+                    onTouchMove={(event) => setIsScrolling(true)}
+                    onTouchEnd={(event) => handleTouchEnd}
+                >
                     <View style={transactionStyle.viewList}>
                         {loading &&
                             <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8" />

@@ -50,10 +50,10 @@ const TransactionItem = (props: TransactionItemParms) => {
 
     const onTouchEnd = async (e: any) => {
         setExecuteSwipe(false);
-        setMoveX(0);
         if (moveX > -5 && moveX < 5) {
             props.onPress(props.data)
         }
+        setMoveX(0);
     };
 
     return (
@@ -93,7 +93,7 @@ const TransactionItem = (props: TransactionItemParms) => {
                         {props.data.Account?.Name}
                         {props.data.Operation?.Type == TypesTransaction.Transference && " -->> " + props.data.DestinationAccount?.Name}
                     </Text>
-                    <DoneIcon width="20" height="20" fill={(props.data.Consolidated == 1) ? "#00A519" : "#A4BCE3"} />
+                    <DoneIcon width="20" height="20" fill={(props.data.Consolidated) ? "#00A519" : "#A4BCE3"} />
                 </View>
             </View>
         </View>

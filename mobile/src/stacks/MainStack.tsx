@@ -1,22 +1,22 @@
-import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 
-import { RootStackParamList } from '../screens/RootStackPrams';
+import Account from '../screens/Account';
+import Category from '../screens/Category';
+import Dashboard from '../screens/Dashboard';
 import Preload from '../screens/Preload';
+import { RootStackParamList } from '../screens/RootStackPrams';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
-import Dashboard from '../screens/Dashboard';
-import Account from '../screens/Account';
 import Transaction from '../screens/Transaction';
 import TransactionCreate from '../screens/Transaction/create';
-import Category from '../screens/Category';
 
 import MainTab from './MainTab';
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const MainStack = () => {
-    return(
+    return (
         <Stack.Navigator
             initialRouteName="Preload"
             screenOptions={{
@@ -30,7 +30,7 @@ const MainStack = () => {
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Account" component={Account} />
             <Stack.Screen name="Transaction" component={Transaction} />
-            <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
+            <Stack.Screen name="TransactionCreate" component={TransactionCreate} />
             <Stack.Screen name="Category" component={Category} />
         </Stack.Navigator>
     );

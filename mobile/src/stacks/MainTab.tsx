@@ -1,12 +1,12 @@
-import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import React from 'react';
 
 import CustomTabBar from '../components/CustomTabBar';
 
-import Dashboard from '../screens/Dashboard';
 import Account from '../screens/Account';
-import Transaction from '../screens/Transaction';
 import Category from '../screens/Category';
+import Dashboard from '../screens/Dashboard';
+import Transaction from '../screens/Transaction';
 
 type TabNavigatorParamList = {
     Dashboard: undefined,
@@ -27,7 +27,7 @@ const MainTab = () => {
         >
             <Tab.Screen name="Dashboard" component={Dashboard} />
             <Tab.Screen name="Account" component={Account} />
-            <Tab.Screen name="Transaction" component={Transaction}/>
+            <Tab.Screen name="Transaction" component={Transaction} />
             <Tab.Screen name="Category" component={Category} />
         </Tab.Navigator>
     );

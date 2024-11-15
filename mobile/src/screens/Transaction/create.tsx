@@ -18,8 +18,8 @@ import TextInput from '../../components/CustomTextInput';
 import OperationModal from '../../components/OperationModal';
 import { TypesTransaction } from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
+import { deleteTransaction, getAccounts, getCategories, postTransaction, putTransaction } from '../../services/transactions.api';
 import { RootStackParamList } from '../RootStackPrams';
-import { deleteTransaction, getAccounts, getCategories, postTransaction, putTransaction } from './transactions.api';
 
 import { style } from '../../styles/styles';
 import { transactionCreateStyle } from './create.styles';
@@ -85,7 +85,7 @@ const TransactionCreate = () => {
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
-            setTypeSelected(data.Operation.Type);
+            setTypeSelected(data.Operation.Type ?? 0);
             setValueValue(data.Value);
             setOperation(data.Operation);
             setValueDescription(data.Operation.Name);
@@ -247,10 +247,10 @@ const TransactionCreate = () => {
         if (!validateRequiredFields()) return;
 
         let operationDTO = {} as I.Operation;
-        operationDTO.Id = operation.Id;
+        if (operation.Id !== undefined)
+            operationDTO.Id = operation.Id;
         operationDTO.Name = valueDescription;
         operationDTO.Type = typeSelected;
-        operationDTO.categoriaID = valueCategory;
         operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
         operationDTO.Recurrent = valueRadioRepeat[0].selected ?? false;
         operationDTO.Status = 1;
@@ -262,11 +262,9 @@ const TransactionCreate = () => {
         transactionDTO.Consolidated = valueConsolidated;
         transactionDTO.TotalInstallments = valueTimes;
         transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format());
-        transactionDTO.ContaID = valueAccount;
         transactionDTO.Account = accounts.find(x => x.Id === valueAccount) ?? {} as I.Account;
         transactionDTO.DestinationAccount = accounts.find(x => x.Id === valueDestAccount);
         //transactionDTO.contaDestinoID = (valueDestAccount !== 0) ? valueDestAccount : undefined;
-        transactionDTO.operacaoID = operation.Id;
         transactionDTO.Operation = operationDTO;
 
         if (isEditing) {
@@ -296,17 +294,20 @@ const TransactionCreate = () => {
                     <ButtonSelectBar>
                         <TouchableOpacity
                             style={getButtonStyle(TypesTransaction.Revenue)}
-                            onPress={() => setTypeSelected(TypesTransaction.Revenue)}>
+                            onPress={() => setTypeSelected(TypesTransaction.Revenue)}
+                            disabled={isEditing}>
                             <Text style={getTextButtonStyle(TypesTransaction.Revenue)}>Receita</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={getButtonStyle(TypesTransaction.Transference)}
-                            onPress={() => setTypeSelected(TypesTransaction.Transference)}>
+                            onPress={() => setTypeSelected(TypesTransaction.Transference)}
+                            disabled={isEditing}>
                             <Text style={getTextButtonStyle(TypesTransaction.Transference)}>Transferência</Text>
                         </TouchableOpacity>
                         <TouchableOpacity
                             style={getButtonStyle(TypesTransaction.Expense)}
-                            onPress={() => setTypeSelected(TypesTransaction.Expense)}>
+                            onPress={() => setTypeSelected(TypesTransaction.Expense)}
+                            disabled={isEditing}>
                             <Text style={getTextButtonStyle(TypesTransaction.Expense)}>Despesa</Text>
                         </TouchableOpacity>
                     </ButtonSelectBar>

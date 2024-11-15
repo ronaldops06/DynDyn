@@ -19,45 +19,60 @@ export interface User {
     AccessToken: string
 };
 
+export interface Synchronization {
+    InternalId: number | null,
+    Operation: string,
+    ExecutionDate: Date,
+    StartCreationDate: Date | null,
+    EndCreationDate: Date | null
+}
+
 export interface Category {
+    InternalId: number,
     Id: number,
     Name: string
     Type: number,
-    Status: number
+    Status: number,
+    DataCriacao: Date,
+    DataAlteracao: Date
 };
 
 export interface Account {
+    InternalId: number,
     Id: number,
     Name: string,
     Status: number,
-    Category: Category
+    Category: Category,
+    ParentAccount: Account | undefined,
+    DataCriacao: Date,
+    DataAlteracao: Date
 };
 
 export interface Operation {
+    InternalId: number,
     Id: number,
     Name: string,
     Type: number,
     Recurrent: boolean,
+    Salary: boolean,
     Status: number,
-    categoriaID: number,
-    Category: Category
+    Category: Category,
+    DataCriacao: Date,
+    DataAlteracao: Date
 };
 
 export interface Transaction {
+    InternalId: number,
     Id: number,
     Value: number,
     Observation: string,
     Consolidated: boolean,
     Installment: number,
     TotalInstallments: number,
-    ContaID: number,
     Account: Account,
-    ContaDestinoID?: number,
     DestinationAccount: Account | undefined,
-    operacaoID: number,
     Operation: Operation,
-    movimentoPaiID: number,
-    ParentTransaction: Transaction,
+    ParentTransaction: Transaction | undefined,
     DataCriacao: Date,
     DataAlteracao: Date
 };
