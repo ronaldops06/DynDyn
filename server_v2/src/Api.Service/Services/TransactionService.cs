@@ -53,7 +53,7 @@ namespace Api.Service.Services
         {
             TransferValidate(model);
 
-            OperacaoNotExists(model);
+            await OperacaoNotExists(model);
 
             var transactionEntity = _mapper.Map<TransactionEntity>(model);
 
@@ -76,7 +76,7 @@ namespace Api.Service.Services
 
             TransferValidate(model);
 
-            OperacaoNotExists(model);
+            await OperacaoNotExists(model);
 
             var transactionEntity = _mapper.Map<TransactionEntity>(model);
             _repository.UnchangedParentTransaction(transactionEntity);
@@ -130,28 +130,30 @@ namespace Api.Service.Services
                 throw new Exception("Transações de transferência não devem ter parcelas informadas.");
         }
 
-        private void OperacaoNotExists(TransactionModel transactionModel)
+        private async Task OperacaoNotExists(TransactionModel transactionModel)
         {
             // Pode estar sendo inserido uma transação com uma operação que ainda não existe, neste caso cria uma nova operação para a transação.
-            if (transactionModel.OperationId == 0)
-                ExistsOperationByNameAndType(transactionModel);
+            if (transactionModel.Operation.Id == 0)
+                await ExistsOperationByNameAndType(transactionModel);
         }
 
-        private async void ExistsOperationByNameAndType(TransactionModel transactionModel)
+        private async Task ExistsOperationByNameAndType(TransactionModel transactionModel)
         {
             var operationEntity = _mapper.Map<OperationEntity>(transactionModel.Operation);
 
             // Verifica se não existe uma operação com o mesmo nome e tipo, se já existir irá somente vincular à que já existe.
-            var operacatoAux = await _operationService.GetByNameAndType(operationEntity.Name, operationEntity.Type);
+            var operacaoAux = await _operationService.GetByNameAndType(operationEntity.Name, operationEntity.Type);
 
-            if (operacatoAux != null && operacatoAux.Id != 0)
+            if (operacaoAux != null && operacaoAux.Id != 0)
             {
-                transactionModel.OperationId = operacatoAux.Id;
+                transactionModel.OperationId = operacaoAux.Id;
+                transactionModel.Operation = operacaoAux;
             }
             else
             {
-                operacatoAux = await _operationService.Post(transactionModel.Operation);
-                transactionModel.OperationId = operacatoAux.Id;
+                operacaoAux = await _operationService.Post(transactionModel.Operation);
+                transactionModel.OperationId = operacaoAux.Id;
+                transactionModel.Operation = operacaoAux;
             }
         }
 

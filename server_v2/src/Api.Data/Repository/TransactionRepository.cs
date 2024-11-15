@@ -78,6 +78,9 @@ namespace Api.Data.Repository
             if (pageParams.DataCriacaoFim != null)
                 query = query.Where(a => a.DataCriacao <= pageParams.DataCriacaoFim);
 
+            if (pageParams.LastSyncDate != null)
+                query = query.Where(a => a.DataAlteracao > pageParams.LastSyncDate);
+
             if (pageParams.MovimentoPaiID != null)
                 query = query.Where(a => a.ParentTransactionId == pageParams.MovimentoPaiID || a.Id == pageParams.MovimentoPaiID);
 
@@ -126,17 +129,32 @@ namespace Api.Data.Repository
 
         public void UnchangedParentTransaction(TransactionEntity transactionEntity)
         {
-            if (transactionEntity.ParentTransaction != null)
-                _context.Entry(transactionEntity.ParentTransaction).State = EntityState.Unchanged;
+            try
+            {
+                if (transactionEntity.ParentTransaction != null)
+                    _context.Entry(transactionEntity.ParentTransaction).State = EntityState.Unchanged;
 
-            if (transactionEntity.Account != null)
-                _context.Entry(transactionEntity.Account).State = EntityState.Unchanged;
+                if (transactionEntity.Account != null)
+                    _context.Entry(transactionEntity.Account).State = EntityState.Unchanged;
 
-            if (transactionEntity.DestinationAccount != null)
-                _context.Entry(transactionEntity.DestinationAccount).State = EntityState.Unchanged;
+                if (transactionEntity.DestinationAccount != null)
+                    _context.Entry(transactionEntity.DestinationAccount).State = EntityState.Unchanged;
 
-            if (transactionEntity.Operation != null)
-                _context.Entry(transactionEntity.Operation).State = EntityState.Unchanged;
+                if (transactionEntity.Operation != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<OperationEntity>()
+                           .FirstOrDefault(e => e.Entity.Id == transactionEntity.Operation.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
+                    _context.Entry(transactionEntity.Operation).State = EntityState.Unchanged;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
         protected IQueryable<TransactionEntity> QueryableIncludeRelations(IQueryable<TransactionEntity> query)
