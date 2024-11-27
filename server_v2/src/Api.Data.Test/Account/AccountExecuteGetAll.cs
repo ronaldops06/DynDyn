@@ -1,3 +1,4 @@
+using System.Globalization;
 using Api.Data.Repository;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
@@ -11,8 +12,6 @@ namespace Api.Data.Test.Account
 {
     public class AccountExecuteGetAll : BaseTestGet<AccountEntity>, IClassFixture<DbTest>
     {
-        private static readonly int RECORD_NUMBER = 35;
-
         public AccountExecuteGetAll(DbTest dbTest) : base(dbTest) { }
 
         [Fact(DisplayName = "Get de Conta")]
@@ -74,6 +73,41 @@ namespace Api.Data.Test.Account
                 }
 
                 await RealizaGetPaginado(_accountRepository);
+
+                Thread.Sleep(1000);
+                var lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                Thread.Sleep(1000);
+
+                for (int i = 1; i <= RECORD_NUMBER; i++)
+                {
+                    AccountEntity _entity = new AccountEntity
+                    {
+                        Name = Faker.Name.FullName(),
+                        Status = GetStatusTypeRandom(),
+                        CategoryId = _categoryCreated.Id,
+                        Category = _categoryCreated,
+                        ParentAccountId = _parentAccountEntity.Id,
+                        ParentAccount = _parentAccountEntity
+                    };
+
+                    await _accountRepository.InsertAsync(_entity);
+                }
+
+                await RealizaGetLasSyncDate(_accountRepository, lastSyncDate, 36);
+
+                Thread.Sleep(1000);
+                lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                Thread.Sleep(1000);
+
+                //O teste abaixo irá atualizar um número objetos para verificar se retorna corretamente
+                for (int i = 10; i < (RECORD_NUMBER + 10); i++)
+                {
+                    AccountEntity _entity = await _accountRepository.SelectByIdAsync(i);
+
+                    await _accountRepository.UpdateAsync(_entity);
+                }
+
+                await RealizaGetLasSyncDate(_accountRepository, lastSyncDate, 10);
             }
         }
     }

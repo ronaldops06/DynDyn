@@ -1,3 +1,5 @@
+using System;
+
 namespace Api.Domain.Dtos
 {
     /// <summary>
@@ -9,5 +11,15 @@ namespace Api.Domain.Dtos
         /// Identificador do objeto.
         /// </summary>
         public int Id { get; set; }
+        
+        /// <summary>
+        /// Data de criação do objeto.
+        /// </summary>
+        public DateTime DataCriacao { get; set; }
+        
+        /// <summary>
+        /// Data de criação do objeto.
+        /// </summary>
+        public DateTime DataAlteracao { get; set; }
     }
 }

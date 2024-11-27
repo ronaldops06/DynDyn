@@ -1,5 +1,7 @@
 import { Account } from "../interfaces/interfaces";
 import { openDatabase } from "./database";
+import {constants} from "../constants";
+import {ResultSet} from "react-native-sqlite-storage";
 
 export const createTableAccounts = async () => {
     const db = await openDatabase();
@@ -91,11 +93,15 @@ export const deleteAccount = async (internalId: number) => {
     await db.executeSql(`DELETE FROM accounts WHERE internal_id = ?`, [internalId]);
 };
 
-export const selectAllAccounts = async (): Promise<Account[]> => {
+export const selectAllAccounts = async (pageNumber: number | null): Promise<Account[]> => {
     const db = await openDatabase();
 
-    const results = await db.executeSql(queryBase());
-    
+    let results: ResultSet[];
+    if (pageNumber)
+        results = await db.executeSql(queryBase() + ' LIMIT ? OFFSET ?', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+    else
+        results = await db.executeSql(queryBase());
+        
     const accounts: Account[] = [];
     results.forEach(result => {
         for (let i = 0; i < result.rows.length; i++) {
@@ -104,7 +110,20 @@ export const selectAllAccounts = async (): Promise<Account[]> => {
     });
 
     return accounts;
-  };
+};
+
+export const selectContAllAccounts = async (): Promise<number> => {
+    const db = await openDatabase();
+
+    const results = await db.executeSql('SELECT * FROM accounts');
+
+    let count: number = 0;
+    results.forEach(result => {
+        count += result.rows.length;
+    });
+
+    return count
+};
 
 export const selectAccountById = async (id: number): Promise<Account | undefined> => {
     const db = await openDatabase();
@@ -158,7 +177,11 @@ const formatResult = (item: any): Account => {
             DataCriacao: item.category_data_criacao,
             DataAlteracao: item.category_data_alteracao,
         },
-        ParentAccount: {
+        ParentAccount: null
+    }
+    
+    if (item.parent_account_internal_id) {
+        account.ParentAccount = {
             InternalId: item.parent_account_internal_id,
             Id: item.parent_account_id,
             Name: item.parent_account_name,
@@ -174,9 +197,9 @@ const formatResult = (item: any): Account => {
                 DataCriacao: item.parent_account_category_data_criacao,
                 DataAlteracao: item.parent_account_category_data_alteracao,
             },
-            ParentAccount: undefined
+            ParentAccount: null
         }
     }
-
+    
     return account;
 }

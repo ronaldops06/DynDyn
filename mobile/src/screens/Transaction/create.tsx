@@ -16,13 +16,17 @@ import ButtonSelectBar from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
 import OperationModal from '../../components/OperationModal';
-import { TypesTransaction } from '../../enums/enums';
+import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import { deleteTransaction, getAccounts, getCategories, postTransaction, putTransaction } from '../../services/transactions.api';
+import { deleteTransaction, putTransaction } from '../../services/transactions.api';
 import { RootStackParamList } from '../RootStackPrams';
 
+import { createTransaction } from '../../controller/transaction.controller';
 import { style } from '../../styles/styles';
 import { transactionCreateStyle } from './create.styles';
+import {loadAllCategory} from "../../controller/category.controller.tsx";
+import {loadAllAccount} from "../../controller/account.controller.tsx";
+import moment from "moment/moment";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
 
@@ -76,8 +80,8 @@ const TransactionCreate = () => {
     const [showModal, setShowModal] = useState(false);
 
     const getLists = async () => {
-        let responseCategories = await getCategories(navigation);
-        let responseAccounts = await getAccounts(navigation);
+        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, navigation);
+        let responseAccounts = await loadAllAccount(null, navigation);
         setCategories(responseCategories?.data ?? []);
         setAccounts(responseAccounts?.data ?? []);
     }
@@ -247,8 +251,10 @@ const TransactionCreate = () => {
         if (!validateRequiredFields()) return;
 
         let operationDTO = {} as I.Operation;
-        if (operation.Id !== undefined)
+        if (operation.Id !== undefined) {
             operationDTO.Id = operation.Id;
+            operationDTO.InternalId = operation.InternalId;
+        }
         operationDTO.Name = valueDescription;
         operationDTO.Type = typeSelected;
         operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
@@ -261,16 +267,16 @@ const TransactionCreate = () => {
         transactionDTO.Observation = valueNote;
         transactionDTO.Consolidated = valueConsolidated;
         transactionDTO.TotalInstallments = valueTimes;
-        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format());
+        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+        transactionDTO.DataAlteracao = new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'))
         transactionDTO.Account = accounts.find(x => x.Id === valueAccount) ?? {} as I.Account;
-        transactionDTO.DestinationAccount = accounts.find(x => x.Id === valueDestAccount);
-        //transactionDTO.contaDestinoID = (valueDestAccount !== 0) ? valueDestAccount : undefined;
+        transactionDTO.DestinationAccount = (valueDestAccount > 0) ? accounts.find(x => x.Id === valueDestAccount) ?? null : null;
         transactionDTO.Operation = operationDTO;
 
         if (isEditing) {
             putTransaction(transactionDTO, navigation);
         } else {
-            postTransaction(transactionDTO, navigation);
+            createTransaction(transactionDTO, navigation);
         }
     };
 

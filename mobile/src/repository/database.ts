@@ -1,4 +1,4 @@
-import SQLite from 'react-native-sqlite-storage';
+import SQLite, {ResultSet} from 'react-native-sqlite-storage';
 
 SQLite.DEBUG(false);
 

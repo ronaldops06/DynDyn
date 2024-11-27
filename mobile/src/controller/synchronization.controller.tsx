@@ -2,18 +2,18 @@ import moment from 'moment';
 import { Synchronization } from "../interfaces/interfaces";
 import { insertSynchronization, selectSynchronizationByCreationsDateAndOperation, updateSynchronization } from "../repository/synchronization.repository";
 
-export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date, endCreationDate: Date, operation: string): Promise<Synchronization> => {
+export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization> => {
 
     let synchronization = await selectSynchronizationByCreationsDateAndOperation(startCreationDate, endCreationDate, operation);
     
     if (!synchronization){
         const executionDate = moment().utc(true);
-        executionDate.add(- 100, "days");
+        executionDate.add(- 100, "y");
 
         synchronization = {
             InternalId: null,
             Operation: operation,
-            ExecutionDate: executionDate.toDate(),
+            ExecutionDate: new Date(executionDate.format('YYYY-MM-DDTHH:mm:ss.SSS')),
             StartCreationDate: startCreationDate,
             EndCreationDate: endCreationDate
         };
@@ -26,6 +26,6 @@ export const loadSynchronizationByCreationsDateAndOperation = async (startCreati
 
 export const setLastSynchronization = async (synchronization: Synchronization): Promise<Synchronization> => {
 
-    synchronization.ExecutionDate = moment().utc(true).toDate();
+    synchronization.ExecutionDate = new Date(moment().utc(true).format('YYYY-MM-DDTHH:mm:ss.SSS'));
     return await updateSynchronization(synchronization);
 };

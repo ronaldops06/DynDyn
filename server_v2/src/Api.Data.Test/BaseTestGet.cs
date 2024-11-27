@@ -10,6 +10,8 @@ namespace Api.Data.Test
 {
     public class BaseTestGet<T> where T : BaseEntity
     {
+        protected static readonly int RECORD_NUMBER = 35;
+
         protected ServiceProvider serviceProvider;
 
         public BaseTestGet(DbTest dbTest)
@@ -56,6 +58,20 @@ namespace Api.Data.Test
             Assert.Equal(35, data.Itens.Last().Id);
             Assert.Equal(21, data.Itens.Min(x => x.Id));
             Assert.Equal(35, data.Itens.Max(x => x.Id));
+        }
+
+        protected async Task RealizaGetLasSyncDate(BaseRepository<T> repositorio, DateTime lastSyncDate, int firstId)
+        {
+            PageParams pageParams = new PageParams
+            {
+                LastSyncDate = lastSyncDate
+            };
+
+            Data<T> data = await repositorio.SelectByParamAsync(pageParams);
+            Assert.NotNull(data);
+            Assert.Equal(RECORD_NUMBER, data.Itens.Count);
+            Assert.Equal(firstId, data.Itens.First().Id);
+            Assert.Equal(firstId + RECORD_NUMBER - 1, data.Itens.Last().Id);
         }
     }
 }

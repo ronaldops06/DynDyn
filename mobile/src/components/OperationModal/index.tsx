@@ -9,6 +9,7 @@ import { getOperations } from './operation.modal.api';
 
 import { style } from '../../styles/styles';
 import { operationModalStyle } from './styles';
+import {loadAllOperation} from "../../controller/operation.controller.tsx";
 
 interface OperationModalParams {
     show: boolean,
@@ -26,7 +27,7 @@ const OperationModal = (props: OperationModalParams) => {
     const loadOperations = async () => {
         setLoading(true);
 
-        let response = await getOperations(`Tipo=${props.tipoOperation}`);
+        let response = await loadAllOperation(props.tipoOperation, null, null);
         setOperations(response?.data ?? []);
         setLoading(false);
     };
@@ -69,12 +70,14 @@ const OperationModal = (props: OperationModalParams) => {
                             {loading &&
                                 <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8" />
                             }
-                            {operations != null && operations.map((item, key) => (
-                                <OperationItem
-                                    key={key}
-                                    data={item}
-                                    onPress={handleItemClick} />
-                            ))
+                            {operations != null && operations.map((item, key) => {
+                                return ( item.Name.toUpperCase().includes(valueSearch.toUpperCase()) &&
+                                    <OperationItem
+                                        key={key}
+                                        data={item}
+                                        onPress={handleItemClick}/>
+                                    )
+                            })
                             }
                         </View>
                     </ScrollView>

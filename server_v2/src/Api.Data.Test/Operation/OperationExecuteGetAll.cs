@@ -1,3 +1,4 @@
+using System.Globalization;
 using Api.Data.Repository;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
@@ -13,8 +14,6 @@ namespace Api.Data.Test.Operation
 {
     public class OperationExecuteGetAll : BaseTestGet<OperationEntity>, IClassFixture<DbTest>
     {
-        private static readonly int RECORD_NUMBER = 35;
-
         public OperationExecuteGetAll(DbTest dbTest) : base(dbTest) { }
 
         [Fact(DisplayName = "Get de Operação")]
@@ -89,6 +88,39 @@ namespace Api.Data.Test.Operation
                 Assert.True(operacoesSelecionadas.Itens.FindAll(x => x.Type == OperationType.Transferencia).Count > 0);
                 Assert.False(operacoesSelecionadas.Itens.FindAll(x => x.Type == OperationType.Debito).Count > 0);
                 Assert.False(operacoesSelecionadas.Itens.FindAll(x => x.Type == OperationType.Credito).Count > 0);
+
+                Thread.Sleep(1000);
+                var lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                for (int i = 1; i <= RECORD_NUMBER; i++)
+                {
+                    OperationEntity _entity = new OperationEntity
+                    {
+                        Name = Faker.Name.FullName(),
+                        Recurrent = false,
+                        Type = GetOperationTypeRandom(),
+                        Status = GetStatusTypeRandom(),
+                        CategoryId = _categoryCreated.Id,
+                        Category = _categoryCreated,
+                    };
+
+                    await _repositorio.InsertAsync(_entity);
+                }
+
+                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 36);
+
+                Thread.Sleep(1000);
+                lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                //O teste abaixo irá atualizar um número objetos para verificar se retorna corretamente
+                for (int i = 10; i < (RECORD_NUMBER + 10); i++)
+                {
+                    OperationEntity _entity = await _repositorio.SelectByIdAsync(i);
+
+                    await _repositorio.UpdateAsync(_entity);
+                }
+
+                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 10);
             }
         }
     }

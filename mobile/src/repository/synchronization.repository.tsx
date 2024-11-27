@@ -32,11 +32,11 @@ export const insertSynchronization = async (synchronization: Synchronization): P
                 + ', end_creation_date'
                 + ') VALUES (?, ?, ?, ?)',
       [ Operation,
-        ExecutionDate, 
-        StartCreationDate, 
-        EndCreationDate ]
+        ExecutionDate.toString(), 
+        StartCreationDate?.toString(), 
+        EndCreationDate?.toString()]
     );
-
+    
     synchronization.InternalId = result[0].insertId;
 
     return synchronization;
@@ -58,13 +58,13 @@ export const updateSynchronization = async (synchronization: Synchronization): P
            + ', end_creation_date = ?'
         + 'WHERE internal_id = ?',
         [ Operation,
-          ExecutionDate, 
-          StartCreationDate, 
-          EndCreationDate,
+          ExecutionDate.toString(), 
+          StartCreationDate?.toString(),
+          EndCreationDate?.toString(),
           InternalId
         ]
     );
-
+    
     return synchronization;
 };
 
@@ -73,18 +73,11 @@ export const deleteSynchronization = async (internalId: number) => {
     await db.executeSql(`DELETE FROM synchronizations WHERE internal_id = ?`, [internalId]);
 };
 
-export const selectSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date, endCreationDate: Date, operation: string): Promise<Synchronization | undefined> => {
+export const selectSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization | undefined> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql(
-                            'SELECT * '
-                          + '  FROM synchronizations '
-                          + ' WHERE start_creation_date = ? '
-                          + '   AND end_creation_date = ?'
-                          + '   AND operation = ?',
-                          [Moment(startCreationDate, 'YYYY-MM-DD').format(),
-                           Moment(endCreationDate, 'YYYY-MM-DD').format(),
-                           operation]
+    const result = await db.executeSql(getQuery(startCreationDate, endCreationDate),
+                            getParams(startCreationDate, endCreationDate, operation)
                         );
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
@@ -94,10 +87,37 @@ const formatResult = (item: any): Synchronization => {
     const synchronization: Synchronization = {
         InternalId: item.internal_id,
         Operation: item.operation,
-        ExecutionDate: item.execution_date,
-        StartCreationDate: item.start_creation_date,
-        EndCreationDate: item.end_creation_date
+        ExecutionDate: new Date(item.execution_date),
+        StartCreationDate: new Date(item.start_creation_date),
+        EndCreationDate: new Date(item.end_creation_date)
     }
 
     return synchronization;
+}
+
+const getQuery = (startCreationDate: Date | null, endCreationDate: Date | null): string => {
+    let query = 'SELECT * '
+            + '  FROM synchronizations '
+            + ' WHERE operation = ?';
+    
+    if (startCreationDate)
+        query += '   AND start_creation_date = ? ';
+            
+    if(endCreationDate)
+        query += '   AND end_creation_date = ?';
+    
+    return query;
+} 
+
+const getParams = (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): any[] => {
+    let params: any[] = [];
+    params.push(operation);
+    
+    if (startCreationDate)
+        params.push(Moment(startCreationDate, 'YYYY-MM-DD').format());
+
+    if(endCreationDate)
+        params.push(Moment(endCreationDate, 'YYYY-MM-DD').format());
+    
+    return params;
 }

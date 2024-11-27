@@ -4,6 +4,7 @@ export interface Response {
     error: string,
     success: boolean,
     totalPages: number,
+    isConnected: boolean,
 };
 
 export interface Login {
@@ -43,7 +44,7 @@ export interface Account {
     Name: string,
     Status: number,
     Category: Category,
-    ParentAccount: Account | undefined,
+    ParentAccount: Account | null,
     DataCriacao: Date,
     DataAlteracao: Date
 };
@@ -70,9 +71,9 @@ export interface Transaction {
     Installment: number,
     TotalInstallments: number,
     Account: Account,
-    DestinationAccount: Account | undefined,
+    DestinationAccount: Account | null,
     Operation: Operation,
-    ParentTransaction: Transaction | undefined,
+    ParentTransaction: Transaction | null,
     DataCriacao: Date,
     DataAlteracao: Date
 };

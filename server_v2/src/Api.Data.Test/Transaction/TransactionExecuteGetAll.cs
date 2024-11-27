@@ -1,19 +1,16 @@
+using System.Globalization;
 using Api.Data.Repository;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
-using Domain.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
-using static Api.Data.Test.Helpers.BaseHelper;
 
 namespace Api.Data.Test.Transaction
 {
     public class TransactionExecuteGetAll : BaseTestGet<TransactionEntity>, IClassFixture<DbTest>
     {
-        private static readonly int RECORD_NUMBER = 35;
-
         public TransactionExecuteGetAll(DbTest dbTest) : base(dbTest) { }
 
         [Fact(DisplayName = "Get de Transações")]
@@ -47,6 +44,42 @@ namespace Api.Data.Test.Transaction
                 }
 
                 await RealizaGetPaginado(_repositorio);
+
+                Thread.Sleep(1000);
+                var lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                for (int i = 1; i <= RECORD_NUMBER; i++)
+                {
+                    TransactionEntity _transactionEntity = new TransactionEntity()
+                    {
+                        Value = random.Next(5000),
+                        Observation = "Pago via pix",
+                        Consolidated = SituationType.Nao,
+                        Installment = random.Next(20),
+                        TotalInstallments = 20,
+                        Account = accountEntity,
+                        AccountId = accountEntity.Id,
+                        Operation = operationEntity,
+                        OperationId = operationEntity.Id
+                    };
+
+                    await _repositorio.InsertAsync(_transactionEntity);
+                }
+
+                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 36);
+
+                Thread.Sleep(1000);
+                lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                //O teste abaixo irá atualizar um número objetos para verificar se retorna corretamente
+                for (int i = 10; i < (RECORD_NUMBER + 10); i++)
+                {
+                    TransactionEntity _entity = await _repositorio.SelectByIdAsync(i);
+
+                    await _repositorio.UpdateAsync(_entity);
+                }
+
+                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 10);
             }
         }
 

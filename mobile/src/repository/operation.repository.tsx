@@ -1,5 +1,7 @@
-import { Operation } from "../interfaces/interfaces";
+import {Account, Operation} from "../interfaces/interfaces";
 import { openDatabase } from "./database";
+import {ResultSet} from "react-native-sqlite-storage";
+import {constants} from "../constants";
 
 export const createTableOperation = async () => {
     const db = await openDatabase();
@@ -105,10 +107,14 @@ export const deleteOperation = async (internalId: number) => {
     await db.executeSql(`DELETE FROM operations WHERE internal_id = ?`, [internalId]);
 };
 
-export const selectAllOperations = async (): Promise<Operation[]> => {
+export const selectAllOperations = async (type: number, pageNumber: number | null): Promise<Operation[]> => {
     const db = await openDatabase();
 
-    const results = await db.executeSql(queryBase());
+    let results: ResultSet[];
+    if (pageNumber)
+        results = await db.executeSql(queryBase() + ' WHERE ope.type = ? LIMIT ? OFFSET ?', [type, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+    else
+        results = await db.executeSql(queryBase() + ' WHERE ope.type = ?', [type]);
     
     const operations: Operation[] = [];
     results.forEach(result => {
@@ -116,9 +122,22 @@ export const selectAllOperations = async (): Promise<Operation[]> => {
             operations.push(formatResult(result.rows.item(i)));
         }
     });
-
+    
     return operations;
-  };
+};
+
+export const selectContAllOperations = async (type: number): Promise<number> => {
+    const db = await openDatabase();
+
+    const results = await db.executeSql('SELECT * FROM operations WHERE type = ?', [type]);
+
+    let count: number = 0;
+    results.forEach(result => {
+        count += result.rows.length;
+    });
+
+    return count
+};
 
 export const selectOperationById = async (id: number): Promise<Operation | undefined> => {
     const db = await openDatabase();
@@ -130,7 +149,7 @@ export const selectOperationById = async (id: number): Promise<Operation | undef
 
 const queryBase = () => {
     return 'SELECT ope.*'
-         + '     , cat.internal_id AS category_internalId'
+         + '     , cat.internal_id AS category_internal_id'
          + '     , cat.id AS category_id'
          + '     , cat.name AS category_name'
          + '     , cat.type AS category_type'
@@ -153,7 +172,7 @@ const formatResult = (item: any): Operation => {
         DataCriacao: item.data_criacao,
         DataAlteracao: item.data_alteracao,
         Category: {
-            InternalId: item.category_internalId,
+            InternalId: item.category_internal_id,
             Id: item.category_id,
             Name: item.category_name,
             Type: item.category_type,

@@ -72,6 +72,9 @@ namespace Api.Data.Repository
             query = query.Include(cat => cat.Category);
             query = query.Include(cta => cta.ParentAccount);
 
+            if (pageParams.LastSyncDate != null)
+                query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
+
             query = query.AsNoTracking().OrderBy(a => a.Id);
 
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);

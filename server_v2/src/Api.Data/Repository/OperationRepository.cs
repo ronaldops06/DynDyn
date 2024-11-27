@@ -73,6 +73,9 @@ namespace Api.Data.Repository
             if (pageParams.Tipo != null)
                 query = query.Where(a => ((int)a.Type) == pageParams.Tipo);
 
+            if (pageParams.LastSyncDate != null)
+                query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
+
             query = query.AsNoTracking().OrderBy(a => a.Id);
 
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);

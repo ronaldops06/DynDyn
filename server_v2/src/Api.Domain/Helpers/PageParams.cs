@@ -4,8 +4,8 @@ namespace Domain.Helpers
 {
     public class PageParams
     {
-        public const int MaxPageSize = 50;
-        private int pageSize = 10;
+        public const int MaxPageSize = 100;
+        private int pageSize = MaxPageSize;
         public int PageNumber { get; set; } = 1;
         public int PageSize
         {

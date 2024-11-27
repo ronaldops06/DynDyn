@@ -1,3 +1,4 @@
+import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import { Alert } from 'react-native';
 import { MMKV } from 'react-native-mmkv';
@@ -8,11 +9,25 @@ const api = axios.create({
     baseURL: "http://192.168.18.3:5000/api/v1/"
 });
 
+const isInternetConnected = async (): Promise<boolean> => {
+    const state = await NetInfo.fetch();
+    return state.isConnected ?? false;
+  };
+
 export const get = async (path: string) => {
+
     const storage = new MMKV();
     const token = await storage.getString('token');
 
     let responseRequest = {} as I.Response;
+    responseRequest.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        responseRequest.isConnected = false;
+        responseRequest.success = true;
+        return responseRequest;
+    }
 
     await api.get(path, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
@@ -40,7 +55,15 @@ export const post = async (path: string, data: any) => {
     const token = storage.getString('token');
 
     let responseRequest = {} as I.Response;
+    responseRequest.isConnected = true;
 
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        responseRequest.isConnected = false;
+        responseRequest.success = true;
+        return responseRequest;
+    }
+    
     await api.post(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
@@ -48,6 +71,7 @@ export const post = async (path: string, data: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
+        console.log(error?.response?.data);
         responseRequest.error = error.response.data;
         responseRequest.status = error.response.status;
         responseRequest.success = false;
@@ -61,6 +85,14 @@ export const put = async (path: string, data: any) => {
     const token = await storage.getString('token');
 
     let responseRequest = {} as I.Response;
+    responseRequest.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        responseRequest.isConnected = false;
+        responseRequest.success = true;
+        return responseRequest;
+    }
 
     await api.put(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
@@ -82,6 +114,14 @@ export const del = async (path: string) => {
     const token = await storage.getString('token');
 
     let responseRequest = {} as I.Response;
+    responseRequest.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        responseRequest.isConnected = false;
+        responseRequest.success = true;
+        return responseRequest;
+    }
 
     await api.delete(path, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }

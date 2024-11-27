@@ -60,7 +60,7 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
       [ Id,
         Value, 
         Observation, 
-        Consolidated, 
+        Consolidated ? 1 : 0, 
         Installment, 
         TotalInstallments, 
         Account?.InternalId, 
@@ -111,7 +111,7 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
       [ Id,
         Value, 
         Observation, 
-        Consolidated, 
+        Consolidated ? 1 :0, 
         Installment, 
         TotalInstallments, 
         Account?.InternalId, 
@@ -132,17 +132,18 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
 
   export const selectAllTransactions = async (dateInicio: Date, dateFim: Date, pageNumber: number): Promise<Transaction[]> => {
     const db = await openDatabase();
+    
     const results = await db.executeSql(
                           queryBase()
                         + ' WHERE trn.data_criacao BETWEEN ? AND ?'
                         + '  LIMIT ? '
                         + '  OFFSET ?', 
-                        [   Moment(dateInicio, 'YYYY-MM-DD').format(),
-                            Moment(dateFim, 'YYYY-MM-DD').format(),
+                        [   Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+                            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
                             constants.pageSize,
                             (pageNumber - 1) * constants.pageSize
                         ]);
-    
+
     const transactions: Transaction[] = [];
     results.forEach(result => {
       for (let i = 0; i < result.rows.length; i++) {
@@ -159,11 +160,11 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
     const results = await db.executeSql(
                           'SELECT * '
                         + '  FROM transactions '
-                        + ' WHERE data_criacao BETWEEN ? AND ?',
-                        [   Moment(dateInicio, 'YYYY-MM-DD').format(),
-                            Moment(dateFim, 'YYYY-MM-DD').format(),
+                        + ' WHERE strftime(\'%Y-%m-%d %H:%M:%S\', data_criacao) BETWEEN ? AND ?',
+                        [   Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+                            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
                         ]);
-    
+
     let count: number = 0;
     results.forEach(result => {
         count += result.rows.length;
@@ -182,18 +183,18 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
                         + '       INNER JOIN operations ope ON ope.internal_id = trn.operation_id'
                         + ' WHERE trn.data_criacao BETWEEN ? AND ?'
                         + ' GROUP BY ope.type',
-                        [   Moment(dateInicio, 'YYYY-MM-DD').format(),
-                            Moment(dateFim, 'YYYY-MM-DD').format(),
+                        [   Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+                            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
                         ]);
     
     return formatResultTotals(results[0]?.rows)
   }
 
-  export const selectTransactionById = async (id: number): Promise<Transaction> => {
+  export const selectTransactionById = async (id: number): Promise<Transaction | undefined> => {
     const db = await openDatabase();
     const result = await db.executeSql(queryBase() + ' WHERE trn.id = ?', [id]);
 
-    return formatResult(result[0]?.rows?.item(0));
+    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
   }
 
 const queryBase = () => {
@@ -231,8 +232,8 @@ const queryBase = () => {
        + '  FROM transactions trn'
        + '       INNER JOIN operations ope ON trn.operation_id = ope.internal_id'
        + '       INNER JOIN accounts act ON trn.account_id = act.internal_id'
-       + '       LEFT JOIN accounts dest_act ON trn.destination_account_id = dest_act.internal_id'
-       + '       LEFT JOIN transactions par_trn ON trn.parent_transaction_id = par_trn.internal_id';
+       + '       LEFT JOIN accounts dest_act ON dest_act.internal_id = trn.destination_account_id'
+       + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
 }
 
 const formatResult = (item: any): Transaction => {
@@ -241,7 +242,7 @@ const formatResult = (item: any): Transaction => {
     Id: item.id,
     Value: item.value, 
     Observation: item.observation, 
-    Consolidated: item.consolidated, 
+    Consolidated: item.consolidated === 1 ? true : false, 
     Installment: item.installment, 
     TotalInstallments: item.total_installment, 
     DataCriacao: item.data_criacao, 
@@ -251,49 +252,57 @@ const formatResult = (item: any): Transaction => {
       Id: item.account_id,
       Name: item.account_name,
       Status: item.account_status,
-      ParentAccount: undefined,
+      ParentAccount: null,
       Category: {} as Category,
       DataCriacao: item.account_data_criacao,
       DataAlteracao: item.account_data_alteracao
     },
-    DestinationAccount: {
-      InternalId: item.dest_act_internal_id,
-      Id: item.dest_act_id,
-      Name: item.dest_act_name,
-      Status: item.dest_act_status,
-      ParentAccount: undefined,
-      Category: {} as Category,
-      DataCriacao: item.dest_act_data_criacao,
-      DataAlteracao: item.dest_act_data_alteracao
-    },  
-    ParentTransaction: {
-      InternalId: item.par_trn_internal_id,
-      Id: item.par_trn_id,
-      Value: item.par_trn_value, 
-      Observation: item.par_trn_observation, 
-      Consolidated: item.par_trn_consolidated, 
-      Installment: item.par_trn_installment, 
-      TotalInstallments: item.par_trn_total_installment,
-      Account: {} as Account,
-      DestinationAccount: undefined,
-      ParentTransaction: undefined,
-      Operation: {} as Operation,
-      DataCriacao: item.par_trn_data_criacao, 
-      DataAlteracao: item.par_trn_data_alteracao,
-    }, 
+    DestinationAccount: null,  
+    ParentTransaction: null, 
     Operation: {
       InternalId: item.operation_internal_id,
       Id: item.operation_id,
       Name: item.operation_name,
       Type: item.operation_type,
-      Recurrent: item.operation_recurrent,
+      Recurrent: item.operation_recurrent === 1 ? true : false,
       Salary: item.operation_salary,
       Status: item.operation_status,
       Category: {} as Category,
       DataCriacao: item.operation_data_criacao,
       DataAlteracao: item.operation_data_alteracao
     }
-  } 
+  }
+    
+  if (item.dest_act_internal_id){
+    transaction.DestinationAccount = {
+        InternalId: item.dest_act_internal_id,
+            Id: item.dest_act_id,
+        Name: item.dest_act_name,
+        Status: item.dest_act_status,
+        ParentAccount: null,
+        Category: {} as Category,
+        DataCriacao: item.dest_act_data_criacao,
+        DataAlteracao: item.dest_act_data_alteracao
+    }
+  }
+  
+  if(item.par_trn_internal_id) {
+      transaction.ParentTransaction = {
+          InternalId: item.par_trn_internal_id,
+          Id: item.par_trn_id,
+          Value: item.par_trn_value,
+          Observation: item.par_trn_observation,
+          Consolidated: item.par_trn_consolidated === 1 ? true : false,
+          Installment: item.par_trn_installment,
+          TotalInstallments: item.par_trn_total_installment,
+          Account: {} as Account,
+          DestinationAccount: null,
+          ParentTransaction: null,
+          Operation: {} as Operation,
+          DataCriacao: item.par_trn_data_criacao,
+          DataAlteracao: item.par_trn_data_alteracao,
+      }
+  }
 
   return transaction;
 }

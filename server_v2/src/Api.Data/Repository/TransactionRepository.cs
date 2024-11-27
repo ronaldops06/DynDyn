@@ -79,7 +79,7 @@ namespace Api.Data.Repository
                 query = query.Where(a => a.DataCriacao <= pageParams.DataCriacaoFim);
 
             if (pageParams.LastSyncDate != null)
-                query = query.Where(a => a.DataAlteracao > pageParams.LastSyncDate);
+                query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
 
             if (pageParams.MovimentoPaiID != null)
                 query = query.Where(a => a.ParentTransactionId == pageParams.MovimentoPaiID || a.Id == pageParams.MovimentoPaiID);

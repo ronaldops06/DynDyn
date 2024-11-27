@@ -28,6 +28,7 @@ namespace Data.Repository
             try
             {
                 item.DataCriacao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                item.DataAlteracao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
 
                 _dataset.Add(item);
                 await _context.SaveChangesAsync();
