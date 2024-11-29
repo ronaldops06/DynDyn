@@ -27,6 +27,9 @@ namespace Api.Data.Mapping
 
             builder.Property(u => u.Recurrent)
                 .IsRequired();
+            
+            builder.Property(u => u.Salary)
+                .IsRequired();
 
             builder.Property(u => u.Status)
                 .IsRequired();

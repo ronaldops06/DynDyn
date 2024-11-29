@@ -126,7 +126,7 @@ namespace Api.Service.Services
 
         private void NotExistsInstallments(int? totalInstallments)
         {
-            if (totalInstallments != null && totalInstallments > 0)
+            if (totalInstallments != null && totalInstallments > 1)
                 throw new Exception("Transações de transferência não devem ter parcelas informadas.");
         }
 

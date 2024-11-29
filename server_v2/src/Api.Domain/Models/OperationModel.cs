@@ -17,6 +17,11 @@ namespace Api.Domain.Models
         /// Indica se a operação acontece de forma recorrente.
         /// </summary>
         public bool Recurrent { get; set; }
+        
+        /// <summary>
+        /// Indica se a operação é uma operação relativa a salário.
+        /// </summary>
+        public bool Salary { get; set; }
 
         /// <summary>
         /// Tipo da operação <see cref="OperationType"/>.

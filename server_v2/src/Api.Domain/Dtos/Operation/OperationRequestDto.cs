@@ -21,6 +21,12 @@ namespace Api.Domain.Dtos.Operation
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         public bool Recurrent { get; set; }
+        
+        /// <summary>
+        /// Indica se a operação é uma operação relativa a salário.
+        /// </summary>
+        [Required(ErrorMessage = "{0} é um campo obrigatório")]
+        public bool Salary { get; set; }
 
         /// <summary>
         /// Tipo da operação <see cref="OperationType"/>.
