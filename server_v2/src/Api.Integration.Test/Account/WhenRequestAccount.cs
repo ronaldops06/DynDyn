@@ -56,6 +56,10 @@ namespace Api.Integration.Test.Account
             Assert.Equal(AccountBaseDto.AccountStatus, registroPost.Status);
             Assert.Equal(AccountBaseDto.AccountCategory.CategoryId, registroPost.Category.Id);
             Assert.Equal(AccountBaseDto.AccountParentAccount.AccountId, registroPost.ParentAccount.Id);
+            Assert.Equal(DateTime.Now.Year, registroPost.DataCriacao?.Year);
+            Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);
+            Assert.Equal(DateTime.Now.Day, registroPost.DataCriacao?.Day);
+            Assert.Equal(DateTime.Now.Hour, registroPost.DataCriacao?.Hour);
 
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Account");

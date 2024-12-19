@@ -67,6 +67,10 @@ namespace Api.Integration.Test
             Assert.Equal(categoryBase.CategoryNome, registroPost.Name);
             Assert.Equal(categoryBase.CategoryTipo, registroPost.Type);
             Assert.Equal(categoryBase.CategoryStatus, registroPost.Status);
+            Assert.Equal(DateTime.Now.Year, registroPost.DataCriacao?.Year);
+            Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);
+            Assert.Equal(DateTime.Now.Day, registroPost.DataCriacao?.Day);
+            Assert.Equal(DateTime.Now.Hour, registroPost.DataCriacao?.Hour);
 
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Category");

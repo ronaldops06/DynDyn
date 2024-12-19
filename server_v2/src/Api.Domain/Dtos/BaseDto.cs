@@ -15,11 +15,11 @@ namespace Api.Domain.Dtos
         /// <summary>
         /// Data de criação do objeto.
         /// </summary>
-        public DateTime DataCriacao { get; set; }
+        public DateTime? DataCriacao { get; set; }
         
         /// <summary>
         /// Data de criação do objeto.
         /// </summary>
-        public DateTime DataAlteracao { get; set; }
+        public DateTime? DataAlteracao { get; set; }
     }
 }

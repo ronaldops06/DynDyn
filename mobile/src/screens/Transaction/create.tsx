@@ -1,12 +1,12 @@
 import CheckBox from '@react-native-community/checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import { RouteProp, useNavigation, useRoute } from '@react-navigation/core';
-import { StackNavigationProp } from '@react-navigation/stack';
+import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
+import {StackNavigationProp} from '@react-navigation/stack';
 import Moment from 'moment';
-import React, { useEffect, useState } from 'react';
-import { Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
-import RadioGroup, { RadioButtonProps } from 'react-native-radio-buttons-group';
+import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 
 import ClockIcon from '../../assets/clock.svg';
 import PrevIcon from '../../assets/nav_prev.svg';
@@ -18,15 +18,14 @@ import TextInput from '../../components/CustomTextInput';
 import OperationModal from '../../components/OperationModal';
 import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import { deleteTransaction, putTransaction } from '../../services/transactions.api';
-import { RootStackParamList } from '../RootStackPrams';
+import {deleteTransaction, putTransaction} from '../../services/transactions.api';
+import {RootStackParamList} from '../RootStackPrams';
 
-import { createTransaction } from '../../controller/transaction.controller';
-import { style } from '../../styles/styles';
-import { transactionCreateStyle } from './create.styles';
+import {alterTransaction, createTransaction} from '../../controller/transaction.controller';
+import {style} from '../../styles/styles';
+import {transactionCreateStyle} from './create.styles';
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {loadAllAccount} from "../../controller/account.controller.tsx";
-import moment from "moment/moment";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
 
@@ -39,15 +38,15 @@ const radioButtonsData: RadioButtonProps[] = [{
     labelStyle: transactionCreateStyle.labelRadioRepeat,
     selected: true
 },
-{
-    id: '2',
-    label: 'Parcelar',
-    value: 'parcelar',
-    color: '#6E8BB8',
-    size: 16,
-    labelStyle: transactionCreateStyle.labelRadioRepeat,
-    selected: false
-}];
+    {
+        id: '2',
+        label: 'Parcelar',
+        value: 'parcelar',
+        color: '#6E8BB8',
+        size: 16,
+        labelStyle: transactionCreateStyle.labelRadioRepeat,
+        selected: false
+    }];
 
 const TransactionCreate = () => {
     //let stepInput = React.createRef<CustomTextInput>();
@@ -55,7 +54,8 @@ const TransactionCreate = () => {
 
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
-    const transactionID = route.params?.data.Id ?? 0;
+    const transactionId = route.params?.data.Id ?? 0;
+    const transactionInternalId = route.params?.data.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
     const baseOperation = {} as I.Operation;
 
@@ -74,8 +74,9 @@ const TransactionCreate = () => {
     const [valueDestAccount, setValueDestAccount] = useState(0);
     const [valueNote, setValueNote] = useState("");
     const [valueConsolidated, setValueConsolidated] = useState(false);
+    const [isSalary, setIsSalary] = useState(false);
     const [valueMultiply, setValeuMultiply] = useState(false);
-    const [valueRadioRepeat, setValueRadioRepeat] = useState<RadioButtonProps[]>(radioButtonsData);
+    const [valueRadioRepeatSelectedId, setValueRadioRepeatSelectedId] = useState<string | undefined>();
     const [valueTimes, setValueTimes] = useState(1);
     const [showModal, setShowModal] = useState(false);
 
@@ -101,11 +102,17 @@ const TransactionCreate = () => {
                 setValueDestAccount(data.DestinationAccount.Id);
             setValueNote(data.Observation);
             setValueConsolidated(data.Consolidated);
+            setIsSalary(data.Operation.Salary);
+            setValeuMultiply(data.Operation.Recurrent || (data.TotalInstallments > 1));
+            if (valueMultiply)
+                setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : '2');
         }
     };
 
     const clearOperation = () => {
         setOperation(baseOperation);
+        setValueDescription("");
+        setIsSalary(false);
     };
 
     const setOperationDefault = () => {
@@ -128,9 +135,9 @@ const TransactionCreate = () => {
         if (!isEditing) {
             setValueDate(Moment(new Date()).format('DD/MM/YYYY'))
             setValueTime(Moment(new Date()).format('HH:mm:ss'));
+            clearOperation();
         }
         getLists();
-        clearOperation();
 
         if (typeSelected == TypesTransaction.Transference) {
             setOperationDefault();
@@ -166,7 +173,7 @@ const TransactionCreate = () => {
             return false;
         }
 
-        if (valueRadioRepeat[1].selected && valueTimes == 0) {
+        if (valueRadioRepeatSelectedId === '1' && valueTimes == 0) {
             Alert.alert("Atenção!", "A quantidade de vezes deve ser informada.");
             return false;
         }
@@ -229,10 +236,10 @@ const TransactionCreate = () => {
                 },
                 {
                     text: "Sim",
-                    onPress: () => deleteTransaction(transactionID, navigation)
+                    onPress: () => deleteTransaction(transactionId, navigation)
                 }
             ],
-            { cancelable: false }
+            {cancelable: false}
         );
     };
 
@@ -244,7 +251,16 @@ const TransactionCreate = () => {
         setOperation(item);
         setValueDescription(item.Name);
         setValueCategory(item.Category.Id);
+        setIsSalary(item.Salary);
     };
+
+    const getRadioButtonsData = ():RadioButtonProps[] => {
+        return radioButtonsData.map(item => {
+            item.disabled = isEditing;
+
+            return item;
+        });
+    }
 
     const handleSaveClick = async () => {
 
@@ -258,23 +274,27 @@ const TransactionCreate = () => {
         operationDTO.Name = valueDescription;
         operationDTO.Type = typeSelected;
         operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
-        operationDTO.Recurrent = valueRadioRepeat[0].selected ?? false;
+        operationDTO.Recurrent = valueRadioRepeatSelectedId === '1' ?? false;
+        operationDTO.Salary = isSalary ?? false;
         operationDTO.Status = 1;
 
         let transactionDTO = {} as I.Transaction;
-        transactionDTO.Id = transactionID;
+        transactionDTO.Id = transactionId;
+        transactionDTO.InternalId = transactionInternalId;
         transactionDTO.Value = valueValue;
         transactionDTO.Observation = valueNote;
         transactionDTO.Consolidated = valueConsolidated;
         transactionDTO.TotalInstallments = valueTimes;
-        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').format('YYYY-MM-DD HH:mm:ss'));
+        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').local().format('YYYY-MM-DD HH:mm:ss'));
         transactionDTO.DataAlteracao = new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'))
         transactionDTO.Account = accounts.find(x => x.Id === valueAccount) ?? {} as I.Account;
         transactionDTO.DestinationAccount = (valueDestAccount > 0) ? accounts.find(x => x.Id === valueDestAccount) ?? null : null;
         transactionDTO.Operation = operationDTO;
+        transactionDTO.ParentTransaction = null;
+
 
         if (isEditing) {
-            putTransaction(transactionDTO, navigation);
+            alterTransaction(transactionDTO, navigation);
         } else {
             createTransaction(transactionDTO, navigation);
         }
@@ -282,18 +302,18 @@ const TransactionCreate = () => {
 
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
-            <ScrollView style={transactionCreateStyle.scroll} >
+            <ScrollView style={transactionCreateStyle.scroll}>
                 <View style={transactionCreateStyle.viewHeaderCadastro}>
                     <TouchableOpacity
                         style={transactionCreateStyle.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill="#F1F1F1" />
+                        <PrevIcon width="40" height="40" fill="#F1F1F1"/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={transactionCreateStyle.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill="#F1F1F1" />
+                            <TrashIcon width="35" height="35" fill="#F1F1F1"/>
                         </TouchableOpacity>}
                 </View>
                 <View style={transactionCreateStyle.viewBodyCadastro}>
@@ -317,7 +337,7 @@ const TransactionCreate = () => {
                             <Text style={getTextButtonStyle(TypesTransaction.Expense)}>Despesa</Text>
                         </TouchableOpacity>
                     </ButtonSelectBar>
-                    <View style={transactionCreateStyle.areaFields} >
+                    <View style={transactionCreateStyle.areaFields}>
                         <View style={transactionCreateStyle.areaValue}>
                             <CurrencyInput
                                 ref={stepInput}
@@ -345,13 +365,13 @@ const TransactionCreate = () => {
                                 />
                             </>
                         }
-                        <View style={transactionCreateStyle.areaDateTime} >
+                        <View style={transactionCreateStyle.areaDateTime}>
                             <TextInput
                                 text={"Data"}
                                 isMoveText={false}
                                 value={valueDate}
                                 setValue={setValueDate}
-                                icon={<TodayIcon width={30} fill="#6E8BB8" />}
+                                icon={<TodayIcon width={30} fill="#6E8BB8"/>}
                                 onPressIcon={() => handleDateTimeClick(true, 'date')}
                                 width={"49%"}
                             />
@@ -360,7 +380,7 @@ const TransactionCreate = () => {
                                 isMoveText={false}
                                 value={valueTime}
                                 setValue={setValueTime}
-                                icon={<ClockIcon width={30} fill="#6E8BB8" />}
+                                icon={<ClockIcon width={30} fill="#6E8BB8"/>}
                                 onPressIcon={() => handleDateTimeClick(true, 'time')}
                                 width={"49%"}
                             />
@@ -382,7 +402,7 @@ const TransactionCreate = () => {
                             />
                         }
                         <Picker
-                            text={"Conta" + ((typeSelected == 0) ? " Origem" : "")}
+                            text={"Conta" + ((typeSelected === TypesTransaction.Transference) ? " Origem" : "")}
                             value={valueAccount}
                             setValue={setValueAccount}
                             data={accounts}
@@ -407,43 +427,52 @@ const TransactionCreate = () => {
                                     <CheckBox
                                         value={valueConsolidated}
                                         onValueChange={setValueConsolidated}
-                                        tintColors={{ true: "#6E8BB8", false: "#6E8BB8" }}
+                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
                                     />
-                                    <Text style={transactionCreateStyle.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
+                                    <Text
+                                        style={transactionCreateStyle.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
                                 </View>
-                                {!isEditing &&
-                                    <>
-                                        <View style={transactionCreateStyle.areaCheckbox}>
-                                            <CheckBox
-                                                value={valueMultiply}
-                                                onValueChange={setValeuMultiply}
-                                                tintColors={{ true: "#6E8BB8", false: "#6E8BB8" }}
-                                            />
-                                            <Text style={transactionCreateStyle.textCheckbox}>Multiplicar</Text>
-                                        </View>
+                                <View style={transactionCreateStyle.areaCheckbox}>
+                                    <CheckBox
+                                        disabled={operation.Id !== undefined}
+                                        value={isSalary}
+                                        onValueChange={setIsSalary}
+                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                    />
+                                    <Text style={transactionCreateStyle.textCheckbox}>Salário</Text>
+                                </View>
+                                <View style={transactionCreateStyle.areaCheckbox}>
+                                    <CheckBox
+                                        value={valueMultiply}
+                                        onValueChange={setValeuMultiply}
+                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                        disabled={isEditing}
+                                    />
+                                    <Text style={transactionCreateStyle.textCheckbox}>Multiplicar</Text>
+                                </View>
 
-                                        {valueMultiply &&
-                                            <View style={transactionCreateStyle.areaRepeat}>
-                                                <RadioGroup
-                                                    radioButtons={valueRadioRepeat}
-                                                    onPress={setValueRadioRepeat}
-                                                    layout="row"
-                                                    containerStyle={transactionCreateStyle.radioRepeat}
+                                {valueMultiply &&
+                                    <View style={transactionCreateStyle.areaRepeat}>
+                                        <RadioGroup
+                                            radioButtons={getRadioButtonsData()}
+                                            onPress={setValueRadioRepeatSelectedId}
+                                            selectedId={valueRadioRepeatSelectedId}
+                                            layout="row"
+                                            containerStyle={transactionCreateStyle.radioRepeat}
+                                        />
+                                        {valueRadioRepeatSelectedId === '2' &&
+                                            <View style={transactionCreateStyle.areaTimes}>
+                                                <TextInput
+                                                    text={"Vezes"}
+                                                    isMoveText={false}
+                                                    value={valueTimes.toString()}
+                                                    setValue={setValueTimes}
+                                                    width={"100%"}
+                                                    editable={!isEditing}
+                                                    //messageText={(valueTimes != 0 ) ? (valueTimes.toString() + "x R$ " + (valueValue / valueTimes).toString()) : ""}                                    
                                                 />
-                                                {valueRadioRepeat[1].selected &&
-                                                    <View style={transactionCreateStyle.areaTimes}>
-                                                        <TextInput
-                                                            text={"Vezes"}
-                                                            isMoveText={false}
-                                                            value={valueTimes.toString()}
-                                                            setValue={setValueTimes}
-                                                            width={"100%"}
-                                                        //messageText={(valueTimes != 0 ) ? (valueTimes.toString() + "x R$ " + (valueValue / valueTimes).toString()) : ""}                                    
-                                                        />
-                                                    </View>}
-                                            </View>
-                                        }
-                                    </>
+                                            </View>}
+                                    </View>
                                 }
                             </>
                         }

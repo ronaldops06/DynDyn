@@ -19,7 +19,7 @@ const SignIn = () => {
 
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
-    const [user, setUser] = useState<I.User>();
+    const [user, setUser] = useState<I.User | null>();
 
     useEffect(() => {
 
@@ -41,17 +41,7 @@ const SignIn = () => {
         loginDTO.Login = valueEmail;
         loginDTO.Password = valuePassword;
 
-        setUser(await login(loginDTO) ?? {} as I.User);
-        /*
-        await api.post('User/Auth', {
-            login: valueEmail,
-            password: valuePassword
-        }).then(response => {
-            setUser(state => (response.data));
-        }).catch((error) => {
-            Alert.alert(error.response.data);
-        }); 
-        */
+        setUser(await login(loginDTO));
     };
 
     const handleRegisterClick = () => {

@@ -4,6 +4,7 @@ using Data.Mapping;
 using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using System;
+using Api.Domain.Enums;
 
 namespace Data.Context
 {
@@ -37,6 +38,15 @@ namespace Data.Context
                     Role = String.Empty
                 }
             );
+
+            modelBuilder.Entity<CategoryEntity>().HasData(
+                new CategoryEntity
+                {
+                    Id = 1,
+                    Name = "Transferência",
+                    Type = CategoryType.Operação,
+                    Status = StatusType.Ativo
+                });
         }
     }
 }

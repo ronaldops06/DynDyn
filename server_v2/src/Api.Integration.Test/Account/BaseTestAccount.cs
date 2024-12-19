@@ -41,7 +41,7 @@ namespace Api.Integration.Test.Account
 
             var categoryBase = new CategoryBase
             {
-                CategoryId = 1,
+                CategoryId = 2,
                 CategoryNome = "Corrente",
                 CategoryTipo = (int)CategoryType.Conta,
                 CategoryStatus = (int)StatusType.Ativo

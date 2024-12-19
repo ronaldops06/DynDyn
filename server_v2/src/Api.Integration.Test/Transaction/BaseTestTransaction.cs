@@ -79,7 +79,7 @@ namespace Api.Integration.Test.Transaction
 
         private AccountRequestDto GenerateAccount(int id, string name)
         {
-            CategoryAccountRequestDto = GenerateCategory(CategoryType.Conta, "Corrente", 1);
+            CategoryAccountRequestDto = GenerateCategory(CategoryType.Conta, "Corrente", 2);
 
             ParentAccountRequestDto = new AccountRequestDto()
             {
@@ -101,7 +101,7 @@ namespace Api.Integration.Test.Transaction
 
         private OperationRequestDto GenerateOperation(int id, string name, OperationType type)
         {
-            CategoryOperationRequestDto = GenerateCategory(CategoryType.Operação, "Eletrônicos", 2);
+            CategoryOperationRequestDto = GenerateCategory(CategoryType.Operação, "Eletrônicos", 3);
 
             return new OperationRequestDto()
             {

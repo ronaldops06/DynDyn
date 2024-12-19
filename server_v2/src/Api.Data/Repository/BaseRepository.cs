@@ -48,7 +48,8 @@ namespace Data.Repository
                 var result = await _dataset.SingleOrDefaultAsync(x => x.Id.Equals(item.Id));
                 if (result == null)
                     throw new Exception("No data found");
-
+                
+                item.DataCriacao = item.DataCriacao ?? result.DataCriacao;
                 item.DataAlteracao = DateTime.Now;
 
                 _context.Entry(result).CurrentValues.SetValues(item);

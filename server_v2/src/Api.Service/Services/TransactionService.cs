@@ -167,7 +167,7 @@ namespace Api.Service.Services
                     transacaoParcelaModel.Id = 0;
                     transacaoParcelaModel.Installment = i;
                     transacaoParcelaModel.DataCriacao = transactionModel.DataCriacao?.AddMonths(i - 1);
-                    transacaoParcelaModel.DataAlteracao = transactionModel.DataAlteracao.AddMonths(i - 1);
+                    transacaoParcelaModel.DataAlteracao = transactionModel.DataAlteracao?.AddMonths(i - 1);
                     transacaoParcelaModel.Operation = null;
                     transacaoParcelaModel.ParentTransactionId = transactionModel.Id;
                     transacaoParcelaModel.ParentTransaction = transactionModel;

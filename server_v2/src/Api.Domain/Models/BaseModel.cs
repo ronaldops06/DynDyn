@@ -26,12 +26,12 @@ namespace Domain.Models
             }
         }
 
-        private DateTime _dataAlteracao;
+        private DateTime? _dataAlteracao;
 
         /// <summary>
         /// Data de atualização do registro.
         /// </summary>
-        public DateTime DataAlteracao
+        public DateTime? DataAlteracao
         {
             get { return _dataAlteracao; }
             set { _dataAlteracao = value; }

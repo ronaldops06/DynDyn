@@ -92,8 +92,8 @@ namespace Api.Integration.Test.Transaction
             Assert.Equal(TransactionRequestDto.Installment, registroPost.Installment);
             Assert.Equal(TransactionRequestDto.TotalInstallments, registroPost.TotalInstallments);
             Assert.Equal(TransactionRequestDto.Account.Id, registroPost.Account.Id);
-            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);            
-
+            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);     
+            
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Transaction");
 

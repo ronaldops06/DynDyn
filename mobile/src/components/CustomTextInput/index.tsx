@@ -13,6 +13,7 @@ interface CustomTextInputParams {
     icon?: any;
     onPressIcon?: any;
     width?: string;
+    editable: boolean;
 };
 
 const CustomTextInput = (props: CustomTextInputParams) => {
@@ -93,7 +94,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
                     value={props.value}
                     secureTextEntry={props.secureTextEntry}
                     onChangeText={(text: string) => onChangeText(text)}
-                    editable={true}
+                    editable={props.editable}
                     onFocus={onFocusHandler}
                     onBlur={onBlurHandler}
                     blurOnSubmit
