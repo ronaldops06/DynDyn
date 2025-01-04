@@ -1,11 +1,11 @@
-import { StyleSheet } from "react-native";
+import {StyleSheet} from "react-native";
 
 export const customTextInputStyle = StyleSheet.create({
     container: {
-      //marginBottom: 15,
-      marginTop: 10
+        marginTop: 10,
+        alignSelf: "center",
     },
-      containerInput: {
+    containerInput: {
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -16,36 +16,36 @@ export const customTextInputStyle = StyleSheet.create({
         borderColor: "#D4DBE6",
         borderRadius: 3,
         alignSelf: "center",
-        width: "100%",
-      },
-      icon: {
+        width: "100%"
+    },
+    icon: {
         marginTop: 0,
         justifyContent: "flex-end",
         alignItems: "flex-end"
-      },
-      input: {
+    },
+    input: {
         fontSize: 16,
         height: 40,
         color: "#6E8BB8",
         flex: 1,
-      },
-      label: {
+    },
+    label: {
         color: "#99ABC9",
         fontFamily: "Open Sans",
         fontSize: 14,
-      },
-      textMessage: {
+    },
+    textMessage: {
         fontSize: 13,
         fontFamily: "Open Sans",
         color: "#A4BCE3",
         justifyContent: "center",
         alignSelf: "center"
-      },
-      animatedStyle: {
+    },
+    animatedStyle: {
         top: 10,
         left: 10,
         position: 'absolute',
         borderRadius: 90,
         zIndex: 10000,
-      },
+    },
 });

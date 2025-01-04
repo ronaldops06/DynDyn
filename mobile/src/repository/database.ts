@@ -1,7 +1,6 @@
 import SQLite, {ResultSet} from 'react-native-sqlite-storage';
 
 SQLite.DEBUG(false);
-
 SQLite.enablePromise(true);
 
 const database_name: string = "sagemoney.db";

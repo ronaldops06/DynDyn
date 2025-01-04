@@ -114,7 +114,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
 
 CustomTextInput.defaultProps = {
     isMoveText: true,
-    width: "90%"
+    width: "100%"
 }
 
 export default CustomTextInput;

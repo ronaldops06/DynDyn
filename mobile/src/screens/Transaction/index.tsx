@@ -1,14 +1,14 @@
 import {useNavigation} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 
 import {CustomAlert} from '../../components/CustomAlert';
-import TransactionItem from '../../components/TransactionItem';
+import TransactionItem from './TransactionItem';
 import {TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import {RootStackParamList} from '../RootStackPrams';
+import {RootStackParamList} from '../RootStackParams';
 
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
@@ -20,6 +20,7 @@ import {
 } from '../../controller/transaction.controller';
 import {style} from '../../styles/styles';
 import {transactionStyle} from './styles';
+import CustomScroll from "../../components/CustomScroll";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Transaction'>;
 
@@ -139,10 +140,6 @@ const Transaction = () => {
         setDate(mountDate);
     };
 
-    const handleTouchEnd = () => {
-        setTimeout(setIsScrolling, 2000, false);
-    }
-
     const handleTransactionItemClick = (data: I.Transaction) => {
         if (!isScrolling)
             navigation.navigate("TransactionCreate", {isEditing: true, data: data});
@@ -163,21 +160,6 @@ const Transaction = () => {
     const setDate = (date: Date) => {
         setSelectedYear(date.getFullYear());
         setSelectedMonth(date.getMonth());
-    }
-
-    const reloadPage = () => {
-        if (pageNumber <= totalPages) {
-            setPageNumber(pageNumber + 1);
-        }
-    }
-
-    function isEndScroll(event: any) {
-        let mHeight = event.nativeEvent.layoutMeasurement.height;
-        let cSize = event.nativeEvent.contentSize.height;
-        let Y = event.nativeEvent.contentOffset.y;
-
-        if (Math.ceil(mHeight + Y) >= cSize) return true;
-        return false;
     }
 
     return (
@@ -218,35 +200,25 @@ const Transaction = () => {
                             style={[transactionStyle.textTotais, transactionStyle.textSaldo]}>R$ {((transactionTotals?.Credit ?? 0) - (transactionTotals?.Debit ?? 0)).toFixed(2)}</Text>
                     </View>
                 </View>
-                <ScrollView style={transactionStyle.scroll}
-                            onScroll={(event) => {
-                                if (isEndScroll(event)) {
-                                    if (!loading) {
-                                        reloadPage();
-                                    }
-                                }
-                            }}
-                            onTouchStart={(event) => setIsScrolling(false)}
-                            onTouchMove={(event) => setIsScrolling(true)}
-                            onTouchEnd={(event) => handleTouchEnd}
+                <CustomScroll
+                    loading={loading}
+                    totalPages={totalPages}
+                    pageNumber={pageNumber}
+                    handlePageNumber={setPageNumber}
+                    handleScrolling={setIsScrolling}
                 >
-                    <View style={transactionStyle.viewList}>
-                        {loading &&
-                            <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8"/>
-                        }
-                        {transactions != null && transactions.filter((item) => {
-                            return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
-                        }).map((item, key) => (
-                            <TransactionItem
-                                key={key}
-                                data={item}
-                                onPress={handleTransactionItemClick}
-                                onSwipeLeft={onSwipeLeft}
-                                onSwipeRight={onSwipeRight}/>
-                        ))
-                        }
-                    </View>
-                </ScrollView>
+                    {transactions != null && transactions.filter((item) => {
+                        return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
+                    }).map((item, key) => (
+                        <TransactionItem
+                            key={key}
+                            data={item}
+                            onPress={handleTransactionItemClick}
+                            onSwipeLeft={onSwipeLeft}
+                            onSwipeRight={onSwipeRight}/>
+                    ))
+                    }
+                </CustomScroll>
                 <TouchableOpacity
                     style={transactionStyle.buttonPlus}
                     onPress={handleNewClick}>

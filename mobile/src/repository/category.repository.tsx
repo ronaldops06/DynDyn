@@ -51,7 +51,7 @@ export const insertCategory = async (category: Category): Promise<Category> => {
     return category;
 };
 
-export const updateCategory = async (category: Category) => {
+export const updateCategory = async (category: Category): Promise<Category> => {
     const db = await openDatabase();
     const { Id,
             Name, 
@@ -80,36 +80,67 @@ export const updateCategory = async (category: Category) => {
         InternalId
         ]
     );
+    
+    return category;
 };
 
-export const deleteCategory = async (internalId: number) => {
+export const deleteInternalCategory = async (internalId: number) => {
     const db = await openDatabase();
-    await db.executeSql('DELETE FROM categories WHERE internal_id = ?', [internalId]);
+    await db.executeSql(
+        'DELETE FROM categories ' +
+        'WHERE internal_id = ?'
+        , [internalId]);
 };
 
-export const selectAllCategories = async (type: number, pageNumber: number | null): Promise<Category[]> => {
+export const selectAllCategories = async (type: number | null, pageNumber: number | null): Promise<Category[]> => {
     const db = await openDatabase();
     
     let results: ResultSet[];
-    if (pageNumber)
-        results = await db.executeSql('SELECT * FROM categories WHERE type = ? LIMIT ? OFFSET ?', [type, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
-    else
-        results = await db.executeSql('SELECT * FROM categories WHERE type = ?', [type]);
+    let query = 'SELECT *' +
+                       ' FROM categories';
+    
+    let params = [];
+    
+    if (type){
+        query += ' WHERE type = ?';
+        params.push(type);
+    }
+
+    query += ' ORDER BY name';
+    
+    if (pageNumber){
+        query += ' LIMIT ?' +
+                 ' OFFSET ?';
+        params.push(constants.pageSize);
+        params.push((pageNumber - 1) * constants.pageSize);
+    }
+    
+    results = await db.executeSql(query, params);
     
     const categories: Category[] = [];
-    results.forEach(result => {
+    results.map(async result => {
         for (let i = 0; i < result.rows.length; i++) {
-            categories.push(formatResult(result.rows.item(i)));
+            categories.push(await formatResult(result.rows.item(i)));
         }
     });
 
     return categories;
 };
 
-export const selectContAllCategories = async (type: number): Promise<number> => {
+export const selectContAllCategories = async (type: number | null): Promise<number> => {
     const db = await openDatabase();
+    
+    let query = 'SELECT * ' +
+        '  FROM categories ';
 
-    const results = await db.executeSql('SELECT * FROM categories WHERE type = ?', [type]);
+    let params = [];
+
+    if (type){
+        query += ' WHERE type = ?';
+        params.push(type);
+    }
+    
+    const results = await db.executeSql(query, params);
 
     let count: number = 0;
     results.forEach(result => {
@@ -122,12 +153,16 @@ export const selectContAllCategories = async (type: number): Promise<number> => 
 export const selectCategoryById = async (id: number): Promise<Category | undefined> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql('SELECT * FROM categories WHERE id = ?', [id]);
+    const result = await db.executeSql(
+        'SELECT * ' +
+        '  FROM categories ' +
+        ' WHERE id = ?'
+        , [id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
-}  
+}
 
-const formatResult = (item: any): Category => {
+const formatResult = async (item: any): Promise<Category> => {
     const category: Category = {
         InternalId: item.internal_id,
         Id: item.id,

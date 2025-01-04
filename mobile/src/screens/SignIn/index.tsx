@@ -6,7 +6,7 @@ import { MMKV } from 'react-native-mmkv';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
-import { RootStackParamList } from '../RootStackPrams';
+import { RootStackParamList } from '../RootStackParams';
 import { login } from './signin.api';
 
 import { style } from '../../styles/styles';

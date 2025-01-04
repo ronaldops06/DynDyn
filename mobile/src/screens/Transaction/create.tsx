@@ -12,20 +12,23 @@ import ClockIcon from '../../assets/clock.svg';
 import PrevIcon from '../../assets/nav_prev.svg';
 import TodayIcon from '../../assets/today.svg';
 import TrashIcon from '../../assets/trash.svg';
-import ButtonSelectBar from '../../components/ButtonSelectBar';
+import ButtonSelectBar, {ButtonsSelectedProps} from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
-import OperationModal from '../../components/OperationModal';
+import OperationModal from './OperationModal';
 import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import {deleteTransaction, putTransaction} from '../../services/transactions.api';
-import {RootStackParamList} from '../RootStackPrams';
+import {deleteTransaction} from '../../services/transactions.api';
+import {RootStackParamList} from '../RootStackParams';
 
 import {alterTransaction, createTransaction} from '../../controller/transaction.controller';
-import {style} from '../../styles/styles';
-import {transactionCreateStyle} from './create.styles';
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {loadAllAccount} from "../../controller/account.controller.tsx";
+
+import {style} from '../../styles/styles';
+import {styleCadastro} from '../../styles/styles.cadastro';
+import {transactionCreateStyle} from './create.styles';
+import {constants} from "../../constants";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
 
@@ -243,6 +246,16 @@ const TransactionCreate = () => {
         );
     };
 
+    const getButtonsSelectedBar = (): ButtonsSelectedProps[] => {
+        let buttonsSelectedBar: ButtonsSelectedProps[] = [];
+
+        Object.values(constants.operationType).map(type => {
+            buttonsSelectedBar.push({text: type.Name, value: type.Id});
+        });
+
+        return buttonsSelectedBar;
+    }
+
     const handleOperationsClick = () => {
         setShowModal(true);
     };
@@ -254,7 +267,7 @@ const TransactionCreate = () => {
         setIsSalary(item.Salary);
     };
 
-    const getRadioButtonsData = ():RadioButtonProps[] => {
+    const getRadioButtonsData = (): RadioButtonProps[] => {
         return radioButtonsData.map(item => {
             item.disabled = isEditing;
 
@@ -302,42 +315,28 @@ const TransactionCreate = () => {
 
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
-            <ScrollView style={transactionCreateStyle.scroll}>
-                <View style={transactionCreateStyle.viewHeaderCadastro}>
+            <ScrollView style={style.scrollCadastro}>
+                <View style={styleCadastro.viewHeaderCadastro}>
                     <TouchableOpacity
-                        style={transactionCreateStyle.buttonBack}
+                        style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
                         <PrevIcon width="40" height="40" fill="#F1F1F1"/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
-                            style={transactionCreateStyle.buttonTrash}
+                            style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
                             <TrashIcon width="35" height="35" fill="#F1F1F1"/>
                         </TouchableOpacity>}
                 </View>
-                <View style={transactionCreateStyle.viewBodyCadastro}>
-                    <ButtonSelectBar>
-                        <TouchableOpacity
-                            style={getButtonStyle(TypesTransaction.Revenue)}
-                            onPress={() => setTypeSelected(TypesTransaction.Revenue)}
-                            disabled={isEditing}>
-                            <Text style={getTextButtonStyle(TypesTransaction.Revenue)}>Receita</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={getButtonStyle(TypesTransaction.Transference)}
-                            onPress={() => setTypeSelected(TypesTransaction.Transference)}
-                            disabled={isEditing}>
-                            <Text style={getTextButtonStyle(TypesTransaction.Transference)}>Transferência</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            style={getButtonStyle(TypesTransaction.Expense)}
-                            onPress={() => setTypeSelected(TypesTransaction.Expense)}
-                            disabled={isEditing}>
-                            <Text style={getTextButtonStyle(TypesTransaction.Expense)}>Despesa</Text>
-                        </TouchableOpacity>
-                    </ButtonSelectBar>
-                    <View style={transactionCreateStyle.areaFields}>
+                <View style={styleCadastro.viewBodyCadastro}>
+                    <ButtonSelectBar
+                        buttons={getButtonsSelectedBar()}
+                        valueSelected={typeSelected}
+                        handleValueSelected={setTypeSelected}
+                        disabled={isEditing}
+                    />
+                    <View style={styleCadastro.areaFields}>
                         <View style={transactionCreateStyle.areaValue}>
                             <CurrencyInput
                                 ref={stepInput}
@@ -423,32 +422,32 @@ const TransactionCreate = () => {
                         />
                         {!typeSelectedIsTransference() &&
                             <>
-                                <View style={transactionCreateStyle.areaCheckbox}>
+                                <View style={styleCadastro.areaCheckbox}>
                                     <CheckBox
                                         value={valueConsolidated}
                                         onValueChange={setValueConsolidated}
                                         tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
                                     />
                                     <Text
-                                        style={transactionCreateStyle.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
+                                        style={styleCadastro.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
                                 </View>
-                                <View style={transactionCreateStyle.areaCheckbox}>
+                                <View style={styleCadastro.areaCheckbox}>
                                     <CheckBox
                                         disabled={operation.Id !== undefined}
                                         value={isSalary}
                                         onValueChange={setIsSalary}
                                         tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
                                     />
-                                    <Text style={transactionCreateStyle.textCheckbox}>Salário</Text>
+                                    <Text style={styleCadastro.textCheckbox}>Salário</Text>
                                 </View>
-                                <View style={transactionCreateStyle.areaCheckbox}>
+                                <View style={styleCadastro.areaCheckbox}>
                                     <CheckBox
                                         value={valueMultiply}
                                         onValueChange={setValeuMultiply}
                                         tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
                                         disabled={isEditing}
                                     />
-                                    <Text style={transactionCreateStyle.textCheckbox}>Multiplicar</Text>
+                                    <Text style={styleCadastro.textCheckbox}>Multiplicar</Text>
                                 </View>
 
                                 {valueMultiply &&
@@ -477,12 +476,12 @@ const TransactionCreate = () => {
                             </>
                         }
                     </View>
-                    <View style={transactionCreateStyle.areaButtonSave}>
+                    <View style={styleCadastro.areaButtonSave}>
                         <TouchableOpacity
-                            style={transactionCreateStyle.buttonSave}
+                            style={styleCadastro.buttonSave}
                             onPress={handleSaveClick}
                         >
-                            <Text style={transactionCreateStyle.textButtonSave}>Salvar</Text>
+                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
                         </TouchableOpacity>
                     </View>
                     <OperationModal

@@ -10,7 +10,7 @@ export const customPickerStyle = StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: "#D4DBE6",
         borderRadius: 3,
-        width: "90%",
+        width: "100%",
         alignSelf: "center",
     },
     icon: {

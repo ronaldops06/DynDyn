@@ -4,7 +4,7 @@ import { Alert } from 'react-native';
 import { constants } from '../constants';
 import * as I from '../interfaces/interfaces';
 import { insertTransaction, selectAllTransactions, selectContAll, selectTransactionById, selectTransactionsTotals, updateTransaction } from '../repository/transaction.repository';
-import { getTransactions, postTransaction } from '../services/transactions.api';
+import {getTransactions, postTransaction, putTransaction} from '../services/transactions.api';
 import { loadInternalAccount } from './account.controller';
 import { loadInternalOperation } from './operation.controller';
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
@@ -40,11 +40,13 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
     return internalTransaction;
 }
 
-export const loadInternalAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
+export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
     let responseTransactions = {} as I.Response;
     
     responseTransactions.data = await selectAllTransactions(mountDateInicio, mountDateFim, pageNumber as number);
-    responseTransactions.totalPages = await selectContAll(mountDateInicio, mountDateFim);
+    let totalRecords = await selectContAll(mountDateInicio, mountDateFim);
+    
+    responseTransactions.totalPages = Math.ceil(totalRecords / constants.pageSize);
 
     return responseTransactions;
 }
@@ -57,8 +59,7 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
 
     var transactions = responseTransactions?.data ?? [];
     
-    var promises = transactions.map(async (item: I.Transaction) => {
-        
+    for (const item of transactions) {
         var transaction = await selectTransactionById(item.Id);
         
         item.Operation = await loadInternalOperation(item.Operation?? {} as I.Operation);
@@ -71,18 +72,16 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
             item.ParentTransaction = await loadInternalTransaction(item.ParentTransaction ?? {} as I.Transaction);
         
         if (transaction === undefined) {
-            await insertTransaction(item);
+            let transaction: I.Transaction = await insertTransaction(item);
         } else {
             item.InternalId = transaction.InternalId;
             await updateTransaction(item);
         }
-    });
-    
-    await Promise.all(promises);
+    }
     
     await setLastSynchronization(synchronization);
     
-    return loadInternalAll(mountDateInicio, mountDateFim, pageNumber);
+    return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
 }
 
 export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim: Date): Promise<I.TransactionTotals> => {
@@ -91,17 +90,17 @@ export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim
 
 export const createTransaction = async (transaction: I.Transaction, navigation: any): Promise<I.Transaction> => {
     let response = await postTransaction(transaction, navigation);
+    populateInternalFields(transaction, response);
+
+    if (transaction.Operation.InternalId === undefined)
+        transaction.Operation = await loadInternalOperation(response.data.Operation);
 
     if (!response.isConnected) {
-        populateInternalFields(transaction, response);
-        
         transaction = await insertTransaction(transaction);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feito uma nova tentativa de envio assim que a conexão for restabelecida.");
+        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
         navigation.goBack();
     } else if (response.data !== null){
-        populateInternalFields(transaction, response);
-        
         transaction = await insertTransaction(response.data);
         navigation.goBack();
     }
@@ -109,9 +108,36 @@ export const createTransaction = async (transaction: I.Transaction, navigation: 
     return transaction;
 }
 
+export const alterTransaction = async (transaction: I.Transaction, navigation: any): Promise<I.Transaction> => {
+    let response = await putTransaction(transaction, navigation);
+    populateInternalFields(transaction, response);
+
+    if (transaction.Operation.InternalId === undefined)
+        transaction.Operation = await loadInternalOperation(transaction.Operation);
+
+    if (!response.isConnected) {
+        transaction = await updateTransaction(transaction);
+        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
+        //TO-DO: Guardar o registro em uma fila de envio
+        navigation.goBack();
+    } else if (response.data !== null){
+        transaction = await updateTransaction(response.data);
+        navigation.goBack();
+    }
+
+    return transaction;
+}
+
 const populateInternalFields = (transaction: I.Transaction, response: I.Response) => {
+    if (transaction.InternalId)
+        response.data.InternalId = transaction.InternalId;
     response.data.Account.InternalId = transaction.Account.InternalId;
-    response.data.DestinationAccount.InternalId = transaction.DestinationAccount?.InternalId;
+    
+    if (transaction.DestinationAccount !== null)
+        response.data.DestinationAccount.InternalId = transaction.DestinationAccount?.InternalId;
+    
     response.data.Operation.InternalId = transaction.Operation.InternalId;
-    response.data.ParentTransaction.InternalId = transaction.ParentTransaction?.InternalId;
+    
+    if (transaction.ParentTransaction !== null)
+        response.data.ParentTransaction.InternalId = transaction.ParentTransaction?.InternalId;
 }

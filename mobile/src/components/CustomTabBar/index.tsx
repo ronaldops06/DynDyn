@@ -48,7 +48,7 @@ const CustomTabBar = (props: CustomTabBarParms) => {
             </TouchableOpacity>
             <TouchableOpacity
                 style={customTabBarStyle.tabItem}
-                onPress={ ()=> goTo('Dashboard') }>
+                onPress={ ()=> goTo('Operation') }>
                 <CategoryIcon style={{ opacity: opacityItem(4) }} width="24" height="24" fill="#6E8BB8" />
             </TouchableOpacity>
         </View>

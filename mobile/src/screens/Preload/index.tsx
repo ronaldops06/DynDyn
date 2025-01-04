@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+    import React, { useEffect } from 'react';
 import { Alert, SafeAreaView, View, Image, Pressable } from 'react-native';
 import { MMKV } from 'react-native-mmkv'
 import { useNavigation } from '@react-navigation/native';
@@ -6,7 +6,7 @@ import {StackNavigationProp} from '@react-navigation/stack';
 
 import { login } from './preload.api';
 
-import { RootStackParamList } from '../RootStackPrams';
+import { RootStackParamList } from '../RootStackParams';
 import { preloadStyle } from './styles';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Preload'>;

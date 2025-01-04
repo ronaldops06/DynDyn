@@ -2,7 +2,6 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
 
-
 import { customPickerStyle } from './styles';
 
 interface PickerParams {

@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native';
+import {StyleSheet} from 'react-native';
 
 export const style = StyleSheet.create({
     container: {
@@ -30,6 +30,12 @@ export const style = StyleSheet.create({
         width: "100%",
         backgroundColor: "#6E8BB8"
     },
+    viewHeaderConsultaReduced: {
+        display: "flex",
+        height: 90,
+        width: "100%",
+        backgroundColor: "#6E8BB8"
+    },
     viewBodyConsulta: {
         display: "flex",
         width: "100%",
@@ -37,7 +43,21 @@ export const style = StyleSheet.create({
         backgroundColor: "#F1F1F1",
         borderTopLeftRadius: 60
     },
+    viewBodyConsultaLarger: {
+        display: "flex",
+        width: "100%",
+        backgroundColor: "#F1F1F1",
+        borderTopLeftRadius: 60,
+        flex: 1
+    },
     loadingIcon: {
         marginTop: 50
+    },
+    scrollCadastro: {
+        height: "100%"
+    },
+    scroll: {
+        flex: 1,
+        padding: 20
     },
 });

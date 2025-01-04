@@ -57,11 +57,13 @@ export const postTransaction = async (data: I.Transaction, navigation: any): Pro
     return response;
 };
 
-export const putTransaction = async (data: I.Transaction, navigation: any) => {
+export const putTransaction = async (data: I.Transaction, navigation: any): Promise<I.Response> => {
     let response = {} as I.Response;
-    response = await put(`Transaction/${data.Id}`, data);
+    response = await put(`Transaction`, data);
 
-    if (!validateResponse(Action.Put, response, navigation)) return null;
+    if (!validateResponse(Action.Put, response, navigation)){
+        response.data = null;
+    }
 
     return response;
 };

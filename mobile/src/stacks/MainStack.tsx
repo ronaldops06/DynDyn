@@ -3,9 +3,12 @@ import React from 'react';
 
 import Account from '../screens/Account';
 import Category from '../screens/Category';
+import CategoryCreate from '../screens/Category/create';
+import Operation from '../screens/Operation';
+import OperationCreate from '../screens/Operation/create';
 import Dashboard from '../screens/Dashboard';
 import Preload from '../screens/Preload';
-import { RootStackParamList } from '../screens/RootStackPrams';
+import { RootStackParamList } from '../screens/RootStackParams';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Transaction from '../screens/Transaction';
@@ -32,6 +35,9 @@ const MainStack = () => {
             <Stack.Screen name="Transaction" component={Transaction} />
             <Stack.Screen name="TransactionCreate" component={TransactionCreate} />
             <Stack.Screen name="Category" component={Category} />
+            <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
+            <Stack.Screen name="Operation" component={Operation} />
+            <Stack.Screen name="OperationCreate" component={OperationCreate} />
         </Stack.Navigator>
     );
 }

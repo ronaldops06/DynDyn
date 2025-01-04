@@ -3,7 +3,7 @@ import { View, Text } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { useNavigation } from '@react-navigation/core';
 
-import { RootStackParamList } from '../RootStackPrams';
+import { RootStackParamList } from '../RootStackParams';
 //import api from '../../services/api';
 
 import { style } from '../../styles/styles';

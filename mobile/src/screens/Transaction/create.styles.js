@@ -1,49 +1,9 @@
 import { StyleSheet } from "react-native";
 
-import { style } from '../../styles/styles';
-
 export const transactionCreateStyle = StyleSheet.create({
-    scroll: {
-        height: "100%"
-    },
-    viewHeaderCadastro: {
-        ...style.viewHeaderCadastro,
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "space-between",
-        height: 80,
-        borderBottomLeftRadius: 40
-    },
-    viewBodyCadastro: {
-        ...style.viewBodyCadastro,
-        flex: 1
-    },
-    buttonBack: {
-        width: 40,
-        height: 40,
-        marginTop: 20,
-        marginLeft: 15
-
-    },
-    buttonTrash: {
-        width: 40,
-        height: 40,
-        marginTop: 20,
-        marginRight: 15
-    },
-    areaFields: {
-        flex: 1,
-        marginTop: 10,
-        marginLeft: 5,
-        marginRight: 5,
-        style: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-    },
     areaValue: {
         flexDirection: "row",
-        width: "60%",
+        width: "100%",
         justifyContent: "center"
     },
     buttonMinus: {
@@ -91,13 +51,14 @@ export const transactionCreateStyle = StyleSheet.create({
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline",
-        marginBottom: 20
+        marginBottom: 20,
+        textAlign: "center"
     },
     areaDateTime: {
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        width: "90%"
+        width: "100%"
     },
     button: {
         alignItems: "center",
@@ -122,21 +83,6 @@ export const transactionCreateStyle = StyleSheet.create({
     textButtonSelected: {
         color: "#6E8BB8",
     },
-    areaCheckbox: {
-        flexDirection: "row",
-        alignContent: "center",
-        alignItems: "center",
-        width: "90%",
-        marginBottom: 5
-    },
-    checkbox:{
-        color: "#6E8BB8",
-    },
-    textCheckbox: {
-        fontSize: 16,
-        fontFamily: "Open Sans",
-        color: "#6E8BB8",
-    },
     areaRepeat: {
         flexDirection: "row",
         width: "90%",
@@ -156,25 +102,5 @@ export const transactionCreateStyle = StyleSheet.create({
         flexDirection: "column",
         width: "30%",
         marginLeft: 10
-    },
-    areaButtonSave: {
-        flex: 1,
-        marginBottom: 15,
-        flexDirection: "column",
-        alignItems: "center",   
-        justifyContent: "flex-end"
-    },
-    buttonSave: {
-        width: 130,
-        height: 40,
-        borderRadius: 30,
-        backgroundColor: "#6E8BB8",
-        justifyContent: "center",
-        alignItems: "center"
-    },
-    textButtonSave: {
-        color: "#F5F5F5",
-        fontSize: 16,
-        fontFamily: "Open Sans"
     },
 });

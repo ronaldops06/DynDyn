@@ -7,12 +7,14 @@ import Account from '../screens/Account';
 import Category from '../screens/Category';
 import Dashboard from '../screens/Dashboard';
 import Transaction from '../screens/Transaction';
+import Operation from '../screens/Operation';
 
 type TabNavigatorParamList = {
     Dashboard: undefined,
     Account: undefined,
     Transaction: undefined,
-    Category: undefined
+    Category: undefined,
+    Operation: undefined,
 }
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();
@@ -29,6 +31,7 @@ const MainTab = () => {
             <Tab.Screen name="Account" component={Account} />
             <Tab.Screen name="Transaction" component={Transaction} />
             <Tab.Screen name="Category" component={Category} />
+            <Tab.Screen name="Operation" component={Operation} />
         </Tab.Navigator>
     );
 }

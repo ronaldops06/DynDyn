@@ -1,5 +1,5 @@
 import * as I from "../interfaces/interfaces.tsx";
-import {get} from "./api.ts";
+import {del, get, post, put} from "./api.ts";
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import {Alert} from "react-native";
 
@@ -32,5 +32,37 @@ export const getCategories = async (params: string, navigation: any) => {
 
     if (!validateResponse(Action.Get, response, navigation)) return null;
 
+    return response;
+};
+
+export const postCategory = async (data: I.Category, navigation: any): Promise<I.Response> => {
+    let response = {} as I.Response;
+
+    response = await post('Category', data);
+
+    if (!validateResponse(Action.Post, response, navigation)){
+        response.data = null;
+    }
+
+    return response;
+};
+
+export const putCategory = async (data: I.Category, navigation: any): Promise<I.Response> => {
+    let response = {} as I.Response;
+    response = await put(`Category`, data);
+
+    if (!validateResponse(Action.Put, response, navigation)){
+        response.data = null;
+    }
+
+    return response;
+};
+
+export const deleteCategory = async (id: number, navigation: any) : Promise<I.Response> => {
+    let response = {} as I.Response;
+    response = await del(`Category/${id}`);
+
+    validateResponse(Action.Delete, response, navigation);
+    
     return response;
 };

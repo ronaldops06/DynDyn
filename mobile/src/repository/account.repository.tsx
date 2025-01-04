@@ -98,9 +98,9 @@ export const selectAllAccounts = async (pageNumber: number | null): Promise<Acco
 
     let results: ResultSet[];
     if (pageNumber)
-        results = await db.executeSql(queryBase() + ' LIMIT ? OFFSET ?', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+        results = await db.executeSql(queryBase() + ' ORDER BY act.name LIMIT ? OFFSET ? ', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
     else
-        results = await db.executeSql(queryBase());
+        results = await db.executeSql(queryBase() + ' ORDER BY act.name');
         
     const accounts: Account[] = [];
     results.forEach(result => {
@@ -130,6 +130,19 @@ export const selectAccountById = async (id: number): Promise<Account | undefined
     const result = await db.executeSql(queryBase() +' WHERE act.id = ?', [id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+}
+
+export const existsAccountRelationshipCategory = async (categoryInternalId: number): Promise<boolean> => {
+    const db = await openDatabase();
+
+    const result = await db.executeSql(
+        'SELECT *' +
+        ' FROM accounts' +
+        ' WHERE category_id = ?' +
+        ' LIMIT = 1'
+        , [categoryInternalId]);
+
+    return result[0]?.rows.length > 0;
 }
 
 const queryBase = () => {
