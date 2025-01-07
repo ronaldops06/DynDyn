@@ -3,7 +3,7 @@ import { StyleSheet } from "react-native";
 export const transactionStyle = StyleSheet.create({
     viewSelectDate: {
         flexDirection: "row",
-        marginTop: 30
+        marginTop: 10
     },
     buttonPrev: {
         flex: 1,

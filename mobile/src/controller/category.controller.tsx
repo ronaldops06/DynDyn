@@ -127,7 +127,7 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
         navigation.goBack();
-    } else if (response.data !== null){
+    } else if (response.data){
         await deleteInternalCategory(categoryInternalId);
         navigation.goBack();
     }

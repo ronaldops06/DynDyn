@@ -1,5 +1,5 @@
-import { Account } from "../interfaces/interfaces";
-import { openDatabase } from "./database";
+import {Account} from "../interfaces/interfaces";
+import {openDatabase} from "./database";
 import {constants} from "../constants";
 import {ResultSet} from "react-native-sqlite-storage";
 
@@ -7,46 +7,49 @@ export const createTableAccounts = async () => {
     const db = await openDatabase();
 
     await db.executeSql(`
-      CREATE TABLE IF NOT EXISTS accounts (
-        internal_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-        id           NUMBER,
-        name         TEXT,
-        status       NUMBER,
-        category_id  NUMBER,
-        parent_account_id NUMBER,
-        data_criacao TEXT,
-        data_alteracao TEXT
-      );
+        CREATE TABLE IF NOT EXISTS accounts
+        (
+            internal_id       INTEGER PRIMARY KEY AUTOINCREMENT,
+            id                NUMBER,
+            name              TEXT,
+            status            NUMBER,
+            category_id       NUMBER,
+            parent_account_id NUMBER,
+            data_criacao      TEXT,
+            data_alteracao    TEXT
+        );
     `);
 };
 
 export const insertAccount = async (account: Account): Promise<Account> => {
     const db = await openDatabase();
-    const { Id,
-            Name, 
-            Status,
-            Category, 
-            ParentAccount,
-            DataCriacao, 
-            DataAlteracao } = account;
+    const {
+        Id,
+        Name,
+        Status,
+        Category,
+        ParentAccount,
+        DataCriacao,
+        DataAlteracao
+    } = account;
 
     const result = await db.executeSql(
-      'INSERT INTO accounts '
-                + '( id'
-                + ', name'
-                + ', status'
-                + ', category_id'
-                + ', parent_account_id'
-                + ', data_criacao'
-                + ', data_alteracao'
-                + ') VALUES (?, ?, ?, ?, ?, ?, ?)',
-      [ Id,
-        Name,  
-        Status,
-        Category?.InternalId, 
-        ParentAccount?.InternalId,
-        DataCriacao, 
-        DataAlteracao ]
+        'INSERT INTO accounts '
+        + '( id'
+        + ', name'
+        + ', status'
+        + ', category_id'
+        + ', parent_account_id'
+        + ', data_criacao'
+        + ', data_alteracao'
+        + ') VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [Id,
+            Name,
+            Status,
+            Category?.InternalId,
+            ParentAccount?.InternalId,
+            DataCriacao,
+            DataAlteracao]
     );
 
     account.InternalId = result[0].insertId;
@@ -55,42 +58,50 @@ export const insertAccount = async (account: Account): Promise<Account> => {
 };
 
 export const updateAccount = async (account: Account) => {
-const db = await openDatabase();
-const { Id,
-        Name, 
+    const db = await openDatabase();
+    const {
+        Id,
+        Name,
         Status,
-        Category, 
+        Category,
         ParentAccount,
         DataCriacao,
         DataAlteracao,
         InternalId
-        } = account;
+    } = account;
 
-await db.executeSql(
-    'UPDATE accounts '
-    + 'SET id = ?'
+    await db.executeSql(
+        'UPDATE accounts '
+        + 'SET id = ?'
         + ', name = ?'
         + ', status = ?'
         + ', category_id = ?'
         + ', parent_account_id = ?'
         + ', data_criacao = ?'
         + ', data_alteracao = ?'
-    + 'WHERE internal_id = ?',
-    [ Id,
-    Name, 
-    Status,
-    Category?.InternalId, 
-    ParentAccount?.InternalId,
-    DataCriacao, 
-    DataAlteracao,
-    InternalId
-    ]
-);
+        + 'WHERE internal_id = ?',
+        [Id,
+            Name,
+            Status,
+            Category?.InternalId,
+            ParentAccount?.InternalId,
+            DataCriacao,
+            DataAlteracao,
+            InternalId
+        ]
+    );
+    
+    return account;
 };
 
-export const deleteAccount = async (internalId: number) => {
+export const deleteInternalAccount = async (internalId: number) => {
     const db = await openDatabase();
-    await db.executeSql(`DELETE FROM accounts WHERE internal_id = ?`, [internalId]);
+    
+    await db.executeSql(
+        'DELETE ' +
+        '  FROM accounts ' +
+        ' WHERE internal_id = ?'
+        , [internalId]);
 };
 
 export const selectAllAccounts = async (pageNumber: number | null): Promise<Account[]> => {
@@ -101,7 +112,7 @@ export const selectAllAccounts = async (pageNumber: number | null): Promise<Acco
         results = await db.executeSql(queryBase() + ' ORDER BY act.name LIMIT ? OFFSET ? ', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
     else
         results = await db.executeSql(queryBase() + ' ORDER BY act.name');
-        
+
     const accounts: Account[] = [];
     results.forEach(result => {
         for (let i = 0; i < result.rows.length; i++) {
@@ -127,7 +138,7 @@ export const selectContAllAccounts = async (): Promise<number> => {
 
 export const selectAccountById = async (id: number): Promise<Account | undefined> => {
     const db = await openDatabase();
-    const result = await db.executeSql(queryBase() +' WHERE act.id = ?', [id]);
+    const result = await db.executeSql(queryBase() + ' WHERE act.id = ?', [id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
@@ -139,38 +150,51 @@ export const existsAccountRelationshipCategory = async (categoryInternalId: numb
         'SELECT *' +
         ' FROM accounts' +
         ' WHERE category_id = ?' +
-        ' LIMIT = 1'
+        ' LIMIT 1'
         , [categoryInternalId]);
+
+    return result[0]?.rows.length > 0;
+}
+
+export const existsAccountRelationshipAccount = async (accountInternalId: number): Promise<boolean> => {
+    const db = await openDatabase();
+
+    const result = await db.executeSql(
+        'SELECT *' +
+        ' FROM accounts' +
+        ' WHERE parent_account_id = ? ' +
+        ' LIMIT 1'
+        , [ accountInternalId ]);
 
     return result[0]?.rows.length > 0;
 }
 
 const queryBase = () => {
     return 'SELECT act.*'
-         + '     , cat.internal_id AS category_internal_id'
-         + '     , cat.id AS category_id'
-         + '     , cat.name AS category_name'
-         + '     , cat.type AS category_type'
-         + '     , cat.status AS category_status'
-         + '     , cat.data_criacao AS category_data_criacao'
-         + '     , cat.data_alteracao AS category_data_alteracao'
-         + '     , par_act.internal_id AS parent_account_internal_id'
-         + '     , par_act.id AS parent_account_id'
-         + '     , par_act.name AS parent_account_name'
-         + '     , par_act.status AS parent_account_status'
-         + '     , par_act.data_criacao AS parent_account_data_criacao'
-         + '     , par_act.data_alteracao AS parent_account_data_alteracao'
-         + '     , par_cat.internal_id AS parent_account_category_internal_id'
-         + '     , par_cat.id AS parent_account_category_id'
-         + '     , par_cat.name AS parent_account_category_name'
-         + '     , par_cat.type AS parent_account_category_type'
-         + '     , par_cat.status AS parent_account_category_status'
-         + '     , par_cat.data_criacao AS parent_account_category_data_criacao'
-         + '     , par_cat.data_alteracao AS parent_account_category_data_alteracao'
-         + '  FROM accounts act'
-         + '       INNER JOIN categories cat ON act.category_id = cat.internal_id'
-         + '       LEFT JOIN accounts par_act ON act.internal_id = par_act.parent_account_id'
-         + '       LEFT JOIN categories par_cat ON par_act.category_id = par_cat.internal_id';
+        + '     , cat.internal_id AS category_internal_id'
+        + '     , cat.id AS category_id'
+        + '     , cat.name AS category_name'
+        + '     , cat.type AS category_type'
+        + '     , cat.status AS category_status'
+        + '     , cat.data_criacao AS category_data_criacao'
+        + '     , cat.data_alteracao AS category_data_alteracao'
+        + '     , par_act.internal_id AS parent_account_internal_id'
+        + '     , par_act.id AS parent_account_id'
+        + '     , par_act.name AS parent_account_name'
+        + '     , par_act.status AS parent_account_status'
+        + '     , par_act.data_criacao AS parent_account_data_criacao'
+        + '     , par_act.data_alteracao AS parent_account_data_alteracao'
+        + '     , par_cat.internal_id AS parent_account_category_internal_id'
+        + '     , par_cat.id AS parent_account_category_id'
+        + '     , par_cat.name AS parent_account_category_name'
+        + '     , par_cat.type AS parent_account_category_type'
+        + '     , par_cat.status AS parent_account_category_status'
+        + '     , par_cat.data_criacao AS parent_account_category_data_criacao'
+        + '     , par_cat.data_alteracao AS parent_account_category_data_alteracao'
+        + '  FROM accounts act'
+        + '       INNER JOIN categories cat ON act.category_id = cat.internal_id'
+        + '       LEFT JOIN accounts par_act ON act.parent_account_id = par_act.internal_id'
+        + '       LEFT JOIN categories par_cat ON par_act.category_id = par_cat.internal_id';
 }
 
 const formatResult = (item: any): Account => {
@@ -192,7 +216,7 @@ const formatResult = (item: any): Account => {
         },
         ParentAccount: null
     }
-    
+
     if (item.parent_account_internal_id) {
         account.ParentAccount = {
             InternalId: item.parent_account_internal_id,
@@ -213,6 +237,6 @@ const formatResult = (item: any): Account => {
             ParentAccount: null
         }
     }
-    
+
     return account;
 }

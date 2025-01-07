@@ -60,4 +60,11 @@ export const style = StyleSheet.create({
         flex: 1,
         padding: 20
     },
+    textHeaderConsultaTitle: {
+        color: "#F1F1F1",
+        fontSize: 16,
+        fontFamily: "Open Sans",
+        marginTop: 10,
+        marginLeft: 22,
+    }
 });

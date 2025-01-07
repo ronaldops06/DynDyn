@@ -118,6 +118,7 @@ const Category = () => {
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
+                <Text style={style.textHeaderConsultaTitle}>Categorias</Text>
                 <CarouselSelection data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>

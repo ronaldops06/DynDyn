@@ -1,7 +1,7 @@
 import {style} from "../../styles/styles.ts";
 import {categoryStyle} from "../Category/styles";
 import PlusIcon from "../../assets/plus.svg";
-import {SafeAreaView, TouchableOpacity, View} from "react-native";
+import {SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/core";
 import _ from 'lodash';
@@ -109,6 +109,7 @@ const Operation = () => {
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
+                <Text style={style.textHeaderConsultaTitle}>Operações</Text>
                 <CarouselSelection data={constants.operationType} handleItemSelectedId={setOperationType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>

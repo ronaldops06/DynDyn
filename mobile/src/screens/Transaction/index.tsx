@@ -165,6 +165,7 @@ const Transaction = () => {
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsulta}>
+                <Text style={style.textHeaderConsultaTitle}>Transações</Text>
                 <View style={transactionStyle.viewSelectDate}>
                     <TouchableOpacity onPress={handleLeftDateClick} style={transactionStyle.buttonPrev}>
                         <NavPrevIcon width="35" height="35" fill="#F5F5F5"/>

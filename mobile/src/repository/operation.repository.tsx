@@ -112,8 +112,8 @@ export const deleteInternalOperation = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(
         'DELETE' +
-        'FROM operations' +
-        'WHERE internal_id = ?'
+        '  FROM operations' +
+        ' WHERE internal_id = ?'
         , [internalId]);
 };
 
@@ -164,7 +164,7 @@ export const existsOperationRelationshipCategory = async (categoryInternalId: nu
         'SELECT *' +
         ' FROM operations' +
         ' WHERE category_id = ?' +
-        ' LIMIT = 1'
+        ' LIMIT 1'
         , [categoryInternalId]);
 
     return result[0]?.rows.length > 0;

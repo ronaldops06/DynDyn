@@ -6,7 +6,7 @@ import { MMKV } from 'react-native-mmkv';
 import * as I from '../interfaces/interfaces';
 
 const api = axios.create({
-    baseURL: "http://192.168.0.11:5000/api/v1/"
+    baseURL: "http://192.168.18.3:5000/api/v1/"
 });
 
 const isInternetConnected = async (): Promise<boolean> => {

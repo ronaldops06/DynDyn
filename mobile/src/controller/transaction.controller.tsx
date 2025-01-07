@@ -3,11 +3,22 @@ import Moment from 'moment';
 import { Alert } from 'react-native';
 import { constants } from '../constants';
 import * as I from '../interfaces/interfaces';
-import { insertTransaction, selectAllTransactions, selectContAll, selectTransactionById, selectTransactionsTotals, updateTransaction } from '../repository/transaction.repository';
-import {getTransactions, postTransaction, putTransaction} from '../services/transactions.api';
+import {
+    deleteInternalTransaction,
+    existsTransactionRelationshipOperation,
+    insertTransaction,
+    selectAllTransactions,
+    selectContAll,
+    selectTransactionById,
+    selectTransactionsTotals,
+    updateTransaction
+} from '../repository/transaction.repository';
+import {deleteTransaction, getTransactions, postTransaction, putTransaction} from '../services/transactions.api';
 import { loadInternalAccount } from './account.controller';
 import { loadInternalOperation } from './operation.controller';
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
+import {deleteOperation} from "../services/operation.api.tsx";
+import {deleteInternalOperation} from "../repository/operation.repository.tsx";
 
 /**
  * Método responsável por retornar a transação persistida internamente para ser utilizada como referência.
@@ -140,4 +151,21 @@ const populateInternalFields = (transaction: I.Transaction, response: I.Response
     
     if (transaction.ParentTransaction !== null)
         response.data.ParentTransaction.InternalId = transaction.ParentTransaction?.InternalId;
+}
+
+export const excludeTransaction = async (transactionId: number, transactionInternalId: number, navigation: any): Promise<boolean> => {
+
+    let response = await deleteTransaction(transactionId, navigation);
+
+    if (!response.isConnected) {
+        await deleteInternalTransaction(transactionInternalId);
+        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
+        //TO-DO: Guardar o registro em uma fila de envio
+        navigation.goBack();
+    } else if (response.data){
+        await deleteInternalTransaction(transactionInternalId);
+        navigation.goBack();
+    }
+
+    return true;
 }

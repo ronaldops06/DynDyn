@@ -88,6 +88,7 @@ const CustomPicker = (props: PickerParams) => {
                 style={customPickerStyle.picker}
                 selectedValue={props.value}
                 onValueChange={(itemValue, itemIndex) => props.setValue(itemValue)}>
+                <Picker.Item key={0} label="" value={0} />
                 {props.data.map((item, key) => (
                     <Picker.Item key={key} label={item.Name} value={item.Id} />
                 ))}

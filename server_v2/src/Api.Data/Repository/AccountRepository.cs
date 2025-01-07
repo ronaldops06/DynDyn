@@ -29,6 +29,7 @@ namespace Api.Data.Repository
 
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
+                query = query.Include(cta => cta.ParentAccount.Category);
 
                 query = query.AsNoTracking().OrderBy(a => a.Id);
                 result = query.ToList();
@@ -51,6 +52,7 @@ namespace Api.Data.Repository
 
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
+                query = query.Include(cta => cta.ParentAccount.Category);
 
                 query = query.AsNoTracking()
                              .Where(x => x.Id == id);
@@ -71,6 +73,7 @@ namespace Api.Data.Repository
 
             query = query.Include(cat => cat.Category);
             query = query.Include(cta => cta.ParentAccount);
+            query = query.Include(cta => cta.ParentAccount.Category);
 
             if (pageParams.LastSyncDate != null)
                 query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
@@ -90,6 +93,7 @@ namespace Api.Data.Repository
 
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
+                query = query.Include(cta => cta.ParentAccount.Category);
 
                 query = query.AsNoTracking()
                              .Where(x => x.Name == name);

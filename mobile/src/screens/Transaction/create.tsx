@@ -21,7 +21,7 @@ import * as I from '../../interfaces/interfaces';
 import {deleteTransaction} from '../../services/transactions.api';
 import {RootStackParamList} from '../RootStackParams';
 
-import {alterTransaction, createTransaction} from '../../controller/transaction.controller';
+import {alterTransaction, createTransaction, excludeTransaction} from '../../controller/transaction.controller';
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {loadAllAccount} from "../../controller/account.controller.tsx";
 
@@ -200,19 +200,7 @@ const TransactionCreate = () => {
             setValueTime(Moment(currentDate).local().format('HH:mm:ss'));
         }
     };
-
-    const getButtonStyle = (type: number) => {
-        return [transactionCreateStyle.button, (typeSelected == type ?
-            transactionCreateStyle.buttonSelected :
-            transactionCreateStyle.buttonDefault)];
-    };
-
-    const getTextButtonStyle = (type: number) => {
-        return [transactionCreateStyle.textButton, (typeSelected == type ?
-            transactionCreateStyle.textButtonSelected :
-            transactionCreateStyle.textButtonDefault)];
-    };
-
+    
     const getTextValueStyle = () => {
         return [transactionCreateStyle.inputValue, (typeSelected == TypesTransaction.Revenue ?
             transactionCreateStyle.inputValueRevenue :
@@ -239,7 +227,7 @@ const TransactionCreate = () => {
                 },
                 {
                     text: "Sim",
-                    onPress: () => deleteTransaction(transactionId, navigation)
+                    onPress: () => excludeTransaction(transactionId, transactionInternalId, navigation)
                 }
             ],
             {cancelable: false}

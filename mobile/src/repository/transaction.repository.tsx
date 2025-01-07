@@ -131,7 +131,7 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
     return transaction;
 };
 
-export const deleteTransaction = async (internalId: number) => {
+export const deleteInternalTransaction = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(
         'DELETE'
@@ -213,9 +213,24 @@ export const existsTransactionRelationshipOperation = async (operationInternalId
         'SELECT *' +
         ' FROM transactions' +
         ' WHERE operation_id = ?' +
-        ' LIMIT = 1'
+        ' LIMIT 1'
         , [operationInternalId]);
 
+    return result[0]?.rows.length > 0;
+}
+
+export const existsTransactionRelationshipAccount = async (accountInternalId: number): Promise<boolean> => {
+    const db = await openDatabase();
+
+    const result = await db.executeSql(
+        'SELECT *' +
+        ' FROM transactions' +
+        ' WHERE account_id = ?' +
+        '    OR destination_account_id = ?' +
+        ' LIMIT 1'
+        , [ accountInternalId, 
+            accountInternalId ]);
+    
     return result[0]?.rows.length > 0;
 }
 

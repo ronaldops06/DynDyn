@@ -2,6 +2,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import React from 'react';
 
 import Account from '../screens/Account';
+import AccountCreate from "../screens/Account/create.tsx";
 import Category from '../screens/Category';
 import CategoryCreate from '../screens/Category/create';
 import Operation from '../screens/Operation';
@@ -32,6 +33,7 @@ const MainStack = () => {
             <Stack.Screen name="MainTab" component={MainTab} />
             <Stack.Screen name="Dashboard" component={Dashboard} />
             <Stack.Screen name="Account" component={Account} />
+            <Stack.Screen name="AccountCreate" component={AccountCreate} />
             <Stack.Screen name="Transaction" component={Transaction} />
             <Stack.Screen name="TransactionCreate" component={TransactionCreate} />
             <Stack.Screen name="Category" component={Category} />

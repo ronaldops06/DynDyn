@@ -68,9 +68,11 @@ export const putTransaction = async (data: I.Transaction, navigation: any): Prom
     return response;
 };
 
-export const deleteTransaction = async (id: number, navigation: any) => {
+export const deleteTransaction = async (id: number, navigation: any): Promise<I.Response> => {
     let response = {} as I.Response;
     response = await del(`Transaction/${id}`);
 
     validateResponse(Action.Delete, response, navigation);
+    
+    return response;
 };

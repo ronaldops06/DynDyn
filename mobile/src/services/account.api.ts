@@ -1,7 +1,7 @@
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import * as I from "../interfaces/interfaces.tsx";
 import {Alert} from "react-native";
-import {get} from "./api.ts";
+import {del, get, post, put} from "./api.ts";
 
 export const validateResponse = (action: Action, response: I.Response, navigation: any) => {
     if (response.status == StatusHttp.Unauthorized) {
@@ -31,6 +31,38 @@ export const getAccounts = async (params: string, navigation: any) => {
     response = await get(`Account?${params}`);
 
     if (!validateResponse(Action.Get, response, navigation)) return null;
+
+    return response;
+};
+
+export const postAccount = async (data: I.Account, navigation: any): Promise<I.Response> => {
+    let response = {} as I.Response;
+
+    response = await post('Account', data);
+
+    if (!validateResponse(Action.Post, response, navigation)){
+        response.data = null;
+    }
+
+    return response;
+};
+
+export const putAccount = async (data: I.Account, navigation: any): Promise<I.Response> => {
+    let response = {} as I.Response;
+    response = await put(`Account`, data);
+
+    if (!validateResponse(Action.Put, response, navigation)){
+        response.data = null;
+    }
+
+    return response;
+};
+
+export const deleteAccount = async (id: number, navigation: any) : Promise<I.Response> => {
+    let response = {} as I.Response;
+    response = await del(`Account/${id}`);
+
+    validateResponse(Action.Delete, response, navigation);
 
     return response;
 };
