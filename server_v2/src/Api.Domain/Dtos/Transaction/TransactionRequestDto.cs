@@ -2,7 +2,6 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
-using Api.Domain.Enums;
 
 namespace Api.Domain.Dtos.Transaction
 {

@@ -43,6 +43,10 @@ namespace Api.Application.V1.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet]
@@ -66,6 +70,10 @@ namespace Api.Application.V1.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet("Totais")]
@@ -84,6 +92,10 @@ namespace Api.Application.V1.Controllers
                 return Ok(transactionTotalResultDto);
             }
             catch (ArgumentException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+            catch (Exception ex)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
@@ -109,6 +121,10 @@ namespace Api.Application.V1.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Created($"/api/transaction/{transactionResultDto.Id}", transactionResultDto);
         }
@@ -130,6 +146,10 @@ namespace Api.Application.V1.Controllers
                 transactionResultDto = _mapper.Map<TransactionResponseDto>(transactionModel);
             }
             catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

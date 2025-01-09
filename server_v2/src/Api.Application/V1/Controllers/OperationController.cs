@@ -42,6 +42,10 @@ namespace Api.Application.V1.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpGet]
@@ -62,6 +66,10 @@ namespace Api.Application.V1.Controllers
                 return Ok(operationsResultDto);
             }
             catch (ArgumentException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+            catch (Exception ex)
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
@@ -87,6 +95,10 @@ namespace Api.Application.V1.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
 
             return Created($"/api/operation/{operationResultDto.Id}", operationResultDto);
         }
@@ -108,6 +120,10 @@ namespace Api.Application.V1.Controllers
                 operationResultDto = _mapper.Map<OperationResponseDto>(operationModel);
             }
             catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }

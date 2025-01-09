@@ -44,6 +44,10 @@ namespace Application.V1.Controllers
             {
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost]
@@ -63,6 +67,10 @@ namespace Application.V1.Controllers
                 userResultDto = _mapper.Map<UserResponseDto>(userModel);
             }
             catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
@@ -87,6 +95,10 @@ namespace Application.V1.Controllers
                 userResultDto = _mapper.Map<UserResponseDto>(userModel);
             }
             catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
