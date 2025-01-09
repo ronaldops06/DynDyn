@@ -16,6 +16,7 @@ import {style} from "../../styles/styles.ts";
 import {styleCadastro} from '../../styles/styles.cadastro';
 import * as I from "../../interfaces/interfaces.tsx";
 import {alterCategory, createCategory, excludeCategory} from "../../controller/category.controller.tsx";
+import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'CategoryCreate'>;
 const CategoryCreate = () => {
@@ -59,7 +60,11 @@ const CategoryCreate = () => {
                 },
                 {
                     text: "Sim", 
-                    onPress: async () => await excludeCategory(categoryId, categoryInternalId, navigation)
+                    onPress: async () => {
+                        let response = await excludeCategory(categoryId, categoryInternalId, navigation);
+                        validateLogin(response, navigation);
+                        validateSuccess(response, navigation);
+                    }
                 }
             ],
             {cancelable: false}
@@ -91,12 +96,15 @@ const CategoryCreate = () => {
         categoryDTO.Name = name;
         categoryDTO.Type = type ?? 1;
         categoryDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
-        
-        if (isEditing) {
-            await alterCategory(categoryDTO, navigation);
-        } else {
-            await createCategory(categoryDTO, navigation);
-        }
+
+        let response: I.Response = {} as I.Response;
+        if (isEditing)
+            response = await alterCategory(categoryDTO, navigation);
+        else
+            response = await createCategory(categoryDTO, navigation);
+
+        validateLogin(response, navigation);
+        validateSuccess(response, navigation);
     };
 
     return (

@@ -1,7 +1,6 @@
 import * as I from '../interfaces/interfaces';
 import {
     deleteInternalAccount, existsAccountRelationshipAccount,
-    existsAccountRelationshipCategory,
     insertAccount,
     selectAccountById,
     selectAllAccounts,
@@ -13,10 +12,7 @@ import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} 
 import {constants} from "../constants";
 import Moment from "moment/moment";
 import {deleteAccount, getAccounts, postAccount, putAccount} from "../services/account.api.ts";
-import {deleteCategory, postCategory, putCategory} from "../services/category.api.ts";
-import {deleteInternalCategory, insertCategory, updateCategory} from "../repository/category.repository.tsx";
 import {Alert} from "react-native";
-import {existsOperationRelationshipCategory} from "../repository/operation.repository.tsx";
 import {existsTransactionRelationshipAccount} from "../repository/transaction.repository.tsx";
 
 /**
@@ -44,18 +40,22 @@ export const loadInternalAccount = async (account: I.Account): Promise<I.Account
 export const loadAllAccountInternal = async (pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
+    response.isLogged = true;
     response.data = await selectAllAccounts(pageNumber as number);
     response.totalPages = await selectContAllAccounts();
 
     return response;
 }
 
-export const loadAllAccount = async (pageNumber: Number | null, navigation: any): Promise<I.Response> => {
+export const loadAllAccount = async (pageNumber: Number | null): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.account);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
 
-    let response = await getAccounts(params, navigation);
+    let response = await getAccounts(params);
+    
+    if (response && !response.isLogged)
+        return response;
 
     var accounts = response?.data ?? [];
 
@@ -78,8 +78,11 @@ export const loadAllAccount = async (pageNumber: Number | null, navigation: any)
     return await loadAllAccountInternal(pageNumber);
 }
 
-export const createAccount = async (account: I.Account, navigation: any): Promise<boolean> => {
-    let response = await postAccount(account, navigation);
+export const createAccount = async (account: I.Account): Promise<I.Response> => {
+    let response = await postAccount(account);
+
+    if (response && !response.isLogged)
+        return response;
 
     populateInternalFields(account, response);
 
@@ -87,17 +90,18 @@ export const createAccount = async (account: I.Account, navigation: any): Promis
         account = await insertAccount(account);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        return true;
     } else if (response.data !== null) {
         account = await insertAccount(response.data);
-        return true;
     }
 
-    return false;
+    return response;
 }
 
-export const alterAccount = async (account: I.Account, navigation: any | null): Promise<boolean> => {
-    let response = await putAccount(account, navigation);
+export const alterAccount = async (account: I.Account): Promise<I.Response> => {
+    let response = await putAccount(account);
+
+    if (response && !response.isLogged)
+        return response;
 
     populateInternalFields(account, response);
 
@@ -105,13 +109,11 @@ export const alterAccount = async (account: I.Account, navigation: any | null): 
         account = await updateAccount(account);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        return true;
     } else if (response.data !== null) {
         account = await updateAccount(response.data);
-        return true;
     }
 
-    return false;
+    return response;
 }
 
 const populateInternalFields = (account: I.Account, response: I.Response) => {
@@ -126,28 +128,32 @@ const populateInternalFields = (account: I.Account, response: I.Response) => {
 
 }
 
-export const excludeAccount = async (accountId: number, accountInternalId: number, navigation: any | null): Promise<boolean> => {
+export const excludeAccount = async (accountId: number, accountInternalId: number): Promise<I.Response> => {
+    let response: I.Response = {} as I.Response;
+    response.success = false;
+    
     if (await existsTransactionRelationshipAccount(accountInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a conta, pois existem transações vinculadas a ela.");
-        return false;
+        return response;
     }
 
     if (await existsAccountRelationshipAccount(accountInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a conta, pois existem contas filhas relacionadas a ela.");
-        return false;
+        return response;
     }
 
-    let response = await deleteAccount(accountId, navigation);
+    response = await deleteAccount(accountId);
+
+    if (response && !response.isLogged)
+        return response;
 
     if (!response.isConnected) {
         await deleteInternalAccount(accountInternalId);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        return true;
     } else if (response.data) {
         await deleteInternalAccount(accountInternalId);
-        return true;
     }
 
-    return false;
+    return response;
 }

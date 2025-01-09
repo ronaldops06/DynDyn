@@ -245,12 +245,26 @@ const queryBase = () => {
         + '     , ope.status AS operation_status'
         + '     , ope.data_criacao AS operation_data_criacao'
         + '     , ope.data_alteracao AS operation_data_alteracao'
+        + '     , ope_cat.internal_id AS ope_cat_internal_id'
+        + '     , ope_cat.id AS ope_cat_id'
+        + '     , ope_cat.name AS ope_cat_name'
+        + '     , ope_cat.type AS ope_cat_type'
+        + '     , ope_cat.status AS ope_cat_status'
+        + '     , ope_cat.data_criacao AS ope_cat_data_criacao'
+        + '     , ope_cat.data_alteracao AS ope_cat_data_alteracao'
         + '     , act.internal_id AS account_internal_id'
         + '     , act.id AS account_id'
         + '     , act.name AS account_name'
         + '     , act.status AS account_status'
         + '     , act.data_criacao AS account_data_criacao'
         + '     , act.data_alteracao AS account_data_alteracao'
+        + '     , act_cat.internal_id AS act_cat_internal_id'
+        + '     , act_cat.id AS act_cat_id'
+        + '     , act_cat.name AS act_cat_name'
+        + '     , act_cat.type AS act_cat_type'
+        + '     , act_cat.status AS act_cat_status'
+        + '     , act_cat.data_criacao AS act_cat_data_criacao'
+        + '     , act_cat.data_alteracao AS act_cat_data_alteracao'
         + '     , dest_act.internal_id AS dest_act_internal_id'
         + '     , dest_act.id AS dest_act_id'
         + '     , dest_act.name AS dest_act_name'
@@ -268,7 +282,9 @@ const queryBase = () => {
         + '     , par_trn.data_alteracao AS par_trn_data_alteracao'
         + '  FROM transactions trn'
         + '       INNER JOIN operations ope ON trn.operation_id = ope.internal_id'
+        + '       INNER JOIN categories ope_cat ON ope.category_id = ope_cat.internal_id' 
         + '       INNER JOIN accounts act ON trn.account_id = act.internal_id'
+        + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
         + '       LEFT JOIN accounts dest_act ON dest_act.internal_id = trn.destination_account_id'
         + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
 }
@@ -290,7 +306,15 @@ const formatResult = (item: any): Transaction => {
             Name: item.account_name,
             Status: item.account_status,
             ParentAccount: null,
-            Category: {} as Category,
+            Category: {
+                InternalId: item.act_cat_internal_id,
+                Id: item.act_cat_id,
+                Name: item.act_cat_name,
+                Type: item.act_cat_type,
+                Status: item.act_cat_status,
+                DataCriacao: item.act_cat_data_criacao,
+                DataAlteracao: item.act_cat_data_alteracao
+            },
             DataCriacao: item.account_data_criacao,
             DataAlteracao: item.account_data_alteracao
         },
@@ -304,7 +328,15 @@ const formatResult = (item: any): Transaction => {
             Recurrent: (item.operation_recurrent === 1),
             Salary: (item.operation_salary === 1),
             Status: item.operation_status,
-            Category: {} as Category,
+            Category: {
+                InternalId: item.ope_cat_internal_id,
+                Id: item.ope_cat_id,
+                Name: item.ope_cat_name,
+                Type: item.ope_cat_type,
+                Status: item.ope_cat_status,
+                DataCriacao: item.ope_cat_data_criacao,
+                DataAlteracao: item.ope_cat_data_alteracao
+            },
             DataCriacao: item.operation_data_criacao,
             DataAlteracao: item.operation_data_alteracao
         }

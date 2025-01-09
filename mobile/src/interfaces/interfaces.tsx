@@ -5,6 +5,7 @@ export interface Response {
     success: boolean,
     totalPages: number,
     isConnected: boolean,
+    isLogged: boolean,
 };
 
 export interface Login {
@@ -34,8 +35,8 @@ export interface Category {
     Name: string
     Type: number,
     Status: number,
-    DataCriacao: Date,
-    DataAlteracao: Date
+    DataCriacao: Date | null,
+    DataAlteracao: Date | null
 };
 
 export interface Account {

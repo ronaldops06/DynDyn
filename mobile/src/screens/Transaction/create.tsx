@@ -18,7 +18,6 @@ import TextInput from '../../components/CustomTextInput';
 import OperationModal from './OperationModal';
 import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import {deleteTransaction} from '../../services/transactions.api';
 import {RootStackParamList} from '../RootStackParams';
 
 import {alterTransaction, createTransaction, excludeTransaction} from '../../controller/transaction.controller';
@@ -29,6 +28,7 @@ import {style} from '../../styles/styles';
 import {styleCadastro} from '../../styles/styles.cadastro';
 import {transactionCreateStyle} from './create.styles';
 import {constants} from "../../constants";
+import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
 
@@ -84,8 +84,12 @@ const TransactionCreate = () => {
     const [showModal, setShowModal] = useState(false);
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, navigation);
-        let responseAccounts = await loadAllAccount(null, navigation);
+        let responseCategories = await loadAllCategory(TypesCategory.Operation, null);
+        validateLogin(responseCategories, navigation);
+        
+        let responseAccounts = await loadAllAccount(null);
+        validateLogin(responseAccounts, navigation);
+        
         setCategories(responseCategories?.data ?? []);
         setAccounts(responseAccounts?.data ?? []);
     }
@@ -227,7 +231,11 @@ const TransactionCreate = () => {
                 },
                 {
                     text: "Sim",
-                    onPress: () => excludeTransaction(transactionId, transactionInternalId, navigation)
+                    onPress: async () => {
+                        let response= await excludeTransaction(transactionId, transactionInternalId);
+                        validateLogin(response, navigation);
+                        validateSuccess(response, navigation);
+                    }
                 }
             ],
             {cancelable: false}
@@ -293,12 +301,14 @@ const TransactionCreate = () => {
         transactionDTO.Operation = operationDTO;
         transactionDTO.ParentTransaction = null;
 
+        let response: I.Response = {} as I.Response;
+        if (isEditing)
+            response = await alterTransaction(transactionDTO);
+        else
+            response = await createTransaction(transactionDTO);
 
-        if (isEditing) {
-            alterTransaction(transactionDTO, navigation);
-        } else {
-            createTransaction(transactionDTO, navigation);
-        }
+        validateLogin(response, navigation);
+        validateSuccess(response, navigation);
     };
 
     return (

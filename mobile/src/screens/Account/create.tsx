@@ -16,6 +16,7 @@ import {accountCreateStyle} from "./create.styles";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
+import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'AccountCreate'>;
 const AccountCreate = () => {
@@ -42,14 +43,16 @@ const AccountCreate = () => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Account, null, navigation);
+        let responseCategories = await loadAllCategory(TypesCategory.Account, null);
+        validateLogin(responseCategories, navigation);
         
-        let responseAccounts = await loadAllAccount(null, navigation);
+        let responseAccounts = await loadAllAccount(null);
+        validateLogin(responseAccounts, navigation);
 
         setCategories(responseCategories?.data ?? []);
         setAccounts(responseAccounts?.data ?? []);
     }
-
+    
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
@@ -75,9 +78,9 @@ const AccountCreate = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let success = await excludeAccount(accountId, accountInternalId, navigation);
-                        if (success)
-                            navigation.goBack();
+                        let response = await excludeAccount(accountId, accountInternalId);
+                        validateLogin(response, navigation);
+                        validateSuccess(response, navigation);
                     }
                 }
             ],
@@ -112,14 +115,14 @@ const AccountCreate = () => {
         accountDTO.ParentAccount = (parentAccount > 0) ? accounts.find(x => x.Id === parentAccount) ?? null : null;
         accountDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
 
-        let success = false;
+        let response: I.Response = {} as I.Response;
         if (isEditing)
-            success = await alterAccount(accountDTO, navigation);
+            response = await alterAccount(accountDTO);
         else
-            success = await createAccount(accountDTO, navigation);
-        
-        if (success)
-            navigation.goBack();
+            response = await createAccount(accountDTO);
+
+        validateLogin(response, navigation);
+        validateSuccess(response, navigation);
     };
     
     return(

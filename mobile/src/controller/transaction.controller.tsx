@@ -53,7 +53,8 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
 
 export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
     let responseTransactions = {} as I.Response;
-    
+
+    responseTransactions.isLogged = true;
     responseTransactions.data = await selectAllTransactions(mountDateInicio, mountDateFim, pageNumber as number);
     let totalRecords = await selectContAll(mountDateInicio, mountDateFim);
     
@@ -62,13 +63,16 @@ export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDa
     return responseTransactions;
 }
 
-export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number, navigation: any): Promise<I.Response> => {
+export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(mountDateInicio, mountDateFim, constants.operations.transaction);
 
     let params = `DataCriacaoInicio=${Moment(mountDateInicio).format('YYYY-MM-DD HH:mm:ss')}&DataCriacaoFim=${Moment(mountDateFim).format('YYYY-MM-DD HH:mm:ss')}&LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
-    let responseTransactions = await getTransactions(params, navigation);
+    let response = await getTransactions(params);
 
-    var transactions = responseTransactions?.data ?? [];
+    if (response && !response.isLogged)
+        return response;
+
+    var transactions = response?.data ?? [];
     
     for (const item of transactions) {
         var transaction = await selectTransactionById(item.Id);
@@ -91,7 +95,6 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
     }
     
     await setLastSynchronization(synchronization);
-    
     return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
 }
 
@@ -99,8 +102,12 @@ export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim
     return await selectTransactionsTotals(mountDateInicio, mountDateFim);
 }
 
-export const createTransaction = async (transaction: I.Transaction, navigation: any): Promise<I.Transaction> => {
-    let response = await postTransaction(transaction, navigation);
+export const createTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
+    let response = await postTransaction(transaction);
+
+    if (response && !response.isLogged)
+        return response;
+    
     populateInternalFields(transaction, response);
 
     if (transaction.Operation.InternalId === undefined)
@@ -110,17 +117,18 @@ export const createTransaction = async (transaction: I.Transaction, navigation: 
         transaction = await insertTransaction(transaction);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data !== null){
         transaction = await insertTransaction(response.data);
-        navigation.goBack();
     }
 
-    return transaction;
+    return response;
 }
 
-export const alterTransaction = async (transaction: I.Transaction, navigation: any): Promise<I.Transaction> => {
-    let response = await putTransaction(transaction, navigation);
+export const alterTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
+    let response = await putTransaction(transaction);
+    if (response && !response.isLogged)
+        return response;
+    
     populateInternalFields(transaction, response);
 
     if (transaction.Operation.InternalId === undefined)
@@ -130,13 +138,11 @@ export const alterTransaction = async (transaction: I.Transaction, navigation: a
         transaction = await updateTransaction(transaction);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data !== null){
         transaction = await updateTransaction(response.data);
-        navigation.goBack();
     }
 
-    return transaction;
+    return response;
 }
 
 const populateInternalFields = (transaction: I.Transaction, response: I.Response) => {
@@ -153,19 +159,19 @@ const populateInternalFields = (transaction: I.Transaction, response: I.Response
         response.data.ParentTransaction.InternalId = transaction.ParentTransaction?.InternalId;
 }
 
-export const excludeTransaction = async (transactionId: number, transactionInternalId: number, navigation: any): Promise<boolean> => {
+export const excludeTransaction = async (transactionId: number, transactionInternalId: number): Promise<I.Response> => {
 
-    let response = await deleteTransaction(transactionId, navigation);
+    let response = await deleteTransaction(transactionId);
+    if (response && !response.isLogged)
+        return response;
 
     if (!response.isConnected) {
         await deleteInternalTransaction(transactionInternalId);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data){
         await deleteInternalTransaction(transactionInternalId);
-        navigation.goBack();
     }
 
-    return true;
+    return response;
 }

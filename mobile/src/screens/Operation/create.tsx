@@ -17,6 +17,7 @@ import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 import {operationCreateStyle} from "./create.styles";
+import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'OperationCreate'>;
 
@@ -44,8 +45,9 @@ const OperationCreate = () => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, navigation);
-
+        let responseCategories = await loadAllCategory(TypesCategory.Operation, null);
+        validateLogin(responseCategories);
+        
         setCategories(responseCategories?.data ?? []);
     }
 
@@ -75,7 +77,11 @@ const OperationCreate = () => {
                 },
                 {
                     text: "Sim",
-                    onPress: async () => await excludeOperation(operationId, operationInternalId, navigation)
+                    onPress: async () => {
+                        let response = await excludeOperation(operationId, operationInternalId);
+                        validateLogin(response, navigation);
+                        validateSuccess(response, navigation);
+                    }
                 }
             ],
             {cancelable: false}
@@ -106,11 +112,14 @@ const OperationCreate = () => {
         operationDTO.Salary = isSalary ?? false;
         operationDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
 
-        if (isEditing) {
-            await alterOperation(operationDTO, navigation);
-        } else {
-            await createOperation(operationDTO, navigation);
-        }
+        let response: I.Response = {} as I.Response;
+        if (isEditing)
+            response = await alterOperation(operationDTO);
+        else
+            response = await createOperation(operationDTO);
+
+        validateLogin(response, navigation);
+        validateSuccess(response, navigation);
     };
 
     const validateRequiredFields = () => {

@@ -37,18 +37,22 @@ export const loadInternalCategory = async (category: I.Category): Promise<I.Cate
 export const loadAllCategoryInternal = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
+    response.isLogged = true;
     response.data = await selectAllCategories(type as number, pageNumber as number);
     response.totalPages = await selectContAllCategories(type as number);
 
     return response;
 }
 
-export const loadAllCategory = async (type: Number | null, pageNumber: Number | null, navigation: any): Promise<I.Response> => {
+export const loadAllCategory = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.category);
     
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
     
-    let response = await getCategories(params, navigation);
+    let response = await getCategories(params);
+
+    if (response && !response.isLogged)
+        return response;
     
     var categories = response?.data ?? [];
 
@@ -67,26 +71,30 @@ export const loadAllCategory = async (type: Number | null, pageNumber: Number | 
     return await loadAllCategoryInternal(type, pageNumber);
 }
 
-export const createCategory = async (category: I.Category, navigation: any): Promise<I.Category> => {
-    let response = await postCategory(category, navigation);
-
+export const createCategory = async (category: I.Category): Promise<I.Response> => {
+    let response = await postCategory(category);
+    
+    if (response && !response.isLogged)
+        return response;
+    
     populateInternalFields(category, response);
 
     if (!response.isConnected) {
         category = await insertCategory(category);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data !== null){
         category = await insertCategory(response.data);
-        navigation.goBack();
     }
     
-    return category;
+    return response;
 }
 
-export const alterCategory = async (category: I.Category, navigation: any): Promise<I.Category> => {
-    let response = await putCategory(category, navigation);
+export const alterCategory = async (category: I.Category): Promise<I.Response> => {
+    let response = await putCategory(category);
+
+    if (response && !response.isLogged)
+        return response;
 
     populateInternalFields(category, response);
 
@@ -94,13 +102,11 @@ export const alterCategory = async (category: I.Category, navigation: any): Prom
         category = await updateCategory(category);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data !== null){
         category = await updateCategory(response.data);
-        navigation.goBack();
     }
 
-    return category;
+    return response;
 }
 
 const populateInternalFields = (category: I.Category, response: I.Response) => {
@@ -109,28 +115,32 @@ const populateInternalFields = (category: I.Category, response: I.Response) => {
 
 }
 
-export const excludeCategory = async (categoryId: number, categoryInternalId: number, navigation: any): Promise<boolean> => {
+export const excludeCategory = async (categoryId: number, categoryInternalId: number): Promise<I.Response> => {
+    let response: I.Response = {} as I.Response;
+    response.success = false;
+    
     if (await existsAccountRelationshipCategory(categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem contas vinculadas a ela.");
-        return false;
+        return response;
     }
     
     if (await existsOperationRelationshipCategory(categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem operações relacionadas a ela.");
-        return false;
+        return response;
     }
 
-    let response = await deleteCategory(categoryId, navigation);
+    response = await deleteCategory(categoryId);
+
+    if (response && !response.isLogged)
+        return response;
     
     if (!response.isConnected) {
         await deleteInternalCategory(categoryInternalId);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
-        navigation.goBack();
     } else if (response.data){
         await deleteInternalCategory(categoryInternalId);
-        navigation.goBack();
     }
     
-    return true;
+    return response;
 }

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, SafeAreaView, TouchableOpacity} from 'react-native';
+import {View, Text, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/core';
 import {RootStackParamList} from '../RootStackParams';
@@ -10,14 +10,17 @@ import {categoryStyle} from './styles';
 import PlusIcon from "../../assets/plus.svg";
 import * as I from "../../interfaces/interfaces.tsx";
 import CategoryItem from "./CategoryItem";
-import {CustomAlert} from "../../components/CustomAlert";
-import {loadAllCategory, loadAllCategoryInternal} from "../../controller/category.controller.tsx";
-import NavPrevIcon from "../../assets/nav_prev.svg";
-import NavNextIcon from "../../assets/nav_next.svg";
+import {
+    alterCategory,
+    excludeCategory,
+    loadAllCategory,
+    loadAllCategoryInternal
+} from "../../controller/category.controller.tsx";
 
 import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
 import CarouselSelection from "../../components/CarouselSelection";
+import {validateLogin} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Category'>;
 
@@ -86,10 +89,12 @@ const Category = () => {
 
         let responseCategories = null;
 
-        if (isLoadInternal)
+        if (isLoadInternal) {
             responseCategories = await loadAllCategoryInternal(categoryType, pageNumber);
-        else
-            responseCategories = await loadAllCategory(categoryType, pageNumber, navigation);
+        } else {
+            responseCategories = await loadAllCategory(categoryType, pageNumber);
+            validateLogin(responseCategories, navigation);
+        }
 
         setTotalPages(responseCategories?.totalPages ?? 1);
         appendCategories(responseCategories?.data ?? []);
@@ -103,12 +108,56 @@ const Category = () => {
             navigation.navigate("CategoryCreate", {isEditing: true, data: data});
     }
 
-    const onSwipeLeft = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta categoria terá o status alterado. Deseja continuar?", console.log("implementar"));
+    const onSwipeLeft = (data: I.Category) => {
+        Alert.alert("Atenção!",
+            "Esta categoria terá o status alterado. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
+                        let response = await alterCategory(data);
+                        validateLogin(response, navigation);
+
+                        setCategories((prevCategories) =>
+                            prevCategories.map((item) =>
+                                item.Id === data.Id ? data : item
+                            )
+                        );
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
-    const onSwipeRight = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta categoria será excluída. Deseja continuar?", console.log("implementar"));
+    const onSwipeRight = (data: I.Category) => {
+        Alert.alert("Atenção!",
+            "Esta categoria será excluída. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        let response = await excludeCategory(data.Id, data.InternalId);
+                        validateLogin(response, navigation);
+
+                        if (response.success){
+                            setIsLoadInternal(true);
+                            setCategories([]);
+                        }
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
     const handleNewClick = () => {

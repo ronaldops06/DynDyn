@@ -1,7 +1,7 @@
 import {style} from "../../styles/styles.ts";
 import {categoryStyle} from "../Category/styles";
 import PlusIcon from "../../assets/plus.svg";
-import {SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import React, {useEffect, useState} from "react";
 import {useNavigation} from "@react-navigation/core";
 import _ from 'lodash';
@@ -9,12 +9,19 @@ import _ from 'lodash';
 import {RootStackParamList} from '../RootStackParams';
 import {StackNavigationProp} from "@react-navigation/stack";
 import * as I from "../../interfaces/interfaces.tsx";
-import {loadAllOperation, loadAllOperationInternal} from "../../controller/operation.controller.tsx";
+import {
+    alterOperation,
+    excludeOperation,
+    loadAllOperation,
+    loadAllOperationInternal
+} from "../../controller/operation.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
 import {CustomAlert} from "../../components/CustomAlert";
 import {constants} from "../../constants";
 import CarouselSelection from "../../components/CarouselSelection";
 import OperationItem from "./OperationItem";
+import {validateLogin} from "../../utils.ts";
+import {alterAccount, excludeAccount} from "../../controller/account.controller.tsx";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Operation'>;
 
@@ -77,10 +84,12 @@ const Operation = () => {
 
         let responseOperations = null;
 
-        if (isLoadInternal)
+        if (isLoadInternal) {
             responseOperations = await loadAllOperationInternal(operationType, pageNumber);
-        else
-            responseOperations = await loadAllOperation(operationType, pageNumber, navigation);
+        } else {
+            responseOperations = await loadAllOperation(operationType, pageNumber);
+            validateLogin(responseOperations, navigation);
+        }
 
         setTotalPages(responseOperations?.totalPages ?? 1);
         appendOperations(responseOperations?.data ?? []);
@@ -98,12 +107,56 @@ const Operation = () => {
             navigation.navigate("OperationCreate", {isEditing: true, data: data});
     }
 
-    const onSwipeLeft = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta operação terá o status alterado. Deseja continuar?", console.log("implementar"));
+    const onSwipeLeft = (data: I.Operation) => {
+        Alert.alert("Atenção!",
+            "Esta operação terá o status alterado. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
+                        let response = await alterOperation(data);
+                        validateLogin(response, navigation);
+
+                        setOperations((prevOperations) =>
+                            prevOperations.map((item) =>
+                                item.Id === data.Id ? data : item
+                            )
+                        );
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
-    const onSwipeRight = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta operação será excluída. Deseja continuar?", console.log("implementar"));
+    const onSwipeRight = (data: I.Operation) => {
+        Alert.alert("Atenção!",
+            "Esta operação será excluída. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        let response = await excludeOperation(data.Id, data.InternalId);
+                        validateLogin(response, navigation);
+
+                        if (response.success){
+                            setIsLoadInternal(true);
+                            setOperations([]);
+                        }
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
     return (

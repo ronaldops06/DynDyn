@@ -19,6 +19,7 @@ import CustomScroll from "../../components/CustomScroll";
 import PlusIcon from "../../assets/plus.svg";
 import AccountItem from "./AccountItem";
 import {constants} from "../../constants";
+import { validateLogin } from '../../utils.ts';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Account'>;
 
@@ -67,10 +68,12 @@ const Account = () => {
 
         let responseAccounts = null;
 
-        if (isLoadInternal)
+        if (isLoadInternal) {
             responseAccounts = await loadAllAccountInternal(pageNumber);
-        else
-            responseAccounts = await loadAllAccount(pageNumber, navigation);
+        } else {
+            responseAccounts = await loadAllAccount(pageNumber);
+            validateLogin(responseAccounts, navigation);
+        }
 
         setTotalPages(responseAccounts?.totalPages ?? 1);
         appendAccounts(responseAccounts?.data ?? []);
@@ -97,7 +100,8 @@ const Account = () => {
                     text: "Sim",
                     onPress: async () => {
                         data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
-                        data = await alterAccount(data, null);
+                        let response = await alterAccount(data);
+                        validateLogin(response, navigation);
 
                         setAccounts((prevAccounts) =>
                             prevAccounts.map((item) =>
@@ -122,8 +126,10 @@ const Account = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let success = await excludeAccount(data.Id, data.InternalId, null);
-                        if (success){
+                        let response = await excludeAccount(data.Id, data.InternalId);
+                        validateLogin(response, navigation);
+                        
+                        if (response.success){
                             setIsLoadInternal(true);
                             setAccounts([]);
                         }

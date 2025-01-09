@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import {SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 
 import {CustomAlert} from '../../components/CustomAlert';
@@ -14,6 +14,7 @@ import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import PlusIcon from '../../assets/plus.svg';
 import {
+    alterTransaction, excludeTransaction,
     loadAllTransactionsInternal,
     loadAndPersistAll,
     loadTotalsTransactions
@@ -21,6 +22,9 @@ import {
 import {style} from '../../styles/styles';
 import {transactionStyle} from './styles';
 import CustomScroll from "../../components/CustomScroll";
+import {validateLogin} from "../../utils.ts";
+import {constants} from "../../constants";
+import {alterAccount, excludeAccount} from "../../controller/account.controller.tsx";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Transaction'>;
 
@@ -73,10 +77,12 @@ const Transaction = () => {
 
             let responseTransactions = null;
 
-            if (isLoadInternal)
+            if (isLoadInternal) {
                 responseTransactions = await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
-            else
-                responseTransactions = await loadAndPersistAll(mountDateInicio, mountDateFim, pageNumber, navigation);
+            } else {
+                responseTransactions = await loadAndPersistAll(mountDateInicio, mountDateFim, pageNumber);
+                validateLogin(responseTransactions, navigation);
+            }
 
             setTotalPages(responseTransactions?.totalPages ?? 1);
             appendTransactions(responseTransactions?.data ?? []);
@@ -146,11 +152,55 @@ const Transaction = () => {
     }
 
     const onSwipeLeft = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta transação terá o status alterado. Deseja continuar?", console.log("implementar"));
+        Alert.alert("Atenção!",
+            "Esta transação terá o status alterado. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        data.Consolidated = !data.Consolidated;
+                        let response = await alterTransaction(data);
+                        validateLogin(response, navigation);
+
+                        setTransactions((prevTransactions) =>
+                            prevTransactions.map((item) =>
+                                item.Id === data.Id ? data : item
+                            )
+                        );
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
     const onSwipeRight = (data: I.Transaction) => {
-        CustomAlert("Atenção", "Esta transação será excluída. Deseja continuar?", console.log("implementar"));
+        Alert.alert("Atenção!",
+            "Esta transação será excluída. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        let response = await excludeTransaction(data.Id, data.InternalId);
+                        validateLogin(response, navigation);
+
+                        if (response.success){
+                            setIsLoadInternal(true);
+                            setTransactions([]);
+                        }
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     }
 
     const handleNewClick = () => {

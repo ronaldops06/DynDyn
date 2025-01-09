@@ -2,13 +2,9 @@ import { Alert } from 'react-native';
 import { Action, StatusHttp } from '../enums/enums';
 import * as I from '../interfaces/interfaces';
 import { del, get, post, put } from './api';
+import {validateLogin} from "./helper.api.ts";
 
-export const validateResponse = (action: Action, response: I.Response, navigation: any) => {
-    if (response.status == StatusHttp.Unauthorized) {
-        navigation.navigate("SignIn");
-        return false;
-    }
-
+export const validateResponse = (action: Action, response: I.Response) => {
     if (!response.success) {
         Alert.alert("Erro!", response.error);
         return false;
@@ -26,53 +22,73 @@ export const validateResponse = (action: Action, response: I.Response, navigatio
     return true;
 };
 
-export const getTransactions = async (params: string, navigation: any) => {
+export const getTransactions = async (params: string) => {
     let response = {} as I.Response;
     response = await get(`Transaction?${params}`);
 
-    if (!validateResponse(Action.Get, response, navigation)) return null;
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+    
+    if (!validateResponse(Action.Get, response)) return null;
 
     return response;
 };
 
-export const getTotalsTransactions = async (params: string, navigation: any) => {
+export const getTotalsTransactions = async (params: string) => {
 
     let response = {} as I.Response;
     response = await get(`Transaction/Totais?${params}`);
 
-    if (!validateResponse(Action.Get, response, navigation)) return null;
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+    
+    if (!validateResponse(Action.Get, response)) return null;
 
     return response;
 };
 
-export const postTransaction = async (data: I.Transaction, navigation: any): Promise<I.Response> => {
+export const postTransaction = async (data: I.Transaction): Promise<I.Response> => {
     let response = {} as I.Response;
 
     response = await post('Transaction', data);
 
-    if (!validateResponse(Action.Post, response, navigation)){
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+    
+    if (!validateResponse(Action.Post, response)){
         response.data = null;
     }
 
     return response;
 };
 
-export const putTransaction = async (data: I.Transaction, navigation: any): Promise<I.Response> => {
+export const putTransaction = async (data: I.Transaction): Promise<I.Response> => {
     let response = {} as I.Response;
     response = await put(`Transaction`, data);
 
-    if (!validateResponse(Action.Put, response, navigation)){
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+    
+    if (!validateResponse(Action.Put, response)){
         response.data = null;
     }
 
     return response;
 };
 
-export const deleteTransaction = async (id: number, navigation: any): Promise<I.Response> => {
+export const deleteTransaction = async (id: number): Promise<I.Response> => {
     let response = {} as I.Response;
     response = await del(`Transaction/${id}`);
 
-    validateResponse(Action.Delete, response, navigation);
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+    
+    validateResponse(Action.Delete, response);
     
     return response;
 };
