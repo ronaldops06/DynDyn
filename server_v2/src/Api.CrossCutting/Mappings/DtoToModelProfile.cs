@@ -9,6 +9,7 @@ using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Transaction;
 using System;
+using Api.Domain.Dtos.Balance;
 
 namespace CrossCutting.Mappings
 {
@@ -54,6 +55,10 @@ namespace CrossCutting.Mappings
             CreateMap<TransactionModel, TransactionResponseDto>()
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => (src.Consolidated == SituationType.Sim) ? true : false));
             CreateMap<TransactionTotalModel, TransactionTotalResponseDto>();
+
+            CreateMap<BalanceRequestDto, BalanceModel>()
+                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.Account.Id));
+            CreateMap<BalanceModel, BalanceResponseDto>();
         }
     }
 }

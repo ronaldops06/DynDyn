@@ -1,7 +1,6 @@
+using System;
 using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
-using System.ComponentModel.DataAnnotations;
-using System;
 
 namespace Api.Domain.Dtos.Transaction
 {

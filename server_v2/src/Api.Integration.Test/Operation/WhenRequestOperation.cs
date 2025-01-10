@@ -29,12 +29,13 @@ namespace Api.Integration.Test.Operation
             //Post - Category
             response = await PostJsonAsync(CategoryRequestDto, $"{HostApi}/Category", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            var registroCategoryPost = JsonConvert.DeserializeObject<CategoryResponseDto>(postResult);
+            var registroCategoryPost = JsonConvert.DeserializeObject<CategoryResponseDto>(postResult);  
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroCategoryPost.Id == 0);
-
+            
             CategoryRequestDto.Id = registroCategoryPost.Id;
+            OperationBaseDto.OperationCategory.CategoryId = registroCategoryPost.Id;
 
             //Post
             response = await PostJsonAsync(OperationRequestDto, $"{HostApi}/Operation", Client);

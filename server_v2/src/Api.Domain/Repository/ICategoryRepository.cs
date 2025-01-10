@@ -1,8 +1,6 @@
 using System.Threading.Tasks;
 using Api.Domain.Entities;
-using Domain.Helpers;
 using Domain.Interfaces;
-using Domain.Models;
 
 namespace Api.Domain.Repository
 {

@@ -20,6 +20,7 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddScoped<IAccountRepository, AccountRepository>();
             serviceCollection.AddScoped<IOperationRepository, OperationRepository>();
             serviceCollection.AddScoped<ITransactionRepository, TransactionRepository>();
+            serviceCollection.AddScoped<IBalanceRepository, BalanceRepository>();
 
             if (Environment.GetEnvironmentVariable("DATABASE").ToLower() == "POSTGRES".ToLower())
                 serviceCollection.AddDbContext<SomniaContext>(

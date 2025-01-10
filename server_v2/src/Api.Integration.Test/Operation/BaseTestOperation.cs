@@ -41,8 +41,7 @@ namespace Api.Integration.Test.Operation
 
             var categoryBase = new CategoryBase
             {
-                CategoryId = 1,
-                CategoryNome = "Diversos",
+                CategoryNome = "Teste Integração",
                 CategoryTipo = (int)CategoryType.Operação,
                 CategoryStatus = (int)StatusType.Ativo
             };
