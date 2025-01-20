@@ -13,7 +13,7 @@ namespace Api.Service.Test.Balance
             var balanceEntityResult = Mapper.Map<BalanceEntity>(balanceModelResult);
             var balanceEntity = Mapper.Map<BalanceEntity>(balanceModel);
 
-            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<DateTime>())).ReturnsAsync(It.IsAny<BalanceEntity>());
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(It.IsAny<BalanceEntity>());
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<BalanceEntity>())).ReturnsAsync(balanceEntityResult);
             BalanceService service = new BalanceService(RepositoryMock.Object, Mapper);
 

@@ -52,8 +52,10 @@ namespace Api.Application.Test.Balance
                 Debit = random.Next(10000),
                 SalaryCredit = random.Next(8000),
                 SalaryDebit = random.Next(1500),
-                BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture),
+                Inflow = random.Next(10000),
+                Outflow = random.Next(2500),
+                Month = 1,
+                Year = 2025,
                 Account = accountModel,
                 AccountId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
@@ -84,8 +86,10 @@ namespace Api.Application.Test.Balance
                 Debit = random.Next(10000),
                 SalaryCredit = random.Next(8000),
                 SalaryDebit = random.Next(1500),
-                BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture),
+                Inflow = random.Next(10000),
+                Outflow = random.Next(2500),
+                Month = 1,
+                Year = 2025,
                 Account = accountModel,
                 AccountId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
@@ -116,8 +120,10 @@ namespace Api.Application.Test.Balance
                 Debit = random.Next(10000),
                 SalaryCredit = random.Next(8000),
                 SalaryDebit = random.Next(1500),
-                BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture),
+                Inflow = random.Next(10000),
+                Outflow = random.Next(2500),
+                Month = 1,
+                Year = 2025,
                 Account = accountModel,
                 AccountId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
@@ -144,7 +150,10 @@ namespace Api.Application.Test.Balance
                 Debit = BalanceModel.Debit,
                 SalaryCredit = BalanceModel.SalaryCredit,
                 SalaryDebit = BalanceModel.SalaryDebit,
-                BalanceDate = BalanceModel.BalanceDate,
+                Inflow = BalanceModel.Inflow,
+                Outflow = BalanceModel.Outflow,
+                Month = 1,
+                Year = 2025,
                 Account = accountRequestDto,
             };
 
@@ -169,7 +178,10 @@ namespace Api.Application.Test.Balance
             Assert.Equal(balanceRequestDto.Debit, balanceResponseDto.Debit);
             Assert.Equal(balanceRequestDto.SalaryCredit, balanceResponseDto.SalaryCredit);
             Assert.Equal(balanceRequestDto.SalaryDebit, balanceResponseDto.SalaryDebit);
-            Assert.Equal(balanceRequestDto.BalanceDate, balanceResponseDto.BalanceDate);
+            Assert.Equal(balanceRequestDto.Inflow, balanceResponseDto.Inflow);
+            Assert.Equal(balanceRequestDto.Outflow, balanceResponseDto.Outflow);
+            Assert.Equal(balanceRequestDto.Month, balanceResponseDto.Month);
+            Assert.Equal(balanceRequestDto.Year, balanceResponseDto.Year);
             Assert.Equal(balanceRequestDto.Account.Id, balanceResponseDto.Account.Id);
         }
     }

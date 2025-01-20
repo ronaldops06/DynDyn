@@ -31,7 +31,10 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
         Assert.Equal(balanceEntitySource.Debit, balanceEntityDest.Debit);
         Assert.Equal(balanceEntitySource.SalaryCredit, balanceEntityDest.SalaryCredit);
         Assert.Equal(balanceEntitySource.SalaryDebit, balanceEntityDest.SalaryDebit); 
-        Assert.Equal(balanceEntitySource.BalanceDate, balanceEntityDest.BalanceDate);
+        Assert.Equal(balanceEntitySource.Inflow, balanceEntityDest.Inflow); 
+        Assert.Equal(balanceEntitySource.Outflow, balanceEntityDest.Outflow); 
+        Assert.Equal(balanceEntitySource.Month, balanceEntityDest.Month);
+        Assert.Equal(balanceEntitySource.Year, balanceEntityDest.Year);
         Assert.Equal(balanceEntitySource.AccountId, balanceEntityDest.AccountId);
         Assert.Equal(balanceEntitySource.Account.Id, balanceEntityDest.Account.Id);
     }
@@ -58,8 +61,10 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
                 Debit = 1251.00,
                 SalaryCredit = 5450.00,
                 SalaryDebit = 1050.00,
-                BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture),
+                Inflow = 6800,
+                Outflow = 7000,
+                Month = 1,
+                Year = 2025,
                 Account = accountEntity,
                 AccountId = accountEntity.Id
             };

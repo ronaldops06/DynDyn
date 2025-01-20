@@ -38,7 +38,10 @@ public class BaseTestBalance : BaseIntegration
         public Double BalanceDebit { get; set; }
         public Double? BalanceSalaryCredit { get; set; }
         public Double? BalanceSalaryDebit { get; set; }
-        public DateTime BalanceBalanceDate { get; set; }
+        public Double BalanceInflow { get; set; }
+        public Double BalanceOutflow { get; set; }
+        public int BalanceMonth { get; set; }
+        public int BalanceYear { get; set; }
         public int BalanceAccountId { get; set; }
         public AccountBase BalanceAccount { get; set; }
     }
@@ -86,8 +89,10 @@ public class BaseTestBalance : BaseIntegration
             BalanceDebit = random.Next(10000),
             BalanceSalaryCredit = random.Next(8000),
             BalanceSalaryDebit = random.Next(1500),
-            BalanceBalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture),
+            BalanceInflow = random.Next(10000),
+            BalanceOutflow = random.Next(2500),
+            BalanceMonth = 1,
+            BalanceYear = 2025,
             BalanceAccount = accountBase
         };
         
@@ -103,8 +108,10 @@ public class BaseTestBalance : BaseIntegration
             Debit = random.Next(10000),
             SalaryCredit = random.Next(8000),
             SalaryDebit = random.Next(1500),
-            BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture),
+            Inflow = random.Next(10000),
+            Outflow = random.Next(2500),
+            Month = 1,
+            Year = 2025,
             Account = null
         };
     }
@@ -139,7 +146,10 @@ public class BaseTestBalance : BaseIntegration
             Debit = BalanceBaseDto.BalanceDebit,
             SalaryCredit =  BalanceBaseDto.BalanceSalaryCredit,
             SalaryDebit = BalanceBaseDto.BalanceSalaryDebit,
-            BalanceDate = BalanceBaseDto.BalanceBalanceDate,
+            Inflow =  BalanceBaseDto.BalanceInflow,
+            Outflow = BalanceBaseDto.BalanceOutflow,
+            Month = BalanceBaseDto.BalanceMonth,
+            Year = BalanceBaseDto.BalanceYear,
             Account = AccountRequestDto,
         };
     }

@@ -62,10 +62,26 @@ namespace Api.Domain.Dtos.Balance
         public Double? SalaryDebit { get; set; }
         
         /// <summary>
-        /// Data base do saldo (corresponde ao mês).
+        /// Total de entradas, considerando salário, transferência e todo o resto
+        /// </summary>
+        public Double Inflow { get; set; }
+        
+        /// <summary>
+        /// Total de saídas, considerando salário, transferência e todo o resto
+        /// </summary>
+        public Double Outflow { get; set; }
+        
+        /// <summary>
+        /// Mẽs correspondente ao saldo.
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
-        public DateTime BalanceDate { get; set; }
+        public int Month { get; set; }
+        
+        /// <summary>
+        /// Ano correspondente ao saldo.
+        /// </summary>
+        [Required(ErrorMessage = "{0} é um campo obrigatório")]
+        public int Year { get; set; }
         
         /// <summary>
         /// Conta correspondenta ao saldo.

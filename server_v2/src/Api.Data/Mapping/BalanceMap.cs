@@ -15,8 +15,9 @@ namespace Data.Mapping
 
             builder.HasKey(u => u.Id);
 
-            builder.HasIndex(u => u.BalanceDate)
-                .IsUnique();
+            builder.HasIndex(u => u.Year);
+            
+            builder.HasIndex(u => u.Month);
 
             builder.Property(u => u.Value)
                 .IsRequired();
@@ -40,6 +41,10 @@ namespace Data.Mapping
             builder.Property(u => u.SalaryDebit);
             
             builder.Property(u => u.SalaryDebit);
+            
+            builder.Property(u => u.Inflow);
+            
+            builder.Property(u => u.Outflow);
 
             builder.HasOne(u => u.Account)
                 .WithMany()

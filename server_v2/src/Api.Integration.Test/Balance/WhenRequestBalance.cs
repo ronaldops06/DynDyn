@@ -67,7 +67,8 @@ namespace Api.Integration.Test.Balance
             Assert.Equal(BalanceBaseDto.BalanceDebit, registroPost.Debit);
             Assert.Equal(BalanceBaseDto.BalanceSalaryCredit, registroPost.SalaryCredit);
             Assert.Equal(BalanceBaseDto.BalanceSalaryDebit, registroPost.SalaryDebit);
-            Assert.Equal(BalanceBaseDto.BalanceBalanceDate, registroPost.BalanceDate);
+            Assert.Equal(BalanceBaseDto.BalanceInflow, registroPost.Inflow);
+            Assert.Equal(BalanceBaseDto.BalanceOutflow, registroPost.Outflow);
             Assert.Equal(BalanceBaseDto.BalanceAccount.AccountId, registroPost.Account.Id);
             Assert.Equal(DateTime.Now.Year, registroPost.DataCriacao?.Year);
             Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);

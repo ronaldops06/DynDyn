@@ -26,8 +26,10 @@ public class BalanceMapper : BaseTestService
             Debit = 1251.00,
             SalaryCredit = 5450.00,
             SalaryDebit = 1050.00,
-            BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture),
+            Inflow = 8700.70,
+            Outflow = 3500,
+            Month = 1,
+            Year = 2025,
             Account = accountModel,
             AccountId = accountModel.Id
         };
@@ -45,7 +47,10 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(entity.Debit, model.Debit);
         Assert.Equal(entity.SalaryCredit, model.SalaryCredit);
         Assert.Equal(entity.SalaryDebit, model.SalaryDebit); 
-        Assert.Equal(entity.BalanceDate, model.BalanceDate);
+        Assert.Equal(entity.Inflow, model.Inflow);
+        Assert.Equal(entity.Outflow, model.Outflow); 
+        Assert.Equal(entity.Month, model.Month);
+        Assert.Equal(entity.Year, model.Year);
         Assert.Equal(entity.AccountId, model.AccountId);
         Assert.Equal(entity.Account.Id, model.Account.Id);
 
@@ -61,7 +66,10 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(balanceModel.Debit, entity.Debit);
         Assert.Equal(balanceModel.SalaryCredit, entity.SalaryCredit);
         Assert.Equal(balanceModel.SalaryDebit, entity.SalaryDebit); 
-        Assert.Equal(balanceModel.BalanceDate, entity.BalanceDate);
+        Assert.Equal(balanceModel.Inflow, entity.Inflow);
+        Assert.Equal(balanceModel.Outflow, entity.Outflow); 
+        Assert.Equal(balanceModel.Month, entity.Month);
+        Assert.Equal(balanceModel.Year, entity.Year);
         Assert.Equal(balanceModel.AccountId, entity.AccountId);
         Assert.Equal(balanceModel.Account.Id, entity.Account.Id);
         Assert.Equal(balanceModel.DataCriacao, entity.DataCriacao);
@@ -90,8 +98,10 @@ public class BalanceMapper : BaseTestService
                     Debit = 1251.00,
                     SalaryCredit = 5450.00,
                     SalaryDebit = 1050.00,
-                    BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                        CultureInfo.InvariantCulture),
+                    Inflow = 8700.70,
+                    Outflow = 3500,
+                    Month = 1,
+                    Year = 2025,
                     Account = accountEntity,
                     AccountId = accountEntity.Id
                 };
@@ -117,7 +127,10 @@ public class BalanceMapper : BaseTestService
                 Assert.Equal(listModel[i].Debit, listEntity[i].Debit);
                 Assert.Equal(listModel[i].SalaryCredit, listEntity[i].SalaryCredit);
                 Assert.Equal(listModel[i].SalaryDebit, listEntity[i].SalaryDebit); 
-                Assert.Equal(listModel[i].BalanceDate, listEntity[i].BalanceDate);
+                Assert.Equal(listModel[i].Inflow, listEntity[i].Inflow);
+                Assert.Equal(listModel[i].Outflow, listEntity[i].Outflow); 
+                Assert.Equal(listModel[i].Month, listEntity[i].Month);
+                Assert.Equal(listModel[i].Year, listEntity[i].Year);
                 Assert.Equal(listModel[i].AccountId, listEntity[i].AccountId);
                 Assert.Equal(listModel[i].Account.Id, listEntity[i].Account.Id);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);

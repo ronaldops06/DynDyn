@@ -72,8 +72,10 @@ public class BalanceTest : BaseTestService
                 Debit = random.Next(10000),
                 SalaryCredit = random.Next(8000),
                 SalaryDebit = random.Next(1500),
-                BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                    CultureInfo.InvariantCulture),
+                Inflow = random.Next(10000),
+                Outflow = random.Next(8000),
+                Month = 1,
+                Year = 2025,
                 Account = accountModel,
                 AccountId = accountModel.Id
             };
@@ -98,8 +100,10 @@ public class BalanceTest : BaseTestService
             Debit = 1251.00,
             SalaryCredit = 5450.00,
             SalaryDebit = 1050.00,
-            BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                CultureInfo.InvariantCulture),
+            Inflow = 6800,
+            Outflow = 7000,
+            Month = 1,
+            Year = 2025,
             Account = accountModelBase,
             AccountId = accountModelBase.Id
         };
@@ -117,7 +121,10 @@ public class BalanceTest : BaseTestService
             Debit = balanceModel.Debit,
             SalaryCredit = balanceModel.SalaryCredit,
             SalaryDebit = balanceModel.SalaryDebit,
-            BalanceDate = balanceModel.BalanceDate,
+            Inflow = balanceModel.Inflow,
+            Outflow = balanceModel.Outflow,
+            Month = balanceModel.Month,
+            Year = balanceModel.Year,
             Account = balanceModel.Account,
             AccountId = balanceModel.AccountId,
             DataCriacao = DateTime.UtcNow,
@@ -137,7 +144,10 @@ public class BalanceTest : BaseTestService
             Debit = 980,
             SalaryCredit = 3800,
             SalaryDebit = 680,
-            BalanceDate = balanceModel.BalanceDate,
+            Inflow = 6800,
+            Outflow = 7000,
+            Month = 1,
+            Year = 2025,
             Account = balanceModel.Account,
             AccountId = balanceModel.AccountId,
         };
@@ -155,7 +165,10 @@ public class BalanceTest : BaseTestService
             Debit = balanceModelUpdate.Debit,
             SalaryCredit = balanceModelUpdate.SalaryCredit,
             SalaryDebit = balanceModelUpdate.SalaryDebit,
-            BalanceDate = balanceModelUpdate.BalanceDate,
+            Month = balanceModelUpdate.Month,
+            Year = balanceModelUpdate.Year,
+            Inflow = balanceModelUpdate.Inflow,
+            Outflow = balanceModelUpdate.Outflow,
             Account = balanceModelUpdate.Account,
             AccountId = balanceModelUpdate.AccountId,
             DataCriacao = DateTime.UtcNow,
@@ -177,7 +190,10 @@ public class BalanceTest : BaseTestService
         Assert.Equal(balanceModelSource.Debit, balanceModelDest.Debit);
         Assert.Equal(balanceModelSource.SalaryCredit, balanceModelDest.SalaryCredit);
         Assert.Equal(balanceModelSource.SalaryDebit, balanceModelDest.SalaryDebit);
-        Assert.Equal(balanceModelSource.BalanceDate, balanceModelDest.BalanceDate);
+        Assert.Equal(balanceModelSource.Inflow, balanceModelDest.Inflow);
+        Assert.Equal(balanceModelSource.Outflow, balanceModelDest.Outflow);
+        Assert.Equal(balanceModelSource.Month, balanceModelDest.Month);
+        Assert.Equal(balanceModelSource.Year, balanceModelDest.Year);
         Assert.Equal(balanceModelSource.AccountId, balanceModelDest.AccountId);
         Assert.Equal(balanceModelSource.Account.Id, balanceModelDest.Account.Id);
     }

@@ -76,7 +76,7 @@ namespace Data.Repository
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
-        public async Task<BalanceEntity> SelectByUkAsync(int accountId, DateTime balanceDate)
+        public async Task<BalanceEntity> SelectByUkAsync(int accountId, int month, int year)
         {
             var result = new BalanceEntity();
 
@@ -87,7 +87,7 @@ namespace Data.Repository
                 query = query.Include(act => act.Account);
 
                 query = query.AsNoTracking()
-                    .Where(x => x.AccountId == accountId && x.BalanceDate >= balanceDate);
+                    .Where(x => x.AccountId == accountId && x.Month == month && x.Year == year);
 
                 result = query.FirstOrDefault();
             }

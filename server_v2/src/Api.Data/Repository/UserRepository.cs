@@ -1,15 +1,13 @@
-﻿using Data.Context;
-using Domain.Entities;
-using Domain.Repository;
-using System.Data;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
+using Data.Context;
+using Domain.Entities;
 using Domain.Helpers;
-using System;
 using Domain.Models;
-using System.Collections.Generic;
-using Microsoft.EntityFrameworkCore.Query;
+using Domain.Repository;
+using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repository
 {

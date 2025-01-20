@@ -44,8 +44,10 @@ public class BalanceMapper : BaseTestApplication
                     Debit = 1251.00,
                     SalaryCredit = 5450.00,
                     SalaryDebit = 1050.00,
-                    BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                        CultureInfo.InvariantCulture),
+                    Inflow = 8700.70,
+                    Outflow = 3500,
+                    Month = 1,
+                    Year = 2025,
                     Account = accountRequestDto
                 };
                 
@@ -62,7 +64,10 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(model.Debit, balanceRequestDto.Debit);
                 Assert.Equal(model.SalaryCredit, balanceRequestDto.SalaryCredit);
                 Assert.Equal(model.SalaryDebit, balanceRequestDto.SalaryDebit); 
-                Assert.Equal(model.BalanceDate, balanceRequestDto.BalanceDate);
+                Assert.Equal(model.Inflow, balanceRequestDto.Inflow); 
+                Assert.Equal(model.Outflow, balanceRequestDto.Outflow); 
+                Assert.Equal(model.Month, balanceRequestDto.Month);
+                Assert.Equal(model.Year, balanceRequestDto.Year);
                 Assert.Equal(model.AccountId, balanceRequestDto.Account.Id);
                 Assert.Equal(model.Account.Id, balanceRequestDto.Account.Id);
     
@@ -79,7 +84,10 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(balanceResponseDto.Debit, model.Debit);
                 Assert.Equal(balanceResponseDto.SalaryCredit, model.SalaryCredit);
                 Assert.Equal(balanceResponseDto.SalaryDebit, model.SalaryDebit); 
-                Assert.Equal(balanceResponseDto.BalanceDate, model.BalanceDate);
+                Assert.Equal(balanceResponseDto.Inflow, model.Inflow); 
+                Assert.Equal(balanceResponseDto.Outflow, model.Outflow); 
+                Assert.Equal(balanceResponseDto.Month, model.Month);
+                Assert.Equal(balanceResponseDto.Year, model.Year);
                 Assert.Equal(balanceResponseDto.Account.Id, model.AccountId);
                 Assert.Equal(balanceResponseDto.Account.Id, model.Account.Id);
             }
@@ -120,8 +128,10 @@ public class BalanceMapper : BaseTestApplication
                     Debit = random.Next(10000),
                     SalaryCredit = random.Next(8000),
                     SalaryDebit = random.Next(1500),
-                    BalanceDate = DateTime.ParseExact("2025-01-31 23:59:59", "yyyy-MM-dd HH:mm:ss",
-                        CultureInfo.InvariantCulture),
+                    Inflow = random.Next(10000),
+                    Outflow = random.Next(5000),
+                    Month = 1,
+                    Year = 2025,
                     Account = accountModel,
                     AccountId = accountModel.Id
                 };
@@ -147,7 +157,10 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(listDto[i].Debit, listModel[i].Debit);
                 Assert.Equal(listDto[i].SalaryCredit, listModel[i].SalaryCredit);
                 Assert.Equal(listDto[i].SalaryDebit, listModel[i].SalaryDebit); 
-                Assert.Equal(listDto[i].BalanceDate, listModel[i].BalanceDate);
+                Assert.Equal(listDto[i].Inflow, listModel[i].Inflow); 
+                Assert.Equal(listDto[i].Outflow, listModel[i].Outflow); 
+                Assert.Equal(listDto[i].Month, listModel[i].Month);
+                Assert.Equal(listDto[i].Year, listModel[i].Year);
                 Assert.Equal(listDto[i].Account.Id, listModel[i].AccountId);
                 Assert.Equal(listDto[i].Account.Id, listModel[i].Account.Id);
             }
@@ -172,7 +185,10 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(listResponseDto[i].Debit, listModel[i].Debit);
                 Assert.Equal(listResponseDto[i].SalaryCredit, listModel[i].SalaryCredit);
                 Assert.Equal(listResponseDto[i].SalaryDebit, listModel[i].SalaryDebit); 
-                Assert.Equal(listResponseDto[i].BalanceDate, listModel[i].BalanceDate);
+                Assert.Equal(listResponseDto[i].Inflow, listModel[i].Inflow); 
+                Assert.Equal(listResponseDto[i].Outflow, listModel[i].Outflow); 
+                Assert.Equal(listResponseDto[i].Month, listModel[i].Month);
+                Assert.Equal(listResponseDto[i].Year, listModel[i].Year);
                 Assert.Equal(listResponseDto[i].Account.Id, listModel[i].AccountId);
                 Assert.Equal(listResponseDto[i].Account.Id, listModel[i].Account.Id);
             }
