@@ -103,6 +103,9 @@ builder.Services.AddAuthorization(auth =>
 });
 
 builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile), typeof(DictionaryToModelProfile));
+
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 //</Custon
 
 var app = builder.Build();

@@ -19,9 +19,11 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-	  <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+	  <!--<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
 	  <GenerateBindingRedirectsOutputType>true</GenerateBindingRedirectsOutputType>
-	  <IsPackable>false</IsPackable>
+	  <IsPackable>false</IsPackable>-->
+      <DebugType>none</DebugType>
+      <DebugSymbols>false</DebugSymbols>
   </PropertyGroup>
 
 </Project>

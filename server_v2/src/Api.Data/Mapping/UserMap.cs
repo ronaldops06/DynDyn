@@ -25,7 +25,7 @@ namespace Data.Mapping
 
             builder.Property(u => u.Password)
                 .IsRequired()
-                .HasMaxLength(50);
+                .HasMaxLength(500);
 
             builder.Property(u => u.Role)
                 .HasMaxLength(500);
