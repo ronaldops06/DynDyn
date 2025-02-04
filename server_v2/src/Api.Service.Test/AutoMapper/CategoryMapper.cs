@@ -2,6 +2,7 @@ using Api.Domain.Dtos.Category;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Models;
+using Domain.Entities;
 using Domain.Helpers;
 using Xunit;
 using static Api.Service.Test.Helpers.CategoryHelpers;
@@ -29,12 +30,17 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal((int)model.Type, dto.Type);
             Assert.Equal((int)model.Status, dto.Status);
 
+            model.User = UserModelFake;
+            model.UserId = UserModelFake.Id;
+            
             //Model -> Entity
             var entity = Mapper.Map<CategoryEntity>(model);
             Assert.Equal(entity.Id, model.Id);
             Assert.Equal(entity.Name, model.Name);
             Assert.Equal(entity.Type, model.Type);
             Assert.Equal(entity.Status, model.Status);
+            Assert.Equal(entity.UserId, model.UserId);
+            Assert.Equal(entity.User.Id, model.User.Id);
 
             //Entity -> Model
             var categoryModel = Mapper.Map<CategoryModel>(entity);
@@ -44,6 +50,8 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(categoryModel.Status, entity.Status);
             Assert.Equal(categoryModel.DataCriacao, entity.DataCriacao);
             Assert.Equal(categoryModel.DataAlteracao, entity.DataAlteracao);
+            Assert.Equal(categoryModel.UserId, entity.UserId);
+            Assert.Equal(categoryModel.User.Id, entity.User.Id);
 
             //Model -> DtoResult
             var categoryResponseDto = Mapper.Map<CategoryResponseDto>(categoryModel);
@@ -56,6 +64,8 @@ namespace Api.Service.Test.AutoMapper
         [Fact(DisplayName = "É possível mapear os modelos em lista")]
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
+            var userEntity = Mapper.Map<UserEntity>(UserModelFake);
+            
             var listEntity = new List<CategoryEntity>();
             for (int i = 1; i <= 5; i++)
             {
@@ -66,7 +76,9 @@ namespace Api.Service.Test.AutoMapper
                     Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
-                    DataAlteracao = DateTime.UtcNow
+                    DataAlteracao = DateTime.UtcNow,
+                    User = userEntity,
+                    UserId = userEntity.Id
                 };
 
                 listEntity.Add(item);
@@ -85,6 +97,8 @@ namespace Api.Service.Test.AutoMapper
                 Assert.Equal(listModel[i].Type, listEntity[i].Type);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
+                Assert.Equal(listModel[i].UserId, listEntity[i].UserId);
+                Assert.Equal(listModel[i].User.Id, listEntity[i].User.Id);
             }
 
             //List<Model> -> List<Dto>

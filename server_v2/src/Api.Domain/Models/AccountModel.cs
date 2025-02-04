@@ -38,5 +38,14 @@ namespace Api.Domain.Models
         /// </summary>
         public AccountModel ParentAccount { get; set; }
 
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserModel User { get; set; }
     }
 }

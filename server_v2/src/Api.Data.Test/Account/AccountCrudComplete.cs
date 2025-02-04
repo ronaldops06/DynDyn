@@ -1,8 +1,10 @@
 using Api.Data.Repository;
+using Api.Data.Test.Helpers;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
+using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -26,6 +28,8 @@ namespace Api.Data.Test.Account
             Assert.Equal(accountEntitySource.Category.Id, accountEntityDest.Category.Id);
             Assert.Equal(accountEntitySource.ParentAccountId, accountEntityDest.ParentAccountId);
             Assert.Equal(accountEntitySource.ParentAccount?.Id, accountEntityDest.ParentAccount?.Id);
+            Assert.Equal(accountEntitySource.UserId, accountEntityDest.UserId);
+            Assert.Equal(accountEntitySource.User.Id, accountEntityDest.User.Id);
         }
 
         [Fact(DisplayName = "CRUD de Conta")]
@@ -34,12 +38,20 @@ namespace Api.Data.Test.Account
         {
             using (var context = _serviceProvider.GetService<SomniaContext>())
             {
+                UserRepository userRepository = new UserRepository(context);
+                var userCreated = await userRepository.InsertAsync(UserHelper.GetLoggedUserFake());
+                Assert.NotNull(userCreated);
+                Assert.True(userCreated.Id > 0);
+                
                 CategoryRepository _repositorioCategory = new CategoryRepository(context);
+                
                 CategoryEntity _categoryEntity = new CategoryEntity()
                 {
                     Name = "Corrente",
                     Type = CategoryType.Conta,
                     Status = StatusType.Ativo,
+                    UserId = userCreated.Id,
+                    User = userCreated
                 };
 
                 var _categoryCreated = await _repositorioCategory.InsertAsync(_categoryEntity);
@@ -48,6 +60,7 @@ namespace Api.Data.Test.Account
                 Assert.Equal(_categoryEntity.Name, _categoryCreated.Name);
                 Assert.Equal(_categoryEntity.Type, _categoryCreated.Type);
                 Assert.Equal(_categoryEntity.Status, _categoryCreated.Status);
+                Assert.Equal(_categoryEntity.User.Id, _categoryCreated.User.Id);
 
                 AccountRepository _repositorio = new AccountRepository(context);
 
@@ -56,7 +69,9 @@ namespace Api.Data.Test.Account
                     Name = "Geral",
                     Status = StatusType.Ativo,
                     CategoryId = _categoryCreated.Id,
-                    Category = _categoryCreated
+                    Category = _categoryCreated,
+                    UserId = userCreated.Id,
+                    User = userCreated
                 };
 
                 var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
@@ -70,7 +85,9 @@ namespace Api.Data.Test.Account
                     CategoryId = _categoryCreated.Id,
                     Category = _categoryCreated,
                     ParentAccountId = _parentAccountEntity.Id,
-                    ParentAccount = _parentAccountEntity
+                    ParentAccount = _parentAccountEntity,
+                    UserId = userCreated.Id,
+                    User = userCreated
                 };
 
                 var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
@@ -85,10 +102,10 @@ namespace Api.Data.Test.Account
                 var _registroExiste = await _repositorio.ExistsAsync(_registroAtualizado.Id);
                 Assert.True(_registroExiste);
 
-                var _registroSelecionado = await _repositorio.SelectByIdAsync(_registroAtualizado.Id);
+                var _registroSelecionado = await _repositorio.SelectByIdAsync(userCreated.Id, _registroAtualizado.Id);
                 AplicaTesteCampos(_accountEntity, _registroSelecionado);
 
-                var _todosRegistros = await _repositorio.SelectAsync();
+                var _todosRegistros = await _repositorio.SelectAsync(userCreated.Id);
                 Assert.NotNull(_todosRegistros);
                 Assert.True(_todosRegistros.Count() > 0);
 

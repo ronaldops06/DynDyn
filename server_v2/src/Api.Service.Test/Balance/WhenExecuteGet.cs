@@ -18,9 +18,9 @@ namespace Api.Service.Test.Balance
 
             var data = new Data<BalanceEntity>(listBalanceEntity.Count, listBalanceEntity);
 
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(balanceEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            BalanceService service = new BalanceService(RepositoryMock.Object, Mapper);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(),It.IsAny<int>())).ReturnsAsync(balanceEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(data);
+            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultById = await service.GetById(balanceModelResult.Id);
             ApplyTest(balanceModelResult, resultById);

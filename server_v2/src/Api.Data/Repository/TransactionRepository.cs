@@ -20,7 +20,7 @@ namespace Api.Data.Repository
     {
         public TransactionRepository(SomniaContext context) : base(context) { }
 
-        public override async Task<IEnumerable<TransactionEntity>> SelectAsync()
+        public override async Task<IEnumerable<TransactionEntity>> SelectAsync(int userId)
         {
             var result = new List<TransactionEntity>();
 
@@ -29,7 +29,9 @@ namespace Api.Data.Repository
                 IQueryable<TransactionEntity> query = _context.Transaction;
 
                 query = QueryableIncludeRelations(query);
-
+                
+                query = query.Where(x => x.UserId == userId);
+                
                 query = query.AsNoTracking().OrderBy(a => a.Id);
                 result = query.ToList();
             }
@@ -41,7 +43,7 @@ namespace Api.Data.Repository
             return result;
         }
 
-        public override async Task<TransactionEntity> SelectByIdAsync(int id)
+        public override async Task<TransactionEntity> SelectByIdAsync(int userId, int id)
         {
             var result = new TransactionEntity();
 
@@ -52,7 +54,7 @@ namespace Api.Data.Repository
                 query = QueryableIncludeRelations(query);
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Id == id);
+                             .Where(x => x.Id == id && x.UserId == userId);
 
                 result = query.FirstOrDefault();
             }
@@ -64,13 +66,15 @@ namespace Api.Data.Repository
             return result;
         }
 
-        public override async Task<Data<TransactionEntity>> SelectByParamAsync(PageParams pageParams)
+        public override async Task<Data<TransactionEntity>> SelectByParamAsync(int userId, PageParams pageParams)
         {
             IQueryable<TransactionEntity> query = _context.Transaction;
 
             query = QueryableIncludeRelations(query);
 
             query = query.AsNoTracking().OrderBy(a => a.DataCriacao);
+            
+            query = query.Where(x => x.UserId == userId);
 
             if (pageParams.DataCriacaoInicio != null)
                 query = query.Where(a => a.DataCriacao >= pageParams.DataCriacaoInicio);
@@ -87,20 +91,21 @@ namespace Api.Data.Repository
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
-        public async Task<IEnumerable<TransactionEntity>> SelectTransactionByParentTransactionIdAsync(int parentTransactionId)
+        public async Task<IEnumerable<TransactionEntity>> SelectTransactionByParentTransactionIdAsync(int userId, int parentTransactionId)
         {
             IQueryable<TransactionEntity> query = _context.Transaction;
 
             query = QueryableIncludeRelations(query);
 
             query = query.AsNoTracking().OrderBy(a => a.DataCriacao);
-
+            
+            query = query.Where(x => x.UserId == userId);
             query = query.Where(a => a.ParentTransactionId == parentTransactionId || a.Id == parentTransactionId);
 
             return await query.ToListAsync();
         }
 
-        public async Task<Dictionary<OperationType, double>> SelectTransactionsTotalsAsync(PageParams pageParams)
+        public async Task<Dictionary<OperationType, double>> SelectTransactionsTotalsAsync(int userId, PageParams pageParams)
         {
             var totals = new Dictionary<OperationType, double>();
             try
@@ -108,6 +113,8 @@ namespace Api.Data.Repository
                 IQueryable<TransactionEntity> query = _context.Transaction;
 
                 query = query.Include(ope => ope.Operation);
+
+                query = query.Where(x => x.UserId == userId);
 
                 if (pageParams.DataCriacaoInicio != null)
                     query = query.Where(a => a.DataCriacao >= pageParams.DataCriacaoInicio);
@@ -150,6 +157,9 @@ namespace Api.Data.Repository
 
                     _context.Entry(transactionEntity.Operation).State = EntityState.Unchanged;
                 }
+                
+                if (transactionEntity.User != null)
+                    _context.Entry(transactionEntity.User).State = EntityState.Unchanged;
             }
             catch (Exception ex)
             {
@@ -165,6 +175,7 @@ namespace Api.Data.Repository
             query = query.Include(cat => cat.Account.Category);
             query = query.Include(cta => cta.DestinationAccount);
             query = query.Include(cat => cat.DestinationAccount.Category);
+            query = query.Include(usr => usr.User);
 
             return query;
         }

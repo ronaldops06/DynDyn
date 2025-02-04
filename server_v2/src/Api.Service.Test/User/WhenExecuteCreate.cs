@@ -18,7 +18,7 @@ namespace Api.Service.Test.User
 
             RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(It.IsAny<UserEntity>());
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<UserEntity>())).ReturnsAsync(userEntityResult);
-            UserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+            UserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
 
             var result = await service.Post(userModel);
             ApplyTest(userModel, result);

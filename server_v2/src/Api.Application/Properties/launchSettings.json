@@ -14,14 +14,14 @@
       "dotnetRunMessages": true,
       "launchBrowser": true,
       "launchUrl": "docs",
-      "applicationUrl": "http://192.168.18.3:5000",
+      "applicationUrl": "http://192.168.0.11:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.ldmjuumtcoaslaenmasw;Password=!4JVFrejvHKNZyz;Database=postgres",
         "Seconds": "28800",
         "DATABASE": "POSTGRES",
         "Issuer": "ExemploIssuer",
-        "Audience": "ExemploAudience",
+        "Audience": "r",
         "MIGRATION": "APLICAR"
       }
     },

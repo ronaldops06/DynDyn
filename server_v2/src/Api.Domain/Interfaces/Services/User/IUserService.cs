@@ -6,6 +6,8 @@ namespace Domain.Interfaces.Services.User
 {
     public interface IUserService
     {
+        Task<UserModel> GetLoggedUser();
+        
         Task<UserModel> GetUsuarioByUsernameAndPassword(UserModel user);
 
         Task<UserModel> GetUsuarioByLogin(string login);

@@ -8,18 +8,23 @@ using Api.Domain.Models;
 using Api.Domain.Repository;
 using AutoMapper;
 using Domain.Helpers;
+using Domain.Interfaces.Services.User;
+using Domain.Models;
 
 namespace Api.Service.Services
 {
     public class TransactionService : ITransactionService
     {
+        private IUserService _userService;
         private ITransactionRepository _repository;
         private IOperationService _operationService;
         private readonly IMapper _mapper;
-        public TransactionService(ITransactionRepository repository
-                                 , IOperationService operationService
-                                 , IMapper mapper)
+        public TransactionService(IUserService userService,
+                                  ITransactionRepository repository,
+                                  IOperationService operationService,
+                                  IMapper mapper)
         {
+            _userService = userService;
             _repository = repository;
             _operationService = operationService;
             _mapper = mapper;
@@ -27,7 +32,8 @@ namespace Api.Service.Services
 
         public async Task<TransactionModel> GetById(int id)
         {
-            var entity = await _repository.SelectByIdAsync(id);
+            var user = await _userService.GetLoggedUser();
+            var entity = await _repository.SelectByIdAsync(user.Id, id);
 
             if (entity == null)
                 throw new Exception("Transação não encontrada.");
@@ -37,13 +43,15 @@ namespace Api.Service.Services
 
         public async Task<TransactionTotalModel> GetTotais(PageParams pageParams)
         {
-            var transactionTotals = await _repository.SelectTransactionsTotalsAsync(pageParams);
+            var user = await _userService.GetLoggedUser();
+            var transactionTotals = await _repository.SelectTransactionsTotalsAsync(user.Id, pageParams);
             return _mapper.Map<TransactionTotalModel>(transactionTotals);
         }
 
         public async Task<PageList<TransactionModel>> Get(PageParams pageParams)
         {
-            var data = await _repository.SelectByParamAsync(pageParams);
+            var user = await _userService.GetLoggedUser();
+            var data = await _repository.SelectByParamAsync(user.Id, pageParams);
             var itens = _mapper.Map<List<TransactionModel>>(data.Itens);
 
             return PageList<TransactionModel>.Create(pageParams, itens, data.Count);
@@ -51,6 +59,9 @@ namespace Api.Service.Services
 
         public async Task<TransactionModel> Post(TransactionModel model)
         {
+            var user = await _userService.GetLoggedUser();
+            model.User = user;
+            model.UserId = user.Id;
             TransferValidate(model);
 
             await OperacaoNotExists(model);
@@ -62,22 +73,25 @@ namespace Api.Service.Services
 
             model = _mapper.Map<TransactionModel>(transactionEntity);
 
-            ExecuteInstallments(model);
+            ExecuteInstallments(user, model);
 
             return model;
         }
 
         public async Task<TransactionModel> Put(TransactionModel model)
         {
-            var transactionEntityAux = await _repository.SelectByIdAsync(model.Id);
+            var user = await _userService.GetLoggedUser();
+            var transactionEntityAux = await _repository.SelectByIdAsync(user.Id, model.Id);
 
             if (transactionEntityAux == null)
                 throw new Exception("Transação não encontrada.");
 
+            model.User = user;
+            model.UserId = user.Id;
             TransferValidate(model);
 
             await OperacaoNotExists(model);
-
+            
             var transactionEntity = _mapper.Map<TransactionEntity>(model);
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.UpdateAsync(transactionEntity);
@@ -87,7 +101,8 @@ namespace Api.Service.Services
 
         public async Task<bool> Delete(int id)
         {
-            var transactionEntityAux = await _repository.SelectByIdAsync(id);
+            var user = await _userService.GetLoggedUser();
+            var transactionEntityAux = await _repository.SelectByIdAsync(user.Id, id);
 
             if (transactionEntityAux == null)
                 throw new Exception("Transação não encontrada.");
@@ -95,7 +110,7 @@ namespace Api.Service.Services
             var result = await _repository.DeleteAsync(id);
 
             if (result)
-                ExecuteDeleteInstallments(transactionEntityAux);
+                ExecuteDeleteInstallments(user.Id, transactionEntityAux);
 
             return result;
         }
@@ -157,7 +172,7 @@ namespace Api.Service.Services
             }
         }
 
-        private async void ExecuteInstallments(TransactionModel transactionModel)
+        private async void ExecuteInstallments(UserModel userModel, TransactionModel transactionModel)
         {
             if (transactionModel.TotalInstallments > 1)
             {
@@ -171,6 +186,7 @@ namespace Api.Service.Services
                     transacaoParcelaModel.Operation = null;
                     transacaoParcelaModel.ParentTransactionId = transactionModel.Id;
                     transacaoParcelaModel.ParentTransaction = transactionModel;
+                    transacaoParcelaModel.User = userModel;
 
                     var transactionParcelaEntity = _mapper.Map<TransactionEntity>(transacaoParcelaModel);
 
@@ -188,11 +204,11 @@ namespace Api.Service.Services
             }
         }
 
-        private async void ExecuteDeleteInstallments(TransactionEntity transactionEntityAux)
+        private async void ExecuteDeleteInstallments(int userId, TransactionEntity transactionEntityAux)
         {
             if (transactionEntityAux.ParentTransactionId != null)
             {
-                var transactions = await _repository.SelectTransactionByParentTransactionIdAsync(transactionEntityAux.ParentTransactionId ?? 0);
+                var transactions = await _repository.SelectTransactionByParentTransactionIdAsync(userId, transactionEntityAux.ParentTransactionId ?? 0);
                 foreach (var transactionEntity in transactions)
                 {
                     await _repository.DeleteAsync(transactionEntity.Id);

@@ -15,9 +15,9 @@ namespace Api.Data.Mapping
 
             builder.HasKey(u => u.Id);
 
-            builder.HasIndex(u => u.Name)
+            builder.HasIndex(u => new { u.Name, u.Type, u.UserId })
                 .IsUnique();
-
+            
             builder.Property(u => u.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -26,6 +26,11 @@ namespace Api.Data.Mapping
                 .IsRequired();
 
             builder.Property(u => u.Status)
+                .IsRequired();
+
+            builder.HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
                 .IsRequired();
         }
     }

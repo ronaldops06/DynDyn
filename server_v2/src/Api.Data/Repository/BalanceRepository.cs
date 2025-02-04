@@ -18,7 +18,7 @@ namespace Data.Repository
     {
         public BalanceRepository(SomniaContext context) : base(context) { }
         
-        public override async Task<IEnumerable<BalanceEntity>> SelectAsync()
+        public override async Task<IEnumerable<BalanceEntity>> SelectAsync(int userId)
         {
             var result = new List<BalanceEntity>();
 
@@ -27,7 +27,9 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
+                query = query.Include(usr => usr.User);
 
+                query = query.Where(x => x.UserId == userId);
                 query = query.AsNoTracking().OrderBy(a => a.Id);
                 result = query.ToList();
             }
@@ -39,7 +41,7 @@ namespace Data.Repository
             return result;
         }
         
-        public override async Task<BalanceEntity> SelectByIdAsync(int id)
+        public override async Task<BalanceEntity> SelectByIdAsync(int userId, int id)
         {
             var result = new BalanceEntity();
 
@@ -48,9 +50,10 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
+                query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
-                    .Where(x => x.Id == id);
+                    .Where(x => x.Id == id && x.UserId == userId);
 
                 result = query.FirstOrDefault();
             }
@@ -62,12 +65,15 @@ namespace Data.Repository
             return result;
         }
         
-        public override async Task<Data<BalanceEntity>> SelectByParamAsync(PageParams pageParams)
+        public override async Task<Data<BalanceEntity>> SelectByParamAsync(int userId, PageParams pageParams)
         {
             IQueryable<BalanceEntity> query = _context.Balance;
 
             query = query.Include(act => act.Account);
-
+            query = query.Include(usr => usr.User);
+            
+            query = query.Where(x => x.UserId == userId);
+            
             if (pageParams.LastSyncDate != null)
                 query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
 
@@ -76,7 +82,7 @@ namespace Data.Repository
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
-        public async Task<BalanceEntity> SelectByUkAsync(int accountId, int month, int year)
+        public async Task<BalanceEntity> SelectByUkAsync(int userId, int accountId, int month, int year)
         {
             var result = new BalanceEntity();
 
@@ -85,9 +91,10 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
-
+                query = query.Include(usr => usr.User);
+    
                 query = query.AsNoTracking()
-                    .Where(x => x.AccountId == accountId && x.Month == month && x.Year == year);
+                    .Where(x => x.UserId == userId && x.AccountId == accountId && x.Month == month && x.Year == year);
 
                 result = query.FirstOrDefault();
             }
@@ -103,6 +110,9 @@ namespace Data.Repository
         {
             if (balanceEntity.Account != null)
                 _context.Entry(balanceEntity.Account).State = EntityState.Unchanged;
+            
+            if (balanceEntity.User != null)
+                _context.Entry(balanceEntity.User).State = EntityState.Unchanged;
         }
     }
 }

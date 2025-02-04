@@ -1,9 +1,11 @@
 using System.Data;
 using Api.Data.Repository;
+using Api.Data.Test.Helpers;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
+using Domain.Entities;
 using Domain.Helpers;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
@@ -12,6 +14,7 @@ namespace Api.Data.Test.Transaction
 {
     public class TransactionExecuteGetTotals : IClassFixture<DbTest>
     {
+        private UserEntity _user;
         private ServiceProvider _serviceProvider;
 
         public TransactionExecuteGetTotals(DbTest dbTest)
@@ -25,6 +28,11 @@ namespace Api.Data.Test.Transaction
         {
             using (var context = _serviceProvider.GetService<SomniaContext>())
             {
+                UserRepository userRepository = new UserRepository(context);
+                _user = await userRepository.InsertAsync(UserHelper.GetLoggedUserFake());
+                Assert.NotNull(_user);
+                Assert.True(_user.Id > 0);
+                
                 TransactionRepository _repositorio = new TransactionRepository(context);
 
                 var accountEntity = await InsertAccont(context);
@@ -71,7 +79,7 @@ namespace Api.Data.Test.Transaction
                     DataCriacaoFim = dataFinal
                 };
 
-                var _registroSelecionado = await _repositorio.SelectTransactionsTotalsAsync(pageParams);
+                var _registroSelecionado = await _repositorio.SelectTransactionsTotalsAsync(_user.Id, pageParams);
                 Assert.NotNull(_registroSelecionado);
                 Assert.Equal(1586.90, _registroSelecionado.GetValueOrDefault(OperationType.Debito));
                 Assert.Equal(665.80, _registroSelecionado.GetValueOrDefault(OperationType.Credito));
@@ -86,12 +94,15 @@ namespace Api.Data.Test.Transaction
                 Name = name,
                 Type = type,
                 Status = StatusType.Ativo,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorioCategory.InsertAsync(_categoryEntity);
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
             Assert.Equal(_categoryEntity.Name, _registroCriado.Name);
+            Assert.Equal(_categoryEntity.User.Id, _registroCriado.User.Id);
 
             return _registroCriado;
         }
@@ -107,13 +118,16 @@ namespace Api.Data.Test.Transaction
                 Name = "Geral",
                 Status = StatusType.Ativo,
                 CategoryId = _categoryCreated.Id,
-                Category = _categoryCreated
+                Category = _categoryCreated,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
             Assert.NotNull(_parentAccountCreated);
             Assert.True(_parentAccountCreated.Id > 0);
             Assert.Equal(_parentAccountCreated.Name, _parentAccountEntity.Name);
+            Assert.Equal(_parentAccountCreated.User.Id, _parentAccountEntity.User.Id);
 
             AccountEntity _accountEntity = new AccountEntity()
             {
@@ -122,13 +136,16 @@ namespace Api.Data.Test.Transaction
                 CategoryId = _categoryCreated.Id,
                 Category = _categoryCreated,
                 ParentAccountId = _parentAccountEntity.Id,
-                ParentAccount = _parentAccountEntity
+                ParentAccount = _parentAccountEntity,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
             Assert.True(_registroCriado.Id > 0);
             Assert.NotNull(_registroCriado);
             Assert.Equal(_registroCriado.Name, _accountEntity.Name);
+            Assert.Equal(_registroCriado.User.Id, _accountEntity.User.Id);
 
             return _registroCriado;
         }
@@ -145,12 +162,15 @@ namespace Api.Data.Test.Transaction
                 Status = StatusType.Ativo,
                 CategoryId = categoryEntity.Id,
                 Category = categoryEntity,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorio.InsertAsync(_operationEntity);
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
             Assert.Equal(_registroCriado.Name, _operationEntity.Name);
+            Assert.Equal(_registroCriado.User.Id, _operationEntity.User.Id);
 
             return _registroCriado;
         }
@@ -169,7 +189,9 @@ namespace Api.Data.Test.Transaction
                 Account = accountEntity,
                 AccountId = accountEntity.Id,
                 Operation = operationEntity,
-                OperationId = operationEntity.Id
+                OperationId = operationEntity.Id,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorio.InsertAsync(_transactionEntity);
@@ -178,6 +200,7 @@ namespace Api.Data.Test.Transaction
             Assert.Equal(_registroCriado.Value, _transactionEntity.Value);
             Assert.Equal(_registroCriado.AccountId, _transactionEntity.AccountId);
             Assert.Equal(_registroCriado.OperationId, _transactionEntity.OperationId);
+            Assert.Equal(_registroCriado.UserId, _transactionEntity.UserId);
         }
     }
 }

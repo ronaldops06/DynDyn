@@ -13,10 +13,11 @@ namespace Api.Domain.Repository
         /// <summary>
         /// Método responsável por retornar a operação com base na UK.
         /// </summary>
+        /// <param name="userId">Identificador do usuário</param>
         /// <param name="name">Nome da operação.</param>
         /// <param name="operationType">Tipo da operação <see cref="OperationType"/>.</param>
         /// <returns>Entidade de operação <see cref="OperationEntity"/>.</returns>
-        Task<OperationEntity> SelectByUkAsync(string name, OperationType operationType);
+        Task<OperationEntity> SelectByUkAsync(int userId, string name, OperationType operationType);
 
         /// <summary>
         /// Método responsável por alterar o estado das entidades dependentes para que não ocorra erro ao salvar a entidade principal.

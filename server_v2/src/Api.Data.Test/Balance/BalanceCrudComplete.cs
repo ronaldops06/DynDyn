@@ -1,9 +1,11 @@
 using System.Globalization;
 using Api.Data.Repository;
+using Api.Data.Test.Helpers;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
+using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -11,6 +13,7 @@ namespace Api.Data.Test.Balance;
 
 public class BalanceCrudComplete : IClassFixture<DbTest>
 {
+    private UserEntity _user;
     private ServiceProvider _serviceProvider;
 
     public BalanceCrudComplete(DbTest dbTest)
@@ -37,6 +40,8 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
         Assert.Equal(balanceEntitySource.Year, balanceEntityDest.Year);
         Assert.Equal(balanceEntitySource.AccountId, balanceEntityDest.AccountId);
         Assert.Equal(balanceEntitySource.Account.Id, balanceEntityDest.Account.Id);
+        Assert.Equal(balanceEntitySource.UserId, balanceEntityDest.UserId);
+        Assert.Equal(balanceEntitySource.User.Id, balanceEntityDest.User.Id);
     }
 
     [Fact(DisplayName = "CRUD de Saldo")]
@@ -45,6 +50,11 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
     {
         using (var context = _serviceProvider.GetService<SomniaContext>())
         {
+            UserRepository userRepository = new UserRepository(context);
+            _user = await userRepository.InsertAsync(UserHelper.GetLoggedUserFake());
+            Assert.NotNull(_user);
+            Assert.True(_user.Id > 0);
+            
             BalanceRepository _repositorio = new BalanceRepository(context);
             
             var accountEntity = await InsertAccont(context);
@@ -66,7 +76,9 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
                 Month = 1,
                 Year = 2025,
                 Account = accountEntity,
-                AccountId = accountEntity.Id
+                AccountId = accountEntity.Id,
+                UserId = _user.Id,
+                User = _user
             };
             
             var _registroCriado = await _repositorio.InsertAsync(_balanceEntity);
@@ -81,10 +93,10 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             var _registroExiste = await _repositorio.ExistsAsync(_registroAtualizado.Id);
             Assert.True(_registroExiste);
 
-            var _registroSelecionado = await _repositorio.SelectByIdAsync(_registroAtualizado.Id);
+            var _registroSelecionado = await _repositorio.SelectByIdAsync(_user.Id, _registroAtualizado.Id);
             AplicaTesteCampos(_balanceEntity, _registroSelecionado);
 
-            var _todosRegistros = await _repositorio.SelectAsync();
+            var _todosRegistros = await _repositorio.SelectAsync(_user.Id);
             Assert.NotNull(_todosRegistros);
             Assert.True(_todosRegistros.Count() > 0);
 
@@ -108,7 +120,9 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             Name = "Geral",
             Status = StatusType.Ativo,
             CategoryId = _categoryCreated.Id,
-            Category = _categoryCreated
+            Category = _categoryCreated,
+            UserId = _user.Id,
+            User = _user
         };
 
         var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
@@ -123,7 +137,9 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             CategoryId = _categoryCreated.Id,
             Category = _categoryCreated,
             ParentAccountId = _parentAccountEntity.Id,
-            ParentAccount = _parentAccountEntity
+            ParentAccount = _parentAccountEntity,
+            UserId = _user.Id,
+            User = _user
         };
 
         var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
@@ -142,6 +158,8 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             Name = name,
             Type = type,
             Status = StatusType.Ativo,
+            UserId = _user.Id,
+            User = _user
         };
 
         var _registroCriado = await _repositorioCategory.InsertAsync(_categoryEntity);

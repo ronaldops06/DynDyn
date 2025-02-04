@@ -125,6 +125,7 @@ namespace Api.Application.V1.Controllers
             }
             catch (Exception ex)
             {
+                Log.Info<AccountController>(ex.Message);
                 return BadRequest(ex.Message);
             }
 

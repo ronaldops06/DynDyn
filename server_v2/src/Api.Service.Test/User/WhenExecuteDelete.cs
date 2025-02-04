@@ -18,13 +18,13 @@ namespace Api.Service.Test.User
 
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(userEntity);
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
-            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
 
             var result = await service.Delete(userModel.Id);
             Assert.True(result);
 
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(false);
-            service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+            service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
 
             result = await service.Delete(99989);
             Assert.False(result);

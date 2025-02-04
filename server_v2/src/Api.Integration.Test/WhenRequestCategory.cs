@@ -60,6 +60,7 @@ namespace Api.Integration.Test
             //Post
             response = await PostJsonAsync(categoryRequestDto, $"{HostApi}/Category", Client);
             postResult = await response.Content.ReadAsStringAsync();
+            Assert.NotNull(postResult);
             var registroPost = JsonConvert.DeserializeObject<CategoryResponseDto>(postResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
@@ -108,6 +109,65 @@ namespace Api.Integration.Test
             //Delete
             response = await Client.DeleteAsync($"{HostApi}/Category/{registroUpdated.Id}");
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        }
+
+        [Fact(DisplayName = "Existe Integridade Na Categoria")]
+        public async Task Valida_Integridade_Categoria()
+        {
+            var pageParams = new PageParams()
+            {
+                Tipo = 1,
+                PageNumber = 1,
+                PageSize = 3
+            };
+            
+            var categoryRequestDto = new CategoryRequestDto
+            {
+                Name = Faker.Name.FullName(),
+                Type = 1,
+                Status = 1
+            };
+            
+            //Post Usuário 1
+            await AdicionarToken();
+            
+            var response = await PostJsonAsync(categoryRequestDto, $"{HostApi}/Category", Client);
+            var postResult = await response.Content.ReadAsStringAsync();
+            var registroPrimeiroUsuario = JsonConvert.DeserializeObject<CategoryResponseDto>(postResult);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(registroPrimeiroUsuario.Id == 0);
+            
+            //Post Usuário 2
+            await AdicionarTokenUsuarioAdicional();
+            
+            response = await PostJsonAsync(categoryRequestDto, $"{HostApi}/Category", Client);
+            postResult = await response.Content.ReadAsStringAsync();
+            var registroSegundoUsuario = JsonConvert.DeserializeObject<CategoryResponseDto>(postResult);
+            
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(registroSegundoUsuario.Id == 0);
+            
+            //Get All Usuário 2
+            var builder = new UriBuilder($"{HostApi}/Category");
+
+            var query = HttpUtility.ParseQueryString(builder.Query);
+            query[nameof(PageParams.Tipo)] = $"{pageParams.Tipo}";
+            query[nameof(PageParams.PageNumber)] = $"{pageParams.PageNumber}";
+            query[nameof(PageParams.PageSize)] = $"{pageParams.PageSize}";
+
+            builder.Query = query.ToString();
+
+            response = await Client.GetAsync(builder.Uri);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var listFromJson = JsonConvert.DeserializeObject<IEnumerable<CategoryResponseDto>>(jsonResult);
+
+            Assert.NotNull(listFromJson);
+            Assert.True(listFromJson.Count() > 0);
+            Assert.True(listFromJson.Where(r => r.Id == registroSegundoUsuario.Id).Count() == 1);
+            Assert.False(listFromJson.Where(r => r.Id == registroPrimeiroUsuario.Id).Count() == 1);
         }
     }
 }

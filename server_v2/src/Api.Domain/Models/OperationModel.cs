@@ -42,5 +42,15 @@ namespace Api.Domain.Models
         /// Categoria da operação <see cref="CategoryModel"/>.
         /// </summary>
         public CategoryModel Category { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserModel User { get; set; }
     }
 }

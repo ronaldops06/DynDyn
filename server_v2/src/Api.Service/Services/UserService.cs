@@ -6,7 +6,9 @@ using Domain.Models;
 using Domain.Repository;
 using System;
 using System.Collections.Generic;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Service.Services
 {
@@ -15,14 +17,25 @@ namespace Service.Services
         private IUserRepository _repository;
         private readonly IMapper _mapper;
         private readonly ILoginService _loginService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public UserService(IUserRepository repository
-                          , IMapper mapper
-                          , ILoginService loginService)
+        public UserService(IUserRepository repository,
+                           IMapper mapper,
+                           ILoginService loginService,
+                           IHttpContextAccessor httpContextAccessor)
         {
             _repository = repository;
             _mapper = mapper;
             _loginService = loginService;
+            _httpContextAccessor = httpContextAccessor;
+        }
+
+        public async Task<UserModel> GetLoggedUser()
+        {
+            var userId = int.Parse(_httpContextAccessor.HttpContext?.User.FindFirst(ClaimTypes.SerialNumber)?.Value);
+            var entity = await _repository.SelectByIdAsync(userId);
+            
+            return _mapper.Map<UserModel>(entity);
         }
 
         public async Task<UserModel> GetUsuarioByUsernameAndPassword(UserModel user)

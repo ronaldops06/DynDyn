@@ -87,5 +87,15 @@ namespace Api.Domain.Entities
         /// Conta correspondenta ao saldo.
         /// </summary>
         public AccountEntity Account { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base.
+        /// </summary>
+        public UserEntity User { get; set; }
     }
 }

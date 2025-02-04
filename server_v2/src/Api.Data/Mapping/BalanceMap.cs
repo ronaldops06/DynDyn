@@ -14,11 +14,10 @@ namespace Data.Mapping
             builder.ToTable("Balance");
 
             builder.HasKey(u => u.Id);
-
-            builder.HasIndex(u => u.Year);
             
-            builder.HasIndex(u => u.Month);
-
+            builder.HasIndex(u => new { u.Year, u.Month, u.AccountId, u.UserId })
+                .IsUnique();
+            
             builder.Property(u => u.Value)
                 .IsRequired();
 
@@ -49,6 +48,11 @@ namespace Data.Mapping
             builder.HasOne(u => u.Account)
                 .WithMany()
                 .HasForeignKey(e => e.AccountId)
+                .IsRequired();
+            
+            builder.HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
                 .IsRequired();
         }
     }

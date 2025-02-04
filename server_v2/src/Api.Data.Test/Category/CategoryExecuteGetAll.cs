@@ -8,6 +8,7 @@ using Xunit;
 using static Api.Data.Test.Helpers.CategoryHelper;
 using static Api.Data.Test.Helpers.BaseHelper;
 using System.Globalization;
+using Api.Data.Test.Helpers;
 
 namespace Api.Data.Test.Category
 {
@@ -21,6 +22,11 @@ namespace Api.Data.Test.Category
         {
             using (var context = serviceProvider.GetService<SomniaContext>())
             {
+                UserRepository userRepository = new UserRepository(context);
+                var userCreated = await userRepository.InsertAsync(UserHelper.GetLoggedUserFake());
+                Assert.NotNull(userCreated);
+                Assert.True(userCreated.Id > 0);
+                
                 CategoryRepository _repositorio = new CategoryRepository(context);
                 List<CategoryEntity> listCategoryDto = new List<CategoryEntity>();
 
@@ -31,12 +37,14 @@ namespace Api.Data.Test.Category
                         Name = Faker.Name.FullName(),
                         Type = GetCategoryTypeRandom(),
                         Status = GetStatusTypeRandom(),
+                        UserId = userCreated.Id,
+                        User = userCreated
                     };
 
                     await _repositorio.InsertAsync(_entity);
                 }
 
-                await base.RealizaGetPaginado(_repositorio);
+                await base.RealizaGetPaginado(userCreated.Id, _repositorio);
 
                 // Testes aplicando filtros espefícicos
                 PageParams pageParams = new PageParams
@@ -46,7 +54,7 @@ namespace Api.Data.Test.Category
                     Tipo = (int)CategoryType.Conta
                 };
 
-                var categoriasSelecionadas = await _repositorio.SelectByParamAsync(pageParams);
+                var categoriasSelecionadas = await _repositorio.SelectByParamAsync(userCreated.Id, pageParams);
                 Assert.NotNull(categoriasSelecionadas);
                 Assert.True(categoriasSelecionadas.Itens.Count > 0);
                 Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Conta).Count > 0);
@@ -54,7 +62,7 @@ namespace Api.Data.Test.Category
 
                 pageParams.Tipo = (int)CategoryType.Operação;
 
-                categoriasSelecionadas = await _repositorio.SelectByParamAsync(pageParams);
+                categoriasSelecionadas = await _repositorio.SelectByParamAsync(userCreated.Id, pageParams);
                 Assert.NotNull(categoriasSelecionadas);
                 Assert.True(categoriasSelecionadas.Itens.Count > 0);
                 Assert.True(categoriasSelecionadas.Itens.FindAll(x => x.Type == CategoryType.Operação).Count > 0);
@@ -70,12 +78,14 @@ namespace Api.Data.Test.Category
                         Name = Faker.Name.FullName(),
                         Type = GetCategoryTypeRandom(),
                         Status = GetStatusTypeRandom(),
+                        UserId = userCreated.Id,
+                        User = userCreated
                     };
 
                     await _repositorio.InsertAsync(_entity);
                 }
 
-                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 36);
+                await RealizaGetLasSyncDate(userCreated.Id, _repositorio, lastSyncDate, 36);
 
                 Thread.Sleep(1000);
                 lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
@@ -83,12 +93,12 @@ namespace Api.Data.Test.Category
                 //O teste abaixo irá atualizar um número objetos para verificar se retorna corretamente
                 for (int i = 10; i < (RECORD_NUMBER + 10); i++)
                 {
-                    CategoryEntity _entity = await _repositorio.SelectByIdAsync(i);
+                    CategoryEntity _entity = await _repositorio.SelectByIdAsync(userCreated.Id, i);
 
                     await _repositorio.UpdateAsync(_entity);
                 }
 
-                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 10);
+                await RealizaGetLasSyncDate(userCreated.Id, _repositorio, lastSyncDate, 10);
             }
         }
     }

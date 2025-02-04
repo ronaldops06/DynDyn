@@ -19,7 +19,7 @@ namespace Api.Data.Test
             serviceProvider = dbTest.ServiceProvider;
         }
 
-        protected async Task RealizaGetPaginado(BaseRepository<T> repositorio)
+        protected async Task RealizaGetPaginado(int userId, BaseRepository<T> repositorio)
         {
             PageParams pageParams = new PageParams
             {
@@ -27,7 +27,7 @@ namespace Api.Data.Test
                 PageNumber = 1
             };
 
-            Data<T> data = await repositorio.SelectByParamAsync(pageParams);
+            Data<T> data = await repositorio.SelectByParamAsync(userId, pageParams);
             Assert.NotNull(data);
             Assert.Equal(10, data.Itens.Count);
 
@@ -37,7 +37,7 @@ namespace Api.Data.Test
                 PageNumber = 2
             };
 
-            data = await repositorio.SelectByParamAsync(pageParams);
+            data = await repositorio.SelectByParamAsync(userId, pageParams);
             Assert.NotNull(data);
             Assert.Equal(10, data.Itens.Count);
             Assert.Equal(11, data.Itens.First().Id);
@@ -51,7 +51,7 @@ namespace Api.Data.Test
                 PageNumber = 2
             };
 
-            data = await repositorio.SelectByParamAsync(pageParams);
+            data = await repositorio.SelectByParamAsync(userId, pageParams);
             Assert.NotNull(data);
             Assert.Equal(15, data.Itens.Count);
             Assert.Equal(21, data.Itens.First().Id);
@@ -60,14 +60,14 @@ namespace Api.Data.Test
             Assert.Equal(35, data.Itens.Max(x => x.Id));
         }
 
-        protected async Task RealizaGetLasSyncDate(BaseRepository<T> repositorio, DateTime lastSyncDate, int firstId)
+        protected async Task RealizaGetLasSyncDate(int userId, BaseRepository<T> repositorio, DateTime lastSyncDate, int firstId)
         {
             PageParams pageParams = new PageParams
             {
                 LastSyncDate = lastSyncDate
             };
 
-            Data<T> data = await repositorio.SelectByParamAsync(pageParams);
+            Data<T> data = await repositorio.SelectByParamAsync(userId, pageParams);
             Assert.NotNull(data);
             Assert.Equal(RECORD_NUMBER, data.Itens.Count);
             Assert.Equal(firstId, data.Itens.First().Id);

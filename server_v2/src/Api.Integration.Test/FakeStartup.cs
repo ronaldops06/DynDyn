@@ -41,7 +41,9 @@ namespace Api.Integration.Test
             ConfigureService.ConfigureDependenciesService(services);
             ConfigureRepository.ConfigureDependenciesRepository(services);
             services.AddDbContext<SomniaContext>(x => x.UseSqlite($"Data Source={_dataBaseName}.db"), ServiceLifetime.Transient);
-
+            
+            services.AddHttpContextAccessor();
+            
             var config = new AutoMapper.MapperConfiguration(cfg =>
             {
                 cfg.AddProfile(new DtoToModelProfile());

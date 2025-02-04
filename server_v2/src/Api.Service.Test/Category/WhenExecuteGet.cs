@@ -18,9 +18,9 @@ namespace Api.Service.Test.Category
 
             var data = new Data<CategoryEntity>(listCategoryEntity.Count, listCategoryEntity);
 
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            ICategoryService service = new CategoryService(RepositoryMock.Object, Mapper);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(categoryEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(data);
+            ICategoryService service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultById = await service.GetById(categoryModelResult.Id);
             ApplyTest(categoryModelResult, resultById);

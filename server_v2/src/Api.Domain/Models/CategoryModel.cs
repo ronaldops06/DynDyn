@@ -22,5 +22,15 @@ namespace Api.Domain.Models
         /// Status da categoria <see cref="StatusType"/>.
         /// </summary>
         public StatusType Status { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserModel User { get; set; }
     }
 }

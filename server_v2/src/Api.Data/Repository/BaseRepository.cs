@@ -35,7 +35,13 @@ namespace Data.Repository
             }
             catch (Exception ex)
             {
-                throw ex;
+                var message = ex.Message;
+                
+                if (ex.InnerException != null)
+                    message = $"Inner Exception: {ex.InnerException.Message}";
+                
+                Log.Info<BaseRepository<T>>(message);
+                throw new Exception(message);
             }
 
             return item;
@@ -87,11 +93,11 @@ namespace Data.Repository
             return await _dataset.AnyAsync(x => x.Id.Equals(id));
         }
 
-        public virtual Task<T> SelectByIdAsync(int id) => null;
+        public virtual Task<T> SelectByIdAsync(int userId, int id) => null;
 
-        public virtual Task<IEnumerable<T>> SelectAsync() => null;
+        public virtual Task<IEnumerable<T>> SelectAsync(int userId) => null;
 
-        public virtual Task<Data<T>> SelectByParamAsync(PageParams pageParams) => null;
+        public virtual Task<Data<T>> SelectByParamAsync(int userId, PageParams pageParams) => null;
 
         protected async Task<Data<T>> ExecuteQueryAsync(IQueryable<T> source, int pageNumber, int pageSize)
         {

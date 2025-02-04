@@ -18,10 +18,10 @@ namespace Api.Service.Test.Operation
 
             var data = new Data<OperationEntity>(listOperationEntity.Count, listOperationEntity);
 
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(operationEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(operationEntityResult);
-            OperationService service = new OperationService(RepositoryMock.Object, Mapper);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(operationEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(data);
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(operationEntityResult);
+            OperationService service = new OperationService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultById = await service.GetById(operationModelResult.Id);
             ApplyTest(operationModelResult, resultById);

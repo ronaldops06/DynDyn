@@ -49,6 +49,21 @@ namespace Api.Integration.Test
 
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(BEARER_TOKEN, loginObject.AccessToken);
         }
+        
+        public async Task AdicionarTokenUsuarioAdicional()
+        {
+            var loginDto = new LoginDto
+            {
+                Login = "ope@gmail.com",
+                Password = "pgadmin"
+            };
+
+            var resultLogin = await PostJsonAsync(loginDto, $"{HostApi}/Login/Auth", Client);
+            var jsonLogin = await resultLogin.Content.ReadAsStringAsync();
+            var loginObject = JsonConvert.DeserializeObject<LoginResponseDto>(jsonLogin);
+
+            Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(BEARER_TOKEN, loginObject.AccessToken);
+        }
 
         public static async Task<HttpResponseMessage> PostJsonAsync(object dataclass, string url, HttpClient client)
         {

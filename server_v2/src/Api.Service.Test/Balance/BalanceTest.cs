@@ -29,7 +29,9 @@ public class BalanceTest : BaseTestService
             Id = 1,
             Name = "Corrente",
             Type = CategoryType.Conta,
-            Status = StatusType.Ativo
+            Status = StatusType.Ativo,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         var accountModelBase = new AccountModel
@@ -38,7 +40,9 @@ public class BalanceTest : BaseTestService
             Name = "Cash",
             Status = StatusType.Ativo,
             Category = categoryModel,
-            CategoryId = categoryModel.Id
+            CategoryId = categoryModel.Id,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         pageParams = new PageParams()
@@ -57,7 +61,9 @@ public class BalanceTest : BaseTestService
                 Name = $"Cash {i}",
                 Status = StatusType.Ativo,
                 Category = categoryModel,
-                CategoryId = categoryModel.Id
+                CategoryId = categoryModel.Id,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             var model = new BalanceModel()
@@ -77,7 +83,9 @@ public class BalanceTest : BaseTestService
                 Month = 1,
                 Year = 2025,
                 Account = accountModel,
-                AccountId = accountModel.Id
+                AccountId = accountModel.Id,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             listBalanceModel.Add(model);
@@ -105,7 +113,9 @@ public class BalanceTest : BaseTestService
             Month = 1,
             Year = 2025,
             Account = accountModelBase,
-            AccountId = accountModelBase.Id
+            AccountId = accountModelBase.Id,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         balanceModelResult = new BalanceModel
@@ -128,7 +138,9 @@ public class BalanceTest : BaseTestService
             Account = balanceModel.Account,
             AccountId = balanceModel.AccountId,
             DataCriacao = DateTime.UtcNow,
-            DataAlteracao = DateTime.UtcNow
+            DataAlteracao = DateTime.UtcNow,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         balanceModelUpdate = new BalanceModel
@@ -150,6 +162,8 @@ public class BalanceTest : BaseTestService
             Year = 2025,
             Account = balanceModel.Account,
             AccountId = balanceModel.AccountId,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         balanceModelUpdateResult = new BalanceModel
@@ -172,7 +186,9 @@ public class BalanceTest : BaseTestService
             Account = balanceModelUpdate.Account,
             AccountId = balanceModelUpdate.AccountId,
             DataCriacao = DateTime.UtcNow,
-            DataAlteracao = DateTime.UtcNow
+            DataAlteracao = DateTime.UtcNow,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
     }
 
@@ -196,5 +212,7 @@ public class BalanceTest : BaseTestService
         Assert.Equal(balanceModelSource.Year, balanceModelDest.Year);
         Assert.Equal(balanceModelSource.AccountId, balanceModelDest.AccountId);
         Assert.Equal(balanceModelSource.Account.Id, balanceModelDest.Account.Id);
+        Assert.Equal(balanceModelSource.UserId, balanceModelDest.UserId);
+        Assert.Equal(balanceModelSource.User.Id, balanceModelDest.User.Id);
     }
 }

@@ -23,8 +23,8 @@ namespace Api.Service.Test.User
 
             RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
             RepositoryMock.Setup(m => m.FindUsuarioByUsernamaAndPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(userEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+            RepositoryMock.Setup(m => m.SelectByParamAsync( It.IsAny<PageParams>())).ReturnsAsync(data);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
 
             var resultByLogin = await service.GetUsuarioByLogin(userModelResult.Login);
             ApplyTest(userModelResult, resultByLogin);

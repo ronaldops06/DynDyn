@@ -102,6 +102,7 @@ builder.Services.AddAuthorization(auth =>
         .RequireAuthenticatedUser().Build());
 });
 
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile), typeof(DictionaryToModelProfile));
 
 builder.Logging.ClearProviders();

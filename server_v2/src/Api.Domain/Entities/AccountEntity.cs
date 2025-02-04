@@ -37,5 +37,15 @@ namespace Api.Domain.Entities
         /// Conta pai da conta em questão <see cref="AccountEntity"/>.
         /// </summary>
         public AccountEntity ParentAccount { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base.
+        /// </summary>
+        public UserEntity User { get; set; }
     }
 }

@@ -29,7 +29,9 @@ namespace Api.Service.Test.Operation
                 Id = 1,
                 Name = "Animais de Estimação",
                 Type = CategoryType.Conta,
-                Status = StatusType.Ativo
+                Status = StatusType.Ativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             pageParams = new PageParams()
@@ -50,7 +52,9 @@ namespace Api.Service.Test.Operation
                     CategoryId = categoryModel.Id,
                     Category = categoryModel,
                     DataCriacao = DateTime.UtcNow,
-                    DataAlteracao = DateTime.UtcNow
+                    DataAlteracao = DateTime.UtcNow,
+                    User = UserModelFake,
+                    UserId = UserModelFake.Id
                 };
 
                 listOperationModel.Add(model);
@@ -68,7 +72,9 @@ namespace Api.Service.Test.Operation
                 Type = OperationType.Debito,
                 Status = StatusType.Ativo,
                 CategoryId = categoryModel.Id,
-                Category = categoryModel
+                Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             operationModelResult = new OperationModel
@@ -81,7 +87,9 @@ namespace Api.Service.Test.Operation
                 CategoryId = operationModel.CategoryId,
                 Category = operationModel.Category,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             operationModelUpdate = new OperationModel
@@ -92,7 +100,9 @@ namespace Api.Service.Test.Operation
                 Type = operationModel.Type,
                 Status = StatusType.Inativo,
                 CategoryId = categoryModel.Id,
-                Category = categoryModel
+                Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             operationModelUpdateResult = new OperationModel
@@ -105,13 +115,17 @@ namespace Api.Service.Test.Operation
                 CategoryId = operationModelUpdate.CategoryId,
                 Category = operationModelUpdate.Category,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
         protected void ApplyTest(OperationModel operationModelSource, OperationModel operationModelDest)
         {
             Assert.NotNull(operationModelDest);
+            Assert.NotNull(operationModelDest.User);
+            Assert.True(operationModelDest.UserId > 0);
             Assert.Equal(operationModelSource.Id, operationModelDest.Id);
             Assert.Equal(operationModelSource.Name, operationModelDest.Name);
             Assert.Equal(operationModelSource.Recurrent, operationModelDest.Recurrent);
@@ -119,6 +133,8 @@ namespace Api.Service.Test.Operation
             Assert.Equal(operationModelSource.Status, operationModelDest.Status);
             Assert.Equal(operationModelSource.CategoryId, operationModelDest.CategoryId);
             Assert.Equal(operationModelSource.Category.Id, operationModelDest.Category.Id);
+            Assert.Equal(operationModelSource.UserId, operationModelDest.UserId);
+            Assert.Equal(operationModelSource.User.Id, operationModelDest.User.Id);
         }
     }
 }

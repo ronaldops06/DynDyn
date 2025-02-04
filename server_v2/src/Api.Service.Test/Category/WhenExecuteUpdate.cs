@@ -1,4 +1,5 @@
 ﻿using Api.Domain.Entities;
+using Api.Domain.Enums;
 using Api.Domain.Interfaces.Services;
 using Api.Service.Services;
 using Moq;
@@ -14,10 +15,10 @@ namespace Api.Service.Test.Category
             var categoryEntityUpdateResult = Mapper.Map<CategoryEntity>(categoryModelUpdateResult);
             var categoryEntityUpdate = Mapper.Map<CategoryEntity>(categoryModelUpdate);
 
-            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<string>())).ReturnsAsync(categoryEntityUpdate);
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(categoryEntityUpdate);
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<CategoryType>(), It.IsAny<string>())).ReturnsAsync(categoryEntityUpdate);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(categoryEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<CategoryEntity>())).ReturnsAsync(categoryEntityUpdateResult);
-            ICategoryService service = new CategoryService(RepositoryMock.Object, Mapper);
+            ICategoryService service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultUpdate = await service.Put(categoryModelUpdate);
             ApplyTest(categoryModelUpdate, resultUpdate);

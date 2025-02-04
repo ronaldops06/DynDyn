@@ -36,7 +36,7 @@ namespace Domain.Models
             get { return _dataAlteracao; }
             set { _dataAlteracao = value; }
         }
-
+        
         public object Clone() => this.MemberwiseClone();
     }
 }

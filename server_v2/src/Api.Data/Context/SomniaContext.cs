@@ -38,17 +38,26 @@ namespace Data.Context
                     Password = "pgadmin",
                     DataCriacao = DateTime.Now,
                     Role = String.Empty
+                },
+                new UserEntity
+                {
+                    Id = 2,
+                    Name = "Operação",
+                    Login = "ope@gmail.com",
+                    Password = "pgadmin",
+                    DataCriacao = DateTime.Now,
+                    Role = String.Empty
                 }
             );
 
-            modelBuilder.Entity<CategoryEntity>().HasData(
+            /*modelBuilder.Entity<CategoryEntity>().HasData(
                 new CategoryEntity
                 {
                     Id = 1,
                     Name = "Transferência",
                     Type = CategoryType.Operação,
-                    Status = StatusType.Ativo
-                });
+                    Status = StatusType.Ativo,
+                });*/
         }
     }
 }

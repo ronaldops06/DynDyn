@@ -20,7 +20,7 @@ namespace Api.Service.Test.User
             RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityUpdate);
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(userEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<UserEntity>())).ReturnsAsync(userEntityUpdateResult);
-            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
 
             var resultUpdate = await service.Put(userModelUpdate);
             ApplyTest(userModelUpdate, resultUpdate);

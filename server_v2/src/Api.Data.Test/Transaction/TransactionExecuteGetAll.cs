@@ -1,9 +1,11 @@
 using System.Globalization;
 using Api.Data.Repository;
+using Api.Data.Test.Helpers;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Data.Context;
 using Data.Repository;
+using Domain.Entities;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -11,6 +13,8 @@ namespace Api.Data.Test.Transaction
 {
     public class TransactionExecuteGetAll : BaseTestGet<TransactionEntity>, IClassFixture<DbTest>
     {
+        private UserEntity _user;
+        
         public TransactionExecuteGetAll(DbTest dbTest) : base(dbTest) { }
 
         [Fact(DisplayName = "Get de Transações")]
@@ -19,6 +23,11 @@ namespace Api.Data.Test.Transaction
         {
             using (var context = serviceProvider.GetService<SomniaContext>())
             {
+                UserRepository userRepository = new UserRepository(context);
+                _user = await userRepository.InsertAsync(UserHelper.GetLoggedUserFake());
+                Assert.NotNull(_user);
+                Assert.True(_user.Id > 0);
+                
                 TransactionRepository _repositorio = new TransactionRepository(context);
 
                 var accountEntity = await InsertAccont(context);
@@ -37,13 +46,15 @@ namespace Api.Data.Test.Transaction
                         Account = accountEntity,
                         AccountId = accountEntity.Id,
                         Operation = operationEntity,
-                        OperationId = operationEntity.Id
+                        OperationId = operationEntity.Id,
+                        UserId = _user.Id,
+                        User = _user
                     };
 
                     await _repositorio.InsertAsync(_transactionEntity);
                 }
 
-                await RealizaGetPaginado(_repositorio);
+                await RealizaGetPaginado(_user.Id, _repositorio);
 
                 Thread.Sleep(1000);
                 var lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
@@ -60,13 +71,15 @@ namespace Api.Data.Test.Transaction
                         Account = accountEntity,
                         AccountId = accountEntity.Id,
                         Operation = operationEntity,
-                        OperationId = operationEntity.Id
+                        OperationId = operationEntity.Id,
+                        UserId = _user.Id,
+                        User = _user
                     };
 
                     await _repositorio.InsertAsync(_transactionEntity);
                 }
 
-                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 36);
+                await RealizaGetLasSyncDate(_user.Id, _repositorio, lastSyncDate, 36);
 
                 Thread.Sleep(1000);
                 lastSyncDate = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
@@ -74,12 +87,12 @@ namespace Api.Data.Test.Transaction
                 //O teste abaixo irá atualizar um número objetos para verificar se retorna corretamente
                 for (int i = 10; i < (RECORD_NUMBER + 10); i++)
                 {
-                    TransactionEntity _entity = await _repositorio.SelectByIdAsync(i);
+                    TransactionEntity _entity = await _repositorio.SelectByIdAsync(_user.Id, i);
 
                     await _repositorio.UpdateAsync(_entity);
                 }
 
-                await RealizaGetLasSyncDate(_repositorio, lastSyncDate, 10);
+                await RealizaGetLasSyncDate(_user.Id, _repositorio, lastSyncDate, 10);
             }
         }
 
@@ -91,12 +104,15 @@ namespace Api.Data.Test.Transaction
                 Name = name,
                 Type = type,
                 Status = StatusType.Ativo,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorioCategory.InsertAsync(_categoryEntity);
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
             Assert.Equal(_categoryEntity.Name, _registroCriado.Name);
+            Assert.Equal(_categoryEntity.User.Id, _registroCriado.User.Id);
 
             return _registroCriado;
         }
@@ -112,13 +128,16 @@ namespace Api.Data.Test.Transaction
                 Name = "Geral",
                 Status = StatusType.Ativo,
                 CategoryId = _categoryCreated.Id,
-                Category = _categoryCreated
+                Category = _categoryCreated,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
             Assert.NotNull(_parentAccountCreated);
             Assert.True(_parentAccountCreated.Id > 0);
             Assert.Equal(_parentAccountCreated.Name, _parentAccountEntity.Name);
+            Assert.Equal(_parentAccountCreated.User.Id, _parentAccountEntity.User.Id);
 
             AccountEntity _accountEntity = new AccountEntity()
             {
@@ -127,7 +146,9 @@ namespace Api.Data.Test.Transaction
                 CategoryId = _categoryCreated.Id,
                 Category = _categoryCreated,
                 ParentAccountId = _parentAccountEntity.Id,
-                ParentAccount = _parentAccountEntity
+                ParentAccount = _parentAccountEntity,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
@@ -152,12 +173,15 @@ namespace Api.Data.Test.Transaction
                 Status = StatusType.Ativo,
                 CategoryId = _categoryCreated.Id,
                 Category = _categoryCreated,
+                UserId = _user.Id,
+                User = _user
             };
 
             var _registroCriado = await _repositorio.InsertAsync(_operationEntity);
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
             Assert.Equal(_registroCriado.Name, _operationEntity.Name);
+            Assert.Equal(_registroCriado.User.Id, _operationEntity.User.Id);
 
             return _registroCriado;
         }

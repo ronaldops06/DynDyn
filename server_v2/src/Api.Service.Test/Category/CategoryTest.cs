@@ -39,7 +39,9 @@ namespace Api.Service.Test.Category
                     Type = GetCategoryTypeRandom(),
                     Status = GetStatusTypeRandom(),
                     DataCriacao = DateTime.UtcNow,
-                    DataAlteracao = DateTime.UtcNow
+                    DataAlteracao = DateTime.UtcNow,
+                    User = UserModelFake,
+                    UserId = UserModelFake.Id
                 };
 
                 listCategoryModel.Add(dto);
@@ -54,7 +56,9 @@ namespace Api.Service.Test.Category
                 Id = 1,
                 Name = "Corrente",
                 Type = CategoryType.Conta,
-                Status = StatusType.Ativo
+                Status = StatusType.Ativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             categoryModelResult = new CategoryModel
@@ -64,7 +68,9 @@ namespace Api.Service.Test.Category
                 Type = categoryModel.Type,
                 Status = categoryModel.Status,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             categoryModelUpdate = new CategoryModel
@@ -72,7 +78,9 @@ namespace Api.Service.Test.Category
                 Id = categoryModel.Id,
                 Name = "Lazer",
                 Type = CategoryType.Conta,
-                Status = StatusType.Inativo
+                Status = StatusType.Inativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             categoryModelUpdateResult = new CategoryModel
@@ -82,17 +90,23 @@ namespace Api.Service.Test.Category
                 Type = categoryModelUpdate.Type,
                 Status = categoryModelUpdate.Status,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
         protected void ApplyTest(CategoryModel categoryModelSource, CategoryModel categoryModelDest)
         {
             Assert.NotNull(categoryModelDest);
+            Assert.NotNull(categoryModelDest.User);
+            Assert.True(categoryModelDest.UserId > 0);
             Assert.Equal(categoryModelSource.Id, categoryModelDest.Id);
             Assert.Equal(categoryModelSource.Name, categoryModelDest.Name);
             Assert.Equal(categoryModelSource.Type, categoryModelDest.Type);
             Assert.Equal(categoryModelSource.Status, categoryModelDest.Status);
+            Assert.Equal(categoryModelSource.UserId, categoryModelDest.UserId);
+            Assert.Equal(categoryModelSource.User.Id, categoryModelDest.User.Id);
         }
     }
 }

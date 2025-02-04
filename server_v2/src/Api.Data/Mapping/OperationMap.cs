@@ -15,7 +15,7 @@ namespace Api.Data.Mapping
 
             builder.HasKey(u => u.Id);
 
-            builder.HasIndex(u => u.Name)
+            builder.HasIndex(u => new { u.Name, u.UserId })
                 .IsUnique();
 
             builder.Property(u => u.Name)
@@ -38,6 +38,11 @@ namespace Api.Data.Mapping
                   .WithMany()
                   .HasForeignKey(e => e.CategoryId)
                   .IsRequired();
+            
+            builder.HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
         }
     }
 }

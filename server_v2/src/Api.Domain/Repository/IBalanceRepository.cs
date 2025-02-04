@@ -13,11 +13,12 @@ namespace Domain.Repository
         /// <summary>
         /// Método responsável por retornar o saldo com base na UK.
         /// </summary>
+        /// <param name="userId">Identificador do usuário</param>
         /// <param name="accountId">Identificador da conta.</param>
         /// <param name="month">Mês do saldo.</param>
         /// <param name="year">Ano do saldo.</param>
         /// <returns>Entidade de categoria <see cref="CategoryEntity"/></returns>
-        Task<BalanceEntity> SelectByUkAsync(int accountId, int month, int year);
+        Task<BalanceEntity> SelectByUkAsync(int userId, int accountId, int month, int year);
 
         /// <summary>
         /// Método responsável por alterar o estado das entidades dependentes para que não ocorra erro ao salvar a entidade principal.

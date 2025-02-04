@@ -97,6 +97,7 @@ namespace Api.Application.V1.Controllers
             }
             catch (Exception ex)
             {
+                Log.Info<CategoryController>(ex.Message);
                 return BadRequest(ex.Message);
             }
 

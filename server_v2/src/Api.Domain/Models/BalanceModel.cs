@@ -87,5 +87,15 @@ namespace Domain.Models
         /// Conta correspondenta ao saldo.
         /// </summary>
         public AccountModel Account { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserModel User { get; set; }
     }
 }

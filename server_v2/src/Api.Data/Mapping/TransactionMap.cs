@@ -14,7 +14,7 @@ namespace Api.Data.Mapping
             builder.ToTable("Transaction");
 
             builder.HasKey(u => u.Id);
-
+            
             builder.Property(u => u.Value)
                 .IsRequired();
 
@@ -53,6 +53,11 @@ namespace Api.Data.Mapping
                   .HasForeignKey(e => e.OperationId)
                   .OnDelete(DeleteBehavior.Restrict)
                   .IsRequired();
+            
+            builder.HasOne(u => u.User)
+                .WithMany()
+                .HasForeignKey(e => e.UserId)
+                .IsRequired();
         }
     }
 }

@@ -42,5 +42,15 @@ namespace Api.Domain.Entities
         /// Categoria da operação <see cref="CategoryEntity"/>.
         /// </summary>
         public CategoryEntity Category { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base.
+        /// </summary>
+        public UserEntity User { get; set; }
     }
 }

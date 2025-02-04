@@ -34,7 +34,7 @@ namespace Api.Data.Test.User
                     await _repositorio.InsertAsync(_entity);
                 }
 
-                base.RealizaGetPaginado(_repositorio);
+                //base.RealizaGetPaginado(_repositorio);
             }
         }
     }

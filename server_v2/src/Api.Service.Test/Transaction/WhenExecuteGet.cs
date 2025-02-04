@@ -18,10 +18,10 @@ namespace Api.Service.Test.Transaction
 
             var data = new Data<TransactionEntity>(listTransactionEntity.Count, listTransactionEntity);
 
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(transactionEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            RepositoryMock.Setup(m => m.SelectTransactionsTotalsAsync(It.IsAny<PageParams>())).ReturnsAsync(transactionTotals);
-            TransactionService service = new TransactionService(RepositoryMock.Object, OperationServiceMock.Object, Mapper);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(transactionEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(data);
+            RepositoryMock.Setup(m => m.SelectTransactionsTotalsAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(transactionTotals);
+            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, Mapper);
 
             var resultById = await service.GetById(transactionModelResult.Id);
             ApplyTest(transactionModelResult, resultById);

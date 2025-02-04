@@ -1,6 +1,7 @@
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Models;
+using Domain.Entities;
 using Xunit;
 
 namespace Api.Service.Test.AutoMapper
@@ -24,7 +25,9 @@ namespace Api.Service.Test.AutoMapper
                 Account = accountModel,
                 AccountId = accountModel.Id,
                 Operation = operationModel,
-                OperationId = operationModel.Id
+                OperationId = operationModel.Id,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             //Model -> Entity
@@ -41,6 +44,8 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(entity.Operation.Id, model.Operation.Id);
             Assert.Equal(entity.ParentTransactionId, model.ParentTransactionId);
             Assert.Equal(entity.ParentTransaction?.Id, model.ParentTransaction?.Id);
+            Assert.Equal(entity.UserId, model.UserId);
+            Assert.Equal(entity.User.Id, model.User.Id);
 
             //Entity -> Model
             var transactionModel = Mapper.Map<TransactionModel>(entity);
@@ -56,11 +61,14 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(transactionModel.Operation.Id, entity.Operation.Id);
             Assert.Equal(transactionModel.ParentTransactionId, entity.ParentTransactionId);
             Assert.Equal(transactionModel.ParentTransaction?.Id, entity.ParentTransaction?.Id);
+            Assert.Equal(transactionModel.UserId, entity.UserId);
+            Assert.Equal(transactionModel.User.Id, entity.User.Id);
         }
 
         [Fact(DisplayName = "É possível mapear os modelos em lista")]
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
+            var userEntity = Mapper.Map<UserEntity>(UserModelFake);
             var accountModel = GenerateAccount(2, "Cach");
             var accountEntity = Mapper.Map<AccountEntity>(accountModel);
             var operationModel = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
@@ -80,7 +88,9 @@ namespace Api.Service.Test.AutoMapper
                     Account = accountEntity,
                     AccountId = accountEntity.Id,
                     Operation = operationEntity,
-                    OperationId = operationEntity.Id
+                    OperationId = operationEntity.Id,
+                    User = userEntity,
+                    UserId = userEntity.Id
                 };
 
                 listEntity.Add(item);
@@ -107,6 +117,8 @@ namespace Api.Service.Test.AutoMapper
                 Assert.Equal(listModel[i].ParentTransaction?.Id, listEntity[i].ParentTransaction?.Id);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
+                Assert.Equal(listModel[i].UserId, listEntity[i].UserId);
+                Assert.Equal(listModel[i].User.Id, listEntity[i].User.Id);
             }
         }
 
@@ -118,6 +130,8 @@ namespace Api.Service.Test.AutoMapper
                 Name = name,
                 Type = type,
                 Status = StatusType.Ativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
@@ -131,7 +145,9 @@ namespace Api.Service.Test.AutoMapper
                 Name = "Geral",
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
-                Category = category
+                Category = category,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             return new AccountModel()
@@ -142,7 +158,9 @@ namespace Api.Service.Test.AutoMapper
                 CategoryId = category.Id,
                 Category = category,
                 ParentAccountId = _parentAccountModel.Id,
-                ParentAccount = _parentAccountModel
+                ParentAccount = _parentAccountModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
@@ -159,6 +177,8 @@ namespace Api.Service.Test.AutoMapper
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
                 Category = category,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
     }

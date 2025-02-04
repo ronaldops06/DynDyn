@@ -17,9 +17,9 @@ namespace Api.Service.Test.Account
 
             var data = new Data<AccountEntity>(listAccountEntity.Count, listAccountEntity);
 
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(accountEntityResult);
-            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<PageParams>())).ReturnsAsync(data);
-            AccountService service = new AccountService(RepositoryMock.Object, Mapper);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(accountEntityResult);
+            RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(),It.IsAny<PageParams>())).ReturnsAsync(data);
+            AccountService service = new AccountService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultById = await service.GetById(accountModelResult.Id);
             ApplyTest(accountModelResult, resultById);

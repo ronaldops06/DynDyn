@@ -1,6 +1,7 @@
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Models;
+using Domain.Entities;
 using Xunit;
 
 namespace Api.Service.Test.AutoMapper
@@ -15,6 +16,8 @@ namespace Api.Service.Test.AutoMapper
                 Name = "Corrente",
                 Type = CategoryType.Conta,
                 Status = StatusType.Ativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             var model = new OperationModel()
@@ -25,6 +28,8 @@ namespace Api.Service.Test.AutoMapper
                 Status = StatusType.Ativo,
                 CategoryId = categoryModel.Id,
                 Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             //Model -> Entity
@@ -36,6 +41,8 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(entity.Status, model.Status);
             Assert.Equal(entity.CategoryId, model.CategoryId);
             Assert.Equal(entity.Category.Id, model.Category.Id);
+            Assert.Equal(entity.UserId, model.UserId);
+            Assert.Equal(entity.User.Id, model.User.Id);
 
             //Entity -> Model
             var operationModel = Mapper.Map<OperationModel>(entity);
@@ -48,16 +55,22 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(operationModel.Category.Id, entity.Category.Id);
             Assert.Equal(operationModel.DataCriacao, entity.DataCriacao);
             Assert.Equal(operationModel.DataAlteracao, entity.DataAlteracao);
+            Assert.Equal(operationModel.UserId, entity.UserId);
+            Assert.Equal(operationModel.User.Id, entity.User.Id);
         }
 
         [Fact(DisplayName = "É possível mapear os modelos em lista")]
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
+            var userEntity = Mapper.Map<UserEntity>(UserModelFake);
+            
             var categoryEntity = new CategoryEntity()
             {
                 Name = "Corrente",
                 Type = CategoryType.Conta,
                 Status = StatusType.Ativo,
+                User = userEntity,
+                UserId = userEntity.Id
             };
 
             var listEntity = new List<OperationEntity>();
@@ -73,7 +86,9 @@ namespace Api.Service.Test.AutoMapper
                     CategoryId = categoryEntity.Id,
                     Category = categoryEntity,
                     DataCriacao = DateTime.UtcNow,
-                    DataAlteracao = DateTime.UtcNow
+                    DataAlteracao = DateTime.UtcNow,
+                    User = userEntity,
+                    UserId = userEntity.Id
                 };
 
                 listEntity.Add(item);
@@ -95,6 +110,8 @@ namespace Api.Service.Test.AutoMapper
                 Assert.Equal(listModel[i].Category.Id, listEntity[i].Category.Id);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
+                Assert.Equal(listModel[i].UserId, listEntity[i].UserId);
+                Assert.Equal(listModel[i].User.Id, listEntity[i].User.Id);
             }
         }
     }

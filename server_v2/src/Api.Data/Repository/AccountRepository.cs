@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
+using Api.Domain.Enums;
 using Api.Domain.Repository;
 using Data.Context;
 using Data.Repository;
@@ -19,7 +20,7 @@ namespace Api.Data.Repository
     {
         public AccountRepository(SomniaContext context) : base(context) { }
 
-        public override async Task<IEnumerable<AccountEntity>> SelectAsync()
+        public override async Task<IEnumerable<AccountEntity>> SelectAsync(int userId)
         {
             var result = new List<AccountEntity>();
 
@@ -30,7 +31,9 @@ namespace Api.Data.Repository
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
                 query = query.Include(cta => cta.ParentAccount.Category);
+                query = query.Include(usr => usr.User);
 
+                query = query.Where(x => x.UserId == userId);
                 query = query.AsNoTracking().OrderBy(a => a.Id);
                 result = query.ToList();
             }
@@ -42,7 +45,7 @@ namespace Api.Data.Repository
             return result;
         }
 
-        public override async Task<AccountEntity> SelectByIdAsync(int id)
+        public override async Task<AccountEntity> SelectByIdAsync(int userId, int id)
         {
             var result = new AccountEntity();
 
@@ -53,9 +56,10 @@ namespace Api.Data.Repository
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
                 query = query.Include(cta => cta.ParentAccount.Category);
+                query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Id == id);
+                             .Where(x => x.UserId == userId && x.Id == id);
 
                 result = query.FirstOrDefault();
             }
@@ -67,14 +71,17 @@ namespace Api.Data.Repository
             return result;
         }
 
-        public override async Task<Data<AccountEntity>> SelectByParamAsync(PageParams pageParams)
+        public override async Task<Data<AccountEntity>> SelectByParamAsync(int userId, PageParams pageParams)
         {
             IQueryable<AccountEntity> query = _context.Account;
 
             query = query.Include(cat => cat.Category);
             query = query.Include(cta => cta.ParentAccount);
             query = query.Include(cta => cta.ParentAccount.Category);
+            query = query.Include(usr => usr.User);
 
+            query = query.Where(x => x.UserId == userId);
+            
             if (pageParams.LastSyncDate != null)
                 query = query.Where(a => a.DataAlteracao >= pageParams.LastSyncDate);
 
@@ -83,7 +90,7 @@ namespace Api.Data.Repository
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
         }
 
-        public async Task<AccountEntity> SelectByUkAsync(string name)
+        public async Task<AccountEntity> SelectByUkAsync(int userId, string name, StatusType status)
         {
             var result = new AccountEntity();
 
@@ -94,9 +101,10 @@ namespace Api.Data.Repository
                 query = query.Include(cat => cat.Category);
                 query = query.Include(cta => cta.ParentAccount);
                 query = query.Include(cta => cta.ParentAccount.Category);
+                query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Name == name);
+                             .Where(x => x.UserId == userId && x.Name == name && x.Status == status);
 
                 result = query.FirstOrDefault();
             }
@@ -115,6 +123,9 @@ namespace Api.Data.Repository
 
             if (accountEntity.ParentAccount != null)
                 _context.Entry(accountEntity.ParentAccount).State = EntityState.Unchanged;
+            
+            if (accountEntity.User != null)
+                _context.Entry(accountEntity.User).State = EntityState.Unchanged;
         }
     }
 }

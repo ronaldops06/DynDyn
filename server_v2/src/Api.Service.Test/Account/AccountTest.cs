@@ -11,7 +11,7 @@ namespace Api.Service.Test.Account
     public class AccountTest : BaseTestService
     {
         private static readonly int RECORD_NUMBER = 10;
-
+        
         protected Mock<IAccountRepository> RepositoryMock = new Mock<IAccountRepository>();
         protected List<AccountModel> listAccountModel = new List<AccountModel>();
         protected List<AccountModel> listAccountModelResult = new List<AccountModel>();
@@ -28,7 +28,9 @@ namespace Api.Service.Test.Account
                 Id = 1,
                 Name = "Corrente",
                 Type = CategoryType.Conta,
-                Status = StatusType.Ativo
+                Status = StatusType.Ativo,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             var parentModel = new AccountModel
@@ -37,7 +39,9 @@ namespace Api.Service.Test.Account
                 Name = "Geral",
                 Status = StatusType.Ativo,
                 CategoryId = categoryModel.Id,
-                Category = categoryModel
+                Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             pageParams = new PageParams()
@@ -58,7 +62,9 @@ namespace Api.Service.Test.Account
                     CategoryId = categoryModel.Id,
                     Category = categoryModel,
                     DataCriacao = DateTime.UtcNow,
-                    DataAlteracao = DateTime.UtcNow
+                    DataAlteracao = DateTime.UtcNow,
+                    User = UserModelFake,
+                    UserId = UserModelFake.Id
                 };
 
                 listAccountModel.Add(model);
@@ -76,7 +82,9 @@ namespace Api.Service.Test.Account
                 ParentAccountId = parentModel.Id,
                 ParentAccount = parentModel,
                 CategoryId = categoryModel.Id,
-                Category = categoryModel
+                Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             accountModelResult = new AccountModel
@@ -89,7 +97,9 @@ namespace Api.Service.Test.Account
                 CategoryId = accountModel.CategoryId,
                 Category = accountModel.Category,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             accountModelUpdate = new AccountModel
@@ -100,7 +110,9 @@ namespace Api.Service.Test.Account
                 ParentAccountId = parentModel.Id,
                 ParentAccount = parentModel,
                 CategoryId = categoryModel.Id,
-                Category = categoryModel
+                Category = categoryModel,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             accountModelUpdateResult = new AccountModel
@@ -113,13 +125,17 @@ namespace Api.Service.Test.Account
                 CategoryId = accountModelUpdate.CategoryId,
                 Category = accountModelUpdate.Category,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
         protected void ApplyTest(AccountModel accountModelSource, AccountModel accountModelDest)
         {
             Assert.NotNull(accountModelDest);
+            Assert.NotNull(accountModelSource.User);
+            Assert.True(accountModelSource.UserId > 0);
             Assert.Equal(accountModelSource.Id, accountModelDest.Id);
             Assert.Equal(accountModelSource.Name, accountModelDest.Name);
             Assert.Equal(accountModelSource.Status, accountModelDest.Status);
@@ -127,6 +143,8 @@ namespace Api.Service.Test.Account
             Assert.Equal(accountModelSource.Category.Id, accountModelDest.Category.Id);
             Assert.Equal(accountModelSource.ParentAccountId, accountModelDest.ParentAccountId);
             Assert.Equal(accountModelSource.ParentAccount.Id, accountModelDest.ParentAccount.Id);
+            Assert.Equal(accountModelSource.UserId, accountModelDest.UserId);
+            Assert.Equal(accountModelSource.User.Id, accountModelDest.User.Id);
         }
     }
 }

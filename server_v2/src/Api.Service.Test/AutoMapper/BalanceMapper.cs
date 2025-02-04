@@ -2,6 +2,7 @@ using System.Globalization;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Models;
+using Domain.Entities;
 using Domain.Models;
 using Xunit;
 
@@ -31,7 +32,9 @@ public class BalanceMapper : BaseTestService
             Month = 1,
             Year = 2025,
             Account = accountModel,
-            AccountId = accountModel.Id
+            AccountId = accountModel.Id,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         //Model -> Entity
@@ -53,6 +56,8 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(entity.Year, model.Year);
         Assert.Equal(entity.AccountId, model.AccountId);
         Assert.Equal(entity.Account.Id, model.Account.Id);
+        Assert.Equal(entity.UserId, model.UserId);
+        Assert.Equal(entity.User.Id, model.User.Id);
 
         //Entity -> Model
         var balanceModel = Mapper.Map<BalanceModel>(entity);
@@ -74,11 +79,15 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(balanceModel.Account.Id, entity.Account.Id);
         Assert.Equal(balanceModel.DataCriacao, entity.DataCriacao);
         Assert.Equal(balanceModel.DataAlteracao, entity.DataAlteracao);
+        Assert.Equal(balanceModel.UserId, entity.UserId);
+        Assert.Equal(balanceModel.User.Id, entity.User.Id);
     }
     
     [Fact(DisplayName = "É possível mapear os modelos em lista")]
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
+            var userEntity = Mapper.Map<UserEntity>(UserModelFake);
+            
             var accountModel = GenerateAccount(2, "Cach");
             var accountEntity = Mapper.Map<AccountEntity>(accountModel);
 
@@ -103,7 +112,9 @@ public class BalanceMapper : BaseTestService
                     Month = 1,
                     Year = 2025,
                     Account = accountEntity,
-                    AccountId = accountEntity.Id
+                    AccountId = accountEntity.Id,
+                    User = userEntity,
+                    UserId = userEntity.Id
                 };
 
                 listEntity.Add(item);
@@ -135,6 +146,8 @@ public class BalanceMapper : BaseTestService
                 Assert.Equal(listModel[i].Account.Id, listEntity[i].Account.Id);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
+                Assert.Equal(listModel[i].UserId, listEntity[i].UserId);
+                Assert.Equal(listModel[i].User.Id, listEntity[i].User.Id);
             }
         }
     
@@ -148,7 +161,9 @@ public class BalanceMapper : BaseTestService
             Name = "Geral",
             Status = StatusType.Ativo,
             CategoryId = category.Id,
-            Category = category
+            Category = category,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
 
         return new AccountModel()
@@ -159,7 +174,9 @@ public class BalanceMapper : BaseTestService
             CategoryId = category.Id,
             Category = category,
             ParentAccountId = _parentAccountModel.Id,
-            ParentAccount = _parentAccountModel
+            ParentAccount = _parentAccountModel,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
     }
     
@@ -171,6 +188,8 @@ public class BalanceMapper : BaseTestService
             Name = name,
             Type = type,
             Status = StatusType.Ativo,
+            User = UserModelFake,
+            UserId = UserModelFake.Id
         };
     }
     

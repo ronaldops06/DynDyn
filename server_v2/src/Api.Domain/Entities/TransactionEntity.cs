@@ -72,5 +72,15 @@ namespace Api.Domain.Entities
         /// Operação utilizada no movimento.
         /// </summary>
         public OperationEntity Operation { get; set; }
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserEntity User { get; set; }
     }
 }

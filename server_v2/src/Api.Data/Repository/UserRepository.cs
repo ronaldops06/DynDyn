@@ -47,7 +47,7 @@ namespace Data.Repository
             return await query.FirstOrDefaultAsync();
         }
 
-        public override async Task<IEnumerable<UserEntity>> SelectAsync()
+        public async Task<IEnumerable<UserEntity>> SelectAsync()
         {
             var result = new List<UserEntity>();
 
@@ -66,7 +66,7 @@ namespace Data.Repository
             return result;
         }
 
-        public override async Task<UserEntity> SelectByIdAsync(int id)
+        public async Task<UserEntity> SelectByIdAsync(int id)
         {
             var result = new UserEntity();
 
@@ -87,7 +87,7 @@ namespace Data.Repository
             return result;
         }
 
-        public override async Task<Data<UserEntity>> SelectByParamAsync(PageParams pageParams)
+        public async Task<Data<UserEntity>> SelectByParamAsync(PageParams pageParams)
         {
             IQueryable<UserEntity> query = _context.Users;
 

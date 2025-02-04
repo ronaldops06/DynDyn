@@ -14,9 +14,9 @@ namespace Api.Service.Test.Operation
             var operationEntityResult = Mapper.Map<OperationEntity>(operationModelResult);
             var operationEntity = Mapper.Map<OperationEntity>(operationModel);
 
-            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(It.IsAny<OperationEntity>());
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(It.IsAny<OperationEntity>());
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<OperationEntity>())).ReturnsAsync(operationEntityResult);
-            OperationService service = new OperationService(RepositoryMock.Object, Mapper);
+            OperationService service = new OperationService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var result = await service.Post(operationModel);
             ApplyTest(operationModel, result);

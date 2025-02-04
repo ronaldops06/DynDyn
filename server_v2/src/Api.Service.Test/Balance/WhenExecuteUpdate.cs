@@ -14,10 +14,10 @@ namespace Api.Service.Test.Balance
             var balanceEntityUpdateResult = Mapper.Map<BalanceEntity>(balanceModelUpdateResult);
             var balanceEntityUpdate = Mapper.Map<BalanceEntity>(balanceModelUpdate);
 
-            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
-            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
+            RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
+            RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<BalanceEntity>())).ReturnsAsync(balanceEntityUpdateResult);
-            BalanceService service = new BalanceService(RepositoryMock.Object, Mapper);
+            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
 
             var resultUpdate = await service.Put(balanceModelUpdate);
             ApplyTest(balanceModelUpdate, resultUpdate);

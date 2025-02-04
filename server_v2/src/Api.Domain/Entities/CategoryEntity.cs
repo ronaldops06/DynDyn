@@ -22,5 +22,15 @@ namespace Api.Domain.Entities
         /// Status da categoria <see cref="StatusType"/>
         /// </summary>
         public StatusType Status { get; set; } = StatusType.Ativo;
+        
+        /// <summary>
+        /// Identificador do usuário base.
+        /// </summary>
+        public int UserId { get; set; }
+        
+        /// <summary>
+        /// Usuário base
+        /// </summary>
+        public UserEntity User { get; set; }
     }
 }

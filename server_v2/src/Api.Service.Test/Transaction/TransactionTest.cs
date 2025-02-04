@@ -55,7 +55,9 @@ namespace Api.Service.Test.Transaction
                     Account = accountModel,
                     AccountId = accountModel.Id,
                     Operation = operationModel,
-                    OperationId = operationModel.Id
+                    OperationId = operationModel.Id,
+                    User = UserModelFake,
+                    UserId = UserModelFake.Id
                 };
 
                 listTransactionModel.Add(model);
@@ -77,7 +79,9 @@ namespace Api.Service.Test.Transaction
                 Account = accountModel,
                 AccountId = accountModel.Id,
                 Operation = operationModel,
-                OperationId = operationModel.Id
+                OperationId = operationModel.Id,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             transactionModelResult = new TransactionModel()
@@ -93,7 +97,9 @@ namespace Api.Service.Test.Transaction
                 Operation = transactionModel.Operation,
                 OperationId = transactionModel.OperationId,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             installmentTransactionModelResult = new TransactionModel()
@@ -107,7 +113,9 @@ namespace Api.Service.Test.Transaction
                 Account = transactionModel.Account,
                 AccountId = transactionModel.AccountId,
                 Operation = transactionModel.Operation,
-                OperationId = transactionModel.OperationId
+                OperationId = transactionModel.OperationId,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             transferTransactionModelResult = new TransactionModel()
@@ -123,7 +131,9 @@ namespace Api.Service.Test.Transaction
                 DestinationAccount = destinationAccountModel,
                 DestinationAccountId = destinationAccountModel.Id,
                 Operation = transactionModel.Operation,
-                OperationId = transactionModel.OperationId
+                OperationId = transactionModel.OperationId,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             transactionModelUpdate = new TransactionModel()
@@ -137,7 +147,9 @@ namespace Api.Service.Test.Transaction
                 Account = transactionModel.Account,
                 AccountId = transactionModel.AccountId,
                 Operation = transactionModel.Operation,
-                OperationId = transactionModel.OperationId
+                OperationId = transactionModel.OperationId,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             transactionModelUpdateResult = new TransactionModel()
@@ -153,7 +165,9 @@ namespace Api.Service.Test.Transaction
                 Operation = transactionModelUpdate.Operation,
                 OperationId = transactionModelUpdate.OperationId,
                 DataCriacao = DateTime.UtcNow,
-                DataAlteracao = DateTime.UtcNow
+                DataAlteracao = DateTime.UtcNow,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             transactionTotals.Add(OperationType.Credito, 1000.90);
@@ -182,7 +196,9 @@ namespace Api.Service.Test.Transaction
                 Name = "Geral",
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
-                Category = category
+                Category = category,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
 
             return new AccountModel()
@@ -193,7 +209,8 @@ namespace Api.Service.Test.Transaction
                 CategoryId = category.Id,
                 Category = category,
                 ParentAccountId = _parentAccountModel.Id,
-                ParentAccount = _parentAccountModel
+                ParentAccount = _parentAccountModel,User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
@@ -210,12 +227,16 @@ namespace Api.Service.Test.Transaction
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
                 Category = category,
+                User = UserModelFake,
+                UserId = UserModelFake.Id
             };
         }
 
         protected void ApplyTest(TransactionModel transactionModelSource, TransactionModel transactionModelDest)
         {
             Assert.NotNull(transactionModelDest);
+            Assert.NotNull(transactionModelDest.User);
+            Assert.True(transactionModelDest.UserId > 0);
             Assert.Equal(transactionModelSource.Id, transactionModelDest.Id);
             Assert.Equal(transactionModelSource.Value, transactionModelDest.Value);
             Assert.Equal(transactionModelSource.Observation, transactionModelDest.Observation);
@@ -228,6 +249,8 @@ namespace Api.Service.Test.Transaction
             Assert.Equal(transactionModelSource.DestinationAccount?.Id, transactionModelDest.DestinationAccount?.Id);
             Assert.Equal(transactionModelSource.OperationId, transactionModelDest.OperationId);
             Assert.Equal(transactionModelSource.Operation.Id, transactionModelDest.Operation.Id);
+            Assert.Equal(transactionModelSource.UserId, transactionModelDest.UserId);
+            Assert.Equal(transactionModelSource.User.Id, transactionModelDest.User.Id);
         }
     }
 }
