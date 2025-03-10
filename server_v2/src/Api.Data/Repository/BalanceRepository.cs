@@ -27,6 +27,7 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
+                query = query.Include(cat => cat.Account.Category);
                 query = query.Include(usr => usr.User);
 
                 query = query.Where(x => x.UserId == userId);
@@ -50,6 +51,7 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
+                query = query.Include(cat => cat.Account.Category);
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
@@ -70,6 +72,7 @@ namespace Data.Repository
             IQueryable<BalanceEntity> query = _context.Balance;
 
             query = query.Include(act => act.Account);
+            query = query.Include(cat => cat.Account.Category);
             query = query.Include(usr => usr.User);
             
             query = query.Where(x => x.UserId == userId);
@@ -91,6 +94,7 @@ namespace Data.Repository
                 IQueryable<BalanceEntity> query = _context.Balance;
 
                 query = query.Include(act => act.Account);
+                query = query.Include(cat => cat.Account.Category);
                 query = query.Include(usr => usr.User);
     
                 query = query.AsNoTracking()

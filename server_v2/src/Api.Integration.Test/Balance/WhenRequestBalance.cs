@@ -69,6 +69,8 @@ namespace Api.Integration.Test.Balance
             Assert.Equal(BalanceBaseDto.BalanceSalaryDebit, registroPost.SalaryDebit);
             Assert.Equal(BalanceBaseDto.BalanceInflow, registroPost.Inflow);
             Assert.Equal(BalanceBaseDto.BalanceOutflow, registroPost.Outflow);
+            Assert.NotNull(registroPost.Account);
+            Assert.NotNull(registroPost.Account.Category);
             Assert.Equal(BalanceBaseDto.BalanceAccount.AccountId, registroPost.Account.Id);
             Assert.Equal(DateTime.Now.Year, registroPost.DataCriacao?.Year);
             Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);
@@ -93,6 +95,12 @@ namespace Api.Integration.Test.Balance
             Assert.NotNull(listFromJson);
             Assert.True(listFromJson.Count() > 0);
             Assert.True(listFromJson.Where(r => r.Id == registroPost.Id).Count() == 1);
+
+            foreach (var record in listFromJson)
+            {
+                Assert.NotNull(record.Account);
+                Assert.NotNull(record.Account.Category);
+            }
 
             //PUT
             BalanceRequestDto.Id = registroPost.Id;

@@ -38,8 +38,11 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
         Assert.Equal(balanceEntitySource.Outflow, balanceEntityDest.Outflow); 
         Assert.Equal(balanceEntitySource.Month, balanceEntityDest.Month);
         Assert.Equal(balanceEntitySource.Year, balanceEntityDest.Year);
+        Assert.NotNull(balanceEntitySource.Account);
+        Assert.NotNull(balanceEntitySource.Account.Category);
         Assert.Equal(balanceEntitySource.AccountId, balanceEntityDest.AccountId);
         Assert.Equal(balanceEntitySource.Account.Id, balanceEntityDest.Account.Id);
+        Assert.NotNull(balanceEntitySource.User);
         Assert.Equal(balanceEntitySource.UserId, balanceEntityDest.UserId);
         Assert.Equal(balanceEntitySource.User.Id, balanceEntityDest.User.Id);
     }
