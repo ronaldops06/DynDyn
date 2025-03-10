@@ -68,6 +68,7 @@ const AccountItem = (props: AccountItemProps) => {
                 </View>
                 <View style={cardStyle.rowInfo}>
                     <Text style={cardStyle.textName}>{props.data.Name}</Text>
+                    <Text style={cardStyle.textName}>R$ {props.data.BalanceTotals?.Value ? props.data.BalanceTotals?.Value?.toFixed(2) : '0.00'}</Text>
                 </View>
                 <View style={cardStyle.rowFooter}>
                     <Text style={cardStyle.textFooter} >

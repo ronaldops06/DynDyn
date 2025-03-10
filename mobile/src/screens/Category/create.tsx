@@ -23,8 +23,8 @@ const CategoryCreate = () => {
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'CategoryCreate'>>();
 
-    const categoryId = route.params?.data.Id ?? 0;
-    const categoryInternalId = route.params?.data.InternalId ?? 0;
+    const categoryId = route.params?.data?.Id ?? 0;
+    const categoryInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
     const [name, setName] = useState<string>("");
@@ -47,6 +47,9 @@ const CategoryCreate = () => {
     };
     
     const handleBackClick = () => {
+        if (route.params?.onGoBack)
+            route.params.onGoBack(constants.actionNavigation.none);
+        
         navigation.goBack();
     };
 
@@ -61,9 +64,9 @@ const CategoryCreate = () => {
                 {
                     text: "Sim", 
                     onPress: async () => {
-                        let response = await excludeCategory(categoryId, categoryInternalId, navigation);
+                        let response = await excludeCategory(categoryId, categoryInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation);
+                        validateSuccess(response, navigation, route);
                     }
                 }
             ],
@@ -99,12 +102,12 @@ const CategoryCreate = () => {
 
         let response: I.Response = {} as I.Response;
         if (isEditing)
-            response = await alterCategory(categoryDTO, navigation);
+            response = await alterCategory(categoryDTO);
         else
-            response = await createCategory(categoryDTO, navigation);
+            response = await createCategory(categoryDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation);
+        validateSuccess(response, navigation, route);
     };
 
     return (

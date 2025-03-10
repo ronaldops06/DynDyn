@@ -26,6 +26,11 @@ export const createTableTransaction = async () => {
             data_alteracao         TEXT
         );
     `);
+
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_id ON transactions (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions (account_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_operation_id ON transactions (operation_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_data_criacao ON transactions (data_criacao);`);
 };
 
 export const insertTransaction = async (transaction: Transaction): Promise<Transaction> => {
@@ -271,6 +276,13 @@ const queryBase = () => {
         + '     , dest_act.status AS dest_act_status'
         + '     , dest_act.data_criacao AS dest_act_data_criacao'
         + '     , dest_act.data_alteracao AS dest_act_data_alteracao'
+        + '     , dest_act_cat.internal_id AS dest_act_cat_internal_id'
+        + '     , dest_act_cat.id AS dest_act_cat_id'
+        + '     , dest_act_cat.name AS dest_act_cat_name'
+        + '     , dest_act_cat.type AS dest_act_cat_type'
+        + '     , dest_act_cat.status AS dest_act_cat_status'
+        + '     , dest_act_cat.data_criacao AS dest_act_cat_data_criacao'
+        + '     , dest_act_cat.data_alteracao AS dest_act_cat_data_alteracao'
         + '     , par_trn.internal_id AS par_trn_internal_id'
         + '     , par_trn.id AS par_trn_id'
         + '     , par_trn.value AS par_trn_value'
@@ -286,6 +298,7 @@ const queryBase = () => {
         + '       INNER JOIN accounts act ON trn.account_id = act.internal_id'
         + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
         + '       LEFT JOIN accounts dest_act ON dest_act.internal_id = trn.destination_account_id'
+        + '       LEFT JOIN categories dest_act_cat ON dest_act_cat.internal_id = dest_act.category_id'
         + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
 }
 
@@ -349,7 +362,15 @@ const formatResult = (item: any): Transaction => {
             Name: item.dest_act_name,
             Status: item.dest_act_status,
             ParentAccount: null,
-            Category: {} as Category,
+            Category: {
+                InternalId: item.dest_act_cat_internal_id,
+                Id: item.dest_act_cat_id,
+                Name: item.dest_act_cat_name,
+                Type: item.dest_act_cat_type,
+                Status: item.dest_act_cat_status,
+                DataCriacao: item.dest_act_cat_data_criacao,
+                DataAlteracao: item.dest_act_cat_data_alteracao
+            },
             DataCriacao: item.dest_act_data_criacao,
             DataAlteracao: item.dest_act_data_alteracao
         }

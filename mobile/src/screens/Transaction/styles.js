@@ -87,4 +87,8 @@ export const transactionStyle = StyleSheet.create({
         marginTop: 5,
         marginBottom: 5,
     },
+    scroll: {
+        flex: 1,
+        marginTop: 5
+    }
 });

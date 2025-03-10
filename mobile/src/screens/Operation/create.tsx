@@ -25,8 +25,8 @@ const OperationCreate = () => {
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'OperationCreate'>>();
 
-    const operationId = route.params?.data.Id ?? 0;
-    const operationInternalId = route.params?.data.InternalId ?? 0;
+    const operationId = route.params?.data?.Id ?? 0;
+    const operationInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
     const [name, setName] = useState<string>("");
@@ -46,7 +46,7 @@ const OperationCreate = () => {
 
     const getLists = async () => {
         let responseCategories = await loadAllCategory(TypesCategory.Operation, null);
-        validateLogin(responseCategories);
+        validateLogin(responseCategories, navigation);
         
         setCategories(responseCategories?.data ?? []);
     }
@@ -64,6 +64,9 @@ const OperationCreate = () => {
     };
 
     const handleBackClick = () => {
+        if (route.params?.onGoBack)
+            route.params.onGoBack(constants.actionNavigation.none);
+        
         navigation.goBack();
     };
 
@@ -80,7 +83,7 @@ const OperationCreate = () => {
                     onPress: async () => {
                         let response = await excludeOperation(operationId, operationInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation);
+                        validateSuccess(response, navigation, route);
                     }
                 }
             ],
@@ -119,7 +122,7 @@ const OperationCreate = () => {
             response = await createOperation(operationDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation);
+        validateSuccess(response, navigation, route);
     };
 
     const validateRequiredFields = () => {

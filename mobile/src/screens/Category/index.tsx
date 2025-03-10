@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {View, Text, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/core';
@@ -21,6 +21,7 @@ import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
 import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
+import CategoryIcon from '../../assets/category.svg';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Category'>;
 
@@ -30,26 +31,25 @@ const Category = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const [loading, setLoading] = useState(false);
+    const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [categories, setCategories] = useState<I.Category[]>([]);
-    const [categoryType, setCategoryType] = useState<number>(1);
+    const [categoryType, setCategoryType] = useState<number>(constants.categoryType.operation.Id);
 
     useEffect(() => {
-        setCategoryType(1);
+        setCategoryType(constants.categoryType.operation.Id);
     }, []);
-
+    
     useEffect(() => {
-        // Executado no goBack da tela seguinte
-        navigation.addListener('focus', () => {
-            setIsLoadInternal(true);
-            setCategories([]);
-        });
-    }, [navigation]);
-
-    useEffect(() => {
+        //Faz com que não execute na abertura da tela (renderização)
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
         if (categories.length === 0) {
             setPageNumber(1);
             loadCategories();
@@ -57,8 +57,10 @@ const Category = () => {
     }, [categories]);
 
     useEffect(() => {
-        setIsLoadInternal(true);
-        loadCategories();
+        if (categories?.length !== 0) {
+            setIsLoadInternal(true);
+            loadCategories();
+        }
     }, [pageNumber]);
 
     useEffect(() => {
@@ -105,7 +107,14 @@ const Category = () => {
 
     const handleItemClick = (data: I.Category) => {
         if (!isScrolling)
-            navigation.navigate("CategoryCreate", {isEditing: true, data: data});
+            navigation.navigate("CategoryCreate", {
+                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
+                    if (actionNavigation === constants.actionNavigation.reload) {
+                        setIsLoadInternal(true);
+                        setCategories([]);
+                    }
+                }
+            });
     }
 
     const onSwipeLeft = (data: I.Category) => {
@@ -161,13 +170,23 @@ const Category = () => {
     }
 
     const handleNewClick = () => {
-        navigation.navigate("CategoryCreate");
+        navigation.navigate("CategoryCreate", {
+            isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
+                if (actionNavigation === constants.actionNavigation.reload) {
+                    setIsLoadInternal(true);
+                    setCategories([]);
+                }
+            }
+        });
     }
 
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
-                <Text style={style.textHeaderConsultaTitle}>Categorias</Text>
+                <View style={style.titleScreen}>
+                    <CategoryIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                    <Text style={style.titleScreemText}>Categorias</Text>
+                </View>
                 <CarouselSelection data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>

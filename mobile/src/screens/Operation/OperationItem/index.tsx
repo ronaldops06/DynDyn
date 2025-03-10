@@ -1,9 +1,11 @@
 import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
-import DoneIcon from "../../../assets/done.svg";
 import {constants} from "../../../constants";
 import {cardStyle} from "../../../styles/styles.card"
+import DoneIcon from "../../../assets/done.svg";
+import PaymentIcon from "../../../assets/payments.svg";
+import CurrencyExchangeIcon from "../../../assets/currency_exchange.svg";
 
 interface OperationItemProps {
     data: I.Operation,
@@ -68,16 +70,15 @@ const OperationItem = (props: OperationItemProps) => {
                     <Text style={cardStyle.textName}>{props.data.Name}</Text>
                 </View>
                 <View style={cardStyle.rowFooter}>
-                    <Text style={cardStyle.textFooter} >
+                    <Text style={cardStyle.textFooter}>
                         {props.data.Category.Name}
                     </Text>
-                    <Text style={cardStyle.textFooter}>
-                        {props.data.Recurrent ? "Recorrente" : "Esporádico"}
-                    </Text>
-                    <Text style={cardStyle.textFooter}>
-                        {props.data.Salary ? "Salário" : ""}
-                    </Text>
-                    <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>
+                    <View style={cardStyle.boxEnd}>
+                        <CurrencyExchangeIcon style={{opacity: props.data.Recurrent ? 1 : 0}} width="20" height="20" fill="#00A519"/>
+                        <PaymentIcon style={{opacity: props.data.Salary ? 1 : 0}} width="20" height="20" fill="#00A519"/>
+                        <DoneIcon style={{opacity: 1}} width="20" height="20"
+                                  fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>
+                    </View>
                 </View>
             </View>
         </View>

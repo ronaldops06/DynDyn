@@ -24,8 +24,8 @@ const AccountCreate = () => {
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'AccountCreate'>>();
 
-    const accountId = route.params?.data.Id ?? 0;
-    const accountInternalId = route.params?.data.InternalId ?? 0;
+    const accountId = route.params?.data?.Id ?? 0;
+    const accountInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
     const [name, setName] = useState<string>("");
@@ -64,6 +64,9 @@ const AccountCreate = () => {
     };
 
     const handleBackClick = () => {
+        if (route.params?.onGoBack) 
+            route.params.onGoBack(constants.actionNavigation.none);
+        
         navigation.goBack();
     };
 
@@ -80,7 +83,7 @@ const AccountCreate = () => {
                     onPress: async () => {
                         let response = await excludeAccount(accountId, accountInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation);
+                        validateSuccess(response, navigation, route);
                     }
                 }
             ],
@@ -122,7 +125,7 @@ const AccountCreate = () => {
             response = await createAccount(accountDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation);
+        validateSuccess(response, navigation, route);
     };
     
     return(

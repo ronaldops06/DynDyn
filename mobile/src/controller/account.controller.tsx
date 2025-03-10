@@ -14,6 +14,7 @@ import Moment from "moment/moment";
 import {deleteAccount, getAccounts, postAccount, putAccount} from "../services/account.api.ts";
 import {Alert} from "react-native";
 import {existsTransactionRelationshipAccount} from "../repository/transaction.repository.tsx";
+import {selectTotalsByTreeAccount} from "../repository/balance.repository.tsx";
 
 /**
  * Método responsável por retornar a conta persistida internamente para ser utilizada como referência.
@@ -27,6 +28,9 @@ import {existsTransactionRelationshipAccount} from "../repository/transaction.re
 export const loadInternalAccount = async (account: I.Account): Promise<I.Account> => {
 
     account.Category = await loadInternalCategory(account.Category);
+    
+    if (account.ParentAccount !== null)
+        account.ParentAccount = await loadInternalAccount(account.ParentAccount);
 
     let internalAccount = await selectAccountById(account.Id);
 
@@ -42,6 +46,11 @@ export const loadAllAccountInternal = async (pageNumber: Number | null): Promise
 
     response.isLogged = true;
     response.data = await selectAllAccounts(pageNumber as number);
+    
+    for (let account of response.data) {
+        account.BalanceTotals = await selectTotalsByTreeAccount(account.InternalId);
+    }
+
     response.totalPages = await selectContAllAccounts();
 
     return response;
@@ -51,14 +60,14 @@ export const loadAllAccount = async (pageNumber: Number | null): Promise<I.Respo
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.account);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
-
+    
     let response = await getAccounts(params);
     
     if (response && !response.isLogged)
         return response;
 
     var accounts = response?.data ?? [];
-
+    
     for (const item of accounts) {
         item.Category = await loadInternalCategory(item.Category);
 

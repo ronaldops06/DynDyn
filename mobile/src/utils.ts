@@ -1,4 +1,6 @@
 import * as I from "./interfaces/interfaces.tsx";
+import sha256 from 'crypto-js/sha256';
+import {constants} from "./constants";
 
 export function isEndScroll(event: any) {
     let mHeight = event.nativeEvent.layoutMeasurement.height;
@@ -14,7 +16,15 @@ export const validateLogin = (response: I.Response, navigation: any) => {
         navigation.navigate("SignIn");
 }
 
-export const validateSuccess = (response: I.Response, navigation: any) => {
-    if (response.success)
+export const validateSuccess = (response: I.Response, navigation: any, route: any) => {
+    if (response.success) {
+        if (route?.params?.onGoBack)
+            route.params.onGoBack(constants.actionNavigation.reload);
+        
         navigation.goBack();
+    }
+}
+
+export const encrypt = async (value: string): Promise<string> => {
+    return sha256(value).toString();
 }

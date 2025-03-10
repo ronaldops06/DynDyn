@@ -12,6 +12,7 @@ import ClockIcon from '../../assets/clock.svg';
 import PrevIcon from '../../assets/nav_prev.svg';
 import TodayIcon from '../../assets/today.svg';
 import TrashIcon from '../../assets/trash.svg';
+import HistoryIcon from '../../assets/history.svg';
 import ButtonSelectBar, {ButtonsSelectedProps} from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
@@ -57,8 +58,8 @@ const TransactionCreate = () => {
 
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
-    const transactionId = route.params?.data.Id ?? 0;
-    const transactionInternalId = route.params?.data.InternalId ?? 0;
+    const transactionId = route.params?.data?.Id ?? 0;
+    const transactionInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
     const baseOperation = {} as I.Operation;
 
@@ -96,7 +97,7 @@ const TransactionCreate = () => {
 
     const loadDataSreen = () => {
         const data = route.params?.data;
-        if (data != undefined) {
+        if (data !== undefined && data !== null) {
             setTypeSelected(data.Operation.Type ?? 0);
             setValueValue(data.Value);
             setOperation(data.Operation);
@@ -148,6 +149,7 @@ const TransactionCreate = () => {
 
         if (typeSelected == TypesTransaction.Transference) {
             setOperationDefault();
+            setValueConsolidated(true);
         }
     }, [typeSelected]);
 
@@ -218,6 +220,9 @@ const TransactionCreate = () => {
     };
 
     const handleBackClick = () => {
+        if (route.params?.onGoBack)
+            route.params.onGoBack(constants.actionNavigation.none);
+        
         navigation.goBack();
     };
 
@@ -232,9 +237,10 @@ const TransactionCreate = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let response= await excludeTransaction(transactionId, transactionInternalId);
+                        const data = route.params?.data ?? {} as I.Transaction;
+                        let response= await excludeTransaction(data);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation);
+                        validateSuccess(response, navigation, route);
                     }
                 }
             ],
@@ -275,6 +281,8 @@ const TransactionCreate = () => {
 
         if (!validateRequiredFields()) return;
 
+        const data = route.params?.data ?? {} as I.Transaction;
+
         let operationDTO = {} as I.Operation;
         if (operation.Id !== undefined) {
             operationDTO.Id = operation.Id;
@@ -303,12 +311,12 @@ const TransactionCreate = () => {
 
         let response: I.Response = {} as I.Response;
         if (isEditing)
-            response = await alterTransaction(transactionDTO);
+            response = await alterTransaction(data, transactionDTO);
         else
             response = await createTransaction(transactionDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation);
+        validateSuccess(response, navigation, route);
     };
 
     return (
@@ -348,19 +356,14 @@ const TransactionCreate = () => {
                             />
                         </View>
                         {!typeSelectedIsTransference() &&
-                            <>
-                                <Text
-                                    style={transactionCreateStyle.textListOperations}
-                                    onPress={handleOperationsClick}>
-                                    Operações
-                                </Text>
-                                <TextInput
-                                    text={"Descrição"}
-                                    isMoveText={false}
-                                    value={valueDescription}
-                                    setValue={setValueDescription}
-                                />
-                            </>
+                            <TextInput
+                                text={"Descrição"}
+                                isMoveText={false}
+                                value={valueDescription}
+                                setValue={setValueDescription}
+                                icon={<HistoryIcon width={30} fill="#6E8BB8"/>}
+                                onPressIcon={handleOperationsClick}
+                            />
                         }
                         <View style={transactionCreateStyle.areaDateTime}>
                             <TextInput

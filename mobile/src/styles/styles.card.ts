@@ -11,7 +11,7 @@ export const cardStyle = StyleSheet.create({
         minHeight: 70
     },
     cardBackground: {
-        marginBottom: 20,
+        marginBottom: 5,
         borderRadius: 8,
         backgroundColor: "#E4E9F0",
     },
@@ -35,7 +35,7 @@ export const cardStyle = StyleSheet.create({
     },
     textFooter: {
         color: "#A4BCE3",
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: "Open Sans"
     },
     textName: {
@@ -43,4 +43,9 @@ export const cardStyle = StyleSheet.create({
         fontSize: 15,
         fontFamily: "Open Sans"
     },
+    boxEnd: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: 80
+    }
 });

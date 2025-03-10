@@ -33,6 +33,7 @@ const ButtonSelectBar = (props: ButtonSelectProps) => {
             {props.buttons.map((button) => {
                 return (
                     <TouchableOpacity
+                        key={button.value}
                         style={getButtonStyle(button.value)}
                         onPress={() => props.handleValueSelected(button.value)}
                         disabled={props.disabled}>

@@ -1,6 +1,6 @@
 import {style} from "../../styles/styles.ts";
 import {isEndScroll} from "../../utils.ts";
-import {ActivityIndicator, ScrollView, View} from "react-native";
+import {ActivityIndicator, ScrollView, View, TextStyle} from "react-native";
 import {categoryStyle} from "../../screens/Category/styles";
 import React, {useState} from "react";
 
@@ -11,6 +11,7 @@ interface CustomScrollParams {
     handlePageNumber: any;
     handleScrolling: any;
     children: React.ReactNode;
+    styles?: TextStyle | undefined;
 }
 
 const CustomScroll = (props: CustomScrollParams) => {
@@ -26,9 +27,9 @@ const CustomScroll = (props: CustomScrollParams) => {
     const handleTouchEnd = () => {
         setTimeout(props.handleScrolling, 2000, false);
     }
-
+    
     return (
-        <ScrollView style={style.scroll}
+        <ScrollView style={props.styles ? props.styles : style.scroll}
             onScroll={(event) => {
                 if (isEndScroll(event)) {
                     if (!props.loading) {
@@ -41,10 +42,10 @@ const CustomScroll = (props: CustomScrollParams) => {
             onTouchEnd={(event) => handleTouchEnd}
         >
             <View style={categoryStyle.viewList}>
+                {props.children}
                 {props.loading &&
                     <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8"/>
                 }
-                {props.children}
             </View>
         </ScrollView>
     );

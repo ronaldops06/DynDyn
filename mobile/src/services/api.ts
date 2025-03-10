@@ -1,23 +1,49 @@
 import NetInfo from '@react-native-community/netinfo';
 import axios from 'axios';
 import { Alert } from 'react-native';
-import { MMKV } from 'react-native-mmkv';
 
 import * as I from '../interfaces/interfaces';
+import EncryptedStorage from "react-native-encrypted-storage";
+import {constants} from "../constants";
 
 const api = axios.create({
     baseURL: "http://192.168.18.3:5000/api/v1/"
 });
 
+const getToken = async (): Promise<string> => {
+    const session = await EncryptedStorage.getItem("user_session");
+    
+    if (session) 
+        return JSON.parse(session).AccessToken;
+    
+    return '';
+}
+
 const isInternetConnected = async (): Promise<boolean> => {
     const state = await NetInfo.fetch();
     return state.isConnected ?? false;
-  };
+};
 
-export const get = async (path: string) => {
+export const getPaginated = async (path: string): Promise<I.Response> => {
+    let pathWithPages = `${path}&PageNumber=1&PageSize=${constants.pageSizeRequest}`;
+    let responseAllPages = await get(pathWithPages);
+    
+    if (!responseAllPages.success || !responseAllPages.isConnected) {
+        return responseAllPages;
+    } else if (responseAllPages.totalPages > 1){
+        for (let i = 2; i <= responseAllPages.totalPages; i++) {
+            pathWithPages = `${path}&PageNumber=${i}&PageSize=${constants.pageSizeRequest}`;
+            
+            let response = await get(pathWithPages);
+            responseAllPages.data.push(...response.data);
+        }
+    }
+    
+    return responseAllPages;
+}
 
-    const storage = new MMKV();
-    const token = await storage.getString('token');
+export const get = async (path: string): Promise<I.Response> => {
+    let token = await getToken();
 
     let responseRequest = {} as I.Response;
     responseRequest.isConnected = true;
@@ -51,8 +77,7 @@ export const get = async (path: string) => {
 };
 
 export const post = async (path: string, data: any) => {
-    const storage = new MMKV();
-    const token = storage.getString('token');
+    let token = await getToken();
 
     let responseRequest = {} as I.Response;
     responseRequest.isConnected = true;
@@ -71,7 +96,7 @@ export const post = async (path: string, data: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log(error?.response?.data);
+        console.log(error?.response);
         responseRequest.error = error.response.data;
         responseRequest.status = error.response.status;
         responseRequest.success = false;
@@ -81,9 +106,8 @@ export const post = async (path: string, data: any) => {
 };
 
 export const put = async (path: string, data: any) => {
-    const storage = new MMKV();
-    const token = await storage.getString('token');
-
+    let token = await getToken();
+    
     let responseRequest = {} as I.Response;
     responseRequest.isConnected = true;
 
@@ -101,17 +125,17 @@ export const put = async (path: string, data: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
+        console.log('erro', error?.response?.data);
         responseRequest.error = error.response.data;
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });
-
+    
     return responseRequest;
 };
 
 export const del = async (path: string) => {
-    const storage = new MMKV();
-    const token = await storage.getString('token');
+    let token = await getToken();
 
     let responseRequest = {} as I.Response;
     responseRequest.isConnected = true;
@@ -139,8 +163,7 @@ export const del = async (path: string) => {
 };
 
 export const getLogin = async (path: string, navigation: any) => {
-    const storage = new MMKV();
-    const token = storage.getString('token');
+    let token = await getToken();
 
     if (token) {
         api.get(path, {
@@ -158,14 +181,22 @@ export const getLogin = async (path: string, navigation: any) => {
     }
 }
 
-export const postLogin = async (path: string, data: I.Login) => {
-    let dataResponse = null;
+export const postLogin = async (path: string, data: I.Login): Promise<I.User | null> => {
+    let dataResponse: I.User | null = {} as I.User;
 
     await api.post(path, data
     ).then(response => {
         dataResponse = response.data;
     }).catch((error) => {
-        Alert.alert(error.response.data);
+        dataResponse = null;
+        if (error.response?.data)
+            Alert.alert("Login Inválido", error.response.data);
+        else if (error.response)
+            Alert.alert("Erro no Servidor", `Status: ${error.response.status}`);
+        else if (error.request)
+            Alert.alert("Erro de Rede", "Serviço indisponível.");
+        else
+            Alert.alert("Erro", "Algo deu errado.");
     });
 
     return dataResponse;

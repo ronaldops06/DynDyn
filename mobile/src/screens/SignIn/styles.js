@@ -29,6 +29,11 @@ export const signInStyle = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
+    buttonFingerprint:{
+        marginTop: 40,
+        justifyContent: "center",
+        alignItems: "center"
+    },
     buttonText: {
         color: "#F5F5F5",
         fontSize: 16,

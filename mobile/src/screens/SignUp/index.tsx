@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/core';
 import { StackNavigationProp } from '@react-navigation/stack';
 import React, { useState } from 'react';
 import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
-import { MMKV } from 'react-native-mmkv';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
@@ -11,15 +11,9 @@ import { postUser } from './signup.api';
 
 import { style } from '../../styles/styles';
 import { signUpStyle } from './styles';
+import {encrypt} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
-
-interface User {
-    id: number,
-    login: string,
-    name: string,
-    token: string
-};
 
 const SignUp = () => {
     const navigation = useNavigation<homeScreenProp>();
@@ -28,7 +22,7 @@ const SignUp = () => {
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [valuePasswordConfirm, setValuePasswordConfirm] = useState("");
-    const [user, setUser] = useState<User>({ id: 0, name: "", login: "", token: "" });
+    const [user, setUser] = useState<I.User>({ Id: 0, Name: "", Login: "", AccessToken: "", Password: "" });
 
     const handleRegisterClick = async () => {
         if (valuePassword != valuePasswordConfirm) {
@@ -37,20 +31,27 @@ const SignUp = () => {
             let userDTO = {} as I.User;
             userDTO.Name = valueName;
             userDTO.Login = valueEmail;
-            userDTO.Password = valuePasswordConfirm;
+            userDTO.Password = await encrypt(valuePasswordConfirm);
 
             const response = await postUser(userDTO, navigation);
             setUser(response?.data);
 
-            if (user.token) {
-                const storage = new MMKV();
-                await storage.set('token', user.token);
+            if (user.AccessToken) {
+                user.Password = userDTO.Password;
+                await setUserInStorage();
 
                 navigation.reset({
                     routes: [{ name: 'MainTab' }]
                 })
             }
         }
+    };
+
+    const setUserInStorage = async () => {
+        await EncryptedStorage.setItem(
+            "user_session",
+            JSON.stringify(user)
+        );
     };
 
     const handleLoginClick = () => {

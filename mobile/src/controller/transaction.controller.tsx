@@ -19,6 +19,7 @@ import { loadInternalOperation } from './operation.controller';
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
 import {deleteOperation} from "../services/operation.api.tsx";
 import {deleteInternalOperation} from "../repository/operation.repository.tsx";
+import {calculateBalanceByTransaction, calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
 
 /**
  * Método responsável por retornar a transação persistida internamente para ser utilizada como referência.
@@ -121,10 +122,13 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
         transaction = await insertTransaction(response.data);
     }
 
+    await calculateBalanceByTransaction(transaction, true);
+
     return response;
 }
 
-export const alterTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
+export const alterTransaction = async (sourceTransaction: I.Transaction, transaction: I.Transaction): Promise<I.Response> => {
+    
     let response = await putTransaction(transaction);
     if (response && !response.isLogged)
         return response;
@@ -136,10 +140,13 @@ export const alterTransaction = async (transaction: I.Transaction): Promise<I.Re
 
     if (!response.isConnected) {
         transaction = await updateTransaction(transaction);
+        await calculateBalanceByTransactionFromUpdate(sourceTransaction, transaction);
+        
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null){
         transaction = await updateTransaction(response.data);
+        await calculateBalanceByTransactionFromUpdate(sourceTransaction, transaction);
     }
 
     return response;
@@ -159,18 +166,21 @@ const populateInternalFields = (transaction: I.Transaction, response: I.Response
         response.data.ParentTransaction.InternalId = transaction.ParentTransaction?.InternalId;
 }
 
-export const excludeTransaction = async (transactionId: number, transactionInternalId: number): Promise<I.Response> => {
+export const excludeTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
 
-    let response = await deleteTransaction(transactionId);
+    let response = await deleteTransaction(transaction.Id);
     if (response && !response.isLogged)
         return response;
 
     if (!response.isConnected) {
-        await deleteInternalTransaction(transactionInternalId);
+        await deleteInternalTransaction(transaction.InternalId);
+        await calculateBalanceByTransactionFromUpdate(transaction, null);
+        
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data){
-        await deleteInternalTransaction(transactionInternalId);
+        await deleteInternalTransaction(transaction.InternalId);
+        await calculateBalanceByTransactionFromUpdate(transaction, null);
     }
 
     return response;

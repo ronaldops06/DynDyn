@@ -1,7 +1,7 @@
 import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
-import {categoryItemStyle} from "../CategoryItem/styles";
+import {cardStyle} from "../../../styles/styles.card";
 import DoneIcon from "../../../assets/done.svg";
 import {constants} from "../../../constants";
 
@@ -55,22 +55,22 @@ const CategoryItem = (props: CategoryItemParms) => {
 
     return (
         <View
-            style={categoryItemStyle.cardBackground}>
+            style={cardStyle.cardBackground}>
             <View
-                style={[categoryItemStyle.card, {marginLeft: moveX * -1, marginRight: moveX}]}
+                style={[cardStyle.card, {marginLeft: moveX * -1, marginRight: moveX}]}
                 // onTouchEndCapture={() => onTouchEnd}
                 onTouchStart={e => setTouchX(e.nativeEvent.pageX)}
                 onTouchEnd={e => onTouchEnd(e)}
                 onTouchCancel={e => onTouchEnd(e)}
                 onTouchMove={e => onTouchMove(e)}
             >
-                <View style={categoryItemStyle.rowInfo}>
-                    <Text style={categoryItemStyle.textCategoryName}>
+                <View style={cardStyle.rowInfo}>
+                    <Text style={cardStyle.textName}>
                         {props.data.Name}
                     </Text>
                 </View>
-                <View style={categoryItemStyle.rowFooter}>
-                    <Text style={categoryItemStyle.textFooter}>
+                <View style={cardStyle.rowFooter}>
+                    <Text style={cardStyle.textFooter}>
                         {props.data.Type === constants.categoryType.account.Id ? "Conta" : "Operação"}
                     </Text>
                     <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>

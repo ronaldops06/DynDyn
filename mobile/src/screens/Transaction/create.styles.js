@@ -4,7 +4,8 @@ export const transactionCreateStyle = StyleSheet.create({
     areaValue: {
         flexDirection: "row",
         width: "100%",
-        justifyContent: "center"
+        justifyContent: "center",
+        marginBottom: 20,
     },
     buttonMinus: {
         width: 35,

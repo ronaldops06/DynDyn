@@ -1,7 +1,7 @@
-import { Alert } from 'react-native';
-import { Action, StatusHttp } from '../enums/enums';
-import * as I from '../interfaces/interfaces';
-import { del, get, post, put } from './api';
+import {Action, StatusHttp} from "../enums/enums.tsx";
+import * as I from "../interfaces/interfaces.tsx";
+import {Alert} from "react-native";
+import {del, get, getPaginated, post, put} from "./api.ts";
 import {validateLogin} from "./helper.api.ts";
 
 export const validateResponse = (action: Action, response: I.Response) => {
@@ -12,52 +12,38 @@ export const validateResponse = (action: Action, response: I.Response) => {
 
     if (response.status == StatusHttp.Created && action != Action.Get) {
         if (action == Action.Post)
-            Alert.alert("Sucesso!", "Transação cadastrada com sucesso.");
+            Alert.alert("Sucesso!", "Saldo cadastrado com sucesso.");
         else if (action == Action.Put)
-            Alert.alert("Sucesso!", "Transação atualizada com sucesso.");
+            Alert.alert("Sucesso!", "Saldo atualizado com sucesso.");
         else if (action == Action.Delete)
-            Alert.alert("Sucesso!", "Transação excluída com sucesso.");
+            Alert.alert("Sucesso!", "Saldo excluído com sucesso.");
     }
 
     return true;
 };
 
-export const getTransactions = async (params: string) => {
+export const getBalances = async (params: string) => {
     let response = {} as I.Response;
-    response = await get(`Transaction?${params}`);
+    response = await getPaginated(`Balance?${params}`);
 
     response = validateLogin(response);
     if (!response.isLogged)
         return response;
-    
+
     if (!validateResponse(Action.Get, response)) return null;
 
     return response;
 };
 
-export const getTotalsTransactions = async (params: string) => {
-
+export const postBalance = async (data: I.Balance): Promise<I.Response> => {
     let response = {} as I.Response;
-    response = await get(`Transaction/Totais?${params}`);
+
+    response = await post('Balance', data);
 
     response = validateLogin(response);
     if (!response.isLogged)
         return response;
-    
-    if (!validateResponse(Action.Get, response)) return null;
 
-    return response;
-};
-
-export const postTransaction = async (data: I.Transaction): Promise<I.Response> => {
-    let response = {} as I.Response;
-
-    response = await post('Transaction', data);
-
-    response = validateLogin(response);
-    if (!response.isLogged)
-        return response;
-    
     if (!validateResponse(Action.Post, response)){
         response.data = null;
     }
@@ -65,15 +51,14 @@ export const postTransaction = async (data: I.Transaction): Promise<I.Response> 
     return response;
 };
 
-export const putTransaction = async (data: I.Transaction): Promise<I.Response> => {
+export const putBalance = async (data: I.Balance): Promise<I.Response> => {
     let response = {} as I.Response;
-    
-    response = await put(`Transaction`, data);
+    response = await put(`Balance`, data);
 
     response = validateLogin(response);
     if (!response.isLogged)
         return response;
-    
+
     if (!validateResponse(Action.Put, response)){
         response.data = null;
     }
@@ -81,15 +66,15 @@ export const putTransaction = async (data: I.Transaction): Promise<I.Response> =
     return response;
 };
 
-export const deleteTransaction = async (id: number): Promise<I.Response> => {
+export const deleteBalance = async (id: number) : Promise<I.Response> => {
     let response = {} as I.Response;
-    response = await del(`Transaction/${id}`);
+    response = await del(`Balance/${id}`);
 
     response = validateLogin(response);
     if (!response.isLogged)
         return response;
-    
+
     validateResponse(Action.Delete, response);
-    
+
     return response;
 };

@@ -26,7 +26,7 @@ const OperationModal = (props: OperationModalParams) => {
     const loadOperations = async () => {
         setLoading(true);
 
-        let response = await loadAllOperation(props.tipoOperation, null, null);
+        let response = await loadAllOperation(props.tipoOperation, null);
         setOperations(response?.data ?? []);
         setLoading(false);
     };

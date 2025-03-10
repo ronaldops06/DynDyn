@@ -1,6 +1,6 @@
-    import React, { useEffect } from 'react';
-import { Alert, SafeAreaView, View, Image, Pressable } from 'react-native';
-import { MMKV } from 'react-native-mmkv'
+import React, { useEffect } from 'react';
+import { SafeAreaView, View, Image, Pressable } from 'react-native';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import { useNavigation } from '@react-navigation/native';
 import {StackNavigationProp} from '@react-navigation/stack';
 
@@ -16,14 +16,12 @@ const Preload = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const checkToken = async () => {
-        const storage = new MMKV();
-        const token = storage.getString('token')
-        
-        if (token){
-            await login(navigation);
-        } else {
+        const session = await EncryptedStorage.getItem("user_session");
+
+        if (!session || !JSON.parse(session).token)
             navigation.navigate('SignIn');
-        }
+        
+        await login(navigation);
     };
 
     useEffect(()=>{
@@ -43,7 +41,6 @@ const Preload = () => {
                     <Image
                         style={preloadStyle.image}
                         source={require('../../assets/house.png')}
-                        
                     />
                 </View>
             </Pressable>

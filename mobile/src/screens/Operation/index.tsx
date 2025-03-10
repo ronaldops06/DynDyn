@@ -1,13 +1,11 @@
-import {style} from "../../styles/styles.ts";
-import {categoryStyle} from "../Category/styles";
+import React, {useEffect, useRef, useState} from "react";
 import PlusIcon from "../../assets/plus.svg";
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import React, {useEffect, useState} from "react";
+import {StackNavigationProp} from "@react-navigation/stack";
 import {useNavigation} from "@react-navigation/core";
 import _ from 'lodash';
 
 import {RootStackParamList} from '../RootStackParams';
-import {StackNavigationProp} from "@react-navigation/stack";
 import * as I from "../../interfaces/interfaces.tsx";
 import {
     alterOperation,
@@ -16,12 +14,14 @@ import {
     loadAllOperationInternal
 } from "../../controller/operation.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
-import {CustomAlert} from "../../components/CustomAlert";
 import {constants} from "../../constants";
 import CarouselSelection from "../../components/CarouselSelection";
 import OperationItem from "./OperationItem";
 import {validateLogin} from "../../utils.ts";
-import {alterAccount, excludeAccount} from "../../controller/account.controller.tsx";
+
+import {style} from "../../styles/styles.ts";
+import {categoryStyle} from "../Category/styles";
+import HistoryIcon from '../../assets/history.svg';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Operation'>;
 
@@ -29,22 +29,21 @@ const Operation = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const [loading, setLoading] = useState(false);
+    const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [operations, setOperations] = useState<I.Operation[]>([]);
-    const [operationType, setOperationType] = useState<number>(1);
+    const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
 
     useEffect(() => {
-        // Executado no goBack da tela seguinte
-        navigation.addListener('focus', () => {
-            setIsLoadInternal(true);
-            setOperations([]);
-        });
-    }, [navigation]);
-
-    useEffect(() => {
+        //Faz com que não execute na abertura da tela (renderização)
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
         if (operations.length === 0) {
             setPageNumber(1);
             loadOperations();
@@ -52,13 +51,16 @@ const Operation = () => {
     }, [operations]);
 
     useEffect(() => {
-        setIsLoadInternal(true);
-        loadOperations();
+        if (operations.length !== 0) {
+            setIsLoadInternal(true);
+            loadOperations();
+        }
     }, [pageNumber]);
-    
+
     useEffect(() => {
+
         updateOperations();
-        
+
         return () => updateOperations.cancel();
     }, [operationType]);
 
@@ -68,7 +70,7 @@ const Operation = () => {
     const updateOperations = _.debounce(() => {
         setOperations([]);
     }, 500);
-    
+
     const appendOperations = (data: I.Operation[]) => {
         let operationsNew = operations;
         if (data.length > 0) {
@@ -99,12 +101,27 @@ const Operation = () => {
     };
 
     const handleNewClick = () => {
-        navigation.navigate("OperationCreate");
+        navigation.navigate("OperationCreate", {
+            isEditing: false, data: null,
+            onGoBack: (actionNavigation: string) => {
+                if (actionNavigation === constants.actionNavigation.reload) {
+                    setIsLoadInternal(true);
+                    setOperations([]);
+                }
+            }
+        });
     }
 
     const handleItemClick = (data: I.Operation) => {
         if (!isScrolling)
-            navigation.navigate("OperationCreate", {isEditing: true, data: data});
+            navigation.navigate("OperationCreate", {
+                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
+                    if (actionNavigation === constants.actionNavigation.reload) {
+                        setIsLoadInternal(true);
+                        setOperations([]);
+                    }
+                }
+            });
     }
 
     const onSwipeLeft = (data: I.Operation) => {
@@ -148,7 +165,7 @@ const Operation = () => {
                         let response = await excludeOperation(data.Id, data.InternalId);
                         validateLogin(response, navigation);
 
-                        if (response.success){
+                        if (response.success) {
                             setIsLoadInternal(true);
                             setOperations([]);
                         }
@@ -162,7 +179,10 @@ const Operation = () => {
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
-                <Text style={style.textHeaderConsultaTitle}>Operações</Text>
+                <View style={style.titleScreen}>
+                    <HistoryIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                    <Text style={style.titleScreemText}>Operações</Text>
+                </View>
                 <CarouselSelection data={constants.operationType} handleItemSelectedId={setOperationType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>

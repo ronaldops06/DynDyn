@@ -6,12 +6,12 @@ export interface Response {
     totalPages: number,
     isConnected: boolean,
     isLogged: boolean,
-};
+}
 
 export interface Login {
     Login: string,
     Password: string
-};
+}
 
 export interface User {
     Id: number,
@@ -19,7 +19,7 @@ export interface User {
     Name: string,
     Password: string,
     AccessToken: string
-};
+}
 
 export interface Synchronization {
     InternalId: number | null,
@@ -37,7 +37,7 @@ export interface Category {
     Status: number,
     DataCriacao: Date | null,
     DataAlteracao: Date | null
-};
+}
 
 export interface Account {
     InternalId: number,
@@ -47,8 +47,9 @@ export interface Account {
     Category: Category,
     ParentAccount: Account | null,
     DataCriacao: Date,
-    DataAlteracao: Date
-};
+    DataAlteracao: Date,
+    BalanceTotals: BalanceTotals | null
+}
 
 export interface Operation {
     InternalId: number,
@@ -61,7 +62,7 @@ export interface Operation {
     Category: Category,
     DataCriacao: Date,
     DataAlteracao: Date
-};
+}
 
 export interface Transaction {
     InternalId: number,
@@ -77,10 +78,51 @@ export interface Transaction {
     ParentTransaction: Transaction | null,
     DataCriacao: Date,
     DataAlteracao: Date
-};
+}
+
+export interface TransactionsGroup {
+    date: string,
+    transactions: Transaction[]
+}
 
 export interface TransactionTotals {
     Credit: number,
     Debit: number,
     Tansfer: number
+}
+
+export interface Balance {
+    InternalId: number,
+    Id: number,
+    Value: number,
+    Valuation: number,
+    Dividends: number,
+    Income: number,
+    PercentageValuation: number,
+    PercentageIncome: number,
+    Credit: number,
+    Debit: number,
+    SalaryCredit: number,
+    SalaryDebit: number,
+    Outflow: number,
+    Inflow: number,
+    Month: number,
+    Year: number,
+    Account: Account,
+    DataCriacao: Date,
+    DataAlteracao: Date
+}
+
+export interface BalanceTotals {
+    Value: number
+}
+
+export interface CalculateBalance {
+    Value: number,
+    Account: Account,
+    Month: number,
+    Year: number,
+    CalculateBalanceType: number,
+    OperationType: number,
+    Salary: boolean
 }

@@ -19,6 +19,8 @@ export const createTableAccounts = async () => {
             data_alteracao    TEXT
         );
     `);
+    
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_accounts_id ON accounts (id);`);
 };
 
 export const insertAccount = async (account: Account): Promise<Account> => {
@@ -114,11 +116,11 @@ export const selectAllAccounts = async (pageNumber: number | null): Promise<Acco
         results = await db.executeSql(queryBase() + ' ORDER BY act.name');
 
     const accounts: Account[] = [];
-    results.forEach(result => {
-        for (let i = 0; i < result.rows.length; i++) {
-            accounts.push(formatResult(result.rows.item(i)));
+    for (let j = 0; j < results.length; j++) {
+        for (let i = 0; i < results[j].rows.length; i++) {
+            accounts.push(await formatResult(results[j].rows.item(i)));
         }
-    });
+    };
 
     return accounts;
 };
@@ -126,7 +128,10 @@ export const selectAllAccounts = async (pageNumber: number | null): Promise<Acco
 export const selectContAllAccounts = async (): Promise<number> => {
     const db = await openDatabase();
 
-    const results = await db.executeSql('SELECT * FROM accounts');
+    const results = await db.executeSql(
+        'SELECT * ' +
+        '  FROM accounts'
+    );
 
     let count: number = 0;
     results.forEach(result => {
@@ -140,7 +145,7 @@ export const selectAccountById = async (id: number): Promise<Account | undefined
     const db = await openDatabase();
     const result = await db.executeSql(queryBase() + ' WHERE act.id = ?', [id]);
 
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    return result[0]?.rows.length > 0 ? await formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
 export const existsAccountRelationshipCategory = async (categoryInternalId: number): Promise<boolean> => {
@@ -184,20 +189,20 @@ const queryBase = () => {
         + '     , par_act.status AS parent_account_status'
         + '     , par_act.data_criacao AS parent_account_data_criacao'
         + '     , par_act.data_alteracao AS parent_account_data_alteracao'
-        + '     , par_cat.internal_id AS parent_account_category_internal_id'
-        + '     , par_cat.id AS parent_account_category_id'
-        + '     , par_cat.name AS parent_account_category_name'
-        + '     , par_cat.type AS parent_account_category_type'
-        + '     , par_cat.status AS parent_account_category_status'
-        + '     , par_cat.data_criacao AS parent_account_category_data_criacao'
-        + '     , par_cat.data_alteracao AS parent_account_category_data_alteracao'
+        + '     , par_cat.internal_id AS par_cat_internal_id'
+        + '     , par_cat.id AS par_cat_id'
+        + '     , par_cat.name AS par_cat_name'
+        + '     , par_cat.type AS par_cat_type'
+        + '     , par_cat.status AS par_cat_status'
+        + '     , par_cat.data_criacao AS par_cat_data_criacao'
+        + '     , par_cat.data_alteracao AS par_cat_data_alteracao'
         + '  FROM accounts act'
         + '       INNER JOIN categories cat ON act.category_id = cat.internal_id'
         + '       LEFT JOIN accounts par_act ON act.parent_account_id = par_act.internal_id'
         + '       LEFT JOIN categories par_cat ON par_act.category_id = par_cat.internal_id';
 }
 
-const formatResult = (item: any): Account => {
+const formatResult = async (item: any): Promise<Account> => {
     const account: Account = {
         InternalId: item.internal_id,
         Id: item.id,
@@ -214,7 +219,8 @@ const formatResult = (item: any): Account => {
             DataCriacao: item.category_data_criacao,
             DataAlteracao: item.category_data_alteracao,
         },
-        ParentAccount: null
+        ParentAccount: null,
+        BalanceTotals: null
     }
 
     if (item.parent_account_internal_id) {
@@ -226,15 +232,16 @@ const formatResult = (item: any): Account => {
             DataCriacao: item.parent_account_data_criacao,
             DataAlteracao: item.parent_account_data_alteracao,
             Category: {
-                InternalId: item.parent_account_category_internal_id,
-                Id: item.parent_account_category_id,
-                Name: item.parent_account_category_name,
-                Type: item.parent_account_category_type,
-                Status: item.parent_account_category_status,
-                DataCriacao: item.parent_account_category_data_criacao,
-                DataAlteracao: item.parent_account_category_data_alteracao,
+                InternalId: item.par_cat_internal_id,
+                Id: item.par_cat_id,
+                Name: item.par_cat_name,
+                Type: item.par_cat_type,
+                Status: item.par_cat_status,
+                DataCriacao: item.par_cat_data_criacao,
+                DataAlteracao: item.par_cat_data_alteracao,
             },
-            ParentAccount: null
+            ParentAccount: null,
+            BalanceTotals: null
         }
     }
 

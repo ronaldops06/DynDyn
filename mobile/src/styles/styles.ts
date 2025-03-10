@@ -41,7 +41,7 @@ export const style = StyleSheet.create({
         width: "100%",
         height: "80%",
         backgroundColor: "#F1F1F1",
-        borderTopLeftRadius: 60
+        //borderTopLeftRadius: 60
     },
     viewBodyConsultaLarger: {
         display: "flex",
@@ -51,14 +51,21 @@ export const style = StyleSheet.create({
         flex: 1
     },
     loadingIcon: {
-        marginTop: 50
+        marginTop: 5,
+        marginBottom: 50,
     },
     scrollCadastro: {
         height: "100%"
     },
     scroll: {
         flex: 1,
-        padding: 20
+        paddingLeft: 20,
+        paddingRight: 20,
+        marginTop: 15
+    },
+    viewTitle: {
+        borderBottomWidth: 1,
+        borderBottomColor: "#D4DBE6",
     },
     textHeaderConsultaTitle: {
         color: "#F1F1F1",
@@ -66,5 +73,18 @@ export const style = StyleSheet.create({
         fontFamily: "Open Sans",
         marginTop: 10,
         marginLeft: 22,
+    },
+    titleScreen: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        paddingLeft: 15,
+        height: 35
+    },
+    titleScreemText: {
+        color: "#F1F1F1",
+        fontSize: 18,
+        marginLeft: 8,
+        fontWeight: "bold",
+        fontFamily: "Open Sans"
     }
 });

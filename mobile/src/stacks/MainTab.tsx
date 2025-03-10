@@ -14,7 +14,7 @@ type TabNavigatorParamList = {
     Account: undefined,
     Transaction: undefined,
     Category: undefined,
-    Operation: undefined,
+    Operation: undefined
 }
 
 const Tab = createBottomTabNavigator<TabNavigatorParamList>();

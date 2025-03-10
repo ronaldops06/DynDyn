@@ -1,11 +1,8 @@
 import {useNavigation} from '@react-navigation/core';
 import {StackNavigationProp} from '@react-navigation/stack';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
-
-import {CustomAlert} from '../../components/CustomAlert';
-import TransactionItem from './TransactionItem';
 import {TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
 import {RootStackParamList} from '../RootStackParams';
@@ -14,7 +11,8 @@ import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import PlusIcon from '../../assets/plus.svg';
 import {
-    alterTransaction, excludeTransaction,
+    alterTransaction,
+    excludeTransaction,
     loadAllTransactionsInternal,
     loadAndPersistAll,
     loadTotalsTransactions
@@ -24,7 +22,8 @@ import {transactionStyle} from './styles';
 import CustomScroll from "../../components/CustomScroll";
 import {validateLogin} from "../../utils.ts";
 import {constants} from "../../constants";
-import {alterAccount, excludeAccount} from "../../controller/account.controller.tsx";
+import TransactionItem from "./TransactionItem";
+import CashRegisterIcon from "../../assets/cash-register.svg";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Transaction'>;
 
@@ -47,7 +46,9 @@ const Transaction = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const [loading, setLoading] = useState(false);
+    const isFirstRender = useRef(true);
     const [transactions, setTransactions] = useState<I.Transaction[]>([]);
+    const [transactionsGroup, setTransactionsGroup] = useState<I.TransactionsGroup[]>([]);
     const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>();
     const [selectedYear, setSelectedYear] = useState(0);
     const [selectedMonth, setSelectedMonth] = useState(0);
@@ -101,14 +102,6 @@ const Transaction = () => {
         setDate(today);
     }, []);
 
-    useEffect(() => {
-        // Executado no goBack da tela seguinte
-        navigation.addListener('focus', () => {
-            setIsLoadInternal(true);
-            setTransactions([]);
-        });
-    }, [navigation]);
-    
     /*Se clicar várias vezes na troca de datas essa lógica faz com que não seja efetuado a busca em todas as trocas de 
     datas, o "debounce" faz com que aguarde para executar a função e se for chamada novamente enquanto o tempo não acabou
     cancela a chamada anterior e começa a aguardar novamente.*/
@@ -118,22 +111,48 @@ const Transaction = () => {
 
     useEffect(() => {
         updateTransactions();
-        
+
         return () => updateTransactions.cancel();
     }, [selectedYear, selectedMonth]);
 
     useEffect(() => {
+        //Faz com que não execute na abertura da tela (renderização)
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
         if (transactions.length === 0) {
             setPageNumber(1);
             loadTransactions();
+        } else {
+            getTransactionsGroupByDate();
         }
     }, [transactions])
 
     useEffect(() => {
-        setIsLoadInternal(true);
-        loadTransactions(false);
+        if (transactions?.length !== 0) {
+            setIsLoadInternal(true);
+            loadTransactions(false);
+        }
     }, [pageNumber]);
 
+    const getTransactionsGroupByDate = () => {
+        let transactionsGroup: I.TransactionsGroup[] = [] as I.TransactionsGroup[];
+        
+        transactions.map((item) => {
+            const formattedDate = new Date(item.DataCriacao).toISOString().split("T")[0];
+                        
+            const index = transactionsGroup.findIndex(x => x.date === formattedDate);
+            if (index >= 0) {
+                transactionsGroup[index].transactions.push(item);
+            } else {
+                transactionsGroup.push({date: formattedDate, transactions: [item]});
+            }
+        });
+        
+        setTransactionsGroup(transactionsGroup);
+    }
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
         mountDate.setMonth(mountDate.getMonth() - 1);
@@ -148,7 +167,14 @@ const Transaction = () => {
 
     const handleTransactionItemClick = (data: I.Transaction) => {
         if (!isScrolling)
-            navigation.navigate("TransactionCreate", {isEditing: true, data: data});
+            navigation.navigate("TransactionCreate", {
+                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
+                    if (actionNavigation === constants.actionNavigation.reload) {
+                        setIsLoadInternal(true);
+                        setTransactions([]);
+                    }
+                }
+            });
     }
 
     const onSwipeLeft = (data: I.Transaction) => {
@@ -163,7 +189,7 @@ const Transaction = () => {
                     text: "Sim",
                     onPress: async () => {
                         data.Consolidated = !data.Consolidated;
-                        let response = await alterTransaction(data);
+                        let response = await alterTransaction(data, data);
                         validateLogin(response, navigation);
 
                         setTransactions((prevTransactions) =>
@@ -189,10 +215,10 @@ const Transaction = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let response = await excludeTransaction(data.Id, data.InternalId);
+                        let response = await excludeTransaction(data);
                         validateLogin(response, navigation);
 
-                        if (response.success){
+                        if (response.success) {
                             setIsLoadInternal(true);
                             setTransactions([]);
                         }
@@ -204,7 +230,14 @@ const Transaction = () => {
     }
 
     const handleNewClick = () => {
-        navigation.navigate("TransactionCreate");
+        navigation.navigate("TransactionCreate", {
+            isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
+                if (actionNavigation === constants.actionNavigation.reload) {
+                    setIsLoadInternal(true);
+                    setTransactions([]);
+                }
+            }
+        });
     }
 
     const setDate = (date: Date) => {
@@ -215,7 +248,10 @@ const Transaction = () => {
     return (
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsulta}>
-                <Text style={style.textHeaderConsultaTitle}>Transações</Text>
+                <View style={style.titleScreen}>
+                    <CashRegisterIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                    <Text style={style.titleScreemText}>Transações</Text>
+                </View>
                 <View style={transactionStyle.viewSelectDate}>
                     <TouchableOpacity onPress={handleLeftDateClick} style={transactionStyle.buttonPrev}>
                         <NavPrevIcon width="35" height="35" fill="#F5F5F5"/>
@@ -257,6 +293,7 @@ const Transaction = () => {
                     pageNumber={pageNumber}
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
+                    styles={transactionStyle.scroll}
                 >
                     {transactions != null && transactions.filter((item) => {
                         return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
@@ -267,7 +304,7 @@ const Transaction = () => {
                             onPress={handleTransactionItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                    ))
+                        ))
                     }
                 </CustomScroll>
                 <TouchableOpacity

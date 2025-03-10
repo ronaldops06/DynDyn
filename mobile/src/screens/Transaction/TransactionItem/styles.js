@@ -1,28 +1,36 @@
 import { StyleSheet } from "react-native";
 
 export const transactionItemStyle = StyleSheet.create({
+    cardBackground: {
+        backgroundColor: "#E4E9F0",
+    },
     card: {
-        flexDirection: "column",
+        flexDirection: "row",
         backgroundColor: "#F5F5F5",
         borderColor: "#E4E9F0",
-        borderWidth: 1,
-        borderRadius: 8,
+        borderBottomWidth: 1,
         padding: 15,
+        paddingLeft: 5,
+        paddingBottom: 5,
         minHeight: 70
     },
-    cardBackground: {
-        marginBottom: 20,
-        borderRadius: 8,
-        backgroundColor: "#E4E9F0",
+    cardType: {
+        height: 70,
+        width: "12%",
+        alignItems: "center",
+        justifyContent: "center"
+    },
+    cardContent: {
+        flexDirection: "column",
+        width: "88%"
     },
     rowHeader: {
         flexDirection: "row",
         justifyContent: "space-between"
-
     },
     textHeader: {
         color: "#A4BCE3",
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: "Open Sans"
     },
     rowInfo: {
@@ -35,13 +43,15 @@ export const transactionItemStyle = StyleSheet.create({
     },
     textFooter: {
         color: "#A4BCE3",
-        fontSize: 12,
+        fontSize: 14,
         fontFamily: "Open Sans"
     },
     textTransactionName: {
-        color: "#3C66F0",
+        color: "gray",
+        fontWeight: "bold",
         fontSize: 15,
-        fontFamily: "Open Sans"
+        fontFamily: "Open Sans",
+        maxWidth: 230
     },
     textTransactionValue: {
         color: "#3C66F0",
@@ -66,7 +76,7 @@ export const transactionItemStyle = StyleSheet.create({
         fontWeight: "bold"
     },
     textTransactionValueTransfer: {
-        color: "#F06868",
+        color: "gray",
         fontSize: 16,
         fontFamily: "Open Sans",
         fontWeight: "bold"

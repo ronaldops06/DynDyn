@@ -21,6 +21,10 @@ export const createTableOperation = async () => {
             data_alteracao TEXT
         );
     `);
+
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_id ON operations (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_type ON operations (type);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_category_id ON operations (category_id);`);
 };
 
 export const insertOperation = async (operation: Operation): Promise<Operation> => {
