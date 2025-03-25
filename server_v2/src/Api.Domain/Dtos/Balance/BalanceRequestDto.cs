@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Api.Domain.Dtos.Account;
+using Api.Domain.Dtos.Portfolio;
 
 namespace Api.Domain.Dtos.Balance
 {
@@ -87,6 +87,6 @@ namespace Api.Domain.Dtos.Balance
         /// Conta correspondenta ao saldo.
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
-        public AccountRequestDto Account { get; set; }
+        public PortfolioRequestDto Portfolio { get; set; }
     }
 }

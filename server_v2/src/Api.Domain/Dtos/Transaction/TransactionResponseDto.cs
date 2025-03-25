@@ -1,6 +1,6 @@
 using System;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
 
 namespace Api.Domain.Dtos.Transaction
 {
@@ -47,12 +47,12 @@ namespace Api.Domain.Dtos.Transaction
         /// <summary>
         /// Conta origem do movimento.
         /// </summary>
-        public AccountResponseDto Account { get; set; }
+        public PortfolioResponseDto Portfolio { get; set; }
 
         /// <summary>
         /// Conta destino do movimento (utilizado nas transferências entre contas).
         /// </summary>
-        public AccountResponseDto DestinationAccount { get; set; }
+        public PortfolioResponseDto DestinationPortfolio { get; set; }
 
         /// <summary>
         /// Operação utilizada no movimento.

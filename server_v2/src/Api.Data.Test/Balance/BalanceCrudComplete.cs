@@ -38,10 +38,10 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
         Assert.Equal(balanceEntitySource.Outflow, balanceEntityDest.Outflow); 
         Assert.Equal(balanceEntitySource.Month, balanceEntityDest.Month);
         Assert.Equal(balanceEntitySource.Year, balanceEntityDest.Year);
-        Assert.NotNull(balanceEntitySource.Account);
-        Assert.NotNull(balanceEntitySource.Account.Category);
-        Assert.Equal(balanceEntitySource.AccountId, balanceEntityDest.AccountId);
-        Assert.Equal(balanceEntitySource.Account.Id, balanceEntityDest.Account.Id);
+        Assert.NotNull(balanceEntitySource.Portfolio);
+        Assert.NotNull(balanceEntitySource.Portfolio.Category);
+        Assert.Equal(balanceEntitySource.PortfolioId, balanceEntityDest.PortfolioId);
+        Assert.Equal(balanceEntitySource.Portfolio.Id, balanceEntityDest.Portfolio.Id);
         Assert.NotNull(balanceEntitySource.User);
         Assert.Equal(balanceEntitySource.UserId, balanceEntityDest.UserId);
         Assert.Equal(balanceEntitySource.User.Id, balanceEntityDest.User.Id);
@@ -60,7 +60,7 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             
             BalanceRepository _repositorio = new BalanceRepository(context);
             
-            var accountEntity = await InsertAccont(context);
+            var portfolioEntity = await InsertAccont(context);
 
             BalanceEntity _balanceEntity = new BalanceEntity()
             {
@@ -78,8 +78,8 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
                 Outflow = 7000,
                 Month = 1,
                 Year = 2025,
-                Account = accountEntity,
-                AccountId = accountEntity.Id,
+                Portfolio = portfolioEntity,
+                PortfolioId = portfolioEntity.Id,
                 UserId = _user.Id,
                 User = _user
             };
@@ -112,13 +112,13 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
         }
     }
     
-    private async Task<AccountEntity> InsertAccont(SomniaContext context)
+    private async Task<PortfolioEntity> InsertAccont(SomniaContext context)
     {
         var _categoryCreated = await InsertCategory(context, CategoryType.Conta, "Corrente");
 
-        AccountRepository _repositorio = new AccountRepository(context);
+        PortfolioRepository _repositorio = new PortfolioRepository(context);
 
-        AccountEntity _parentAccountEntity = new AccountEntity()
+        PortfolioEntity parentPortfolioPortfolioEntity = new PortfolioEntity()
         {
             Name = "Geral",
             Status = StatusType.Ativo,
@@ -128,27 +128,27 @@ public class BalanceCrudComplete : IClassFixture<DbTest>
             User = _user
         };
 
-        var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
-        Assert.NotNull(_parentAccountCreated);
-        Assert.True(_parentAccountCreated.Id > 0);
-        Assert.Equal(_parentAccountCreated.Name, _parentAccountEntity.Name);
+        var _parentPortfolioCreated = await _repositorio.InsertAsync(parentPortfolioPortfolioEntity);
+        Assert.NotNull(_parentPortfolioCreated);
+        Assert.True(_parentPortfolioCreated.Id > 0);
+        Assert.Equal(_parentPortfolioCreated.Name, parentPortfolioPortfolioEntity.Name);
 
-        AccountEntity _accountEntity = new AccountEntity()
+        PortfolioEntity portfolioPortfolioEntity = new PortfolioEntity()
         {
             Name = "Cash",
             Status = StatusType.Ativo,
             CategoryId = _categoryCreated.Id,
             Category = _categoryCreated,
-            ParentAccountId = _parentAccountEntity.Id,
-            ParentAccount = _parentAccountEntity,
+            ParentPortfolioId = parentPortfolioPortfolioEntity.Id,
+            ParentPortfolio = parentPortfolioPortfolioEntity,
             UserId = _user.Id,
             User = _user
         };
 
-        var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
+        var _registroCriado = await _repositorio.InsertAsync(portfolioPortfolioEntity);
         Assert.True(_registroCriado.Id > 0);
         Assert.NotNull(_registroCriado);
-        Assert.Equal(_registroCriado.Name, _accountEntity.Name);
+        Assert.Equal(_registroCriado.Name, portfolioPortfolioEntity.Name);
 
         return _registroCriado;
     }

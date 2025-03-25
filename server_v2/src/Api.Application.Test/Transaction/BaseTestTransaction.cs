@@ -1,11 +1,12 @@
 using Api.Application.V1.Controllers;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Dtos.Transaction;
 using Api.Domain.Enums;
 using Api.Domain.Models;
 using Domain.Helpers;
+using Domain.Models;
 
 namespace Api.Application.Test.Transaction
 {
@@ -22,7 +23,7 @@ namespace Api.Application.Test.Transaction
         {
             Random random = new Random();
 
-            var accountModel = GenerateAccount(2, "Cach");
+            var portfolioModel = GeneratePortfolio(2, "Cach");
             var operationModel = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
 
             TransactionModel = new TransactionModel()
@@ -33,8 +34,8 @@ namespace Api.Application.Test.Transaction
                 Consolidated = SituationType.Nao,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = portfolioModel,
+                PortfolioId = portfolioModel.Id,
                 Operation = operationModel,
                 OperationId = operationModel.Id
             };
@@ -49,8 +50,8 @@ namespace Api.Application.Test.Transaction
                 Consolidated = SituationType.Nao,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = portfolioModel,
+                PortfolioId = portfolioModel.Id,
                 Operation = operationModel,
                 OperationId = operationModel.Id
             };
@@ -65,8 +66,8 @@ namespace Api.Application.Test.Transaction
                 Consolidated = SituationType.Nao,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = portfolioModel,
+                PortfolioId = portfolioModel.Id,
                 Operation = operationModel,
                 OperationId = operationModel.Id
             };
@@ -75,12 +76,12 @@ namespace Api.Application.Test.Transaction
 
             var categoryRequestDto = new CategoryRequestDto
             {
-                Id = TransactionModel.Account.CategoryId
+                Id = TransactionModel.Portfolio.CategoryId
             };
 
-            var accountRequestDto = new AccountRequestDto
+            var portfolioRequestDto = new PortfolioRequestDto
             {
-                Id = TransactionModel.AccountId,
+                Id = TransactionModel.PortfolioId,
                 Category = categoryRequestDto
             };
 
@@ -102,7 +103,7 @@ namespace Api.Application.Test.Transaction
                 Consolidated = (TransactionModel.Consolidated == SituationType.Sim),
                 Installment = TransactionModel.Installment,
                 TotalInstallments = TransactionModel.TotalInstallments,
-                Account = accountRequestDto,
+                Portfolio = portfolioRequestDto,
                 Operation = operationRequestDto
             };
 
@@ -124,11 +125,11 @@ namespace Api.Application.Test.Transaction
             };
         }
 
-        private AccountModel GenerateAccount(int id, string name)
+        private PortfolioModel GeneratePortfolio(int id, string name)
         {
             var category = GenerateCategory(CategoryType.Conta, "Corrente", 1);
 
-            AccountModel _parentAccountModel = new AccountModel()
+            PortfolioModel parentPortfolioModel = new PortfolioModel()
             {
                 Id = 1,
                 Name = "Geral",
@@ -137,15 +138,15 @@ namespace Api.Application.Test.Transaction
                 Category = category
             };
 
-            return new AccountModel()
+            return new PortfolioModel()
             {
                 Id = id,
                 Name = name,
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
                 Category = category,
-                ParentAccountId = _parentAccountModel.Id,
-                ParentAccount = _parentAccountModel
+                ParentPortfolioId = parentPortfolioModel.Id,
+                ParentPortfolio = parentPortfolioModel
             };
         }
 

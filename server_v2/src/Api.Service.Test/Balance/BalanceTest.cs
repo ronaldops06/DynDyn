@@ -34,7 +34,7 @@ public class BalanceTest : BaseTestService
             UserId = UserModelFake.Id
         };
 
-        var accountModelBase = new AccountModel
+        var portfolioModelBase = new PortfolioModel
         {
             Id = 1,
             Name = "Cash",
@@ -55,7 +55,7 @@ public class BalanceTest : BaseTestService
 
         for (int i = 1; i <= RECORD_NUMBER; i++)
         {
-            var accountModel = new AccountModel
+            var portfolioModel = new PortfolioModel
             {
                 Id = i,
                 Name = $"Cash {i}",
@@ -82,8 +82,8 @@ public class BalanceTest : BaseTestService
                 Outflow = random.Next(8000),
                 Month = 1,
                 Year = 2025,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = portfolioModel,
+                PortfolioId = portfolioModel.Id,
                 User = UserModelFake,
                 UserId = UserModelFake.Id
             };
@@ -112,8 +112,8 @@ public class BalanceTest : BaseTestService
             Outflow = 7000,
             Month = 1,
             Year = 2025,
-            Account = accountModelBase,
-            AccountId = accountModelBase.Id,
+            Portfolio = portfolioModelBase,
+            PortfolioId = portfolioModelBase.Id,
             User = UserModelFake,
             UserId = UserModelFake.Id
         };
@@ -135,8 +135,8 @@ public class BalanceTest : BaseTestService
             Outflow = balanceModel.Outflow,
             Month = balanceModel.Month,
             Year = balanceModel.Year,
-            Account = balanceModel.Account,
-            AccountId = balanceModel.AccountId,
+            Portfolio = balanceModel.Portfolio,
+            PortfolioId = balanceModel.PortfolioId,
             DataCriacao = DateTime.UtcNow,
             DataAlteracao = DateTime.UtcNow,
             User = UserModelFake,
@@ -160,8 +160,8 @@ public class BalanceTest : BaseTestService
             Outflow = 7000,
             Month = 1,
             Year = 2025,
-            Account = balanceModel.Account,
-            AccountId = balanceModel.AccountId,
+            Portfolio = balanceModel.Portfolio,
+            PortfolioId = balanceModel.PortfolioId,
             User = UserModelFake,
             UserId = UserModelFake.Id
         };
@@ -183,8 +183,8 @@ public class BalanceTest : BaseTestService
             Year = balanceModelUpdate.Year,
             Inflow = balanceModelUpdate.Inflow,
             Outflow = balanceModelUpdate.Outflow,
-            Account = balanceModelUpdate.Account,
-            AccountId = balanceModelUpdate.AccountId,
+            Portfolio = balanceModelUpdate.Portfolio,
+            PortfolioId = balanceModelUpdate.PortfolioId,
             DataCriacao = DateTime.UtcNow,
             DataAlteracao = DateTime.UtcNow,
             User = UserModelFake,
@@ -210,8 +210,8 @@ public class BalanceTest : BaseTestService
         Assert.Equal(balanceModelSource.Outflow, balanceModelDest.Outflow);
         Assert.Equal(balanceModelSource.Month, balanceModelDest.Month);
         Assert.Equal(balanceModelSource.Year, balanceModelDest.Year);
-        Assert.Equal(balanceModelSource.AccountId, balanceModelDest.AccountId);
-        Assert.Equal(balanceModelSource.Account.Id, balanceModelDest.Account.Id);
+        Assert.Equal(balanceModelSource.PortfolioId, balanceModelDest.PortfolioId);
+        Assert.Equal(balanceModelSource.Portfolio.Id, balanceModelDest.Portfolio.Id);
         Assert.Equal(balanceModelSource.UserId, balanceModelDest.UserId);
         Assert.Equal(balanceModelSource.User.Id, balanceModelDest.User.Id);
     }

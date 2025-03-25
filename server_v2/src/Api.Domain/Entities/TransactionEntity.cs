@@ -46,22 +46,22 @@ namespace Api.Domain.Entities
         /// <summary>
         /// Identificador da conta origem do movimento.
         /// </summary>
-        public int AccountId { get; set; }
+        public int PortfolioId { get; set; }
 
         /// <summary>
         /// Conta origem do movimento.
         /// </summary>
-        public AccountEntity Account { get; set; }
+        public PortfolioEntity Portfolio { get; set; }
 
         /// <summary>
         /// Identificador da conta destino do movimento (utilizado nas transferências entre contas).
         /// </summary>
-        public int? DestinationAccountId { get; set; }
+        public int? DestinationPortfolioId { get; set; }
 
         /// <summary>
         /// Conta destino do movimento (utilizado nas transferências entre contas).
         /// </summary>
-        public AccountEntity DestinationAccount { get; set; }
+        public PortfolioEntity DestinationPortfolio { get; set; }
 
         /// <summary>
         /// Identificador da operação.

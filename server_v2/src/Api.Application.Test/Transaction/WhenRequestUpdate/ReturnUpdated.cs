@@ -30,7 +30,7 @@ namespace Api.Application.Test.Transaction.WhenRequestUpdate
             Assert.Equal(TransactionRequestDto.Installment, resultValue.Installment);
             Assert.Equal(TransactionRequestDto.Consolidated, resultValue.Consolidated);
             Assert.Equal(TransactionRequestDto.TotalInstallments, resultValue.TotalInstallments);
-            Assert.Equal(TransactionRequestDto.Account.Id, resultValue.Account.Id);
+            Assert.Equal(TransactionRequestDto.Portfolio.Id, resultValue.Portfolio.Id);
             Assert.Equal(TransactionRequestDto.Operation.Id, resultValue.Operation.Id);
             Assert.Equal(TransactionRequestDto.ParentTransaction?.Id, resultValue.ParentTransaction?.Id);
         }

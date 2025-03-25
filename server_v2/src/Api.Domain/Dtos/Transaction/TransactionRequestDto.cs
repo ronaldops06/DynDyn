@@ -1,7 +1,7 @@
 using System;
 using System.ComponentModel.DataAnnotations;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
 
 namespace Api.Domain.Dtos.Transaction
 {
@@ -48,12 +48,12 @@ namespace Api.Domain.Dtos.Transaction
         /// Conta origem do movimento.
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
-        public AccountRequestDto Account { get; set; }
+        public PortfolioRequestDto Portfolio { get; set; }
 
         /// <summary>
         /// Conta destino do movimento (utilizado nas transferências entre contas).
         /// </summary>
-        public AccountRequestDto DestinationAccount { get; set; }
+        public PortfolioRequestDto DestinationPortfolio { get; set; }
 
         /// <summary>
         /// Operação utilizada no movimento.

@@ -119,9 +119,9 @@ namespace Api.Service.Services
         {
             if (transactionModel.Operation.Type == OperationType.Transferencia)
             {
-                ExistsDestinationAccount(transactionModel.DestinationAccountId);
+                ExistsDestinationAccount(transactionModel.DestinationPortfolioId);
 
-                IsDifferentAccounts(transactionModel.AccountId, transactionModel.DestinationAccountId);
+                IsDifferentAccounts(transactionModel.PortfolioId, transactionModel.DestinationPortfolioId);
 
                 NotExistsInstallments(transactionModel.TotalInstallments);
             }

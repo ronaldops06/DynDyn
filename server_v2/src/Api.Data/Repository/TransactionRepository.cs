@@ -141,11 +141,11 @@ namespace Api.Data.Repository
                 if (transactionEntity.ParentTransaction != null)
                     _context.Entry(transactionEntity.ParentTransaction).State = EntityState.Unchanged;
 
-                if (transactionEntity.Account != null)
-                    _context.Entry(transactionEntity.Account).State = EntityState.Unchanged;
+                if (transactionEntity.Portfolio != null)
+                    _context.Entry(transactionEntity.Portfolio).State = EntityState.Unchanged;
 
-                if (transactionEntity.DestinationAccount != null)
-                    _context.Entry(transactionEntity.DestinationAccount).State = EntityState.Unchanged;
+                if (transactionEntity.DestinationPortfolio != null)
+                    _context.Entry(transactionEntity.DestinationPortfolio).State = EntityState.Unchanged;
 
                 if (transactionEntity.Operation != null)
                 {
@@ -171,10 +171,10 @@ namespace Api.Data.Repository
         {
             query = query.Include(ope => ope.Operation);
             query = query.Include(cat => cat.Operation.Category);
-            query = query.Include(cta => cta.Account);
-            query = query.Include(cat => cat.Account.Category);
-            query = query.Include(cta => cta.DestinationAccount);
-            query = query.Include(cat => cat.DestinationAccount.Category);
+            query = query.Include(cta => cta.Portfolio);
+            query = query.Include(p => p.Portfolio.Category);
+            query = query.Include(cta => cta.DestinationPortfolio);
+            query = query.Include(cat => cat.DestinationPortfolio.Category);
             query = query.Include(usr => usr.User);
 
             return query;

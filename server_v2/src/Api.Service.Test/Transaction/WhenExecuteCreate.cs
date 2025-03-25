@@ -54,8 +54,8 @@ namespace Api.Service.Test.Transaction
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
             var service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, Mapper);
 
-            transactionModel.DestinationAccount = destinationAccountModel;
-            transactionModel.DestinationAccountId = destinationAccountModel.Id;
+            transactionModel.DestinationPortfolio = DestinationPortfolioModel;
+            transactionModel.DestinationPortfolioId = DestinationPortfolioModel.Id;
             transactionModel.Operation = transferOperationModel;
             transactionModel.OperationId = transferOperationModel.Id;
             transactionModel.TotalInstallments = null;

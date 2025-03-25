@@ -1,12 +1,12 @@
 using System.Net;
 using System.Text;
 using System.Web;
-using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
+using Api.Domain.Dtos.Transaction;
 using Newtonsoft.Json;
 using Xunit;
-using Api.Domain.Dtos.Account;
-using Api.Domain.Dtos.Transaction;
 
 namespace Api.Integration.Test.Transaction
 {
@@ -24,7 +24,7 @@ namespace Api.Integration.Test.Transaction
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             //Assert.Contains("Value é um campo obrigatório", postResult);
             //Assert.Contains("Consolidated é um campo obrigatório", postResult);
-            Assert.Contains("Account é um campo obrigatório", postResult);
+            Assert.Contains("Portfolio é um campo obrigatório", postResult);
             Assert.Contains("Operation é um campo obrigatório", postResult);
 
             GenerateRequestDto();
@@ -50,24 +50,24 @@ namespace Api.Integration.Test.Transaction
             CategoryOperationRequestDto.Id = registroCategoryPost.Id;
 
             //Post - ParentAccount
-            response = await PostJsonAsync(ParentAccountRequestDto, $"{HostApi}/Account", Client);
+            response = await PostJsonAsync(ParentPortfolioAccountRequestDto, $"{HostApi}/Portfolio", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            var registroAccountPost = JsonConvert.DeserializeObject<AccountResponseDto>(postResult);
+            var registroAccountPost = JsonConvert.DeserializeObject<PortfolioResponseDto>(postResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroAccountPost.Id == 0);
 
-            ParentAccountRequestDto.Id = registroAccountPost.Id;
+            ParentPortfolioAccountRequestDto.Id = registroAccountPost.Id;
 
             //Post - Account
-            response = await PostJsonAsync(AccountRequestDto, $"{HostApi}/Account", Client);
+            response = await PostJsonAsync(PortfolioAccountRequestDto, $"{HostApi}/Portfolio", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            registroAccountPost = JsonConvert.DeserializeObject<AccountResponseDto>(postResult);
+            registroAccountPost = JsonConvert.DeserializeObject<PortfolioResponseDto>(postResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroAccountPost.Id == 0);
 
-            AccountRequestDto.Id = registroAccountPost.Id;
+            PortfolioAccountRequestDto.Id = registroAccountPost.Id;
 
             //Post - Operation
             response = await PostJsonAsync(OperationRequestDto, $"{HostApi}/Operation", Client);
@@ -91,7 +91,7 @@ namespace Api.Integration.Test.Transaction
             Assert.Equal(TransactionRequestDto.Consolidated, registroPost.Consolidated);
             Assert.Equal(TransactionRequestDto.Installment, registroPost.Installment);
             Assert.Equal(TransactionRequestDto.TotalInstallments, registroPost.TotalInstallments);
-            Assert.Equal(TransactionRequestDto.Account.Id, registroPost.Account.Id);
+            Assert.Equal(TransactionRequestDto.Portfolio.Id, registroPost.Portfolio.Id);
             Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);     
             
             //GetAll

@@ -15,7 +15,7 @@ namespace Data.Mapping
 
             builder.HasKey(u => u.Id);
             
-            builder.HasIndex(u => new { u.Year, u.Month, u.AccountId, u.UserId })
+            builder.HasIndex(u => new { u.Year, u.Month, u.PortfolioId, u.UserId })
                 .IsUnique();
             
             builder.Property(u => u.Value)
@@ -45,9 +45,9 @@ namespace Data.Mapping
             
             builder.Property(u => u.Outflow);
 
-            builder.HasOne(u => u.Account)
+            builder.HasOne(u => u.Portfolio)
                 .WithMany()
-                .HasForeignKey(e => e.AccountId)
+                .HasForeignKey(e => e.PortfolioId)
                 .IsRequired();
             
             builder.HasOne(u => u.User)

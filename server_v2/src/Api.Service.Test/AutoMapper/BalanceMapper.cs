@@ -13,7 +13,7 @@ public class BalanceMapper : BaseTestService
     [Fact(DisplayName = "É possível mapear os modelos")]
     public void Eh_Possivel_Mapear_Os_Modelos()
     {
-        var accountModel = GenerateAccount(2, "Cach");
+        var portfolioModel = GeneratePortfolio(2, "Cach");
         
         BalanceModel model = new BalanceModel()
         {
@@ -31,8 +31,8 @@ public class BalanceMapper : BaseTestService
             Outflow = 3500,
             Month = 1,
             Year = 2025,
-            Account = accountModel,
-            AccountId = accountModel.Id,
+            Portfolio = portfolioModel,
+            PortfolioId = portfolioModel.Id,
             User = UserModelFake,
             UserId = UserModelFake.Id
         };
@@ -54,8 +54,8 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(entity.Outflow, model.Outflow); 
         Assert.Equal(entity.Month, model.Month);
         Assert.Equal(entity.Year, model.Year);
-        Assert.Equal(entity.AccountId, model.AccountId);
-        Assert.Equal(entity.Account.Id, model.Account.Id);
+        Assert.Equal(entity.PortfolioId, model.PortfolioId);
+        Assert.Equal(entity.Portfolio.Id, model.Portfolio.Id);
         Assert.Equal(entity.UserId, model.UserId);
         Assert.Equal(entity.User.Id, model.User.Id);
 
@@ -75,8 +75,8 @@ public class BalanceMapper : BaseTestService
         Assert.Equal(balanceModel.Outflow, entity.Outflow); 
         Assert.Equal(balanceModel.Month, entity.Month);
         Assert.Equal(balanceModel.Year, entity.Year);
-        Assert.Equal(balanceModel.AccountId, entity.AccountId);
-        Assert.Equal(balanceModel.Account.Id, entity.Account.Id);
+        Assert.Equal(balanceModel.PortfolioId, entity.PortfolioId);
+        Assert.Equal(balanceModel.Portfolio.Id, entity.Portfolio.Id);
         Assert.Equal(balanceModel.DataCriacao, entity.DataCriacao);
         Assert.Equal(balanceModel.DataAlteracao, entity.DataAlteracao);
         Assert.Equal(balanceModel.UserId, entity.UserId);
@@ -88,8 +88,8 @@ public class BalanceMapper : BaseTestService
         {
             var userEntity = Mapper.Map<UserEntity>(UserModelFake);
             
-            var accountModel = GenerateAccount(2, "Cach");
-            var accountEntity = Mapper.Map<AccountEntity>(accountModel);
+            var portfolioModel = GeneratePortfolio(2, "Cach");
+            var portfolioEntity = Mapper.Map<PortfolioEntity>(portfolioModel);
 
             var listEntity = new List<BalanceEntity>();
             for (int i = 1; i <= 5; i++)
@@ -111,8 +111,8 @@ public class BalanceMapper : BaseTestService
                     Outflow = 3500,
                     Month = 1,
                     Year = 2025,
-                    Account = accountEntity,
-                    AccountId = accountEntity.Id,
+                    Portfolio = portfolioEntity,
+                    PortfolioId = portfolioEntity.Id,
                     User = userEntity,
                     UserId = userEntity.Id
                 };
@@ -142,8 +142,8 @@ public class BalanceMapper : BaseTestService
                 Assert.Equal(listModel[i].Outflow, listEntity[i].Outflow); 
                 Assert.Equal(listModel[i].Month, listEntity[i].Month);
                 Assert.Equal(listModel[i].Year, listEntity[i].Year);
-                Assert.Equal(listModel[i].AccountId, listEntity[i].AccountId);
-                Assert.Equal(listModel[i].Account.Id, listEntity[i].Account.Id);
+                Assert.Equal(listModel[i].PortfolioId, listEntity[i].PortfolioId);
+                Assert.Equal(listModel[i].Portfolio.Id, listEntity[i].Portfolio.Id);
                 Assert.Equal(listModel[i].DataCriacao, listEntity[i].DataCriacao);
                 Assert.Equal(listModel[i].DataAlteracao, listEntity[i].DataAlteracao);
                 Assert.Equal(listModel[i].UserId, listEntity[i].UserId);
@@ -151,11 +151,11 @@ public class BalanceMapper : BaseTestService
             }
         }
     
-    private AccountModel GenerateAccount(int id, string name)
+    private PortfolioModel GeneratePortfolio(int id, string name)
     {
         var category = GenerateCategory(CategoryType.Conta, "Corrente", 1);
 
-        AccountModel _parentAccountModel = new AccountModel()
+        PortfolioModel parentPortfolioPortfolioModel = new PortfolioModel()
         {
             Id = 1,
             Name = "Geral",
@@ -166,15 +166,15 @@ public class BalanceMapper : BaseTestService
             UserId = UserModelFake.Id
         };
 
-        return new AccountModel()
+        return new PortfolioModel()
         {
             Id = id,
             Name = name,
             Status = StatusType.Ativo,
             CategoryId = category.Id,
             Category = category,
-            ParentAccountId = _parentAccountModel.Id,
-            ParentAccount = _parentAccountModel,
+            ParentPortfolioId = parentPortfolioPortfolioModel.Id,
+            ParentPortfolio = parentPortfolioPortfolioModel,
             User = UserModelFake,
             UserId = UserModelFake.Id
         };

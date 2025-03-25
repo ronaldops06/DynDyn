@@ -1,7 +1,6 @@
-using System.Globalization;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Enums;
 using Api.Domain.Models;
 using Domain.Helpers;
@@ -23,7 +22,7 @@ public class BalanceMapper : BaseTestApplication
                     Status = (int)StatusType.Ativo
                 };
     
-                var accountRequestDto = new AccountRequestDto
+                var accountRequestDto = new PortfolioRequestDto
                 {
                     Id = 1,
                     Name = "Geral",
@@ -48,7 +47,7 @@ public class BalanceMapper : BaseTestApplication
                     Outflow = 3500,
                     Month = 1,
                     Year = 2025,
-                    Account = accountRequestDto
+                    Portfolio = accountRequestDto
                 };
                 
                 //Dto -> Model
@@ -68,8 +67,8 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(model.Outflow, balanceRequestDto.Outflow); 
                 Assert.Equal(model.Month, balanceRequestDto.Month);
                 Assert.Equal(model.Year, balanceRequestDto.Year);
-                Assert.Equal(model.AccountId, balanceRequestDto.Account.Id);
-                Assert.Equal(model.Account.Id, balanceRequestDto.Account.Id);
+                Assert.Equal(model.PortfolioId, balanceRequestDto.Portfolio.Id);
+                Assert.Equal(model.Portfolio.Id, balanceRequestDto.Portfolio.Id);
     
                 //Model -> DtoResult
                 var balanceResponseDto = Mapper.Map<BalanceResponseDto>(model);
@@ -88,8 +87,8 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(balanceResponseDto.Outflow, model.Outflow); 
                 Assert.Equal(balanceResponseDto.Month, model.Month);
                 Assert.Equal(balanceResponseDto.Year, model.Year);
-                Assert.Equal(balanceResponseDto.Account.Id, model.AccountId);
-                Assert.Equal(balanceResponseDto.Account.Id, model.Account.Id);
+                Assert.Equal(balanceResponseDto.Portfolio.Id, model.PortfolioId);
+                Assert.Equal(balanceResponseDto.Portfolio.Id, model.Portfolio.Id);
             }
             
             [Fact(DisplayName = "É possível mapear os modelos em lista")]
@@ -108,7 +107,7 @@ public class BalanceMapper : BaseTestApplication
 
             for (int i = 1; i <= 5; i++)
             {
-                var accountModel = new AccountModel
+                var accountModel = new PortfolioModel
                 {
                     Id = i,
                     Name = $"Geral {i}",
@@ -132,8 +131,8 @@ public class BalanceMapper : BaseTestApplication
                     Outflow = random.Next(5000),
                     Month = 1,
                     Year = 2025,
-                    Account = accountModel,
-                    AccountId = accountModel.Id
+                    Portfolio = accountModel,
+                    PortfolioId = accountModel.Id
                 };
                 
                 listModel.Add(model);
@@ -161,8 +160,8 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(listDto[i].Outflow, listModel[i].Outflow); 
                 Assert.Equal(listDto[i].Month, listModel[i].Month);
                 Assert.Equal(listDto[i].Year, listModel[i].Year);
-                Assert.Equal(listDto[i].Account.Id, listModel[i].AccountId);
-                Assert.Equal(listDto[i].Account.Id, listModel[i].Account.Id);
+                Assert.Equal(listDto[i].Portfolio.Id, listModel[i].PortfolioId);
+                Assert.Equal(listDto[i].Portfolio.Id, listModel[i].Portfolio.Id);
             }
 
             var pageList = new PageList<BalanceModel>(listModel, listModel.Count, 1, listModel.Count);
@@ -189,8 +188,8 @@ public class BalanceMapper : BaseTestApplication
                 Assert.Equal(listResponseDto[i].Outflow, listModel[i].Outflow); 
                 Assert.Equal(listResponseDto[i].Month, listModel[i].Month);
                 Assert.Equal(listResponseDto[i].Year, listModel[i].Year);
-                Assert.Equal(listResponseDto[i].Account.Id, listModel[i].AccountId);
-                Assert.Equal(listResponseDto[i].Account.Id, listModel[i].Account.Id);
+                Assert.Equal(listResponseDto[i].Portfolio.Id, listModel[i].PortfolioId);
+                Assert.Equal(listResponseDto[i].Portfolio.Id, listModel[i].Portfolio.Id);
             }
         }
 }

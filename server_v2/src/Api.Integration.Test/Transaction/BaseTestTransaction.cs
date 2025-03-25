@@ -1,10 +1,10 @@
-using Api.Domain.Dtos.Operation;
+using System.Globalization;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
+using Api.Domain.Dtos.Transaction;
 using Api.Domain.Enums;
 using Domain.Helpers;
-using Api.Domain.Dtos.Account;
-using Api.Domain.Dtos.Transaction;
-using System.Globalization;
 
 namespace Api.Integration.Test.Transaction
 {
@@ -18,8 +18,8 @@ namespace Api.Integration.Test.Transaction
             public int? Installment;
             public int? TotalInstallments;
             public TransactionRequestDto ParentTransaction;
-            public AccountRequestDto Account;
-            public AccountRequestDto DestinationAccount;
+            public PortfolioRequestDto PortfolioAccount;
+            public PortfolioRequestDto DestinationPortfolioAccount;
             public OperationRequestDto Operation;
         }
 
@@ -27,8 +27,8 @@ namespace Api.Integration.Test.Transaction
         protected CategoryRequestDto CategoryAccountRequestDto;
         protected CategoryRequestDto CategoryOperationRequestDto;
         protected OperationRequestDto OperationRequestDto;
-        protected AccountRequestDto ParentAccountRequestDto;
-        protected AccountRequestDto AccountRequestDto;
+        protected PortfolioRequestDto ParentPortfolioAccountRequestDto;
+        protected PortfolioRequestDto PortfolioAccountRequestDto;
         protected TransactionRequestDto TransactionRequestDto;
         protected PageParams PageParams;
 
@@ -47,7 +47,7 @@ namespace Api.Integration.Test.Transaction
 
         protected void GenerateRequestDto()
         {
-            AccountRequestDto = GenerateAccount(2, "Cach");
+            PortfolioAccountRequestDto = GenerateAccount(2, "Cach");
             OperationRequestDto = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
 
             Random random = new Random();
@@ -60,7 +60,7 @@ namespace Api.Integration.Test.Transaction
                 Consolidated = false,
                 Installment = null,
                 TotalInstallments = null,
-                Account = AccountRequestDto,
+                Portfolio = PortfolioAccountRequestDto,
                 Operation = OperationRequestDto,
                 DataCriacao = DateTime.ParseExact("2024-09-02 23:59:59", "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)
             };
@@ -77,11 +77,11 @@ namespace Api.Integration.Test.Transaction
             };
         }
 
-        private AccountRequestDto GenerateAccount(int id, string name)
+        private PortfolioRequestDto GenerateAccount(int id, string name)
         {
             CategoryAccountRequestDto = GenerateCategory(CategoryType.Conta, "Corrente", 2);
 
-            ParentAccountRequestDto = new AccountRequestDto()
+            ParentPortfolioAccountRequestDto = new PortfolioRequestDto()
             {
                 Id = 1,
                 Name = "Geral",
@@ -89,13 +89,13 @@ namespace Api.Integration.Test.Transaction
                 Category = CategoryAccountRequestDto
             };
 
-            return new AccountRequestDto()
+            return new PortfolioRequestDto()
             {
                 Id = id,
                 Name = name,
                 Status = (int)StatusType.Ativo,
                 Category = CategoryAccountRequestDto,
-                ParentAccount = ParentAccountRequestDto
+                ParentPortfolio = ParentPortfolioAccountRequestDto
             };
         }
 

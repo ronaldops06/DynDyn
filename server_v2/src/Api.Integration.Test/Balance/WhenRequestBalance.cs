@@ -1,9 +1,9 @@
 using System.Net;
 using System.Text;
 using System.Web;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Portfolio;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -11,8 +11,8 @@ namespace Api.Integration.Test.Balance
 {
     public class WhenRequestBalance : BaseTestBalance
     {
-        [Fact(DisplayName = "CRUD de Conta")]
-        public async Task Eh_Possivel_Realizar_Crud_Conta()
+        [Fact(DisplayName = "CRUD do Saldo")]
+        public async Task Eh_Possivel_Realizar_Crud_Saldo()
         {
             await AdicionarToken();
 
@@ -21,7 +21,7 @@ namespace Api.Integration.Test.Balance
             var postResult = await response.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            Assert.Contains("Account é um campo obrigatório", postResult);
+            Assert.Contains("Portfolio é um campo obrigatório", postResult);
 
             GenerateRequestDto();
 
@@ -36,15 +36,15 @@ namespace Api.Integration.Test.Balance
             CategoryRequestDto.Id = registroCategoryPost.Id;
             BalanceBaseDto.BalanceAccount.AccountCategory.CategoryId = registroCategoryPost.Id;
 
-            //Post - Account
-            response = await PostJsonAsync(AccountRequestDto, $"{HostApi}/Account", Client);
+            //Post - Portfolio
+            response = await PostJsonAsync(PortfolioAccountRequestDto, $"{HostApi}/Portfolio", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            var registroAccountPost = JsonConvert.DeserializeObject<AccountResponseDto>(postResult);
+            var registroAccountPost = JsonConvert.DeserializeObject<PortfolioResponseDto>(postResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroAccountPost.Id == 0);
 
-            AccountRequestDto.Id = registroAccountPost.Id;
+            PortfolioAccountRequestDto.Id = registroAccountPost.Id;
             BalanceBaseDto.BalanceAccount.AccountId = registroAccountPost.Id;
 
             //Post
@@ -69,9 +69,9 @@ namespace Api.Integration.Test.Balance
             Assert.Equal(BalanceBaseDto.BalanceSalaryDebit, registroPost.SalaryDebit);
             Assert.Equal(BalanceBaseDto.BalanceInflow, registroPost.Inflow);
             Assert.Equal(BalanceBaseDto.BalanceOutflow, registroPost.Outflow);
-            Assert.NotNull(registroPost.Account);
-            Assert.NotNull(registroPost.Account.Category);
-            Assert.Equal(BalanceBaseDto.BalanceAccount.AccountId, registroPost.Account.Id);
+            Assert.NotNull(registroPost.Portfolio);
+            Assert.NotNull(registroPost.Portfolio.Category);
+            Assert.Equal(BalanceBaseDto.BalanceAccount.AccountId, registroPost.Portfolio.Id);
             Assert.Equal(DateTime.Now.Year, registroPost.DataCriacao?.Year);
             Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);
             Assert.Equal(DateTime.Now.Day, registroPost.DataCriacao?.Day);
@@ -98,8 +98,8 @@ namespace Api.Integration.Test.Balance
 
             foreach (var record in listFromJson)
             {
-                Assert.NotNull(record.Account);
-                Assert.NotNull(record.Account.Category);
+                Assert.NotNull(record.Portfolio);
+                Assert.NotNull(record.Portfolio.Category);
             }
 
             //PUT

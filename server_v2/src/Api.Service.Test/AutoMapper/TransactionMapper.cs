@@ -2,6 +2,7 @@ using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Models;
 using Domain.Entities;
+using Domain.Models;
 using Xunit;
 
 namespace Api.Service.Test.AutoMapper
@@ -11,7 +12,7 @@ namespace Api.Service.Test.AutoMapper
         [Fact(DisplayName = "É possível mapear os modelos")]
         public void Eh_Possivel_Mapear_Os_Modelos()
         {
-            var accountModel = GenerateAccount(2, "Cach");
+            var portfolioModel = GeneratePortfolio(2, "Cach");
             var operationModel = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
 
             var model = new TransactionModel()
@@ -22,8 +23,8 @@ namespace Api.Service.Test.AutoMapper
                 Consolidated = SituationType.Nao,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = portfolioModel,
+                PortfolioId = portfolioModel.Id,
                 Operation = operationModel,
                 OperationId = operationModel.Id,
                 User = UserModelFake,
@@ -38,8 +39,8 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(entity.Consolidated, model.Consolidated);
             Assert.Equal(entity.Installment, model.Installment);
             Assert.Equal(entity.TotalInstallments, model.TotalInstallments);
-            Assert.Equal(entity.AccountId, model.AccountId);
-            Assert.Equal(entity.Account.Id, model.Account.Id);
+            Assert.Equal(entity.PortfolioId, model.PortfolioId);
+            Assert.Equal(entity.Portfolio.Id, model.Portfolio.Id);
             Assert.Equal(entity.OperationId, model.OperationId);
             Assert.Equal(entity.Operation.Id, model.Operation.Id);
             Assert.Equal(entity.ParentTransactionId, model.ParentTransactionId);
@@ -55,8 +56,8 @@ namespace Api.Service.Test.AutoMapper
             Assert.Equal(transactionModel.Consolidated, entity.Consolidated);
             Assert.Equal(transactionModel.Installment, entity.Installment);
             Assert.Equal(transactionModel.TotalInstallments, entity.TotalInstallments);
-            Assert.Equal(transactionModel.AccountId, entity.AccountId);
-            Assert.Equal(transactionModel.Account.Id, entity.Account.Id);
+            Assert.Equal(transactionModel.PortfolioId, entity.PortfolioId);
+            Assert.Equal(transactionModel.Portfolio.Id, entity.Portfolio.Id);
             Assert.Equal(transactionModel.OperationId, entity.OperationId);
             Assert.Equal(transactionModel.Operation.Id, entity.Operation.Id);
             Assert.Equal(transactionModel.ParentTransactionId, entity.ParentTransactionId);
@@ -69,8 +70,8 @@ namespace Api.Service.Test.AutoMapper
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
             var userEntity = Mapper.Map<UserEntity>(UserModelFake);
-            var accountModel = GenerateAccount(2, "Cach");
-            var accountEntity = Mapper.Map<AccountEntity>(accountModel);
+            var portfolioModel = GeneratePortfolio(2, "Cach");
+            var portfolioEntity = Mapper.Map<PortfolioEntity>(portfolioModel);
             var operationModel = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
             var operationEntity = Mapper.Map<OperationEntity>(operationModel);
 
@@ -85,8 +86,8 @@ namespace Api.Service.Test.AutoMapper
                     Consolidated = SituationType.Nao,
                     Installment = null,
                     TotalInstallments = null,
-                    Account = accountEntity,
-                    AccountId = accountEntity.Id,
+                    Portfolio = portfolioEntity,
+                    PortfolioId = portfolioEntity.Id,
                     Operation = operationEntity,
                     OperationId = operationEntity.Id,
                     User = userEntity,
@@ -109,8 +110,8 @@ namespace Api.Service.Test.AutoMapper
                 Assert.Equal(listModel[i].Consolidated, listEntity[i].Consolidated);
                 Assert.Equal(listModel[i].Installment, listEntity[i].Installment);
                 Assert.Equal(listModel[i].TotalInstallments, listEntity[i].TotalInstallments);
-                Assert.Equal(listModel[i].AccountId, listEntity[i].AccountId);
-                Assert.Equal(listModel[i].Account.Id, listEntity[i].Account.Id);
+                Assert.Equal(listModel[i].PortfolioId, listEntity[i].PortfolioId);
+                Assert.Equal(listModel[i].Portfolio.Id, listEntity[i].Portfolio.Id);
                 Assert.Equal(listModel[i].OperationId, listEntity[i].OperationId);
                 Assert.Equal(listModel[i].Operation.Id, listEntity[i].Operation.Id);
                 Assert.Equal(listModel[i].ParentTransactionId, listEntity[i].ParentTransactionId);
@@ -135,11 +136,11 @@ namespace Api.Service.Test.AutoMapper
             };
         }
 
-        private AccountModel GenerateAccount(int id, string name)
+        private PortfolioModel GeneratePortfolio(int id, string name)
         {
             var category = GenerateCategory(CategoryType.Conta, "Corrente", 1);
 
-            AccountModel _parentAccountModel = new AccountModel()
+            PortfolioModel parentPortfolioPortfolioModel = new PortfolioModel()
             {
                 Id = 1,
                 Name = "Geral",
@@ -150,15 +151,15 @@ namespace Api.Service.Test.AutoMapper
                 UserId = UserModelFake.Id
             };
 
-            return new AccountModel()
+            return new PortfolioModel()
             {
                 Id = id,
                 Name = name,
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
                 Category = category,
-                ParentAccountId = _parentAccountModel.Id,
-                ParentAccount = _parentAccountModel,
+                ParentPortfolioId = parentPortfolioPortfolioModel.Id,
+                ParentPortfolio = parentPortfolioPortfolioModel,
                 User = UserModelFake,
                 UserId = UserModelFake.Id
             };

@@ -13,7 +13,8 @@ namespace CrossCutting.Mappings
             CreateMap<UserEntity, LoginModel>().ReverseMap();
             CreateMap<UserEntity, UserModel>().ReverseMap();
             CreateMap<CategoryEntity, CategoryModel>().ReverseMap();
-            CreateMap<AccountEntity, AccountModel>().ReverseMap();
+            CreateMap<PortfolioModel, PortfolioEntity>();
+            CreateMap<PortfolioEntity, PortfolioModel>();
             CreateMap<OperationEntity, OperationModel>().ReverseMap();
             CreateMap<TransactionEntity, TransactionModel>().ReverseMap();
             CreateMap<BalanceEntity, BalanceModel>().ReverseMap();

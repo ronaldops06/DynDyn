@@ -1,7 +1,6 @@
-using System.Globalization;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Enums;
 using Domain.Helpers;
 
@@ -48,7 +47,7 @@ public class BaseTestBalance : BaseIntegration
     
     protected BalanceRequestDto BalanceRequestDto;
     protected CategoryRequestDto CategoryRequestDto;
-    protected AccountRequestDto AccountRequestDto;
+    protected PortfolioRequestDto PortfolioAccountRequestDto;
     protected BalanceRequestDto ParentBalanceRequestDto;
     protected BalanceBase BalanceBaseDto;
     protected PageParams PageParams;
@@ -112,7 +111,7 @@ public class BaseTestBalance : BaseIntegration
             Outflow = random.Next(2500),
             Month = 1,
             Year = 2025,
-            Account = null
+            Portfolio = null
         };
     }
     
@@ -126,7 +125,7 @@ public class BaseTestBalance : BaseIntegration
             Type = BalanceBaseDto.BalanceAccount.AccountCategory.CategoryTipo
         };
         
-        AccountRequestDto = new AccountRequestDto
+        PortfolioAccountRequestDto = new PortfolioRequestDto
         {
             Id = BalanceBaseDto.BalanceAccount.AccountId,
             Name = BalanceBaseDto.BalanceAccount.AccountName,
@@ -150,7 +149,7 @@ public class BaseTestBalance : BaseIntegration
             Outflow = BalanceBaseDto.BalanceOutflow,
             Month = BalanceBaseDto.BalanceMonth,
             Year = BalanceBaseDto.BalanceYear,
-            Account = AccountRequestDto,
+            Portfolio = PortfolioAccountRequestDto,
         };
     }
 }

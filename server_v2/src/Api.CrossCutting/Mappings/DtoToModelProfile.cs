@@ -1,15 +1,14 @@
-﻿using Api.Domain.Dtos.Category;
+﻿using Api.Domain.Dtos.Balance;
+using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
+using Api.Domain.Dtos.Transaction;
 using Api.Domain.Enums;
 using Api.Domain.Models;
-using Domain.Helpers;
 using AutoMapper;
 using Domain.Dtos.User;
+using Domain.Helpers;
 using Domain.Models;
-using Api.Domain.Dtos.Account;
-using Api.Domain.Dtos.Operation;
-using Api.Domain.Dtos.Transaction;
-using System;
-using Api.Domain.Dtos.Balance;
 
 namespace CrossCutting.Mappings
 {
@@ -31,13 +30,14 @@ namespace CrossCutting.Mappings
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (int)src.Type));
 
-            CreateMap<AccountRequestDto, AccountModel>()
+            CreateMap<PortfolioRequestDto, PortfolioModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
-            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id))
-            .ForMember(dest => dest.ParentAccountId, opt => opt.MapFrom(src => src.ParentAccount.Id));
-            CreateMap<AccountModel, AccountResponseDto>()
-            .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
+            .ForMember(dest => dest.ParentPortfolioId, opt => opt.MapFrom(src => src.ParentPortfolio.Id))
+            .ForMember(dest => dest.CategoryId, opt => opt.MapFrom(src => src.Category.Id));
 
+            CreateMap<PortfolioModel, PortfolioResponseDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
+            
             CreateMap<OperationRequestDto, OperationModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToEnum<OperationType>()))
@@ -48,8 +48,8 @@ namespace CrossCutting.Mappings
 
             CreateMap<TransactionRequestDto, TransactionModel>()
             .ForMember(dest => dest.ParentTransactionId, opt => opt.MapFrom(src => (src.ParentTransaction != null) ? src.ParentTransaction.Id : _intNullable))
-            .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.Account.Id))
-            .ForMember(dest => dest.DestinationAccountId, opt => opt.MapFrom(src => (src.DestinationAccount != null) ? src.DestinationAccount.Id : _intNullable))
+            .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id))
+            .ForMember(dest => dest.DestinationPortfolioId, opt => opt.MapFrom(src => (src.DestinationPortfolio != null) ? src.DestinationPortfolio.Id : _intNullable))
             .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => src.Consolidated ? 1 : 0));
             CreateMap<TransactionModel, TransactionResponseDto>()
@@ -57,7 +57,7 @@ namespace CrossCutting.Mappings
             CreateMap<TransactionTotalModel, TransactionTotalResponseDto>();
 
             CreateMap<BalanceRequestDto, BalanceModel>()
-                .ForMember(dest => dest.AccountId, opt => opt.MapFrom(src => src.Account.Id));
+                .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id));
             CreateMap<BalanceModel, BalanceResponseDto>();
         }
     }

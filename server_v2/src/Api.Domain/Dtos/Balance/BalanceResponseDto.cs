@@ -1,6 +1,5 @@
 using System;
-using Api.Domain.Dtos.Account;
-using Api.Domain.Models;
+using Api.Domain.Dtos.Portfolio;
 
 namespace Api.Domain.Dtos.Balance
 {
@@ -79,6 +78,6 @@ namespace Api.Domain.Dtos.Balance
         /// <summary>
         /// Conta correspondenta ao saldo.
         /// </summary>
-        public AccountResponseDto Account { get; set; }
+        public PortfolioResponseDto Portfolio { get; set; }
     }
 }

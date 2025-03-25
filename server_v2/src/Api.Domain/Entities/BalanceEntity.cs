@@ -81,12 +81,12 @@ namespace Api.Domain.Entities
         /// <summary>
         /// Identificador da conta correspondente ao saldo.
         /// </summary>
-        public int AccountId { get; set; }
+        public int PortfolioId { get; set; }
 
         /// <summary>
         /// Conta correspondenta ao saldo.
         /// </summary>
-        public AccountEntity Account { get; set; }
+        public PortfolioEntity Portfolio { get; set; }
         
         /// <summary>
         /// Identificador do usuário base.

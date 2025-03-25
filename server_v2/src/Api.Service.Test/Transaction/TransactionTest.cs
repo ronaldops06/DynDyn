@@ -3,6 +3,7 @@ using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Api.Domain.Repository;
 using Domain.Helpers;
+using Domain.Models;
 using Moq;
 using Xunit;
 
@@ -19,7 +20,7 @@ namespace Api.Service.Test.Transaction
         protected Dictionary<OperationType, double> transactionTotals = new Dictionary<OperationType, double>();
         protected OperationModel operationModel;
         protected OperationModel transferOperationModel;
-        protected AccountModel destinationAccountModel;
+        protected PortfolioModel DestinationPortfolioModel;
         protected TransactionModel transactionModel;
         protected TransactionModel transactionModelResult;
         protected TransactionModel installmentTransactionModelResult;
@@ -38,7 +39,7 @@ namespace Api.Service.Test.Transaction
 
             Random random = new Random();
             var accountModel = GenerateAccount(2, "Cach");
-            destinationAccountModel = GenerateAccount(3, "Bradesco");
+            DestinationPortfolioModel = GenerateAccount(3, "Bradesco");
             operationModel = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
             transferOperationModel = GenerateOperation(2, "Transferência entre contas", OperationType.Transferencia);
 
@@ -52,8 +53,8 @@ namespace Api.Service.Test.Transaction
                     Consolidated = SituationType.Nao,
                     Installment = null,
                     TotalInstallments = null,
-                    Account = accountModel,
-                    AccountId = accountModel.Id,
+                    Portfolio = accountModel,
+                    PortfolioId = accountModel.Id,
                     Operation = operationModel,
                     OperationId = operationModel.Id,
                     User = UserModelFake,
@@ -76,8 +77,8 @@ namespace Api.Service.Test.Transaction
                 Consolidated = SituationType.Nao,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = accountModel,
+                PortfolioId = accountModel.Id,
                 Operation = operationModel,
                 OperationId = operationModel.Id,
                 User = UserModelFake,
@@ -92,8 +93,8 @@ namespace Api.Service.Test.Transaction
                 Consolidated = transactionModel.Consolidated,
                 Installment = transactionModel.Installment,
                 TotalInstallments = transactionModel.TotalInstallments,
-                Account = transactionModel.Account,
-                AccountId = transactionModel.AccountId,
+                Portfolio = transactionModel.Portfolio,
+                PortfolioId = transactionModel.PortfolioId,
                 Operation = transactionModel.Operation,
                 OperationId = transactionModel.OperationId,
                 DataCriacao = DateTime.UtcNow,
@@ -110,8 +111,8 @@ namespace Api.Service.Test.Transaction
                 Consolidated = transactionModel.Consolidated,
                 Installment = 1,
                 TotalInstallments = 3,
-                Account = transactionModel.Account,
-                AccountId = transactionModel.AccountId,
+                Portfolio = transactionModel.Portfolio,
+                PortfolioId = transactionModel.PortfolioId,
                 Operation = transactionModel.Operation,
                 OperationId = transactionModel.OperationId,
                 User = UserModelFake,
@@ -126,10 +127,10 @@ namespace Api.Service.Test.Transaction
                 Consolidated = transactionModel.Consolidated,
                 Installment = transactionModel.TotalInstallments,
                 TotalInstallments = transactionModel.TotalInstallments,
-                Account = transactionModel.Account,
-                AccountId = transactionModel.AccountId,
-                DestinationAccount = destinationAccountModel,
-                DestinationAccountId = destinationAccountModel.Id,
+                Portfolio = transactionModel.Portfolio,
+                PortfolioId = transactionModel.PortfolioId,
+                DestinationPortfolio = DestinationPortfolioModel,
+                DestinationPortfolioId = DestinationPortfolioModel.Id,
                 Operation = transactionModel.Operation,
                 OperationId = transactionModel.OperationId,
                 User = UserModelFake,
@@ -144,8 +145,8 @@ namespace Api.Service.Test.Transaction
                 Consolidated = SituationType.Sim,
                 Installment = transactionModel.Installment,
                 TotalInstallments = transactionModel.TotalInstallments,
-                Account = transactionModel.Account,
-                AccountId = transactionModel.AccountId,
+                Portfolio = transactionModel.Portfolio,
+                PortfolioId = transactionModel.PortfolioId,
                 Operation = transactionModel.Operation,
                 OperationId = transactionModel.OperationId,
                 User = UserModelFake,
@@ -160,8 +161,8 @@ namespace Api.Service.Test.Transaction
                 Consolidated = transactionModelUpdate.Consolidated,
                 Installment = transactionModelUpdate.Installment,
                 TotalInstallments = transactionModelUpdate.TotalInstallments,
-                Account = transactionModelUpdate.Account,
-                AccountId = transactionModelUpdate.AccountId,
+                Portfolio = transactionModelUpdate.Portfolio,
+                PortfolioId = transactionModelUpdate.PortfolioId,
                 Operation = transactionModelUpdate.Operation,
                 OperationId = transactionModelUpdate.OperationId,
                 DataCriacao = DateTime.UtcNow,
@@ -186,11 +187,11 @@ namespace Api.Service.Test.Transaction
             };
         }
 
-        private AccountModel GenerateAccount(int id, string name)
+        private PortfolioModel GenerateAccount(int id, string name)
         {
             var category = GenerateCategory(CategoryType.Conta, "Corrente", 1);
 
-            AccountModel _parentAccountModel = new AccountModel()
+            PortfolioModel parentPortfolioAccountModel = new PortfolioModel()
             {
                 Id = 1,
                 Name = "Geral",
@@ -201,15 +202,15 @@ namespace Api.Service.Test.Transaction
                 UserId = UserModelFake.Id
             };
 
-            return new AccountModel()
+            return new PortfolioModel()
             {
                 Id = id,
                 Name = name,
                 Status = StatusType.Ativo,
                 CategoryId = category.Id,
                 Category = category,
-                ParentAccountId = _parentAccountModel.Id,
-                ParentAccount = _parentAccountModel,User = UserModelFake,
+                ParentPortfolioId = parentPortfolioAccountModel.Id,
+                ParentPortfolio = parentPortfolioAccountModel,User = UserModelFake,
                 UserId = UserModelFake.Id
             };
         }
@@ -243,10 +244,10 @@ namespace Api.Service.Test.Transaction
             Assert.Equal(transactionModelSource.Consolidated, transactionModelDest.Consolidated);
             Assert.Equal(transactionModelSource.Installment, transactionModelDest.Installment);
             Assert.Equal(transactionModelSource.TotalInstallments, transactionModelDest.TotalInstallments);
-            Assert.Equal(transactionModelSource.AccountId, transactionModelDest.AccountId);
-            Assert.Equal(transactionModelSource.Account.Id, transactionModelDest.Account.Id);
-            Assert.Equal(transactionModelSource.DestinationAccountId, transactionModelDest.DestinationAccountId);
-            Assert.Equal(transactionModelSource.DestinationAccount?.Id, transactionModelDest.DestinationAccount?.Id);
+            Assert.Equal(transactionModelSource.PortfolioId, transactionModelDest.PortfolioId);
+            Assert.Equal(transactionModelSource.Portfolio.Id, transactionModelDest.Portfolio.Id);
+            Assert.Equal(transactionModelSource.DestinationPortfolioId, transactionModelDest.DestinationPortfolioId);
+            Assert.Equal(transactionModelSource.DestinationPortfolio?.Id, transactionModelDest.DestinationPortfolio?.Id);
             Assert.Equal(transactionModelSource.OperationId, transactionModelDest.OperationId);
             Assert.Equal(transactionModelSource.Operation.Id, transactionModelDest.Operation.Id);
             Assert.Equal(transactionModelSource.UserId, transactionModelDest.UserId);

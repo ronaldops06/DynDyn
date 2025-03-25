@@ -25,7 +25,7 @@ namespace CrossCutting.DependencyInjection
                 serviceCollection.AddScoped(typeof(IRepository<>), typeof(BaseRepository<>));
                 serviceCollection.AddScoped<IUserRepository, UserRepository>();
                 serviceCollection.AddScoped<ICategoryRepository, CategoryRepository>();
-                serviceCollection.AddScoped<IAccountRepository, AccountRepository>();
+                serviceCollection.AddScoped<IPortfolioRepository, PortfolioRepository>();
                 serviceCollection.AddScoped<IOperationRepository, OperationRepository>();
                 serviceCollection.AddScoped<ITransactionRepository, TransactionRepository>();
                 serviceCollection.AddScoped<IBalanceRepository, BalanceRepository>();

@@ -1,4 +1,5 @@
 using Api.Domain.Entities;
+using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -37,15 +38,15 @@ namespace Api.Data.Mapping
                   .HasForeignKey(e => e.ParentTransactionId)
                   .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(u => u.Account)
+            builder.HasOne(u => u.Portfolio)
                   .WithMany()
-                  .HasForeignKey(e => e.AccountId)
+                  .HasForeignKey(e => e.PortfolioId)
                   .OnDelete(DeleteBehavior.Restrict)
                   .IsRequired();
 
-            builder.HasOne(u => u.DestinationAccount)
+            builder.HasOne(u => u.DestinationPortfolio)
                   .WithMany()
-                  .HasForeignKey(e => e.DestinationAccountId)
+                  .HasForeignKey(e => e.DestinationPortfolioId)
                   .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(u => u.Operation)

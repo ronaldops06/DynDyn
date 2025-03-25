@@ -47,7 +47,7 @@ namespace Service.Services
         public async Task<BalanceModel> Post(BalanceModel model)
         {
             var user = await _userService.GetLoggedUser();
-            var balanceEntityAux = await _repository.SelectByUkAsync(user.Id, model.AccountId, model.Month, model.Year);
+            var balanceEntityAux = await _repository.SelectByUkAsync(user.Id, model.PortfolioId, model.Month, model.Year);
 
             if (balanceEntityAux != null)
                 throw new Exception("Saldo não disponível.");
@@ -66,7 +66,7 @@ namespace Service.Services
         public async Task<BalanceModel> Put(BalanceModel model)
         {
             var user = await _userService.GetLoggedUser();
-            var balanceEntityAux = await _repository.SelectByUkAsync(user.Id, model.AccountId, model.Month, model.Year);
+            var balanceEntityAux = await _repository.SelectByUkAsync(user.Id, model.PortfolioId, model.Month, model.Year);
 
             if (balanceEntityAux != null && model.Id != balanceEntityAux.Id)
                 throw new Exception("Saldo não disponível.");

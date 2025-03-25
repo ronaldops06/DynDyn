@@ -30,7 +30,7 @@ namespace Api.Data.Test.Transaction
                 
                 TransactionRepository _repositorio = new TransactionRepository(context);
 
-                var accountEntity = await InsertAccont(context);
+                var portfolioEntity = await InsertAccont(context);
                 var operationEntity = await InsertOperation(context);
 
                 Random random = new Random();
@@ -43,8 +43,8 @@ namespace Api.Data.Test.Transaction
                         Consolidated = SituationType.Nao,
                         Installment = random.Next(20),
                         TotalInstallments = 20,
-                        Account = accountEntity,
-                        AccountId = accountEntity.Id,
+                        Portfolio = portfolioEntity,
+                        PortfolioId = portfolioEntity.Id,
                         Operation = operationEntity,
                         OperationId = operationEntity.Id,
                         UserId = _user.Id,
@@ -68,8 +68,8 @@ namespace Api.Data.Test.Transaction
                         Consolidated = SituationType.Nao,
                         Installment = random.Next(20),
                         TotalInstallments = 20,
-                        Account = accountEntity,
-                        AccountId = accountEntity.Id,
+                        Portfolio = portfolioEntity,
+                        PortfolioId = portfolioEntity.Id,
                         Operation = operationEntity,
                         OperationId = operationEntity.Id,
                         UserId = _user.Id,
@@ -117,13 +117,13 @@ namespace Api.Data.Test.Transaction
             return _registroCriado;
         }
 
-        private async Task<AccountEntity> InsertAccont(SomniaContext context)
+        private async Task<PortfolioEntity> InsertAccont(SomniaContext context)
         {
             var _categoryCreated = await InsertCategory(context, CategoryType.Conta, "Corrente");
 
-            AccountRepository _repositorio = new AccountRepository(context);
+            PortfolioRepository _repositorio = new PortfolioRepository(context);
 
-            AccountEntity _parentAccountEntity = new AccountEntity()
+            PortfolioEntity parentPortfolioPortfolioEntity = new PortfolioEntity()
             {
                 Name = "Geral",
                 Status = StatusType.Ativo,
@@ -133,28 +133,28 @@ namespace Api.Data.Test.Transaction
                 User = _user
             };
 
-            var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
-            Assert.NotNull(_parentAccountCreated);
-            Assert.True(_parentAccountCreated.Id > 0);
-            Assert.Equal(_parentAccountCreated.Name, _parentAccountEntity.Name);
-            Assert.Equal(_parentAccountCreated.User.Id, _parentAccountEntity.User.Id);
+            var _parentPortfolioCreated = await _repositorio.InsertAsync(parentPortfolioPortfolioEntity);
+            Assert.NotNull(_parentPortfolioCreated);
+            Assert.True(_parentPortfolioCreated.Id > 0);
+            Assert.Equal(_parentPortfolioCreated.Name, parentPortfolioPortfolioEntity.Name);
+            Assert.Equal(_parentPortfolioCreated.User.Id, parentPortfolioPortfolioEntity.User.Id);
 
-            AccountEntity _accountEntity = new AccountEntity()
+            PortfolioEntity portfolioPortfolioEntity = new PortfolioEntity()
             {
                 Name = "Cash",
                 Status = StatusType.Ativo,
                 CategoryId = _categoryCreated.Id,
                 Category = _categoryCreated,
-                ParentAccountId = _parentAccountEntity.Id,
-                ParentAccount = _parentAccountEntity,
+                ParentPortfolioId = parentPortfolioPortfolioEntity.Id,
+                ParentPortfolio = parentPortfolioPortfolioEntity,
                 UserId = _user.Id,
                 User = _user
             };
 
-            var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
+            var _registroCriado = await _repositorio.InsertAsync(portfolioPortfolioEntity);
             Assert.True(_registroCriado.Id > 0);
             Assert.NotNull(_registroCriado);
-            Assert.Equal(_registroCriado.Name, _accountEntity.Name);
+            Assert.Equal(_registroCriado.Name, portfolioPortfolioEntity.Name);
 
             return _registroCriado;
         }

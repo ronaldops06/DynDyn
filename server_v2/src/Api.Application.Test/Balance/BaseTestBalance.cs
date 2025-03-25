@@ -1,6 +1,5 @@
-using System.Globalization;
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Balance;
+using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Enums;
 using Api.Domain.Models;
 using Application.V1.Controllers;
@@ -30,7 +29,7 @@ namespace Api.Application.Test.Balance
                 Status = StatusType.Ativo
             };
 
-            var accountModel = new AccountModel
+            var accountModel = new PortfolioModel
             {
                 Id = 1,
                 Name = "Cash",
@@ -56,15 +55,15 @@ namespace Api.Application.Test.Balance
                 Outflow = random.Next(2500),
                 Month = 1,
                 Year = 2025,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = accountModel,
+                PortfolioId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
             };
 
             ListBalanceModel.Add(BalanceModel);
 
-            accountModel = new AccountModel
+            accountModel = new PortfolioModel
             {
                 Id = 2,
                 Name = "Cash 2",
@@ -90,15 +89,15 @@ namespace Api.Application.Test.Balance
                 Outflow = random.Next(2500),
                 Month = 1,
                 Year = 2025,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = accountModel,
+                PortfolioId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
             };
 
             ListBalanceModel.Add(BalanceModel);
 
-            accountModel = new AccountModel
+            accountModel = new PortfolioModel
             {
                 Id = 3,
                 Name = "Cash 3",
@@ -124,15 +123,15 @@ namespace Api.Application.Test.Balance
                 Outflow = random.Next(2500),
                 Month = 1,
                 Year = 2025,
-                Account = accountModel,
-                AccountId = accountModel.Id,
+                Portfolio = accountModel,
+                PortfolioId = accountModel.Id,
                 DataAlteracao = DateTime.UtcNow,
                 DataCriacao = DateTime.UtcNow
             };
 
             ListBalanceModel.Add(BalanceModel);
 
-            var accountRequestDto = new AccountRequestDto
+            var accountRequestDto = new PortfolioRequestDto
             {
                 Id = 3
             };
@@ -154,7 +153,7 @@ namespace Api.Application.Test.Balance
                 Outflow = BalanceModel.Outflow,
                 Month = 1,
                 Year = 2025,
-                Account = accountRequestDto,
+                Portfolio = accountRequestDto,
             };
 
             PageParams = new PageParams()
@@ -182,7 +181,7 @@ namespace Api.Application.Test.Balance
             Assert.Equal(balanceRequestDto.Outflow, balanceResponseDto.Outflow);
             Assert.Equal(balanceRequestDto.Month, balanceResponseDto.Month);
             Assert.Equal(balanceRequestDto.Year, balanceResponseDto.Year);
-            Assert.Equal(balanceRequestDto.Account.Id, balanceResponseDto.Account.Id);
+            Assert.Equal(balanceRequestDto.Portfolio.Id, balanceResponseDto.Portfolio.Id);
         }
     }
 }

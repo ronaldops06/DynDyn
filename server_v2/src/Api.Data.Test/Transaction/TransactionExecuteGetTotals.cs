@@ -1,4 +1,3 @@
-using System.Data;
 using Api.Data.Repository;
 using Api.Data.Test.Helpers;
 using Api.Domain.Entities;
@@ -7,6 +6,7 @@ using Data.Context;
 using Data.Repository;
 using Domain.Entities;
 using Domain.Helpers;
+using Faker;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
@@ -35,7 +35,7 @@ namespace Api.Data.Test.Transaction
                 
                 TransactionRepository _repositorio = new TransactionRepository(context);
 
-                var accountEntity = await InsertAccont(context);
+                var portfolioEntity = await InsertPortfolio(context);
                 var categoryOperationEntity = await InsertCategory(context, CategoryType.Operação, "Eletrônicos");
 
                 var dataInicial = DateTime.Now;
@@ -44,26 +44,26 @@ namespace Api.Data.Test.Transaction
 
                 //Crédito = 665.80
                 var operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Credito);
-                InsertTransaction(context, accountEntity, operationEntity, 15);
+                InsertTransaction(context, portfolioEntity, operationEntity, 15);
 
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Credito);
-                InsertTransaction(context, accountEntity, operationEntity, 150.8);
+                InsertTransaction(context, portfolioEntity, operationEntity, 150.8);
 
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Credito);
-                InsertTransaction(context, accountEntity, operationEntity, 500);
+                InsertTransaction(context, portfolioEntity, operationEntity, 500);
 
                 //Aguarda alguns segundos para que a data seja alterada
                 Thread.Sleep(1000);
 
                 //Débito = 1586.90
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Debito);
-                InsertTransaction(context, accountEntity, operationEntity, 805);
+                InsertTransaction(context, portfolioEntity, operationEntity, 805);
 
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Debito);
-                InsertTransaction(context, accountEntity, operationEntity, 329.83);
+                InsertTransaction(context, portfolioEntity, operationEntity, 329.83);
 
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Debito);
-                InsertTransaction(context, accountEntity, operationEntity, 452.07);
+                InsertTransaction(context, portfolioEntity, operationEntity, 452.07);
 
                 var dataFinal = DateTime.Now;
 
@@ -71,7 +71,7 @@ namespace Api.Data.Test.Transaction
                 Thread.Sleep(1000);
 
                 operationEntity = await InsertOperation(context, categoryOperationEntity, OperationType.Debito);
-                InsertTransaction(context, accountEntity, operationEntity, 300.00);
+                InsertTransaction(context, portfolioEntity, operationEntity, 300.00);
 
                 PageParams pageParams = new PageParams
                 {
@@ -107,13 +107,13 @@ namespace Api.Data.Test.Transaction
             return _registroCriado;
         }
 
-        private async Task<AccountEntity> InsertAccont(SomniaContext context)
+        private async Task<PortfolioEntity> InsertPortfolio(SomniaContext context)
         {
             var _categoryCreated = await InsertCategory(context, CategoryType.Conta, "Corrente");
 
-            AccountRepository _repositorio = new AccountRepository(context);
+            PortfolioRepository _repositorio = new PortfolioRepository(context);
 
-            AccountEntity _parentAccountEntity = new AccountEntity()
+            PortfolioEntity parentPortfolioPortfolioEntity = new PortfolioEntity()
             {
                 Name = "Geral",
                 Status = StatusType.Ativo,
@@ -123,29 +123,29 @@ namespace Api.Data.Test.Transaction
                 User = _user
             };
 
-            var _parentAccountCreated = await _repositorio.InsertAsync(_parentAccountEntity);
-            Assert.NotNull(_parentAccountCreated);
-            Assert.True(_parentAccountCreated.Id > 0);
-            Assert.Equal(_parentAccountCreated.Name, _parentAccountEntity.Name);
-            Assert.Equal(_parentAccountCreated.User.Id, _parentAccountEntity.User.Id);
+            var _parentPortfolioCreated = await _repositorio.InsertAsync(parentPortfolioPortfolioEntity);
+            Assert.NotNull(_parentPortfolioCreated);
+            Assert.True(_parentPortfolioCreated.Id > 0);
+            Assert.Equal(_parentPortfolioCreated.Name, parentPortfolioPortfolioEntity.Name);
+            Assert.Equal(_parentPortfolioCreated.User.Id, parentPortfolioPortfolioEntity.User.Id);
 
-            AccountEntity _accountEntity = new AccountEntity()
+            PortfolioEntity portfolioPortfolioEntity = new PortfolioEntity()
             {
                 Name = "Cash",
                 Status = StatusType.Ativo,
                 CategoryId = _categoryCreated.Id,
                 Category = _categoryCreated,
-                ParentAccountId = _parentAccountEntity.Id,
-                ParentAccount = _parentAccountEntity,
+                ParentPortfolioId = parentPortfolioPortfolioEntity.Id,
+                ParentPortfolio = parentPortfolioPortfolioEntity,
                 UserId = _user.Id,
                 User = _user
             };
 
-            var _registroCriado = await _repositorio.InsertAsync(_accountEntity);
+            var _registroCriado = await _repositorio.InsertAsync(portfolioPortfolioEntity);
             Assert.True(_registroCriado.Id > 0);
             Assert.NotNull(_registroCriado);
-            Assert.Equal(_registroCriado.Name, _accountEntity.Name);
-            Assert.Equal(_registroCriado.User.Id, _accountEntity.User.Id);
+            Assert.Equal(_registroCriado.Name, portfolioPortfolioEntity.Name);
+            Assert.Equal(_registroCriado.User.Id, portfolioPortfolioEntity.User.Id);
 
             return _registroCriado;
         }
@@ -156,7 +156,7 @@ namespace Api.Data.Test.Transaction
 
             OperationEntity _operationEntity = new OperationEntity()
             {
-                Name = Faker.Name.FullName(),
+                Name = Name.FullName(),
                 Recurrent = false,
                 Type = operationType,
                 Status = StatusType.Ativo,
@@ -175,7 +175,7 @@ namespace Api.Data.Test.Transaction
             return _registroCriado;
         }
 
-        private async void InsertTransaction(SomniaContext context, AccountEntity accountEntity, OperationEntity operationEntity, double value)
+        private async void InsertTransaction(SomniaContext context, PortfolioEntity portfolioEntity, OperationEntity operationEntity, double value)
         {
             TransactionRepository _repositorio = new TransactionRepository(context);
 
@@ -186,8 +186,8 @@ namespace Api.Data.Test.Transaction
                 Consolidated = SituationType.Nao,
                 Installment = 0,
                 TotalInstallments = 0,
-                Account = accountEntity,
-                AccountId = accountEntity.Id,
+                Portfolio = portfolioEntity,
+                PortfolioId = portfolioEntity.Id,
                 Operation = operationEntity,
                 OperationId = operationEntity.Id,
                 UserId = _user.Id,
@@ -198,7 +198,7 @@ namespace Api.Data.Test.Transaction
             Assert.NotNull(_registroCriado);
             Assert.True(_registroCriado.Id > 0);
             Assert.Equal(_registroCriado.Value, _transactionEntity.Value);
-            Assert.Equal(_registroCriado.AccountId, _transactionEntity.AccountId);
+            Assert.Equal(_registroCriado.PortfolioId, _transactionEntity.PortfolioId);
             Assert.Equal(_registroCriado.OperationId, _transactionEntity.OperationId);
             Assert.Equal(_registroCriado.UserId, _transactionEntity.UserId);
         }

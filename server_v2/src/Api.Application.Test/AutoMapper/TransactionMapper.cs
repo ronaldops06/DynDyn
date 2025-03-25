@@ -1,6 +1,6 @@
-using Api.Domain.Dtos.Account;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Dtos.Transaction;
 using Api.Domain.Enums;
 using Api.Domain.Models;
@@ -14,7 +14,7 @@ namespace Api.Application.Test.AutoMapper
         [Fact(DisplayName = "É possível mapear os modelos")]
         public void Eh_Possivel_Mapear_Os_Dtoos()
         {
-            var accountRequestDto = GenerateAccount(2, "Cach");
+            var portfolioRequestDto = GeneratePortfolio(2, "Cach");
             var operationRequestDto = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
 
             var transactionRequestDto = new TransactionRequestDto()
@@ -25,7 +25,7 @@ namespace Api.Application.Test.AutoMapper
                 Consolidated = false,
                 Installment = null,
                 TotalInstallments = null,
-                Account = accountRequestDto,
+                Portfolio = portfolioRequestDto,
                 Operation = operationRequestDto
             };
 
@@ -37,8 +37,8 @@ namespace Api.Application.Test.AutoMapper
             Assert.Equal(model.Installment, transactionRequestDto.Installment);
             Assert.Equal(model.Consolidated, transactionRequestDto.Consolidated ? SituationType.Sim : SituationType.Nao);
             Assert.Equal(model.TotalInstallments, transactionRequestDto.TotalInstallments);
-            Assert.Equal(model.AccountId, transactionRequestDto.Account.Id);
-            Assert.Equal(model.Account.Id, transactionRequestDto.Account.Id);
+            Assert.Equal(model.PortfolioId, transactionRequestDto.Portfolio.Id);
+            Assert.Equal(model.Portfolio.Id, transactionRequestDto.Portfolio.Id);
             Assert.Equal(model.OperationId, transactionRequestDto.Operation.Id);
             Assert.Equal(model.Operation.Id, transactionRequestDto.Operation.Id);
             Assert.Equal(model.ParentTransactionId, transactionRequestDto.ParentTransaction?.Id);
@@ -52,7 +52,7 @@ namespace Api.Application.Test.AutoMapper
             Assert.Equal(transactionResponseDto.Installment, model.Installment);
             Assert.Equal(transactionResponseDto.Consolidated ? SituationType.Sim : SituationType.Nao, model.Consolidated);
             Assert.Equal(transactionResponseDto.TotalInstallments, model.TotalInstallments);
-            Assert.Equal(transactionResponseDto.Account.Id, model.Account.Id);
+            Assert.Equal(transactionResponseDto.Portfolio.Id, model.Portfolio.Id);
             Assert.Equal(transactionResponseDto.Operation.Id, model.Operation.Id);
             Assert.Equal(transactionResponseDto.ParentTransaction?.Id, model.ParentTransaction?.Id);
         }
@@ -60,7 +60,7 @@ namespace Api.Application.Test.AutoMapper
         [Fact(DisplayName = "É possível mapear os modelos em lista")]
         public void Eh_Possivel_Mapear_Os_Modelos_Em_Lista()
         {
-            var accountRequestDto = GenerateAccount(2, "Cach");
+            var portfolioRequestDto = GeneratePortfolio(2, "Cach");
             var operationRequestDto = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
 
             var listRequestDto = new List<TransactionRequestDto>();
@@ -76,7 +76,7 @@ namespace Api.Application.Test.AutoMapper
                     Consolidated = false,
                     Installment = null,
                     TotalInstallments = null,
-                    Account = accountRequestDto,
+                    Portfolio = portfolioRequestDto,
                     Operation = operationRequestDto
                 };
 
@@ -98,7 +98,7 @@ namespace Api.Application.Test.AutoMapper
                 Assert.Equal(listResponseDto[i].Installment, listModel[i].Installment);
                 Assert.Equal(listResponseDto[i].Consolidated ? SituationType.Sim : SituationType.Nao, listModel[i].Consolidated);
                 Assert.Equal(listResponseDto[i].TotalInstallments, listModel[i].TotalInstallments);
-                Assert.Equal(listResponseDto[i].Account.Id, listModel[i].Account.Id);
+                Assert.Equal(listResponseDto[i].Portfolio.Id, listModel[i].Portfolio.Id);
                 Assert.Equal(listResponseDto[i].Operation.Id, listModel[i].Operation.Id);
                 Assert.Equal(listResponseDto[i].ParentTransaction?.Id, listModel[i].ParentTransaction?.Id);
             }
@@ -118,7 +118,7 @@ namespace Api.Application.Test.AutoMapper
                 Assert.Equal(pageListResponse[i].Installment, listModel[i].Installment);
                 Assert.Equal(pageListResponse[i].Consolidated ? SituationType.Sim : SituationType.Nao, listModel[i].Consolidated);
                 Assert.Equal(pageListResponse[i].TotalInstallments, listModel[i].TotalInstallments);
-                Assert.Equal(pageListResponse[i].Account.Id, listModel[i].Account.Id);
+                Assert.Equal(pageListResponse[i].Portfolio.Id, listModel[i].Portfolio.Id);
                 Assert.Equal(pageListResponse[i].Operation.Id, listModel[i].Operation.Id);
                 Assert.Equal(pageListResponse[i].ParentTransaction?.Id, listModel[i].ParentTransaction?.Id);
             }
@@ -135,11 +135,11 @@ namespace Api.Application.Test.AutoMapper
             };
         }
 
-        private AccountRequestDto GenerateAccount(int id, string name)
+        private PortfolioRequestDto GeneratePortfolio(int id, string name)
         {
             var category = GenerateCategory(CategoryType.Conta, "Corrente", 1);
 
-            AccountRequestDto _parentAccountDto = new AccountRequestDto()
+            PortfolioRequestDto parentPortfolioDto = new PortfolioRequestDto()
             {
                 Id = 1,
                 Name = "Geral",
@@ -147,13 +147,13 @@ namespace Api.Application.Test.AutoMapper
                 Category = category
             };
 
-            return new AccountRequestDto()
+            return new PortfolioRequestDto()
             {
                 Id = id,
                 Name = name,
                 Status = (int)StatusType.Ativo,
                 Category = category,
-                ParentAccount = _parentAccountDto
+                ParentPortfolio = parentPortfolioDto
             };
         }
 

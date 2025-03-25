@@ -26,8 +26,8 @@ namespace Data.Repository
             {
                 IQueryable<BalanceEntity> query = _context.Balance;
 
-                query = query.Include(act => act.Account);
-                query = query.Include(cat => cat.Account.Category);
+                query = query.Include(act => act.Portfolio);
+                query = query.Include(p => p.Portfolio.Category);
                 query = query.Include(usr => usr.User);
 
                 query = query.Where(x => x.UserId == userId);
@@ -50,8 +50,8 @@ namespace Data.Repository
             {
                 IQueryable<BalanceEntity> query = _context.Balance;
 
-                query = query.Include(act => act.Account);
-                query = query.Include(cat => cat.Account.Category);
+                query = query.Include(act => act.Portfolio);
+                query = query.Include(p => p.Portfolio.Category);
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
@@ -71,8 +71,8 @@ namespace Data.Repository
         {
             IQueryable<BalanceEntity> query = _context.Balance;
 
-            query = query.Include(act => act.Account);
-            query = query.Include(cat => cat.Account.Category);
+            query = query.Include(act => act.Portfolio);
+            query = query.Include(p => p.Portfolio.Category);
             query = query.Include(usr => usr.User);
             
             query = query.Where(x => x.UserId == userId);
@@ -93,12 +93,12 @@ namespace Data.Repository
             {
                 IQueryable<BalanceEntity> query = _context.Balance;
 
-                query = query.Include(act => act.Account);
-                query = query.Include(cat => cat.Account.Category);
+                query = query.Include(act => act.Portfolio);
+                query = query.Include(p => p.Portfolio.Category);
                 query = query.Include(usr => usr.User);
     
                 query = query.AsNoTracking()
-                    .Where(x => x.UserId == userId && x.AccountId == accountId && x.Month == month && x.Year == year);
+                    .Where(x => x.UserId == userId && x.PortfolioId == accountId && x.Month == month && x.Year == year);
 
                 result = query.FirstOrDefault();
             }
@@ -112,8 +112,8 @@ namespace Data.Repository
         
         public void UnchangedParentBalance(BalanceEntity balanceEntity)
         {
-            if (balanceEntity.Account != null)
-                _context.Entry(balanceEntity.Account).State = EntityState.Unchanged;
+            if (balanceEntity.Portfolio != null)
+                _context.Entry(balanceEntity.Portfolio).State = EntityState.Unchanged;
             
             if (balanceEntity.User != null)
                 _context.Entry(balanceEntity.User).State = EntityState.Unchanged;
