@@ -23,7 +23,7 @@ import {RootStackParamList} from '../RootStackParams';
 
 import {alterTransaction, createTransaction, excludeTransaction} from '../../controller/transaction.controller';
 import {loadAllCategory} from "../../controller/category.controller.tsx";
-import {loadAllAccount} from "../../controller/account.controller.tsx";
+import {loadAllPortfolio} from "../../controller/portfolio.controller.tsx";
 
 import {style} from '../../styles/styles';
 import {styleCadastro} from '../../styles/styles.cadastro';
@@ -67,15 +67,15 @@ const TransactionCreate = () => {
     const [showDate, setShowDate] = useState(false);
     const [mode, setMode] = useState('date');
     const [categories, setCategories] = useState<I.Category[]>([]);
-    const [accounts, setAccounts] = useState<I.Account[]>([]);
+    const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
     const [valueValue, setValueValue] = useState(0);
     const [operation, setOperation] = useState<I.Operation>(baseOperation);
     const [valueDescription, setValueDescription] = useState("");
     const [valueDate, setValueDate] = useState("");
     const [valueTime, setValueTime] = useState("");
     const [valueCategory, setValueCategory] = useState(0);
-    const [valueAccount, setValueAccount] = useState(0);
-    const [valueDestAccount, setValueDestAccount] = useState(0);
+    const [valuePortfolio, setValuePortfolio] = useState(0);
+    const [valueDestPortfolio, setValueDestPortfolio] = useState(0);
     const [valueNote, setValueNote] = useState("");
     const [valueConsolidated, setValueConsolidated] = useState(false);
     const [isSalary, setIsSalary] = useState(false);
@@ -88,11 +88,11 @@ const TransactionCreate = () => {
         let responseCategories = await loadAllCategory(TypesCategory.Operation, null);
         validateLogin(responseCategories, navigation);
         
-        let responseAccounts = await loadAllAccount(null);
-        validateLogin(responseAccounts, navigation);
+        let responsePortfolios = await loadAllPortfolio(null);
+        validateLogin(responsePortfolios, navigation);
         
         setCategories(responseCategories?.data ?? []);
-        setAccounts(responseAccounts?.data ?? []);
+        setPortfolios(responsePortfolios?.data ?? []);
     }
 
     const loadDataSreen = () => {
@@ -105,9 +105,9 @@ const TransactionCreate = () => {
             setValueDate(Moment(data.DataCriacao).local().format('DD/MM/YYYY'));
             setValueTime(Moment(data.DataCriacao).local().format('HH:mm:ss'));
             setValueCategory(data.Operation.Category.Id);
-            setValueAccount(data.Account.Id);
-            if (data.DestinationAccount)
-                setValueDestAccount(data.DestinationAccount.Id);
+            setValuePortfolio(data.Portfolio.Id);
+            if (data.DestinationPortfolio)
+                setValueDestPortfolio(data.DestinationPortfolio.Id);
             setValueNote(data.Observation);
             setValueConsolidated(data.Consolidated);
             setIsSalary(data.Operation.Salary);
@@ -172,12 +172,12 @@ const TransactionCreate = () => {
             }
         }
 
-        if (valueAccount === 0) {
+        if (valuePortfolio === 0) {
             Alert.alert("Atenção!", "A conta deve ser selecionada.");
             return false;
         }
 
-        if (valueDestAccount == 0 && typeSelected === TypesTransaction.Transference) {
+        if (valueDestPortfolio == 0 && typeSelected === TypesTransaction.Transference) {
             Alert.alert("Atenção!", "A conta de destino deve ser selecionada.");
             return false;
         }
@@ -304,8 +304,8 @@ const TransactionCreate = () => {
         transactionDTO.TotalInstallments = valueTimes;
         transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').local().format('YYYY-MM-DD HH:mm:ss'));
         transactionDTO.DataAlteracao = new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'))
-        transactionDTO.Account = accounts.find(x => x.Id === valueAccount) ?? {} as I.Account;
-        transactionDTO.DestinationAccount = (valueDestAccount > 0) ? accounts.find(x => x.Id === valueDestAccount) ?? null : null;
+        transactionDTO.Portfolio = portfolios.find(x => x.Id === valuePortfolio) ?? {} as I.Portfolio;
+        transactionDTO.DestinationPortfolio = (valueDestPortfolio > 0) ? portfolios.find(x => x.Id === valueDestPortfolio) ?? null : null;
         transactionDTO.Operation = operationDTO;
         transactionDTO.ParentTransaction = null;
 
@@ -403,16 +403,16 @@ const TransactionCreate = () => {
                         }
                         <Picker
                             text={"Conta" + ((typeSelected === TypesTransaction.Transference) ? " Origem" : "")}
-                            value={valueAccount}
-                            setValue={setValueAccount}
-                            data={accounts}
+                            value={valuePortfolio}
+                            setValue={setValuePortfolio}
+                            data={portfolios}
                         />
                         {typeSelectedIsTransference() &&
                             <Picker
                                 text={"Conta Destino"}
-                                value={valueDestAccount}
-                                setValue={setValueDestAccount}
-                                data={accounts}
+                                value={valueDestPortfolio}
+                                setValue={setValueDestPortfolio}
+                                data={portfolios}
                             />
                         }
                         <TextInput

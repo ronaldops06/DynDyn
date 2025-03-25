@@ -12,7 +12,7 @@ import {
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
 import {deleteCategory, getCategories, postCategory, putCategory} from "../services/category.api.ts";
 import {Alert} from "react-native";
-import {existsAccountRelationshipCategory} from "../repository/account.repository.tsx";
+import {existsPortfolioRelationshipCategory} from "../repository/portfolio.repository.tsx";
 import {existsOperationRelationshipCategory} from "../repository/operation.repository.tsx";
 
 /**
@@ -119,7 +119,7 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
     let response: I.Response = {} as I.Response;
     response.success = false;
     
-    if (await existsAccountRelationshipCategory(categoryInternalId)) {
+    if (await existsPortfolioRelationshipCategory(categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem contas vinculadas a ela.");
         return response;
     }

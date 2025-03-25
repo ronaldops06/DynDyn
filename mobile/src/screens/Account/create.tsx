@@ -7,7 +7,7 @@ import * as I from "../../interfaces/interfaces.tsx";
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
 import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import {alterAccount, createAccount, excludeAccount, loadAllAccount} from "../../controller/account.controller.tsx";
+import {alterPortfolio, createPortfolio, excludePortfolio, loadAllPortfolio} from "../../controller/portfolio.controller.tsx";
 import {style} from "../../styles/styles.ts";
 import {styleCadastro} from "../../styles/styles.cadastro.ts";
 import PrevIcon from "../../assets/nav_prev.svg";
@@ -17,23 +17,25 @@ import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import {validateLogin, validateSuccess} from "../../utils.ts";
+import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'AccountCreate'>;
-const AccountCreate = () => {
+const PortfolioCreate = () => {
 
     const navigation = useNavigation<homeScreenProp>();
     const route = useRoute<RouteProp<RootStackParamList, 'AccountCreate'>>();
 
-    const accountId = route.params?.data?.Id ?? 0;
-    const accountInternalId = route.params?.data?.InternalId ?? 0;
+    const portfolioId = route.params?.data?.Id ?? 0;
+    const portfolioInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
     const [name, setName] = useState<string>("");
+    const [type, setType] = useState<number>(1);
     const [category, setCategory] = useState(0);
-    const [parentAccount, setParentAccount] = useState(0);
+    const [parentPortfolio, setParentPortfolio] = useState(0);
     const [status, setStatus] = useState<boolean>(true);
     const [categories, setCategories] = useState<I.Category[]>([]);
-    const [accounts, setAccounts] = useState<I.Account[]>([]);
+    const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
 
     useEffect(() => {
         getLists();
@@ -46,19 +48,20 @@ const AccountCreate = () => {
         let responseCategories = await loadAllCategory(TypesCategory.Account, null);
         validateLogin(responseCategories, navigation);
         
-        let responseAccounts = await loadAllAccount(null);
-        validateLogin(responseAccounts, navigation);
+        let responsePortfolios = await loadAllPortfolio(null);
+        validateLogin(responsePortfolios, navigation);
 
         setCategories(responseCategories?.data ?? []);
-        setAccounts(responseAccounts?.data ?? []);
+        setPortfolios(responsePortfolios?.data ?? []);
     }
     
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
             setName(data.Name);
+            setType(data.Type);
             setCategory(data.Category.Id);
-            setParentAccount(data.ParentAccount?.Id ?? 0);
+            setParentPortfolio(data.ParentPortfolio?.Id ?? 0);
             setStatus(data.Status === constants.status.active.Id);
         }
     };
@@ -69,6 +72,16 @@ const AccountCreate = () => {
         
         navigation.goBack();
     };
+
+    const getButtonsSelectedBar = (): ButtonsSelectedProps[] => {
+        let buttonsSelectedBar: ButtonsSelectedProps[] = [];
+
+        Object.values(constants.portfolioType).map(type => {
+            buttonsSelectedBar.push({text: type.Name, value: type.Id});
+        });
+
+        return buttonsSelectedBar;
+    }
 
     const handleTrashClick = async () => {
         Alert.alert("Atenção!",
@@ -81,7 +94,7 @@ const AccountCreate = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let response = await excludeAccount(accountId, accountInternalId);
+                        let response = await excludePortfolio(portfolioId, portfolioInternalId);
                         validateLogin(response, navigation);
                         validateSuccess(response, navigation, route);
                     }
@@ -110,19 +123,21 @@ const AccountCreate = () => {
 
         if (!validateRequiredFields()) return;
 
-        let accountDTO = {} as I.Account;
-        accountDTO.Id = accountId;
-        accountDTO.InternalId = accountInternalId;
-        accountDTO.Name = name;
-        accountDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
-        accountDTO.ParentAccount = (parentAccount > 0) ? accounts.find(x => x.Id === parentAccount) ?? null : null;
-        accountDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
+        let portfolioDTO = {} as I.Portfolio;
+        portfolioDTO.Id = portfolioId;
+        portfolioDTO.InternalId = portfolioInternalId;
+        portfolioDTO.Name = name;
+        portfolioDTO.Type = type;
+        portfolioDTO.Group = constants.portfolioGroupType.contasBancarias;
+        portfolioDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
+        portfolioDTO.ParentPortfolio = (parentPortfolio > 0) ? portfolios.find(x => x.Id === parentPortfolio) ?? null : null;
+        portfolioDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
 
         let response: I.Response = {} as I.Response;
         if (isEditing)
-            response = await alterAccount(accountDTO);
+            response = await alterPortfolio(portfolioDTO);
         else
-            response = await createAccount(accountDTO);
+            response = await createPortfolio(portfolioDTO);
 
         validateLogin(response, navigation);
         validateSuccess(response, navigation, route);
@@ -145,6 +160,12 @@ const AccountCreate = () => {
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
+                    <ButtonSelectBar
+                        buttons={getButtonsSelectedBar()}
+                        valueSelected={type}
+                        handleValueSelected={setType}
+                        disabled={false}
+                    />
                     <View style={accountCreateStyle.areaFields}>
                         <TextInput
                             text={"Nome"}
@@ -160,9 +181,9 @@ const AccountCreate = () => {
                         />
                         <Picker
                             text={"Conta Pai"}
-                            value={parentAccount}
-                            setValue={setParentAccount}
-                            data={accounts}
+                            value={parentPortfolio}
+                            setValue={setParentPortfolio}
+                            data={portfolios}
                         />
                         <View style={accountCreateStyle.areaCheckbox}>
                             <CheckBox
@@ -188,4 +209,4 @@ const AccountCreate = () => {
     );
 }
 
-export default AccountCreate
+export default PortfolioCreate

@@ -24,7 +24,7 @@ export const createTableBalance = async () => {
             salary_debit         NUMBER,
             inflow               NUMBER,
             outflow              NUMBER,
-            account_id           NUMBER,
+            portfolio_id           NUMBER,
             month                NUMBER,
             year                 NUMBER,
             data_criacao         TEXT,
@@ -32,7 +32,7 @@ export const createTableBalance = async () => {
         );
     `);
 
-    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_account_id ON balances (account_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_portfolio_id ON balances (portfolio_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_id ON balances (id);`);
 };
 
@@ -123,7 +123,7 @@ export const getCommandInsert = () => {
         + ', salary_debit'
         + ', inflow'
         + ', outflow'
-        + ', account_id'
+        + ', portfolio_id'
         + ', month'
         + ', year'
         + ', data_criacao'
@@ -146,7 +146,7 @@ export const getCommandUpdate = () => {
         + '   , salary_debit = ?'
         + '   , inflow = ?'
         + '   , outflow = ?'
-        + '   , account_id = ?'
+        + '   , portfolio_id = ?'
         + '   , month = ?'
         + '   , year = ?'
         + '   , data_criacao = ?'
@@ -169,7 +169,7 @@ export const getParameters = (balance: Balance, acao: string): any[] => {
         SalaryDebit,
         Inflow,
         Outflow,
-        Account,
+        Portfolio,
         Month,
         Year,
         DataCriacao,
@@ -190,7 +190,7 @@ export const getParameters = (balance: Balance, acao: string): any[] => {
         SalaryDebit,
         Inflow,
         Outflow,
-        Account.InternalId,
+        Portfolio.InternalId,
         Month,
         Year,
         DataCriacao,
@@ -244,23 +244,23 @@ export const selectContAllBalances = async (): Promise<number> => {
     return count
 };
 
-export const selectTotalsByTreeAccount = async (internalAccountId: number): Promise<BalanceTotals | undefined> => {
+export const selectTotalsByTreePortfolio = async (internalPortfolioId: number): Promise<BalanceTotals | undefined> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
-        'WITH RECURSIVE account_hierarchy AS (' +
-        '   SELECT internal_id, parent_account_id' +
-        '     FROM accounts' +
+        'WITH RECURSIVE portfolio_hierarchy AS (' +
+        '   SELECT internal_id, parent_portfolio_id' +
+        '     FROM portfolios' +
         '    WHERE internal_id = ?' +
         '    UNION ALL' +
-        '   SELECT act.internal_id, act.parent_account_id' +
-        '     FROM accounts act' +
-        '    INNER JOIN account_hierarchy act_hrc ON act.parent_account_id = act_hrc.internal_id' +
+        '   SELECT act.internal_id, act.parent_portfolio_id' +
+        '     FROM portfolios act' +
+        '    INNER JOIN portfolio_hierarchy act_hrc ON act.parent_portfolio_id = act_hrc.internal_id' +
         ')' +
         '   SELECT SUM(blc.value) AS value' +
-        '     FROM account_hierarchy act' +
-        '    INNER JOIN balances blc ON act.internal_id = blc.account_id'
-        , [internalAccountId]
+        '     FROM portfolio_hierarchy act' +
+        '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id'
+        , [internalPortfolioId]
     );
 
     return result[0]?.rows.length > 0 ? formatResultTotals(result[0]?.rows?.item(0)) : undefined;
@@ -273,16 +273,16 @@ export const selectBalanceById = async (id: number): Promise<Balance | undefined
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const selectBalanceByBalanceMonthAndYear = async (internalAccountId: number, month: number, year: number): Promise<Balance | undefined> => {
+export const selectBalanceByBalanceMonthAndYear = async (internalPortfolioId: number, month: number, year: number): Promise<Balance | undefined> => {
     const db = await openDatabase();
     const result = await db.executeSql(
         queryBase() +
         ' WHERE bal.month      = ?' +
         '   AND bal.year       = ?' +
-        '   AND bal.account_id = ?',
+        '   AND bal.portfolio_id = ?',
         [month,
             year,
-            internalAccountId]);
+            internalPortfolioId]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
@@ -303,7 +303,7 @@ const queryBase = () => {
         + '     , act_cat.data_criacao AS act_cat_data_criacao'
         + '     , act_cat.data_alteracao AS act_cat_data_alteracao'
         + '  FROM balances bal'
-        + '       INNER JOIN accounts act ON bal.account_id = act.internal_id'
+        + '       INNER JOIN portfolios act ON bal.portfolio_id = act.internal_id'
         + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id';
 };
 
@@ -323,12 +323,12 @@ const formatResult = (item: any): Balance => {
         SalaryDebit: item.salary_debit,
         Inflow: item.inflow,
         Outflow: item.outflow,
-        Account: {
+        Portfolio: {
             InternalId: item.act_internal_id,
             Id: item.act_id,
             Name: item.act_name,
             Status: item.act_status,
-            ParentAccount: null,
+            ParentPortfolio: null,
             Category: {
                 InternalId: item.act_cat_internal_id,
                 Id: item.act_cat_id,

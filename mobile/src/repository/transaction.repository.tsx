@@ -2,7 +2,7 @@ import Moment from 'moment';
 
 import {constants} from "../constants";
 import {TypesTransaction} from '../enums/enums';
-import {Account, Category, Operation, Transaction, TransactionTotals} from "../interfaces/interfaces";
+import {Portfolio, Category, Operation, Transaction, TransactionTotals} from "../interfaces/interfaces";
 import {openDatabase} from "./database";
 
 export const createTableTransaction = async () => {
@@ -18,8 +18,8 @@ export const createTableTransaction = async () => {
             consolidated           NUMBER,
             installment            NUMBER,
             total_installments     NUMBER,
-            account_id             NUMBER,
-            destination_account_id NUMBER,
+            portfolio_id             NUMBER,
+            destination_portfolio_id NUMBER,
             operation_id           NUMBER,
             parent_transaction_id  NUMBER,
             data_criacao           TEXT,
@@ -28,7 +28,7 @@ export const createTableTransaction = async () => {
     `);
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_id ON transactions (id);`);
-    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_account_id ON transactions (account_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_portfolio_id ON transactions (portfolio_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_operation_id ON transactions (operation_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_data_criacao ON transactions (data_criacao);`);
 };
@@ -42,8 +42,8 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
         Consolidated,
         Installment,
         TotalInstallments,
-        Account,
-        DestinationAccount,
+        Portfolio,
+        DestinationPortfolio,
         Operation,
         ParentTransaction,
         DataCriacao,
@@ -58,8 +58,8 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
         + ', consolidated'
         + ', installment'
         + ', total_installments'
-        + ', account_id'
-        + ', destination_account_id'
+        + ', portfolio_id'
+        + ', destination_portfolio_id'
         + ', operation_id'
         + ', parent_transaction_id'
         + ', data_criacao'
@@ -71,8 +71,8 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
             Consolidated ? 1 : 0,
             Installment,
             TotalInstallments,
-            Account?.InternalId,
-            DestinationAccount?.InternalId,
+            Portfolio?.InternalId,
+            DestinationPortfolio?.InternalId,
             Operation?.InternalId,
             ParentTransaction?.InternalId,
             DataCriacao,
@@ -93,8 +93,8 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
         Consolidated,
         Installment,
         TotalInstallments,
-        Account,
-        DestinationAccount,
+        Portfolio,
+        DestinationPortfolio,
         Operation,
         ParentTransaction,
         DataCriacao,
@@ -110,8 +110,8 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
         + ', consolidated = ?'
         + ', installment = ?'
         + ', total_installments = ?'
-        + ', account_id = ?'
-        + ', destination_account_id = ?'
+        + ', portfolio_id = ?'
+        + ', destination_portfolio_id = ?'
         + ', operation_id = ?'
         + ', parent_transaction_id = ?'
         + ', data_criacao = ?'
@@ -123,8 +123,8 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
             Consolidated ? 1 : 0,
             Installment,
             TotalInstallments,
-            Account?.InternalId,
-            DestinationAccount?.InternalId,
+            Portfolio?.InternalId,
+            DestinationPortfolio?.InternalId,
             Operation?.InternalId,
             ParentTransaction?.InternalId,
             DataCriacao,
@@ -224,17 +224,17 @@ export const existsTransactionRelationshipOperation = async (operationInternalId
     return result[0]?.rows.length > 0;
 }
 
-export const existsTransactionRelationshipAccount = async (accountInternalId: number): Promise<boolean> => {
+export const existsTransactionRelationshipPortfolio = async (portfolioInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM transactions' +
-        ' WHERE account_id = ?' +
-        '    OR destination_account_id = ?' +
+        ' WHERE portfolio_id = ?' +
+        '    OR destination_portfolio_id = ?' +
         ' LIMIT 1'
-        , [ accountInternalId, 
-            accountInternalId ]);
+        , [ portfolioInternalId, 
+            portfolioInternalId ]);
     
     return result[0]?.rows.length > 0;
 }
@@ -257,12 +257,12 @@ const queryBase = () => {
         + '     , ope_cat.status AS ope_cat_status'
         + '     , ope_cat.data_criacao AS ope_cat_data_criacao'
         + '     , ope_cat.data_alteracao AS ope_cat_data_alteracao'
-        + '     , act.internal_id AS account_internal_id'
-        + '     , act.id AS account_id'
-        + '     , act.name AS account_name'
-        + '     , act.status AS account_status'
-        + '     , act.data_criacao AS account_data_criacao'
-        + '     , act.data_alteracao AS account_data_alteracao'
+        + '     , act.internal_id AS portfolio_internal_id'
+        + '     , act.id AS portfolio_id'
+        + '     , act.name AS portfolio_name'
+        + '     , act.status AS portfolio_status'
+        + '     , act.data_criacao AS portfolio_data_criacao'
+        + '     , act.data_alteracao AS portfolio_data_alteracao'
         + '     , act_cat.internal_id AS act_cat_internal_id'
         + '     , act_cat.id AS act_cat_id'
         + '     , act_cat.name AS act_cat_name'
@@ -295,9 +295,9 @@ const queryBase = () => {
         + '  FROM transactions trn'
         + '       INNER JOIN operations ope ON trn.operation_id = ope.internal_id'
         + '       INNER JOIN categories ope_cat ON ope.category_id = ope_cat.internal_id' 
-        + '       INNER JOIN accounts act ON trn.account_id = act.internal_id'
+        + '       INNER JOIN portfolios act ON trn.portfolio_id = act.internal_id'
         + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
-        + '       LEFT JOIN accounts dest_act ON dest_act.internal_id = trn.destination_account_id'
+        + '       LEFT JOIN portfolios dest_act ON dest_act.internal_id = trn.destination_portfolio_id'
         + '       LEFT JOIN categories dest_act_cat ON dest_act_cat.internal_id = dest_act.category_id'
         + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
 }
@@ -313,12 +313,12 @@ const formatResult = (item: any): Transaction => {
         TotalInstallments: item.total_installment,
         DataCriacao: item.data_criacao,
         DataAlteracao: item.data_alteracao,
-        Account: {
-            InternalId: item.account_internal_id,
-            Id: item.account_id,
-            Name: item.account_name,
-            Status: item.account_status,
-            ParentAccount: null,
+        Portfolio: {
+            InternalId: item.portfolio_internal_id,
+            Id: item.portfolio_id,
+            Name: item.portfolio_name,
+            Status: item.portfolio_status,
+            ParentPortfolio: null,
             Category: {
                 InternalId: item.act_cat_internal_id,
                 Id: item.act_cat_id,
@@ -328,10 +328,10 @@ const formatResult = (item: any): Transaction => {
                 DataCriacao: item.act_cat_data_criacao,
                 DataAlteracao: item.act_cat_data_alteracao
             },
-            DataCriacao: item.account_data_criacao,
-            DataAlteracao: item.account_data_alteracao
+            DataCriacao: item.portfolio_data_criacao,
+            DataAlteracao: item.portfolio_data_alteracao
         },
-        DestinationAccount: null,
+        DestinationPortfolio: null,
         ParentTransaction: null,
         Operation: {
             InternalId: item.operation_internal_id,
@@ -356,12 +356,12 @@ const formatResult = (item: any): Transaction => {
     }
 
     if (item.dest_act_internal_id) {
-        transaction.DestinationAccount = {
+        transaction.DestinationPortfolio = {
             InternalId: item.dest_act_internal_id,
             Id: item.dest_act_id,
             Name: item.dest_act_name,
             Status: item.dest_act_status,
-            ParentAccount: null,
+            ParentPortfolio: null,
             Category: {
                 InternalId: item.dest_act_cat_internal_id,
                 Id: item.dest_act_cat_id,
@@ -385,8 +385,8 @@ const formatResult = (item: any): Transaction => {
             Consolidated: item.par_trn_consolidated === 1 ? true : false,
             Installment: item.par_trn_installment,
             TotalInstallments: item.par_trn_total_installment,
-            Account: {} as Account,
-            DestinationAccount: null,
+            Portfolio: {} as Portfolio,
+            DestinationPortfolio: null,
             ParentTransaction: null,
             Operation: {} as Operation,
             DataCriacao: item.par_trn_data_criacao,

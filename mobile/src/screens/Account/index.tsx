@@ -1,9 +1,7 @@
-import React, {useEffect, useState, useCallback, useRef} from 'react';
-import {View, Text, TouchableOpacity, SafeAreaView, Alert} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import {StackNavigationProp} from '@react-navigation/stack';
 import {useNavigation} from '@react-navigation/core';
-import { useFocusEffect } from '@react-navigation/native';
-import _ from 'lodash';
 
 import {RootStackParamList} from '../RootStackParams';
 
@@ -11,11 +9,11 @@ import {style} from '../../styles/styles';
 import {accountStyle} from './styles';
 import * as I from "../../interfaces/interfaces.tsx";
 import {
-    alterAccount,
-    excludeAccount,
-    loadAllAccount,
-    loadAllAccountInternal
-} from "../../controller/account.controller.tsx";
+    alterPortfolio,
+    excludePortfolio,
+    loadAllPortfolio,
+    loadAllPortfolioInternal
+} from "../../controller/portfolio.controller.tsx";
 import {loadAllBalance} from "../../controller/balance.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
 import PlusIcon from "../../assets/plus.svg";
@@ -26,7 +24,7 @@ import AccountIcon from '../../assets/account.svg';
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'Account'>;
 
-const Account = () => {
+const Portfolio = () => {
     const navigation = useNavigation<homeScreenProp>();
 
     const [loading, setLoading] = useState(true);
@@ -35,7 +33,7 @@ const Account = () => {
     const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
-    const [accounts, setAccounts] = useState<I.Account[]>([]);
+    const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
     const [executado, setExecutado] = useState(false);
     
     /*useFocusEffect(
@@ -43,8 +41,8 @@ const Account = () => {
             
             if (!executado) {
                 setPageNumber(1);
-                setAccounts([]);
-                loadAccounts();
+                setPortfolios([]);
+                loadPortfolios();
                 setExecutado(true);
             }
         }, [])
@@ -57,62 +55,62 @@ const Account = () => {
             return;
         }
 
-        if (accounts.length === 0) {
+        if (portfolios.length === 0) {
             setPageNumber(1);
-            loadAccounts();
+            loadPortfolios();
         }
-    }, [accounts]);
+    }, [portfolios]);
 
     useEffect(() => {
         setIsLoadInternal(true);
-        loadAccounts();
+        loadPortfolios();
     }, [pageNumber]);
 
-    const appendAccounts = (data: I.Account[]) => {
-        let accountsNew = accounts;
+    const appendPortfolios = (data: I.Portfolio[]) => {
+        let portfoliosNew = portfolios;
         if (data.length > 0) {
             data.map((item, key) => {
-                accountsNew.push(item);
+                portfoliosNew.push(item);
             });
-            setAccounts(accountsNew);
+            setPortfolios(portfoliosNew);
         }
     };
 
-    const loadAccounts = async () => {
+    const loadPortfolios = async () => {
         setLoading(true);
 
-        let responseAccounts = null;
+        let responsePortfolios = null;
 
         if (isLoadInternal) {
-            responseAccounts = await loadAllAccountInternal(pageNumber);
+            responsePortfolios = await loadAllPortfolioInternal(pageNumber);
         } else {
-            responseAccounts = await loadAllAccount(pageNumber);
-            validateLogin(responseAccounts, navigation);
+            responsePortfolios = await loadAllPortfolio(pageNumber);
+            validateLogin(responsePortfolios, navigation);
             let response = await loadAllBalance(null);
             //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
-            responseAccounts = await loadAllAccountInternal(pageNumber);
+            responsePortfolios = await loadAllPortfolioInternal(pageNumber);
         }
 
-        setTotalPages(responseAccounts?.totalPages ?? 1);
-        appendAccounts(responseAccounts?.data ?? []);
+        setTotalPages(responsePortfolios?.totalPages ?? 1);
+        appendPortfolios(responsePortfolios?.data ?? []);
 
         setLoading(false);
         setIsLoadInternal(false);
     };
 
-    const handleItemClick = (data: I.Account) => {
+    const handleItemClick = (data: I.Portfolio) => {
         if (!isScrolling)
             navigation.navigate("AccountCreate", {
                 isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
                     if (actionNavigation === constants.actionNavigation.reload) {
                         setIsLoadInternal(true);
-                        setAccounts([]);
+                        setPortfolios([]);
                     }
                 }
             });
     }
 
-    const onSwipeLeft = async (data: I.Account) => {
+    const onSwipeLeft = async (data: I.Portfolio) => {
 
         Alert.alert("Atenção!",
             "Esta conta terá o status alterado. Deseja continuar?",
@@ -125,11 +123,11 @@ const Account = () => {
                     text: "Sim",
                     onPress: async () => {
                         data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
-                        let response = await alterAccount(data);
+                        let response = await alterPortfolio(data);
                         validateLogin(response, navigation);
 
-                        setAccounts((prevAccounts) =>
-                            prevAccounts.map((item) =>
+                        setPortfolios((prevPortfolios) =>
+                            prevPortfolios.map((item) =>
                                 item.Id === data.Id ? data : item
                             )
                         );
@@ -140,7 +138,7 @@ const Account = () => {
         );
     }
 
-    const onSwipeRight = (data: I.Account) => {
+    const onSwipeRight = (data: I.Portfolio) => {
         Alert.alert("Atenção!",
             "Esta conta será excluída. Deseja continuar?",
             [
@@ -151,12 +149,12 @@ const Account = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        let response = await excludeAccount(data.Id, data.InternalId);
+                        let response = await excludePortfolio(data.Id, data.InternalId);
                         validateLogin(response, navigation);
 
                         if (response.success) {
                             setIsLoadInternal(true);
-                            setAccounts([]);
+                            setPortfolios([]);
                         }
                     }
                 }
@@ -170,7 +168,7 @@ const Account = () => {
             isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
                 if (actionNavigation === constants.actionNavigation.reload) {
                     setIsLoadInternal(true);
-                    setAccounts([]);
+                    setPortfolios([]);
                 }
             }
         });
@@ -192,7 +190,7 @@ const Account = () => {
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
                 >
-                    {accounts != null && accounts.map((item, key) => (
+                    {portfolios != null && portfolios.map((item, key) => (
                         <AccountItem
                             key={key}
                             data={item}
@@ -212,4 +210,4 @@ const Account = () => {
     );
 }
 
-export default Account;
+export default Portfolio;

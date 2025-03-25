@@ -1,11 +1,10 @@
 import Moment from 'moment';
 
-import { Alert } from 'react-native';
-import { constants } from '../constants';
+import {Alert} from 'react-native';
+import {constants} from '../constants';
 import * as I from '../interfaces/interfaces';
 import {
     deleteInternalTransaction,
-    existsTransactionRelationshipOperation,
     insertTransaction,
     selectAllTransactions,
     selectContAll,
@@ -14,11 +13,9 @@ import {
     updateTransaction
 } from '../repository/transaction.repository';
 import {deleteTransaction, getTransactions, postTransaction, putTransaction} from '../services/transactions.api';
-import { loadInternalAccount } from './account.controller';
-import { loadInternalOperation } from './operation.controller';
-import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
-import {deleteOperation} from "../services/operation.api.tsx";
-import {deleteInternalOperation} from "../repository/operation.repository.tsx";
+import {loadInternalPortfolio} from './portfolio.controller';
+import {loadInternalOperation} from './operation.controller';
+import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
 import {calculateBalanceByTransaction, calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
 
 /**
@@ -35,10 +32,10 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
     transaction = await selectTransactionById(transaction.Id) ?? transaction;
         
     transaction.Operation = await loadInternalOperation(transaction.Operation ?? {} as I.Operation);
-    transaction.Account = await loadInternalAccount(transaction.Account ?? {} as I.Account);
+    transaction.Portfolio = await loadInternalPortfolio(transaction.Portfolio ?? {} as I.Portfolio);
 
-    if (transaction.DestinationAccount !== null)
-        transaction.DestinationAccount = await loadInternalAccount(transaction.DestinationAccount);
+    if (transaction.DestinationPortfolio !== null)
+        transaction.DestinationPortfolio = await loadInternalPortfolio(transaction.DestinationPortfolio);
 
     if (transaction.ParentTransaction !== null)
         transaction.ParentTransaction = await loadInternalTransaction(transaction.ParentTransaction);
@@ -79,10 +76,10 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
         var transaction = await selectTransactionById(item.Id);
         
         item.Operation = await loadInternalOperation(item.Operation?? {} as I.Operation);
-        item.Account = await loadInternalAccount(item.Account ?? {} as I.Account);
+        item.Portfolio = await loadInternalPortfolio(item.Portfolio ?? {} as I.Portfolio);
         
-        if (item.DestinationAccount !== undefined && item.DestinationAccount !== null)
-            item.DestinationAccount = await loadInternalAccount(item.DestinationAccount);
+        if (item.DestinationPortfolio !== undefined && item.DestinationPortfolio !== null)
+            item.DestinationPortfolio = await loadInternalPortfolio(item.DestinationPortfolio);
         
         if (item.ParentTransaction !== undefined && item.ParentTransaction !== null)
             item.ParentTransaction = await loadInternalTransaction(item.ParentTransaction ?? {} as I.Transaction);
@@ -155,10 +152,10 @@ export const alterTransaction = async (sourceTransaction: I.Transaction, transac
 const populateInternalFields = (transaction: I.Transaction, response: I.Response) => {
     if (transaction.InternalId)
         response.data.InternalId = transaction.InternalId;
-    response.data.Account.InternalId = transaction.Account.InternalId;
+    response.data.Portfolio.InternalId = transaction.Portfolio.InternalId;
     
-    if (transaction.DestinationAccount !== null)
-        response.data.DestinationAccount.InternalId = transaction.DestinationAccount?.InternalId;
+    if (transaction.DestinationPortfolio !== null)
+        response.data.DestinationPortfolio.InternalId = transaction.DestinationPortfolio?.InternalId;
     
     response.data.Operation.InternalId = transaction.Operation.InternalId;
     

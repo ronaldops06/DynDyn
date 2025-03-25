@@ -2,7 +2,7 @@ import * as I from '../interfaces/interfaces';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
 import {constants} from "../constants";
 import Moment from "moment";
-import {loadInternalAccount} from "./account.controller.tsx";
+import {loadInternalPortfolio} from "./portfolio.controller.tsx";
 import {
     deleteInternalBalance,
     insertBalance,
@@ -39,12 +39,12 @@ export const loadAllBalance = async (pageNumber: Number | null): Promise<I.Respo
     var balances = response?.data ?? [];
     
     //Armazena as constas em memória e só irá buscar no banco se não existir nela (array). Isso melhora a performance.
-    var accounts = [] as I.Account[];
+    var portfolios = [] as I.Portfolio[];
     for (const item of balances) {        
-        if (!accounts.some(x => x.Id === item.Account.Id))
-            accounts.push(await loadInternalAccount(item.Account));
+        if (!portfolios.some(x => x.Id === item.Portfolio.Id))
+            portfolios.push(await loadInternalPortfolio(item.Portfolio));
         
-        item.Account = accounts.find(x => x.Id === item.Account.Id);
+        item.Portfolio = portfolios.find(x => x.Id === item.Portfolio.Id);
     }
 
     await saveBalances(balances);
@@ -81,11 +81,11 @@ export const alterBalance = async (balance: I.Balance): Promise<I.Response> => {
     populateInternalFields(balance, response);
 
     if (!response.isConnected) {
-        balance = await updateBalance(balance, null);
+        balance = await updateBalance(balance);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null) {
-        balance = await updateBalance(response.data, null);
+        balance = await updateBalance(response.data);
     }
 
     return response;
@@ -95,8 +95,8 @@ const populateInternalFields = (balance: I.Balance, response: I.Response) => {
     if (balance.InternalId)
         response.data.InternalId = balance.InternalId;
 
-    if (balance.Account !== null)
-        response.data.Account.InternalId = balance.Account.InternalId;
+    if (balance.Portfolio !== null)
+        response.data.Portfolio.InternalId = balance.Portfolio.InternalId;
 }
 
 export const excludeBalance = async (balanceId: number, balanceInternalId: number): Promise<I.Response> => {
@@ -135,10 +135,10 @@ export const validateNeedRecalculate = (sourceTransaction: I.Transaction | null,
     if (sourceTransaction.Operation.Salary !== destTransaction.Operation.Salary)
         return true;
 
-    if (sourceTransaction.Account.Id !== destTransaction.Account.Id)
+    if (sourceTransaction.Portfolio.Id !== destTransaction.Portfolio.Id)
         return true;
 
-    if (sourceTransaction.DestinationAccount?.Id !== destTransaction.DestinationAccount?.Id)
+    if (sourceTransaction.DestinationPortfolio?.Id !== destTransaction.DestinationPortfolio?.Id)
         return true;
 
     if (sourceTransaction.DataCriacao !== destTransaction.DataCriacao)
@@ -178,29 +178,29 @@ export const calculateBalanceByTransaction = async (transaction: I.Transaction, 
 
     if (transaction.Operation.Type === constants.operationType.revenue.Id) {
         calculateBalance.CalculateBalanceType = constants.calculateBalanceType.inflow;
-        calculateBalance.Account = transaction.Account;
+        calculateBalance.Portfolio = transaction.Portfolio;
         await balanceCalculation(calculateBalance, executeSync);
         
     } else if (transaction.Operation.Type === constants.operationType.expense.Id) {
         calculateBalance.CalculateBalanceType = constants.calculateBalanceType.outflow;
-        calculateBalance.Account = transaction.Account;
+        calculateBalance.Portfolio = transaction.Portfolio;
         await balanceCalculation(calculateBalance, executeSync);
         
     } else if (transaction.Operation.Type === constants.operationType.transfer.Id) {
         calculateBalance.CalculateBalanceType = constants.calculateBalanceType.outflow;
-        calculateBalance.Account = transaction.Account;
+        calculateBalance.Portfolio = transaction.Portfolio;
         
         await balanceCalculation(calculateBalance, executeSync);
 
         calculateBalance.CalculateBalanceType = constants.calculateBalanceType.inflow;
-        calculateBalance.Account = transaction.DestinationAccount ?? {} as I.Account;
+        calculateBalance.Portfolio = transaction.DestinationPortfolio ?? {} as I.Portfolio;
         await balanceCalculation(calculateBalance, executeSync);
     }
     
 }
 
 export const balanceCalculation = async (calculateBalance: I.CalculateBalance, executeSync: boolean) => {
-    var balance = await selectBalanceByBalanceMonthAndYear(calculateBalance.Account.InternalId, calculateBalance.Month, calculateBalance.Year);
+    var balance = await selectBalanceByBalanceMonthAndYear(calculateBalance.Portfolio.InternalId, calculateBalance.Month, calculateBalance.Year);
 
     if (balance === undefined) {
         balance = {} as I.Balance;
@@ -219,7 +219,7 @@ export const balanceCalculation = async (calculateBalance: I.CalculateBalance, e
         balance.Year = calculateBalance.Year;
     }
 
-    balance.Account = calculateBalance.Account;
+    balance.Portfolio = calculateBalance.Portfolio;
     
     //Credit: Tudo que entra desconsiderando transferência e salário 
     //Debit: Tudo que sai desconsiderando transferência e salário 

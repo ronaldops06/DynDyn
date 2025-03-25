@@ -2,7 +2,7 @@ import { StyleSheet } from "react-native";
 
 export const buttonSelectStyle = StyleSheet.create({
     areaButtonSelect: {
-        display: "flex",
+        flex: 1,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
@@ -15,9 +15,9 @@ export const buttonSelectStyle = StyleSheet.create({
         borderRadius: 30
     },
     button: {
+        flex: 1,
         alignItems: "center",
         justifyContent: "center",
-        width: 100,
         height: 35,
         borderRadius: 30
     },

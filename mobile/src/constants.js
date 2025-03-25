@@ -3,7 +3,7 @@ export const constants = {
     pageSize: 10,
     operations: {
         category: 'category',
-        account: 'account',
+        portfolio: 'portfolio',
         operation: 'operation',
         transaction: 'transaction',
         balance: 'balance'
@@ -32,5 +32,20 @@ export const constants = {
     actionNavigation: {
         none: 'NONE',
         reload: 'RELOAD',
+    },
+    portfolioType: {
+        ativo: { Id: 1, Name: 'Ativo' },
+        passivo: { Id: 2, Name: 'Passivo' },
+    },
+    portfolioGroupType: {
+        bens: 1,
+        cartoesCredito: 2,
+        contasBancarias: 3,
+        empresas: 4,
+        emprestimos: 5,
+        financiamentos: 6,
+        imoveis: 7,
+        investimentos: 8,
+        veiculos: 9
     }
 }

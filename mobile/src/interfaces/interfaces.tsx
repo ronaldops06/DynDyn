@@ -39,13 +39,15 @@ export interface Category {
     DataAlteracao: Date | null
 }
 
-export interface Account {
+export interface Portfolio {
     InternalId: number,
     Id: number,
     Name: string,
+    Type: number,
+    Group: number,
     Status: number,
     Category: Category,
-    ParentAccount: Account | null,
+    ParentPortfolio: Portfolio | null,
     DataCriacao: Date,
     DataAlteracao: Date,
     BalanceTotals: BalanceTotals | null
@@ -72,8 +74,8 @@ export interface Transaction {
     Consolidated: boolean,
     Installment: number,
     TotalInstallments: number,
-    Account: Account,
-    DestinationAccount: Account | null,
+    Portfolio: Portfolio,
+    DestinationPortfolio: Portfolio | null,
     Operation: Operation,
     ParentTransaction: Transaction | null,
     DataCriacao: Date,
@@ -108,7 +110,7 @@ export interface Balance {
     Inflow: number,
     Month: number,
     Year: number,
-    Account: Account,
+    Portfolio: Portfolio,
     DataCriacao: Date,
     DataAlteracao: Date
 }
@@ -119,7 +121,7 @@ export interface BalanceTotals {
 
 export interface CalculateBalance {
     Value: number,
-    Account: Account,
+    Portfolio: Portfolio,
     Month: number,
     Year: number,
     CalculateBalanceType: number,
