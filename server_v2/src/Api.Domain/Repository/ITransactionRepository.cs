@@ -28,6 +28,23 @@ namespace Api.Domain.Repository
         /// <param name="parentTransactionId">Identificador da transação pai.</param>
         /// <returns>Lista de transações encontradas.</returns>
         Task<IEnumerable<TransactionEntity>> SelectTransactionByParentTransactionIdAsync(int userId, int parentTransactionId);
+        
+        /// <summary>
+        /// Método responsável por retornar as transações de acordo com a operação e o período.
+        /// </summary>
+        /// <param name="userId">Identificador do usuário.</param>
+        /// <param name="operationId">Identificador da operação.</param>
+        /// <param name="period">Período considerado <see cref="Period"/>.</param>
+        /// <returns>Entidade de transação <see cref="TransactionEntity"/>.</returns>
+        Task<TransactionEntity> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period);
+        
+        /// <summary>
+        /// Método responsável por retornar as transações com parcelas pendentes em um periodo.
+        /// </summary>
+        /// <param name="userId">Identificador do usuário.</param>
+        /// <param name="period">Período considerado <see cref="Period"/>.</param>
+        /// <returns>Lista de transações encontradas.</returns>
+        Task<List<TransactionEntity>> SelectByPendingInstallments(int userId, Period period);
 
         /// <summary>
         /// Método responsável por alterar o estado das entidades dependentes para que não ocorra erro ao salvar a entidade principal.

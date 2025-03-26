@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Enums;
 using Api.Domain.Models;
@@ -23,5 +24,11 @@ namespace Api.Domain.Interfaces.Services
         /// <param name="type">Tipo da operação <see cref="OperationType"/>.</param>
         /// <returns>odelo da operação encontrada <see cref="OperationModel"/>.</returns>
         Task<OperationModel> GetByNameAndType(string name, OperationType type);
+        
+        /// <summary>
+        /// Método responsável por retornar as operações ativas e recorrentes.
+        /// </summary>
+        /// <returns>Lista com os modelos de operação <see cref="OperationModel"/>.</returns>
+        Task<List<OperationModel>> GetByActiveAndRecurrent();
     }
 }

@@ -134,6 +134,54 @@ namespace Api.Data.Repository
             return totals;
         }
 
+        public async Task<TransactionEntity> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period)
+        {
+            var result = new TransactionEntity();
+
+            try
+            {
+                IQueryable<TransactionEntity> query = _context.Transaction;
+
+                query = QueryableIncludeRelations(query);
+
+                query = query.AsNoTracking()
+                    .Where(x => x.UserId == userId && x.OperationId == operationId &&
+                                x.DataCriacao >= period.DateStartMonth && x.DataCriacao <= period.DateEndMonth);
+
+                result = query.FirstOrDefault();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar a transação: Erro.: {ex.Message}");
+            }
+
+            return result;
+        }
+
+        public async Task<List<TransactionEntity>> SelectByPendingInstallments(int userId, Period period)
+        {
+            var result = new List<TransactionEntity>();
+
+            try
+            {
+                IQueryable<TransactionEntity> query = _context.Transaction;
+
+                query = QueryableIncludeRelations(query);
+
+                query = query.AsNoTracking()
+                    .Where(x => x.UserId == userId &&
+                                x.DataCriacao >= period.DateStartMonth && x.DataCriacao <= period.DateEndMonth && x.Installment < x.TotalInstallments);
+
+                result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar a transação: Erro.: {ex.Message}");
+            }
+
+            return result;
+        }
+
         public void UnchangedParentTransaction(TransactionEntity transactionEntity)
         {
             try

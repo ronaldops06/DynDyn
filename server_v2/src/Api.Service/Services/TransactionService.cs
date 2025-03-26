@@ -19,10 +19,11 @@ namespace Api.Service.Services
         private ITransactionRepository _repository;
         private IOperationService _operationService;
         private readonly IMapper _mapper;
+
         public TransactionService(IUserService userService,
-                                  ITransactionRepository repository,
-                                  IOperationService operationService,
-                                  IMapper mapper)
+            ITransactionRepository repository,
+            IOperationService operationService,
+            IMapper mapper)
         {
             _userService = userService;
             _repository = repository;
@@ -73,7 +74,7 @@ namespace Api.Service.Services
 
             model = _mapper.Map<TransactionModel>(transactionEntity);
 
-            ExecuteInstallments(user, model);
+            //ExecuteInstallments(user, model);
 
             return model;
         }
@@ -91,7 +92,7 @@ namespace Api.Service.Services
             TransferValidate(model);
 
             await OperacaoNotExists(model);
-            
+
             var transactionEntity = _mapper.Map<TransactionEntity>(model);
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.UpdateAsync(transactionEntity);
@@ -109,12 +110,75 @@ namespace Api.Service.Services
 
             var result = await _repository.DeleteAsync(id);
 
-            if (result)
-                ExecuteDeleteInstallments(user.Id, transactionEntityAux);
+            /*if (result)
+                ExecuteDeleteInstallments(user.Id, transactionEntityAux);*/
 
             return result;
         }
+        
+        public async Task GenerateRecurringAndInstallmentPayments(DateTime? baseDate)
+        {
+            var startDayOfMonth = 5;
+            var periodPreviousMonth = DateHelper.CalculatePeriod(baseDate, startDayOfMonth, -1);
+            var periodCurrentMonth = DateHelper.CalculatePeriod(baseDate, startDayOfMonth, 0);
+            var user = await _userService.GetLoggedUser();
 
+            await GenerateRecurring(user, periodPreviousMonth, periodCurrentMonth);
+
+            await GenerateInstallmentPayments(user, periodPreviousMonth, periodCurrentMonth);
+        }
+
+        private async Task GenerateRecurring(UserModel user, Period periodPreviousMonth, Period periodCurrentMonth)
+        {
+            var operationModels = await _operationService.GetByActiveAndRecurrent();
+            foreach (var operation in operationModels)
+            {
+                var transactionPreviousMonth =
+                    await _repository.SelectByOperationAndPeriodAsync(user.Id, operation.Id, periodPreviousMonth);
+
+                var transactionCurrentMonth =
+                    await _repository.SelectByOperationAndPeriodAsync(user.Id, operation.Id, periodCurrentMonth);
+
+                //Se já existir a transação para a operação no mês atual ou se não existe no mês anterior para usar como base pula o registro 
+                if (transactionCurrentMonth != null || transactionPreviousMonth == null)
+                    continue;
+                
+                await IncludeTransactionBasedPrevious(transactionPreviousMonth);
+            }
+        }
+
+        private async Task GenerateInstallmentPayments(UserModel user, Period periodPreviousMonth, Period periodCurrentMonth)
+        {
+            var transactionsEntities = await _repository.SelectByPendingInstallments(user.Id, periodPreviousMonth);
+            foreach (var transaction in transactionsEntities)
+            {
+                var transactionCurrentMonth =
+                    await _repository.SelectByOperationAndPeriodAsync(user.Id, transaction.OperationId, periodCurrentMonth);
+
+                if (transactionCurrentMonth != null)
+                    continue;
+                
+                await IncludeTransactionBasedPrevious(transaction, true);
+            }
+        }
+
+        private async Task IncludeTransactionBasedPrevious(TransactionEntity transaction, bool incrementInstallment = false)
+        {
+            var transactionEntity = (TransactionEntity)transaction.Clone();
+            transactionEntity.DataCriacao = transactionEntity.DataCriacao?.AddMonths(1);
+            transactionEntity.DataAlteracao = null;
+            transactionEntity.Id = 0;
+            transactionEntity.Portfolio = null;
+            transactionEntity.User = null;
+            transactionEntity.Consolidated = SituationType.Nao;
+            
+            if (incrementInstallment)
+                transactionEntity.Installment++;
+
+            _repository.UnchangedParentTransaction(transactionEntity);
+            transactionEntity = await _repository.InsertAsync(transactionEntity);
+        }
+        
         private void TransferValidate(TransactionModel transactionModel)
         {
             if (transactionModel.Operation.Type == OperationType.Transferencia)
@@ -208,7 +272,9 @@ namespace Api.Service.Services
         {
             if (transactionEntityAux.ParentTransactionId != null)
             {
-                var transactions = await _repository.SelectTransactionByParentTransactionIdAsync(userId, transactionEntityAux.ParentTransactionId ?? 0);
+                var transactions =
+                    await _repository.SelectTransactionByParentTransactionIdAsync(userId,
+                        transactionEntityAux.ParentTransactionId ?? 0);
                 foreach (var transactionEntity in transactions)
                 {
                     await _repository.DeleteAsync(transactionEntity.Id);

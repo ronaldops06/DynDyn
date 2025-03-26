@@ -105,5 +105,13 @@ namespace Api.Service.Services
 
             return _mapper.Map<OperationModel>(entity);
         }
+
+        public async Task<List<OperationModel>> GetByActiveAndRecurrent()
+        {
+            var user = await _userService.GetLoggedUser();
+            var entities = await _repository.SelectByActiveAndRecurrent(user.Id);
+
+            return _mapper.Map<List<OperationModel>>(entities);
+        }
     }
 }

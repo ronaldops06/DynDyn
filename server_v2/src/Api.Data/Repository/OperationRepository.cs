@@ -18,7 +18,9 @@ namespace Api.Data.Repository
     /// </summary>
     public class OperationRepository : BaseRepository<OperationEntity>, IOperationRepository
     {
-        public OperationRepository(SomniaContext context) : base(context) { }
+        public OperationRepository(SomniaContext context) : base(context)
+        {
+        }
 
         public override async Task<IEnumerable<OperationEntity>> SelectAsync(int userId)
         {
@@ -32,7 +34,7 @@ namespace Api.Data.Repository
                 query = query.Include(usr => usr.User);
 
                 query = query.Where(x => x.UserId == userId);
-                
+
                 query = query.AsNoTracking().OrderBy(a => a.Id);
                 result = query.ToList();
             }
@@ -56,7 +58,7 @@ namespace Api.Data.Repository
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Id == id && x.UserId == userId);
+                    .Where(x => x.Id == id && x.UserId == userId);
 
                 result = query.FirstOrDefault();
             }
@@ -74,9 +76,9 @@ namespace Api.Data.Repository
 
             query = query.Include(cat => cat.Category);
             query = query.Include(usr => usr.User);
-            
+
             query = query.Where(x => x.UserId == userId);
-            
+
             if (pageParams.Tipo != null)
                 query = query.Where(a => ((int)a.Type) == pageParams.Tipo);
 
@@ -86,6 +88,30 @@ namespace Api.Data.Repository
             query = query.AsNoTracking().OrderBy(a => a.Id);
 
             return await ExecuteQueryAsync(query, pageParams.PageNumber, pageParams.PageSize);
+        }
+
+        public async Task<List<OperationEntity>> SelectByActiveAndRecurrent(int userId)
+        {
+            var result = new List<OperationEntity>();
+            try
+            {
+                IQueryable<OperationEntity> query = _context.Operation;
+
+                query = query.Include(cat => cat.Category);
+                query = query.Include(usr => usr.User);
+
+                query = query.Where(x => x.UserId == userId && x.Status == StatusType.Ativo && x.Recurrent);
+
+                query = query.AsNoTracking().OrderBy(a => a.Id);
+
+                result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar a operação: Erro.: {ex.Message}");
+            }
+
+            return result;
         }
 
         public async Task<OperationEntity> SelectByUkAsync(int userId, string name, OperationType operationType)
@@ -100,7 +126,7 @@ namespace Api.Data.Repository
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
-                             .Where(x => x.Name == name && x.Type == operationType && x.UserId == userId);
+                    .Where(x => x.Name == name && x.Type == operationType && x.UserId == userId);
 
                 result = query.FirstOrDefault();
             }
@@ -116,7 +142,7 @@ namespace Api.Data.Repository
         {
             if (operationEntity.Category != null)
                 _context.Entry(operationEntity.Category).State = EntityState.Unchanged;
-            
+
             if (operationEntity.User != null)
                 _context.Entry(operationEntity.User).State = EntityState.Unchanged;
         }

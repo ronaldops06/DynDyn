@@ -15,6 +15,7 @@ namespace Domain.Helpers
         public DateTime? DataCriacaoInicio { get; set; }
         public DateTime? DataCriacaoFim { get; set; }
         public DateTime? LastSyncDate { get; set; }
+        public DateTime? BaseDate { get; set; }
         public int? Tipo { get; set; }
         public int? MovimentoPaiID { get; set; }
     }

@@ -100,6 +100,29 @@ namespace Api.Application.V1.Controllers
                 return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
             }
         }
+        
+        [HttpPost("recurring")]
+        [Authorize]
+        public async Task<IActionResult> PostRecurring([FromQuery] PageParams pageParams)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            try
+            {
+                await _service.GenerateRecurringAndInstallmentPayments(pageParams.BaseDate);
+                
+                return Ok("Processo de geração das transações recorrentes executado com sucesso.");
+            }
+            catch (ArgumentException ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode((int)HttpStatusCode.InternalServerError, ex.Message);
+            }
+        }
 
         [HttpPost]
         [Authorize("Bearer")]

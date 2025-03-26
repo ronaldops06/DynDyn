@@ -1,6 +1,5 @@
-using System.Collections.Generic;
+using System;
 using System.Threading.Tasks;
-using Api.Domain.Enums;
 using Api.Domain.Models;
 using Domain.Helpers;
 
@@ -24,5 +23,11 @@ namespace Api.Domain.Interfaces.Services
         /// <param name="pageParams">Parâmetros para filtro <see cref="PageParams"/>.</param>
         /// <returns>Modelo dos totais das transações <see cref="TransactionTotalModel"/>.</returns>
         Task<TransactionTotalModel> GetTotais(PageParams pageParams);
+
+        /// <summary>
+        /// Método responsável por executar a geração das transações de operações recorrentes.
+        /// </summary>
+        /// <param name="baseDate">Data base para geração das transações.</param>
+        Task GenerateRecurringAndInstallmentPayments(DateTime? baseDate);
     }
 }

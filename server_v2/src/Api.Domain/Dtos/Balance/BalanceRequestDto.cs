@@ -13,7 +13,6 @@ namespace Api.Domain.Dtos.Balance
         /// Valor total do saldo no mês.
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
-        [Range(0.000001, double.MaxValue)]
         public Double Value { get; set; }
         
         /// <summary>
