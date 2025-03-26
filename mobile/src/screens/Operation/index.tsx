@@ -43,7 +43,7 @@ const Operation = () => {
             isFirstRender.current = false;
             return;
         }
-        
+
         if (operations.length === 0) {
             setPageNumber(1);
             loadOperations();
@@ -180,8 +180,10 @@ const Operation = () => {
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
-                    <HistoryIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
-                    <Text style={style.titleScreemText}>Operações</Text>
+                    <View style={style.titleScreenTitle}>
+                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <Text style={style.titleScreemText}>Operações</Text>
+                    </View>
                 </View>
                 <CarouselSelection data={constants.operationType} handleItemSelectedId={setOperationType}/>
             </View>

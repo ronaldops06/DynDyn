@@ -42,14 +42,14 @@ const Category = () => {
     useEffect(() => {
         setCategoryType(constants.categoryType.operation.Id);
     }, []);
-    
+
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
             isFirstRender.current = false;
             return;
         }
-        
+
         if (categories.length === 0) {
             setPageNumber(1);
             loadCategories();
@@ -158,7 +158,7 @@ const Category = () => {
                         let response = await excludeCategory(data.Id, data.InternalId);
                         validateLogin(response, navigation);
 
-                        if (response.success){
+                        if (response.success) {
                             setIsLoadInternal(true);
                             setCategories([]);
                         }
@@ -184,8 +184,10 @@ const Category = () => {
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
-                    <CategoryIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
-                    <Text style={style.titleScreemText}>Categorias</Text>
+                    <View style={style.titleScreenTitle}>
+                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <Text style={style.titleScreemText}>Categorias</Text>
+                    </View>
                 </View>
                 <CarouselSelection data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
             </View>

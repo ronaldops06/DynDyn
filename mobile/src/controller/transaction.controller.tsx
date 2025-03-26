@@ -12,7 +12,13 @@ import {
     selectTransactionsTotals,
     updateTransaction
 } from '../repository/transaction.repository';
-import {deleteTransaction, getTransactions, postTransaction, putTransaction} from '../services/transactions.api';
+import {
+    deleteTransaction,
+    getTransactions,
+    postRecurringTransactions,
+    postTransaction,
+    putTransaction
+} from '../services/transactions.api';
 import {loadInternalPortfolio} from './portfolio.controller';
 import {loadInternalOperation} from './operation.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
@@ -119,7 +125,7 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
         transaction = await insertTransaction(response.data);
     }
 
-    await calculateBalanceByTransaction(transaction, true);
+    await calculateBalanceByTransactionFromUpdate(null, transaction);
 
     return response;
 }
@@ -179,6 +185,14 @@ export const excludeTransaction = async (transaction: I.Transaction): Promise<I.
         await deleteInternalTransaction(transaction.InternalId);
         await calculateBalanceByTransactionFromUpdate(transaction, null);
     }
+
+    return response;
+}
+
+export const executeRecurringTransaction = async (mountDateInicio: Date): Promise<I.Response> => {
+    let params = `BaseDate=${Moment(mountDateInicio).format('YYYY-MM-DD HH:mm:ss')}`;
+
+    let response = await postRecurringTransactions(params);
 
     return response;
 }

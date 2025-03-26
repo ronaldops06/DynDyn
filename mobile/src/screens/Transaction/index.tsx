@@ -9,10 +9,11 @@ import {RootStackParamList} from '../RootStackParams';
 
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
+import CurrencyExchangeIcon from '../../assets/currency_exchange.svg';
 import PlusIcon from '../../assets/plus.svg';
 import {
     alterTransaction,
-    excludeTransaction,
+    excludeTransaction, executeRecurringTransaction,
     loadAllTransactionsInternal,
     loadAndPersistAll,
     loadTotalsTransactions
@@ -139,10 +140,10 @@ const Transaction = () => {
 
     const getTransactionsGroupByDate = () => {
         let transactionsGroup: I.TransactionsGroup[] = [] as I.TransactionsGroup[];
-        
+
         transactions.map((item) => {
             const formattedDate = new Date(item.DataCriacao).toISOString().split("T")[0];
-                        
+
             const index = transactionsGroup.findIndex(x => x.date === formattedDate);
             if (index >= 0) {
                 transactionsGroup[index].transactions.push(item);
@@ -150,7 +151,7 @@ const Transaction = () => {
                 transactionsGroup.push({date: formattedDate, transactions: [item]});
             }
         });
-        
+
         setTransactionsGroup(transactionsGroup);
     }
     const handleLeftDateClick = () => {
@@ -163,6 +164,31 @@ const Transaction = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
         mountDate.setMonth(mountDate.getMonth() + 1);
         setDate(mountDate);
+    };
+
+    const handleRecurringAndInstallmentPaymentsClick = async () => {
+
+        Alert.alert("Atenção!",
+            "Serão geradas as transações recorrentes e as transações de parcelas para o mês atual. Deseja continuar?",
+            [
+                {
+                    text: "Não",
+                    style: "cancel"
+                },
+                {
+                    text: "Sim",
+                    onPress: async () => {
+                        let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
+                        var response = await executeRecurringTransaction(mountDateInicio);
+
+                        validateLogin(response, navigation);
+
+                        setTransactions([]);
+                    }
+                }
+            ],
+            {cancelable: false}
+        );
     };
 
     const handleTransactionItemClick = (data: I.Transaction) => {
@@ -188,10 +214,14 @@ const Transaction = () => {
                 {
                     text: "Sim",
                     onPress: async () => {
+                        
+                        var prevtransactions = { ...data};
+                        
                         data.Consolidated = !data.Consolidated;
-                        let response = await alterTransaction(data, data);
+                        let response = await alterTransaction(prevtransactions, data);
                         validateLogin(response, navigation);
-
+                        
+                        //Atualiza a transação alterada para que fique certa na tela e não seja necessário recarregar
                         setTransactions((prevTransactions) =>
                             prevTransactions.map((item) =>
                                 item.Id === data.Id ? data : item
@@ -249,8 +279,13 @@ const Transaction = () => {
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsulta}>
                 <View style={style.titleScreen}>
-                    <CashRegisterIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
-                    <Text style={style.titleScreemText}>Transações</Text>
+                    <View style={style.titleScreenTitle}>
+                        <CashRegisterIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <Text style={style.titleScreemText}>Transações</Text>
+                    </View>
+                    <TouchableOpacity style={style.titleScreenMoreInfo} onPress={handleRecurringAndInstallmentPaymentsClick}>
+                        <CurrencyExchangeIcon width="24" height="24" fill="#F5F5F5"/>
+                    </TouchableOpacity>
                 </View>
                 <View style={transactionStyle.viewSelectDate}>
                     <TouchableOpacity onPress={handleLeftDateClick} style={transactionStyle.buttonPrev}>
@@ -304,7 +339,7 @@ const Transaction = () => {
                             onPress={handleTransactionItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                        ))
+                    ))
                     }
                 </CustomScroll>
                 <TouchableOpacity

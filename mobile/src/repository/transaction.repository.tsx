@@ -260,6 +260,8 @@ const queryBase = () => {
         + '     , act.internal_id AS portfolio_internal_id'
         + '     , act.id AS portfolio_id'
         + '     , act.name AS portfolio_name'
+        + '     , act.type AS portfolio_type'
+        + '     , act.group_portfolio AS portfolio_group'
         + '     , act.status AS portfolio_status'
         + '     , act.data_criacao AS portfolio_data_criacao'
         + '     , act.data_alteracao AS portfolio_data_alteracao'
@@ -273,6 +275,8 @@ const queryBase = () => {
         + '     , dest_act.internal_id AS dest_act_internal_id'
         + '     , dest_act.id AS dest_act_id'
         + '     , dest_act.name AS dest_act_name'
+        + '     , dest_act.type AS dest_act_type'
+        + '     , dest_act.group_portfolio AS dest_act_group'
         + '     , dest_act.status AS dest_act_status'
         + '     , dest_act.data_criacao AS dest_act_data_criacao'
         + '     , dest_act.data_alteracao AS dest_act_data_alteracao'
@@ -310,13 +314,15 @@ const formatResult = (item: any): Transaction => {
         Observation: item.observation,
         Consolidated: (item.consolidated === 1),
         Installment: item.installment,
-        TotalInstallments: item.total_installment,
+        TotalInstallments: item.total_installments,
         DataCriacao: item.data_criacao,
         DataAlteracao: item.data_alteracao,
         Portfolio: {
             InternalId: item.portfolio_internal_id,
             Id: item.portfolio_id,
             Name: item.portfolio_name,
+            Type: item.portfolio_type,
+            Group: item.portfolio_group,
             Status: item.portfolio_status,
             ParentPortfolio: null,
             Category: {
@@ -360,6 +366,8 @@ const formatResult = (item: any): Transaction => {
             InternalId: item.dest_act_internal_id,
             Id: item.dest_act_id,
             Name: item.dest_act_name,
+            Type: item.dest_act_type,
+            Group: item.dest_act_group,
             Status: item.dest_act_status,
             ParentPortfolio: null,
             Category: {
@@ -384,7 +392,7 @@ const formatResult = (item: any): Transaction => {
             Observation: item.par_trn_observation,
             Consolidated: item.par_trn_consolidated === 1 ? true : false,
             Installment: item.par_trn_installment,
-            TotalInstallments: item.par_trn_total_installment,
+            TotalInstallments: item.par_trn_total_installments,
             Portfolio: {} as Portfolio,
             DestinationPortfolio: null,
             ParentTransaction: null,

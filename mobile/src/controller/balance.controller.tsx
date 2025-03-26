@@ -143,6 +143,9 @@ export const validateNeedRecalculate = (sourceTransaction: I.Transaction | null,
 
     if (sourceTransaction.DataCriacao !== destTransaction.DataCriacao)
         return true;
+
+    if (sourceTransaction.Consolidated !== destTransaction.Consolidated)
+        return true;
     
     return false;
 }
@@ -153,21 +156,20 @@ export const calculateBalanceByTransactionFromUpdate = async (sourceTransaction:
         return;
     
     let executeSync = true;
-    if (sourceTransaction !== null && destTransaction !== null)
+    if (sourceTransaction !== null && destTransaction !== null && !sourceTransaction.Consolidated)
         executeSync = false;
     
-    if (sourceTransaction !== null) {
+    if (sourceTransaction !== null && sourceTransaction.Consolidated) {
         sourceTransaction.Value = sourceTransaction.Value * -1;
         await calculateBalanceByTransaction(sourceTransaction, executeSync);
     }
-    
-    if (destTransaction !== null)
+
+    if (destTransaction !== null && destTransaction.Consolidated) 
         await calculateBalanceByTransaction(destTransaction, true);
-    
 }
 
 export const calculateBalanceByTransaction = async (transaction: I.Transaction, executeSync: boolean) => {
-
+    
     let calculateBalance: I.CalculateBalance = {} as I.CalculateBalance;
     calculateBalance.Year = moment(transaction.DataCriacao).year();
     calculateBalance.Month = moment(transaction.DataCriacao).month();
@@ -201,7 +203,7 @@ export const calculateBalanceByTransaction = async (transaction: I.Transaction, 
 
 export const balanceCalculation = async (calculateBalance: I.CalculateBalance, executeSync: boolean) => {
     var balance = await selectBalanceByBalanceMonthAndYear(calculateBalance.Portfolio.InternalId, calculateBalance.Month, calculateBalance.Year);
-
+    
     if (balance === undefined) {
         balance = {} as I.Balance;
         balance.Id = 0;
@@ -247,7 +249,7 @@ export const balanceCalculation = async (calculateBalance: I.CalculateBalance, e
         else if (calculateBalance.OperationType !== constants.operationType.transfer.Id)
             balance.Debit += calculateBalance.Value;
     }
-
+    
     if (balance.InternalId === undefined ) {
         if (executeSync)
             await createBalance(balance);

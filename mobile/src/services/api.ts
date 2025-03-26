@@ -76,7 +76,7 @@ export const get = async (path: string): Promise<I.Response> => {
     return responseRequest;
 };
 
-export const post = async (path: string, data: any) => {
+export const post = async (path: string, data?: any) => {
     let token = await getToken();
 
     let responseRequest = {} as I.Response;
@@ -96,8 +96,8 @@ export const post = async (path: string, data: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log(error?.response);
-        responseRequest.error = error.response.data;
+        console.log('erro',error?.response);
+        responseRequest.error = error.response.data.errors.Value.join();
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });
@@ -126,7 +126,7 @@ export const put = async (path: string, data: any) => {
         responseRequest.success = true;
     }).catch((error) => {
         console.log('erro', error?.response?.data);
-        responseRequest.error = error.response.data;
+        responseRequest.error = error.response.data.errors.Value.join();
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });

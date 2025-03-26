@@ -35,7 +35,7 @@ const Portfolio = () => {
     const [totalPages, setTotalPages] = useState(1);
     const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
     const [executado, setExecutado] = useState(false);
-    
+
     /*useFocusEffect(
         useCallback(() => {
             
@@ -178,8 +178,10 @@ const Portfolio = () => {
         <SafeAreaView style={[style.container, style.containerConsulta]}>
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
-                    <AccountIcon style={{ opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
-                    <Text style={style.titleScreemText}>Contas</Text>
+                    <View style={style.titleScreenTitle}>
+                        <AccountIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <Text style={style.titleScreemText}>Contas</Text>
+                    </View>
                 </View>
             </View>
             <View style={style.viewBodyConsultaLarger}>

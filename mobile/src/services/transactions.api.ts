@@ -65,6 +65,21 @@ export const postTransaction = async (data: I.Transaction): Promise<I.Response> 
     return response;
 };
 
+export const postRecurringTransactions = async (params: string): Promise<I.Response>  => {
+
+    let response = {} as I.Response;
+    response = await post(`Transaction/recurring?${params}`);
+
+    response = validateLogin(response);
+    if (!response.isLogged)
+        return response;
+
+    if (!validateResponse(Action.Post, response)) 
+        response.data = null;
+
+    return response;
+};
+
 export const putTransaction = async (data: I.Transaction): Promise<I.Response> => {
     let response = {} as I.Response;
     

@@ -76,9 +76,7 @@ export const style = StyleSheet.create({
     },
     titleScreen: {
         flexDirection: "row",
-        alignItems: "flex-end",
-        paddingLeft: 15,
-        height: 35
+        justifyContent: "space-between",
     },
     titleScreemText: {
         color: "#F1F1F1",
@@ -86,5 +84,14 @@ export const style = StyleSheet.create({
         marginLeft: 8,
         fontWeight: "bold",
         fontFamily: "Open Sans"
+    },
+    titleScreenTitle: {
+        flexDirection: "row",
+        alignItems: "flex-end",
+        paddingLeft: 15,
+        height: 35
+    },
+    titleScreenMoreInfo: {
+        padding: 10 
     }
 });

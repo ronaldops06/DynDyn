@@ -80,7 +80,7 @@ const TransactionCreate = () => {
     const [valueConsolidated, setValueConsolidated] = useState(false);
     const [isSalary, setIsSalary] = useState(false);
     const [valueMultiply, setValeuMultiply] = useState(false);
-    const [valueRadioRepeatSelectedId, setValueRadioRepeatSelectedId] = useState<string | undefined>();
+    const [valueRadioRepeatSelectedId, setValueRadioRepeatSelectedId] = useState<string>();
     const [valueTimes, setValueTimes] = useState(1);
     const [showModal, setShowModal] = useState(false);
 
@@ -111,9 +111,9 @@ const TransactionCreate = () => {
             setValueNote(data.Observation);
             setValueConsolidated(data.Consolidated);
             setIsSalary(data.Operation.Salary);
+            setValueTimes(data.TotalInstallments);
             setValeuMultiply(data.Operation.Recurrent || (data.TotalInstallments > 1));
-            if (valueMultiply)
-                setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : '2');
+            setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : '2');
         }
     };
 
@@ -460,12 +460,12 @@ const TransactionCreate = () => {
                                             layout="row"
                                             containerStyle={transactionCreateStyle.radioRepeat}
                                         />
-                                        {valueRadioRepeatSelectedId === '2' &&
+                                        {valueRadioRepeatSelectedId && valueRadioRepeatSelectedId === '2' &&
                                             <View style={transactionCreateStyle.areaTimes}>
                                                 <TextInput
                                                     text={"Vezes"}
                                                     isMoveText={false}
-                                                    value={valueTimes.toString()}
+                                                    value={valueTimes?.toString()}
                                                     setValue={setValueTimes}
                                                     width={"100%"}
                                                     editable={!isEditing}

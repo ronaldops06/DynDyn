@@ -103,7 +103,8 @@ export const insertBalance = async (balance: Balance, transaction: Transaction):
 export const updateBalance = async (balance: Balance): Promise<Balance> => {
     const db = await openDatabase();
 
-    await db.executeSql(getCommandUpdate(), getParameters(balance, constants.acao.update));
+    var result = await db.executeSql(getCommandUpdate(), getParameters(balance, constants.acao.update));
+    console.log(result);
 
     return balance;
 };
@@ -195,10 +196,11 @@ export const getParameters = (balance: Balance, acao: string): any[] => {
         Year,
         DataCriacao,
         DataAlteracao];
-
-    if (acao === constants.acao.update)
-        parameters.concat(InternalId);
-
+    
+    if (acao === constants.acao.update) {
+        parameters.push(InternalId);
+    }
+    
     return parameters;
 }
 
@@ -292,6 +294,8 @@ const queryBase = () => {
         + '     , act.internal_id AS act_internal_id'
         + '     , act.id AS act_id'
         + '     , act.name AS act_name'
+        + '     , act.type AS act_type'
+        + '     , act.group_portfolio AS act_group'
         + '     , act.status AS act_status'
         + '     , act.data_criacao AS act_data_criacao'
         + '     , act.data_alteracao AS act_data_alteracao'
@@ -327,6 +331,8 @@ const formatResult = (item: any): Balance => {
             InternalId: item.act_internal_id,
             Id: item.act_id,
             Name: item.act_name,
+            Type: item.act_type,
+            Group: item.act_group,
             Status: item.act_status,
             ParentPortfolio: null,
             Category: {
