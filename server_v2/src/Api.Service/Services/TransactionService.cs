@@ -73,9 +73,7 @@ namespace Api.Service.Services
             transactionEntity = await _repository.InsertAsync(transactionEntity);
 
             model = _mapper.Map<TransactionModel>(transactionEntity);
-
-            //ExecuteInstallments(user, model);
-
+            
             return model;
         }
 
@@ -109,10 +107,7 @@ namespace Api.Service.Services
                 throw new Exception("Transação não encontrada.");
 
             var result = await _repository.DeleteAsync(id);
-
-            /*if (result)
-                ExecuteDeleteInstallments(user.Id, transactionEntityAux);*/
-
+            
             return result;
         }
         
@@ -233,52 +228,6 @@ namespace Api.Service.Services
                 operacaoAux = await _operationService.Post(transactionModel.Operation);
                 transactionModel.OperationId = operacaoAux.Id;
                 transactionModel.Operation = operacaoAux;
-            }
-        }
-
-        private async void ExecuteInstallments(UserModel userModel, TransactionModel transactionModel)
-        {
-            if (transactionModel.TotalInstallments > 1)
-            {
-                for (var i = 2; i <= transactionModel.TotalInstallments; i++)
-                {
-                    TransactionModel transacaoParcelaModel = (TransactionModel)transactionModel.Clone();
-                    transacaoParcelaModel.Id = 0;
-                    transacaoParcelaModel.Installment = i;
-                    transacaoParcelaModel.DataCriacao = transactionModel.DataCriacao?.AddMonths(i - 1);
-                    transacaoParcelaModel.DataAlteracao = transactionModel.DataAlteracao?.AddMonths(i - 1);
-                    transacaoParcelaModel.Operation = null;
-                    transacaoParcelaModel.ParentTransactionId = transactionModel.Id;
-                    transacaoParcelaModel.ParentTransaction = transactionModel;
-                    transacaoParcelaModel.User = userModel;
-
-                    var transactionParcelaEntity = _mapper.Map<TransactionEntity>(transacaoParcelaModel);
-
-                    _repository.UnchangedParentTransaction(transactionParcelaEntity);
-                    transactionParcelaEntity = await _repository.InsertAsync(transactionParcelaEntity);
-                }
-
-                transactionModel.Installment = 1;
-
-                var transactionEntity = _mapper.Map<TransactionEntity>(transactionModel);
-                _repository.UnchangedParentTransaction(transactionEntity);
-                transactionEntity = await _repository.UpdateAsync(transactionEntity);
-
-                transactionModel = _mapper.Map<TransactionModel>(transactionEntity);
-            }
-        }
-
-        private async void ExecuteDeleteInstallments(int userId, TransactionEntity transactionEntityAux)
-        {
-            if (transactionEntityAux.ParentTransactionId != null)
-            {
-                var transactions =
-                    await _repository.SelectTransactionByParentTransactionIdAsync(userId,
-                        transactionEntityAux.ParentTransactionId ?? 0);
-                foreach (var transactionEntity in transactions)
-                {
-                    await _repository.DeleteAsync(transactionEntity.Id);
-                }
             }
         }
     }
