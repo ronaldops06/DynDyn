@@ -20,10 +20,10 @@ import {validateLogin, validateSuccess} from "../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'AccountCreate'>;
-const PortfolioCreate = () => {
+const PortfolioCreate = ({navigation, route}) => {
 
-    const navigation = useNavigation<homeScreenProp>();
-    const route = useRoute<RouteProp<RootStackParamList, 'AccountCreate'>>();
+    //const navigation = useNavigation<homeScreenProp>();
+    //const route = useRoute<RouteProp<RootStackParamList, 'AccountCreate'>>();
 
     const portfolioId = route.params?.data?.Id ?? 0;
     const portfolioInternalId = route.params?.data?.InternalId ?? 0;

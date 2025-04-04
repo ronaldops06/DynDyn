@@ -1,8 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {View, Text, SafeAreaView, TouchableOpacity, Alert} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useNavigation} from '@react-navigation/core';
-import {RootStackParamList} from '../RootStackParams';
+import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 
 import {style} from '../../styles/styles';
@@ -23,13 +20,9 @@ import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'Category'>;
-
-const Category = () => {
+const Category = ({navigation}) => {
     const keys: string[] = Object.keys(constants.categoryType);
-
-    const navigation = useNavigation<homeScreenProp>();
-
+    
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);

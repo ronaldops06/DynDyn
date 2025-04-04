@@ -1,11 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import PlusIcon from "../../assets/plus.svg";
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import {StackNavigationProp} from "@react-navigation/stack";
-import {useNavigation} from "@react-navigation/core";
 import _ from 'lodash';
-
-import {RootStackParamList} from '../RootStackParams';
 import * as I from "../../interfaces/interfaces.tsx";
 import {
     alterOperation,
@@ -23,10 +19,7 @@ import {style} from "../../styles/styles.ts";
 import {categoryStyle} from "../Category/styles";
 import HistoryIcon from '../../assets/history.svg';
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'Operation'>;
-
-const Operation = () => {
-    const navigation = useNavigation<homeScreenProp>();
+const Operation = ({navigation}) => {
 
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);

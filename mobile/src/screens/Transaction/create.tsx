@@ -52,12 +52,12 @@ const radioButtonsData: RadioButtonProps[] = [{
         selected: false
     }];
 
-const TransactionCreate = () => {
+const TransactionCreate = ({navigation, route}) => {
     //let stepInput = React.createRef<CustomTextInput>();
     const stepInput: React.RefObject<any> = React.createRef();
 
-    const navigation = useNavigation<homeScreenProp>();
-    const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
+    //const navigation = useNavigation<homeScreenProp>();
+    //const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
     const transactionId = route.params?.data?.Id ?? 0;
     const transactionInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
