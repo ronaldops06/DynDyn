@@ -1,11 +1,8 @@
-import {useNavigation} from '@react-navigation/core';
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 import {TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import {RootStackParamList} from '../RootStackParams';
 
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
@@ -13,7 +10,8 @@ import CurrencyExchangeIcon from '../../assets/currency_exchange.svg';
 import PlusIcon from '../../assets/plus.svg';
 import {
     alterTransaction,
-    excludeTransaction, executeRecurringTransaction,
+    excludeTransaction,
+    executeRecurringTransaction,
     loadAllTransactionsInternal,
     loadAndPersistAll,
     loadTotalsTransactions
@@ -25,8 +23,6 @@ import {validateLogin} from "../../utils.ts";
 import {constants} from "../../constants";
 import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
-
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'Transaction'>;
 
 const months = [
     'Janeiro',
@@ -43,9 +39,8 @@ const months = [
     'Dezembro'
 ];
 
-const Transaction = () => {
-    const navigation = useNavigation<homeScreenProp>();
-
+const Transaction = ({navigation}) => {
+    
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [transactions, setTransactions] = useState<I.Transaction[]>([]);

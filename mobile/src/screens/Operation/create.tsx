@@ -21,9 +21,9 @@ import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'OperationCreate'>;
 
-const OperationCreate = () => {
-    const navigation = useNavigation<homeScreenProp>();
-    const route = useRoute<RouteProp<RootStackParamList, 'OperationCreate'>>();
+const OperationCreate = ({navigation, route}) => {
+    //const navigation = useNavigation<homeScreenProp>();
+    //const route = useRoute<RouteProp<RootStackParamList, 'OperationCreate'>>();
 
     const operationId = route.params?.data?.Id ?? 0;
     const operationInternalId = route.params?.data?.InternalId ?? 0;

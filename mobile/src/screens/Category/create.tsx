@@ -19,9 +19,9 @@ import {alterCategory, createCategory, excludeCategory} from "../../controller/c
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
 type homeScreenProp = StackNavigationProp<RootStackParamList, 'CategoryCreate'>;
-const CategoryCreate = () => {
-    const navigation = useNavigation<homeScreenProp>();
-    const route = useRoute<RouteProp<RootStackParamList, 'CategoryCreate'>>();
+const CategoryCreate = ({navigation, route}) => {
+    //const navigation = useNavigation<homeScreenProp>();
+    //const route = useRoute<RouteProp<RootStackParamList, 'CategoryCreate'>>();
 
     const categoryId = route.params?.data?.Id ?? 0;
     const categoryInternalId = route.params?.data?.InternalId ?? 0;

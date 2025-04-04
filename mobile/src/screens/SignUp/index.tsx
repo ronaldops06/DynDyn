@@ -1,23 +1,17 @@
-import { useNavigation } from '@react-navigation/core';
-import { StackNavigationProp } from '@react-navigation/stack';
-import React, { useState } from 'react';
-import { Alert, Image, SafeAreaView, Text, TouchableOpacity, View } from 'react-native';
+import React, {useState} from 'react';
+import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
-import { RootStackParamList } from '../RootStackParams';
-import { postUser } from './signup.api';
+import {postUser} from './signup.api';
 
-import { style } from '../../styles/styles';
-import { signUpStyle } from './styles';
+import {style} from '../../styles/styles';
+import {signUpStyle} from './styles';
 import {encrypt} from "../../utils.ts";
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'SignUp'>;
-
-const SignUp = () => {
-    const navigation = useNavigation<homeScreenProp>();
-
+const SignUp = ({navigation}) => {
+    
     const [valueName, setValueName] = useState("");
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");

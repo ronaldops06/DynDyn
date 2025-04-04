@@ -1,24 +1,18 @@
-import {useNavigation} from '@react-navigation/core';
-import {StackNavigationProp} from '@react-navigation/stack';
 import React, {useEffect, useState} from 'react';
-import {Image, SafeAreaView, Text, TouchableOpacity, View, Alert} from 'react-native';
+import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import ReactNativeBiometrics from 'react-native-biometrics';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
-import {RootStackParamList} from '../RootStackParams';
 import {login} from './signin.api';
 
 import {style} from '../../styles/styles';
 import {signInStyle} from './styles';
 import {encrypt} from "../../utils.ts";
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'SignIn'>;
-
-const SignIn = () => {
-    const navigation = useNavigation<homeScreenProp>();
-
+const SignIn = ({navigation}) => {
+    
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
@@ -39,7 +33,8 @@ const SignIn = () => {
 
             reactNativeBiometrics.isSensorAvailable()
                 .then((result) => {
-                    if (result.available) {
+                    const { available, biometryType } = result;
+                    if (available) {
                         setBiometricAvailable(true);
                     }
                 })
@@ -113,7 +108,7 @@ const SignIn = () => {
         let loginDTO = {} as I.Login;
         loginDTO.Login = email;
         loginDTO.Password = password;
-
+        
         let userResponse = await login(loginDTO);
         
         if (userResponse !== null) {

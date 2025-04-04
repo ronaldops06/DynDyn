@@ -1,9 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useNavigation} from '@react-navigation/core';
-
-import {RootStackParamList} from '../RootStackParams';
 
 import {style} from '../../styles/styles';
 import {accountStyle} from './styles';
@@ -22,11 +18,8 @@ import {constants} from "../../constants";
 import {validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'Account'>;
-
-const Portfolio = () => {
-    const navigation = useNavigation<homeScreenProp>();
-
+const Portfolio = ({navigation}) => {
+    
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
