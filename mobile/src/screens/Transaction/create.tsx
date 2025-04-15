@@ -1,7 +1,5 @@
 import CheckBox from '@react-native-community/checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
-import {StackNavigationProp} from '@react-navigation/stack';
 import Moment from 'moment';
 import React, {useEffect, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
@@ -19,7 +17,6 @@ import TextInput from '../../components/CustomTextInput';
 import OperationModal from './OperationModal';
 import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
-import {RootStackParamList} from '../RootStackParams';
 
 import {alterTransaction, createTransaction, excludeTransaction} from '../../controller/transaction.controller';
 import {loadAllCategory} from "../../controller/category.controller.tsx";
@@ -29,15 +26,13 @@ import {style} from '../../styles/styles';
 import {styleCadastro} from '../../styles/styles.cadastro';
 import {transactionCreateStyle} from './create.styles';
 import {constants} from "../../constants";
-import {validateLogin, validateSuccess} from "../../utils.ts";
-
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'TransactionCreate'>;
+import {validateLogin, validateSuccess, toLocalDate, getDate} from "../../utils.ts";
 
 const radioButtonsData: RadioButtonProps[] = [{
     id: '1',
     label: 'Repetir',
     value: 'repetir',
-    color: '#6E8BB8',
+    color: constants.colors.primaryTextColor,
     size: 16,
     labelStyle: transactionCreateStyle.labelRadioRepeat,
     selected: true
@@ -46,18 +41,15 @@ const radioButtonsData: RadioButtonProps[] = [{
         id: '2',
         label: 'Parcelar',
         value: 'parcelar',
-        color: '#6E8BB8',
+        color: constants.colors.primaryTextColor,
         size: 16,
         labelStyle: transactionCreateStyle.labelRadioRepeat,
         selected: false
     }];
 
 const TransactionCreate = ({navigation, route}) => {
-    //let stepInput = React.createRef<CustomTextInput>();
     const stepInput: React.RefObject<any> = React.createRef();
-
-    //const navigation = useNavigation<homeScreenProp>();
-    //const route = useRoute<RouteProp<RootStackParamList, 'TransactionCreate'>>();
+    
     const transactionId = route.params?.data?.Id ?? 0;
     const transactionInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
@@ -124,8 +116,8 @@ const TransactionCreate = ({navigation, route}) => {
     };
 
     const setOperationDefault = () => {
-        setValueDescription('Transferência');
-        var categoryTranference = categories.find(x => x.Name == 'Transferência');
+        setValueDescription('Transferência Entre Contas');
+        var categoryTranference = categories.find(x => x.Name == 'Transferência Contas');
         if (categoryTranference !== undefined) {
             setValueCategory(categoryTranference.Id);
         }
@@ -288,6 +280,7 @@ const TransactionCreate = ({navigation, route}) => {
             operationDTO.Id = operation.Id;
             operationDTO.InternalId = operation.InternalId;
         }
+        
         operationDTO.Name = valueDescription;
         operationDTO.Type = typeSelected;
         operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
@@ -302,8 +295,8 @@ const TransactionCreate = ({navigation, route}) => {
         transactionDTO.Observation = valueNote;
         transactionDTO.Consolidated = valueConsolidated;
         transactionDTO.TotalInstallments = valueTimes;
-        transactionDTO.DataCriacao = new Date(Moment(valueDate + " " + valueTime, 'DD/MM/YYYY HH:mm:ss').local().format('YYYY-MM-DD HH:mm:ss'));
-        transactionDTO.DataAlteracao = new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'))
+        transactionDTO.DataCriacao = toLocalDate(`${valueDate} ${valueTime}`);
+        transactionDTO.DataAlteracao = getDate();
         transactionDTO.Portfolio = portfolios.find(x => x.Id === valuePortfolio) ?? {} as I.Portfolio;
         transactionDTO.DestinationPortfolio = (valueDestPortfolio > 0) ? portfolios.find(x => x.Id === valueDestPortfolio) ?? null : null;
         transactionDTO.Operation = operationDTO;

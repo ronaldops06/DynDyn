@@ -1,13 +1,15 @@
-import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../RootStackParams.ts";
-import {RouteProp, useNavigation, useRoute} from "@react-navigation/core";
 import {constants} from "../../constants";
 import React, {useEffect, useState} from "react";
 import * as I from "../../interfaces/interfaces.tsx";
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
 import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import {alterPortfolio, createPortfolio, excludePortfolio, loadAllPortfolio} from "../../controller/portfolio.controller.tsx";
+import {
+    alterPortfolio,
+    createPortfolio,
+    excludePortfolio,
+    loadAllPortfolio
+} from "../../controller/portfolio.controller.tsx";
 import {style} from "../../styles/styles.ts";
 import {styleCadastro} from "../../styles/styles.cadastro.ts";
 import PrevIcon from "../../assets/nav_prev.svg";
@@ -19,12 +21,8 @@ import CheckBox from "@react-native-community/checkbox";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'AccountCreate'>;
 const PortfolioCreate = ({navigation, route}) => {
-
-    //const navigation = useNavigation<homeScreenProp>();
-    //const route = useRoute<RouteProp<RootStackParamList, 'AccountCreate'>>();
-
+    
     const portfolioId = route.params?.data?.Id ?? 0;
     const portfolioInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
@@ -189,7 +187,7 @@ const PortfolioCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>

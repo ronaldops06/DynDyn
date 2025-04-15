@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { constants } from "../../constants";
 
 export const transactionStyle = StyleSheet.create({
     viewSelectDate: {
@@ -18,8 +19,8 @@ export const transactionStyle = StyleSheet.create({
         bottom: 15,
         right: 15,
         borderWidth: 2,
-        borderColor: "#6E8BB8",
-        backgroundColor: "#F1F1F1",
+        borderColor: constants.colors.primaryBaseColor,
+        backgroundColor: constants.colors.secondaryBaseColor,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -29,7 +30,7 @@ export const transactionStyle = StyleSheet.create({
         alignItems: "center"
     },
     textDateTitle: {
-        color: "#F1F1F1",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 17,
         fontWeight: "bold"
     },
@@ -52,7 +53,7 @@ export const transactionStyle = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         width: 110,
-        backgroundColor: "#F1F1F1" ,
+        backgroundColor: constants.colors.secondaryBaseColor ,
         borderRadius: 15  
     },
     textLabelTotais: {
@@ -65,22 +66,22 @@ export const transactionStyle = StyleSheet.create({
         fontWeight: "bold"
     },
     textLabelReceita: {
-        color: "#3C66F0",
+        color: constants.colors.primaryMonetaryColor,
     },
     textReceita: {
-        color: "#3C66F0"
+        color: constants.colors.primaryMonetaryColor
     },
     textLabelDespesa: {
-        color: "#F06868",
+        color: constants.colors.secondaryMonetaryColor,
     },
     textDespesa: {
-        color: "#F06868"
+        color: constants.colors.secondaryMonetaryColor
     },
     textLabelSaldo: {
-        color: "#4CA346",
+        color: constants.colors.tertiaryMonetaryColor,
     },
     textSaldo: {
-        color: "#4CA346"
+        color: constants.colors.tertiaryMonetaryColor
     },
     viewList: {
         flex: 1,

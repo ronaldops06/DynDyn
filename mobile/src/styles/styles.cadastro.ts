@@ -1,7 +1,7 @@
 import {StyleSheet} from 'react-native';
 
 import {style} from "./styles.ts";
-
+import {constants} from "../constants";
 export const styleCadastro = StyleSheet.create({
     viewHeaderCadastro: {
         ...style.viewHeaderCadastro,
@@ -50,12 +50,12 @@ export const styleCadastro = StyleSheet.create({
         marginBottom: 5
     },
     checkbox: {
-        color: "#6E8BB8",
+        color: constants.colors.primaryTextColor,
     },
     textCheckbox: {
         fontSize: 16,
         fontFamily: "Open Sans",
-        color: "#6E8BB8",
+        color: constants.colors.primaryTextColor,
     },
     areaButtonSave: {
         flex: 1,
@@ -68,12 +68,12 @@ export const styleCadastro = StyleSheet.create({
         width: 130,
         height: 40,
         borderRadius: 30,
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonSave: {
-        color: "#F5F5F5",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },

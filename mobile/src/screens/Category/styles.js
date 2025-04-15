@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { constants } from '../../constants';
 
 export const categoryStyle = StyleSheet.create({
     viewSelectType: {
@@ -20,7 +21,7 @@ export const categoryStyle = StyleSheet.create({
         alignItems: "center"
     },
     textTypeTitle: {
-        color: "#F1F1F1",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 17,
         fontWeight: "bold"
     },
@@ -32,8 +33,8 @@ export const categoryStyle = StyleSheet.create({
         bottom: 15,
         right: 15,
         borderWidth: 2,
-        borderColor: "#6E8BB8",
-        backgroundColor: "#F1F1F1",
+        borderColor: constants.colors.primaryBaseColor,
+        backgroundColor: constants.colors.secondaryBaseColor,
         alignItems: "center",
         justifyContent: "center",
     },

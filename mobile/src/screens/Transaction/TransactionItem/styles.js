@@ -1,13 +1,14 @@
 import { StyleSheet } from "react-native";
+import { constants } from "../../../constants";
 
 export const transactionItemStyle = StyleSheet.create({
     cardBackground: {
-        backgroundColor: "#E4E9F0",
+        backgroundColor: constants.colors.primaryBorderColor,
     },
     card: {
         flexDirection: "row",
-        backgroundColor: "#F5F5F5",
-        borderColor: "#E4E9F0",
+        backgroundColor: constants.colors.secondaryBaseColor,
+        borderColor: constants.colors.primaryBorderColor,
         borderBottomWidth: 1,
         padding: 15,
         paddingLeft: 5,
@@ -29,7 +30,7 @@ export const transactionItemStyle = StyleSheet.create({
         justifyContent: "space-between"
     },
     textHeader: {
-        color: "#A4BCE3",
+        color: constants.colors.secondaryTextColor,
         fontSize: 14,
         fontFamily: "Open Sans"
     },
@@ -42,41 +43,41 @@ export const transactionItemStyle = StyleSheet.create({
         justifyContent: "space-between"
     },
     textFooter: {
-        color: "#A4BCE3",
+        color: constants.colors.secondaryTextColor,
         fontSize: 14,
         fontFamily: "Open Sans"
     },
     textTransactionName: {
-        color: "gray",
+        color: constants.colors.primaryTextColor,
         fontWeight: "bold",
         fontSize: 15,
         fontFamily: "Open Sans",
         maxWidth: 230
     },
     textTransactionValue: {
-        color: "#3C66F0",
+        color: constants.colors.primaryMonetaryColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         fontWeight: "bold"
     },
     textTransactionNameExpense: {
-        color: "#F06868",
+        color: constants.colors.secondaryMonetaryColor,
         fontSize: 15,
         fontFamily: "Open Sans"
     },
     textTransactionNameTransfer: {
-        color: "#F06868",
+        color: constants.colors.secondaryTextColor,
         fontSize: 15,
         fontFamily: "Open Sans"
     },
     textTransactionValueExpense: {
-        color: "#F06868",
+        color: constants.colors.secondaryMonetaryColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         fontWeight: "bold"
     },
     textTransactionValueTransfer: {
-        color: "gray",
+        color: constants.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         fontWeight: "bold"

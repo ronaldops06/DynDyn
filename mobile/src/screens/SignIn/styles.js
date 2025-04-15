@@ -1,11 +1,12 @@
 import { StyleSheet } from 'react-native';
 
 import { style } from '../../styles/styles';
+import { constants } from '../../constants';
 
 export const signInStyle = StyleSheet.create({
     container: {
         ...style.container,
-        backgroundColor: "#F1F1F1" 
+        backgroundColor: constants.colors.secondaryBaseColor
     },
     viewBodyCadastro: {
         ...style.viewBodyCadastro,
@@ -25,7 +26,7 @@ export const signInStyle = StyleSheet.create({
         width: 130,
         height: 40,
         borderRadius: 30,
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
         justifyContent: "center",
         alignItems: "center"
     },
@@ -35,18 +36,18 @@ export const signInStyle = StyleSheet.create({
         alignItems: "center"
     },
     buttonText: {
-        color: "#F5F5F5",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
     registerText: {
         marginTop: 120,
-        color: "#6E8BB8",
+        color: constants.colors.primaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
     registerTextLink: {
-        color: "#6E8BB8",
+        color: constants.colors.primaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline"

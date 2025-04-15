@@ -1,7 +1,4 @@
 import React, {useEffect, useState} from "react";
-import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../RootStackParams.ts";
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import {alterOperation, createOperation, excludeOperation} from "../../controller/operation.controller.tsx";
 import {constants} from "../../constants";
@@ -19,11 +16,7 @@ import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSele
 import {operationCreateStyle} from "./create.styles";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'OperationCreate'>;
-
 const OperationCreate = ({navigation, route}) => {
-    //const navigation = useNavigation<homeScreenProp>();
-    //const route = useRoute<RouteProp<RootStackParamList, 'OperationCreate'>>();
 
     const operationId = route.params?.data?.Id ?? 0;
     const operationInternalId = route.params?.data?.InternalId ?? 0;
@@ -152,13 +145,13 @@ const OperationCreate = ({navigation, route}) => {
                     <TouchableOpacity
                         style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill="#F1F1F1"/>
+                        <PrevIcon width="40" height="40" fill={constants.colors.secondaryBaseColor}/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill="#F1F1F1"/>
+                            <TrashIcon width="35" height="35" fill={constants.colors.secondaryBaseColor}/>
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
@@ -186,7 +179,7 @@ const OperationCreate = ({navigation, route}) => {
                                 <CheckBox
                                     value={isRecurrent}
                                     onValueChange={setIsRecurrent}
-                                    tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                    tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
                                 />
                                 <Text
                                     style={styleCadastro.textCheckbox}>Recorrente</Text>
@@ -195,7 +188,7 @@ const OperationCreate = ({navigation, route}) => {
                                 <CheckBox
                                     value={isSalary}
                                     onValueChange={setIsSalary}
-                                    tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                    tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
                                 />
                                 <Text
                                     style={styleCadastro.textCheckbox}>Salário</Text>
@@ -205,7 +198,7 @@ const OperationCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>

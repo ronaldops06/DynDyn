@@ -1,6 +1,7 @@
 import * as I from "./interfaces/interfaces.tsx";
 import sha256 from 'crypto-js/sha256';
 import {constants} from "./constants";
+import Moment from "moment/moment";
 
 export function isEndScroll(event: any) {
     let mHeight = event.nativeEvent.layoutMeasurement.height;
@@ -28,3 +29,7 @@ export const validateSuccess = (response: I.Response, navigation: any, route: an
 export const encrypt = async (value: string): Promise<string> => {
     return sha256(value).toString();
 }
+
+export const getDate = (): Date => new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'));
+
+export const toLocalDate = (date): Date => Moment.parseZone(date, 'DD/MM/YYYY HH:mm:ss').toDate();
