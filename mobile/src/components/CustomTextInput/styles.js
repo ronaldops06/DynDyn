@@ -1,4 +1,5 @@
 import {StyleSheet} from "react-native";
+import {constants} from "../../constants";
 
 export const customTextInputStyle = StyleSheet.create({
     container: {
@@ -9,11 +10,11 @@ export const customTextInputStyle = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
         paddingTop: 5,
         paddingHorizontal: 10,
         borderBottomWidth: 1,
-        borderColor: "#D4DBE6",
+        borderColor: constants.colors.primaryBorderColor,
         borderRadius: 3,
         alignSelf: "center",
         width: "100%"
@@ -26,18 +27,18 @@ export const customTextInputStyle = StyleSheet.create({
     input: {
         fontSize: 16,
         height: 40,
-        color: "#6E8BB8",
+        color: constants.colors.primaryTextColor,
         flex: 1,
     },
     label: {
-        color: "#99ABC9",
+        color: constants.colors.secondaryTextColor,
         fontFamily: "Open Sans",
         fontSize: 14,
     },
     textMessage: {
         fontSize: 13,
         fontFamily: "Open Sans",
-        color: "#A4BCE3",
+        color: constants.colors.secondaryTextColor,
         justifyContent: "center",
         alignSelf: "center"
     },

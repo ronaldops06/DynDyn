@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-
+import { constants } from "../../constants";
 export const transactionCreateStyle = StyleSheet.create({
     areaValue: {
         flexDirection: "row",
@@ -12,13 +12,13 @@ export const transactionCreateStyle = StyleSheet.create({
         height: 35,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: "#6E8BB8",
-        backgroundColor: "#F5F5F5", 
+        borderColor: constants.colors.primaryBaseColor,
+        backgroundColor: constants.colors.secondaryBaseColor, 
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonMinus: {
-        color: "#6E8BB8"
+        color: constants.colors.primaryBaseColor
     },
     inputValue: {
         fontSize: 24,
@@ -26,29 +26,29 @@ export const transactionCreateStyle = StyleSheet.create({
         alignSelf: "center"
     },
     inputValueRevenue: {
-        color: "#3C66F0"
+        color: constants.colors.primaryMonetaryColor
     },
     inputValueTransfer: {
-        color: "#4CA346"
+        color: constants.colors.primaryTextColor
     },
     inputValueExpense: {
-        color: "#F06868"
+        color: constants.colors.secondaryMonetaryColor
     },
     buttonPlus: {
         width: 35,
         height: 35,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: "#F5F5F5",
-        backgroundColor: "#6E8BB8", 
+        borderColor: constants.colors.secondaryBaseColor,
+        backgroundColor: constants.colors.primaryBaseColor, 
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonPlus: {
-        color: "#F5F5F5"
+        color: constants.colors.secondaryBaseColor
     },
     textListOperations: {
-        color: "#6E8BB8",
+        color: constants.colors.primaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline",
@@ -69,20 +69,20 @@ export const transactionCreateStyle = StyleSheet.create({
         borderRadius: 30
     },
     buttonDefault: {
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
     },
     buttonSelected: {
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
     },
     textButton: {
         fontSize: 14,
         fontFamily: "Open Sans",
     },
     textButtonDefault: {
-        color: "#F5F5F5",
+        color: constants.colors.secondaryBaseColor,
     },
     textButtonSelected: {
-        color: "#6E8BB8",
+        color: constants.colors.primaryBaseColor,
     },
     areaRepeat: {
         flexDirection: "row",
@@ -97,7 +97,7 @@ export const transactionCreateStyle = StyleSheet.create({
     labelRadioRepeat: {
         fontSize: 14,
         fontFamily: "Open Sans",
-        color: "#6E8BB8",
+        color: constants.colors.primaryTextColor,
     },
     areaTimes: {
         flexDirection: "column",

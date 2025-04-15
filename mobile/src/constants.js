@@ -47,5 +47,17 @@ export const constants = {
         imoveis: 7,
         investimentos: 8,
         veiculos: 9
+    },
+    colors: {
+        primaryBaseColor: '#6E8BB8',
+        secondaryBaseColor: '#F1F1F1',
+        tertiaryBaseColor: '#D4DBE6',
+        primaryBorderColor: '#DCDCDC',
+        primaryTextColor: '#4b688c',
+        secondaryTextColor: '#808080',//'#A4BCE3',
+        quintenaryTextColor: '#99ABC9',
+        primaryMonetaryColor: '#3C66F0',
+        secondaryMonetaryColor: '#F06868',
+        tertiaryMonetaryColor: '#4CA346',
     }
 }

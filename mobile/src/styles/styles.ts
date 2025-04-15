@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {constants} from '../constants';
 
 export const style = StyleSheet.create({
     container: {
@@ -7,46 +8,46 @@ export const style = StyleSheet.create({
         flexDirection: "column",
     },
     containerCadastro: {
-        backgroundColor: "#F1F1F1"
+        backgroundColor: constants.colors.secondaryBaseColor
     },
     containerConsulta: {
-        backgroundColor: "#6E8BB8"
+        backgroundColor: constants.colors.primaryBaseColor
     },
     viewHeaderCadastro: {
         width: "100%",
         height: 130,
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
         borderBottomLeftRadius: 60
     },
     viewBodyCadastro: {
         display: "flex",
         width: "100%",
         height: "100%",
-        backgroundColor: "#F1F1F1"
+        backgroundColor: constants.colors.secondaryBaseColor
     },
     viewHeaderConsulta: {
         display: "flex",
         height: "20%",
         width: "100%",
-        backgroundColor: "#6E8BB8"
+        backgroundColor: constants.colors.primaryBaseColor
     },
     viewHeaderConsultaReduced: {
         display: "flex",
         height: 90,
         width: "100%",
-        backgroundColor: "#6E8BB8"
+        backgroundColor: constants.colors.primaryBaseColor
     },
     viewBodyConsulta: {
         display: "flex",
         width: "100%",
         height: "80%",
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
         //borderTopLeftRadius: 60
     },
     viewBodyConsultaLarger: {
         display: "flex",
         width: "100%",
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
         borderTopLeftRadius: 60,
         flex: 1
     },
@@ -65,10 +66,10 @@ export const style = StyleSheet.create({
     },
     viewTitle: {
         borderBottomWidth: 1,
-        borderBottomColor: "#D4DBE6",
+        borderBottomColor: constants.colors.tertiaryBaseColor,
     },
     textHeaderConsultaTitle: {
-        color: "#F1F1F1",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         marginTop: 10,
@@ -79,7 +80,7 @@ export const style = StyleSheet.create({
         justifyContent: "space-between",
     },
     titleScreemText: {
-        color: "#F1F1F1",
+        color: constants.colors.secondaryBaseColor,
         fontSize: 18,
         marginLeft: 8,
         fontWeight: "bold",

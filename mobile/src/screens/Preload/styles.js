@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { constants } from '../../constants';
 
 export const preloadStyle = StyleSheet.create({
     content: {
@@ -7,10 +8,10 @@ export const preloadStyle = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#6E8BB8"
+        backgroundColor: constants.colors.primaryBaseColor
     },
     imageArea: {
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
         borderTopLeftRadius: 130,
         borderTopRightRadius: 130,
         borderBottomLeftRadius: 160,

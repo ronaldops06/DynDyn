@@ -99,8 +99,8 @@ const TransactionItem = (props: TransactionItemParms) => {
                     </View>
                     <View style={transactionItemStyle.rowFooter}>
                         <Text style={transactionItemStyle.textFooter}>
-                            {props.data.Account?.Name}
-                            {props.data.Operation?.Type == TypesTransaction.Transference && " para " + props.data.DestinationAccount?.Name}
+                            {props.data.Portfolio?.Name}
+                            {props.data.Operation?.Type == TypesTransaction.Transference && " para " + props.data.DestinationPortfolio?.Name}
                         </Text>
                         <DoneIcon width="20" height="20" fill={(props.data.Consolidated) ? "#00A519" : "#A4BCE3"}/>
                     </View>

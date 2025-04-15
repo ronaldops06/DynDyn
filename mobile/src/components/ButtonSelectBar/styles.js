@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { constants } from "../../constants";
 
 export const buttonSelectStyle = StyleSheet.create({
     areaButtonSelect: {
@@ -11,7 +12,7 @@ export const buttonSelectStyle = StyleSheet.create({
         marginLeft: 25,
         marginRight: 25,
         height: 40,
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
         borderRadius: 30
     },
     button: {
@@ -22,19 +23,19 @@ export const buttonSelectStyle = StyleSheet.create({
         borderRadius: 30
     },
     buttonSelected: {
-        backgroundColor: "#F1F1F1",
+        backgroundColor: constants.colors.secondaryBaseColor,
     },
     buttonDefault: {
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
     },
     textButton: {
         fontSize: 14,
         fontFamily: "Open Sans",
     },
     textButtonSelected: {
-        color: "#6E8BB8",
+        color: constants.colors.primaryBaseColor,
     },
     textButtonDefault: {
-        color: "#F5F5F5",
+        color: constants.colors.secondaryBaseColor,
     },
 });

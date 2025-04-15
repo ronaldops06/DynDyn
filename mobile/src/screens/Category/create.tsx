@@ -144,7 +144,7 @@ const CategoryCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>

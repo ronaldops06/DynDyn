@@ -1,10 +1,11 @@
 import { StyleSheet } from 'react-native';
+import {constants} from "../../constants";
 
 export const operationModalStyle = StyleSheet.create({
     areaModal: {
         marginTop: "auto",
         height: "65%",
-        backgroundColor: "#6E8BB8",
+        backgroundColor: constants.colors.primaryBaseColor,
         justifyContent: "flex-end",
         borderTopLeftRadius: 35,
         borderTopRightRadius: 35
@@ -22,6 +23,6 @@ export const operationModalStyle = StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         borderRadius: 20,
-        backgroundColor: "#F1F1F1"
+        backgroundColor: constants.colors.secondaryBaseColor
     }
 });

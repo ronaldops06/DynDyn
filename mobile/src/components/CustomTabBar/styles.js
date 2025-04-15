@@ -1,9 +1,10 @@
 import { StyleSheet } from "react-native";
+import {constants} from "../../constants";
 
 export const customTabBarStyle = StyleSheet.create({
     tabArea: {
         height: 60,
-        backgroundColor: "#D4DBE6",
+        backgroundColor: constants.colors.tertiaryBaseColor,
         flexDirection: "row"
     },
     tabItem: {
@@ -16,10 +17,10 @@ export const customTabBarStyle = StyleSheet.create({
         height: 70,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#D4DBE6",
+        backgroundColor: constants.colors.tertiaryBaseColor,
         borderRadius: 35,
         borderWidth: 1,
-        borderColor: "#A3BBE0",
+        borderColor: constants.colors.secondaryTextColor,
         marginTop: -25
     }
 });
