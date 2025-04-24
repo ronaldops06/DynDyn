@@ -1,14 +1,12 @@
 import NetInfo from '@react-native-community/netinfo';
-import axios from 'axios';
+import axios, {AxiosInstance} from 'axios';
 import { Alert } from 'react-native';
 
 import * as I from '../interfaces/interfaces';
 import EncryptedStorage from "react-native-encrypted-storage";
 import {constants} from "../constants";
 
-const api = axios.create({
-    baseURL: "http://192.168.18.3:5000/api/v1/"
-});
+const configUrl = 'https://sagemoney.com.br/config/config.json';
 
 const getToken = async (): Promise<string> => {
     const session = await EncryptedStorage.getItem("user_session");
@@ -23,6 +21,27 @@ const isInternetConnected = async (): Promise<boolean> => {
     const state = await NetInfo.fetch();
     return state.isConnected ?? false;
 };
+
+export const fetchApiUrl = async (): Promise<string | null> => {
+    try {
+        const response = await fetch(configUrl);
+        if (!response.ok) throw new Error('Erro ao buscar configuração');
+
+        const data = await response.json();
+        return data.api_url;
+    } catch (error) {
+        console.error('Erro ao buscar API URL:', error);
+        return null;
+    }
+}
+
+const getApiInstance = async () => {
+    const apiUrl = await EncryptedStorage.getItem("API_URL");
+
+    return axios.create({
+        baseURL: `${apiUrl}/api/v1/`,
+    });
+}
 
 export const getPaginated = async (path: string): Promise<I.Response> => {
     let pathWithPages = `${path}&PageNumber=1&PageSize=${constants.pageSizeRequest}`;
@@ -54,7 +73,9 @@ export const get = async (path: string): Promise<I.Response> => {
         responseRequest.success = true;
         return responseRequest;
     }
-
+    
+    let api = await getApiInstance();
+    
     await api.get(path, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
@@ -89,6 +110,7 @@ export const post = async (path: string, data?: any) => {
         return responseRequest;
     }
     
+    let api = await getApiInstance();
     await api.post(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
@@ -118,6 +140,7 @@ export const put = async (path: string, data: any) => {
         return responseRequest;
     }
 
+    let api = await getApiInstance();
     await api.put(path, data, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
@@ -147,6 +170,7 @@ export const del = async (path: string) => {
         return responseRequest;
     }
 
+    let api = await getApiInstance();
     await api.delete(path, {
         headers: { 'Authorization': 'Bearer ' + token ?? "" }
     }).then(response => {
@@ -166,6 +190,7 @@ export const getLogin = async (path: string, navigation: any) => {
     let token = await getToken();
 
     if (token) {
+        let api = await getApiInstance();
         api.get(path, {
             headers: { 'Authorization': 'Bearer ' + token }
         }).then(response => {
@@ -184,6 +209,7 @@ export const getLogin = async (path: string, navigation: any) => {
 export const postLogin = async (path: string, data: I.Login): Promise<I.User | null> => {
     let dataResponse: I.User | null = {} as I.User;
 
+    let api = await getApiInstance();
     await api.post(path, data
     ).then(response => {
         dataResponse = response.data;
