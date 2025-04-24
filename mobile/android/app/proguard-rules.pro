@@ -8,3 +8,10 @@
 #   http://developer.android.com/guide/developing/tools/proguard.html
 
 # Add any project specific keep options here:
+
+# Corrige problema com com.google.errorprone.annotations.Immutable
+-keep class com.google.errorprone.annotations.Immutable { *; }
+
+# (Opcional) Garante que tudo da biblioteca do Tink seja mantido
+-keep class com.google.crypto.tink.** { *; }
+-dontwarn com.google.errorprone.**
