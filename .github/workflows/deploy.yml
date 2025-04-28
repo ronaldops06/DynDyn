@@ -16,7 +16,7 @@ jobs:
       - name: Configurar .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.36'
+          dotnet-version: '6.0.x'
           
       - name: Ir para a pasta do projeto
         working-directory: ./server_v2/src/Api.Application
