@@ -20,7 +20,8 @@ jobs:
           
       - name: Ir para a pasta do projeto
         working-directory: ./server_v2/src/Api.Application
-        run: echo "Diretório atual: $(pwd)"
+        run: |
+           echo "Diretório atual: $(pwd)"
 
       - name: Restaurar dependências
         working-directory: ./server_v2/src/Api.Application
@@ -28,7 +29,8 @@ jobs:
 
       - name: Publicar app
         working-directory: ./server_v2/src/Api.Application
-        run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
+        run: |
+           dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
 
       - name: Enviar para EC2
         uses: appleboy/scp-action@v0.1.4
