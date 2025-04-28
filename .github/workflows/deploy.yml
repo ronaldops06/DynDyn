@@ -1,0 +1,51 @@
+name: Deploy SageMoney .NET App to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
+      - name: Configurar .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '6.0.36 "
+          
+      - name: Ir para a pasta do projeto
+        working-directory: ./server_v2/src/Api.Application
+        run: echo "Diretório atual: $(pwd)"
+
+      - name: Restaurar dependências
+        working-directory: ./server_v2/src/Api.Application
+        run: dotnet restore
+
+      - name: Publicar app
+        working-directory: ./server_v2/src/Api.Application
+        run: dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
+
+      - name: Enviar para EC2
+        uses: appleboy/scp-action@v0.1.4
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          source: "./publish/*"
+          target: "/home/ubuntu/sagemoney"
+          
+      - name: Executar comandos no EC2 (opcional, tipo restart)
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.AWS_EC2_HOST }}
+          username: ${{ secrets.AWS_EC2_USER }}
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: |
+            sudo systemctl daemon-reload && 
+            sudo systemctl restart sagemoney.service && 
+            sudo systemctl restart nginx
