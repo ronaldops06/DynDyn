@@ -38,7 +38,7 @@ jobs:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          source: "./publish/*"
+          source: "./server_v2/src/Api.Application/publish/*"
           target: "/home/ubuntu/sagemoney"
           
       - name: Executar comandos no EC2 (opcional, tipo restart)
