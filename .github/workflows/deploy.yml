@@ -38,8 +38,9 @@ jobs:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          source: "./server_v2/src/Api.Application/publish/*"
+          source: "./server_v2/src/Api.Application/publish/"
           target: "/home/ubuntu/sagemoney"
+          strip_components: 5
           
       - name: Executar comandos no EC2 (opcional, tipo restart)
         uses: appleboy/ssh-action@v0.1.6
