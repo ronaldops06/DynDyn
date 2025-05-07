@@ -19,7 +19,7 @@ import {validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
 const Portfolio = ({navigation}) => {
-    
+
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -179,22 +179,21 @@ const Portfolio = ({navigation}) => {
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
+                    data={portfolios}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
-                >
-                    {portfolios != null && portfolios.map((item, key) => (
+                    styles={accountStyle.scroll}
+                    renderItem={({item}) => (
                         <AccountItem
-                            key={key}
                             data={item}
                             onPress={handleItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                    ))
-                    }
-                </CustomScroll>
+                    )}
+                />
                 <TouchableOpacity
                     style={accountStyle.buttonPlus}
                     onPress={handleNewClick}>

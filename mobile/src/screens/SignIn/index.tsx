@@ -25,16 +25,14 @@ const SignIn = ({navigation}) => {
         await getUserByStorage();
         
         let isBiometricActivated = await EncryptedStorage.getItem("biometrics");
-
+        
         if (isBiometricActivated === "yes") {
             await handleAuthenticateByBiometric();
         } else {
-            const reactNativeBiometrics = new ReactNativeBiometrics();
-
-            reactNativeBiometrics.isSensorAvailable()
+            await ReactNativeBiometrics.isSensorAvailable()
                 .then((result) => {
                     const { available, biometryType } = result;
-                    if (available) {
+                    if (available && biometryType === ReactNativeBiometrics.Biometrics) {
                         setBiometricAvailable(true);
                     }
                 })
@@ -84,22 +82,13 @@ const SignIn = ({navigation}) => {
     }
 
     const handleAuthenticateByBiometric = async () => {
-        const reactNativeBiometrics = new ReactNativeBiometrics();
-
-        reactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'})
-            .then(async (result) => {
-                const {success} = result;
-
-                if (success) {
-                    let user = await getUserByStorage();
-                    if (user)
-                        validateLogin(user.Login, user.Password);
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-                Alert.alert('Error', 'Ocorreu um erro durante a autenticação biométrica');
-            });
+        const {success} = await ReactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'});
+        
+        if (success) {
+            let user = await getUserByStorage();
+            if (user)
+                validateLogin(user.Login, user.Password);
+        }
     };
 
     const validateLogin = async (email: string, password: string) => {
@@ -108,7 +97,6 @@ const SignIn = ({navigation}) => {
         let loginDTO = {} as I.Login;
         loginDTO.Login = email;
         loginDTO.Password = password;
-        
         let userResponse = await login(loginDTO);
         
         if (userResponse !== null) {

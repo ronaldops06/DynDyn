@@ -68,6 +68,7 @@ export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDa
 }
 
 export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
+    
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(mountDateInicio, mountDateFim, constants.operations.transaction);
 
     let params = `DataCriacaoInicio=${Moment(mountDateInicio).format('YYYY-MM-DD HH:mm:ss')}&DataCriacaoFim=${Moment(mountDateFim).format('YYYY-MM-DD HH:mm:ss')}&LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -97,7 +98,7 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
             await updateTransaction(item);
         }
     }
-    
+
     await setLastSynchronization(synchronization);
     return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
 }

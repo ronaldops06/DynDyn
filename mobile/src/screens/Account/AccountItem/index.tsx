@@ -6,7 +6,7 @@ import {constants} from "../../../constants";
 import {cardStyle} from "../../../styles/styles.card";
 
 interface AccountItemProps {
-    data: I.Account,
+    data: I.Portfolio,
     onPress: any,
     onSwipeLeft?: any,
     onSwipeRight?: any
@@ -15,7 +15,9 @@ interface AccountItemProps {
 const AccountItem = (props: AccountItemProps) => {
 
     const [touchX, setTouchX] = useState(0);
+    const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
+    const [moveY, setMoveY] = useState(0);
     const [executeSipe, setExecuteSwipe] = useState(false);
     
     const executeSwipeLeft = (move: number) => {
@@ -38,19 +40,25 @@ const AccountItem = (props: AccountItemProps) => {
 
     const onTouchMove = (e: any) => {
         let move = touchX - e.nativeEvent.pageX;
+        let auxMoveY = touchY - e.nativeEvent.pageY;
+        
         if (move >= 0) {
             executeSwipeLeft(move);
         } else {
             executeSwipeRight(move);
         }
+
+        setMoveY(auxMoveY);
     };
 
     const onTouchEnd = async (e: any) => {
         setExecuteSwipe(false);
-        if (moveX > -5 && moveX < 5) {
+        if ((moveX > -5 && moveX < 5) && (moveY > -1 && moveY < 1)){
             props.onPress(props.data)
         }
+        
         setMoveX(0);
+        setMoveY(0);
     };
 
     return (
@@ -58,13 +66,16 @@ const AccountItem = (props: AccountItemProps) => {
             style={cardStyle.cardBackground}>
             <View
                 style={[cardStyle.card, {marginLeft: moveX * -1, marginRight: moveX}]}
-                onTouchStart={e => setTouchX(e.nativeEvent.pageX)}
+                onTouchStart={e => {
+                    setTouchX(e.nativeEvent.pageX);
+                    setTouchY(e.nativeEvent.pageY);
+                }}
                 onTouchEnd={e => onTouchEnd(e)}
                 onTouchCancel={e => onTouchEnd(e)}
                 onTouchMove={e => onTouchMove(e)}
             >
                 <View style={cardStyle.rowHeader}>
-                    <Text style={cardStyle.textHeader}>{props.data.ParentAccount?.Name}</Text>
+                    <Text style={cardStyle.textHeader}>{props.data.ParentPortfolio?.Name}</Text>
                 </View>
                 <View style={cardStyle.rowInfo}>
                     <Text style={cardStyle.textName}>{props.data.Name}</Text>

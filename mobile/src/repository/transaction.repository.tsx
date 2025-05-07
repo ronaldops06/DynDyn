@@ -2,7 +2,7 @@ import Moment from 'moment';
 
 import {constants} from "../constants";
 import {TypesTransaction} from '../enums/enums';
-import {Portfolio, Category, Operation, Transaction, TransactionTotals} from "../interfaces/interfaces";
+import {Portfolio, Category, Operation, Transaction, TransactionTotals, TransactionView} from "../interfaces/interfaces";
 import {openDatabase} from "./database";
 
 export const createTableTransaction = async () => {
@@ -150,6 +150,7 @@ export const selectAllTransactions = async (dateInicio: Date, dateFim: Date, pag
     const results = await db.executeSql(
         queryBase()
         + ' WHERE strftime(\'%Y-%m-%d %H:%M:%S\', trn.data_criacao) BETWEEN ? AND ?'
+        + ' ORDER BY trn.data_criacao DESC'
         + '  LIMIT ? '
         + '  OFFSET ?',
         [Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
@@ -207,6 +208,13 @@ export const selectTransactionsTotals = async (dateInicio: Date, dateFim: Date):
 export const selectTransactionById = async (id: number): Promise<Transaction | undefined> => {
     const db = await openDatabase();
     const result = await db.executeSql(queryBase() + ' WHERE trn.id = ?', [id]);
+
+    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+}
+
+export const selectTransactionByInternalId = async (internalId: number): Promise<Transaction | undefined> => {
+    const db = await openDatabase();
+    const result = await db.executeSql(queryBase() + ' WHERE trn.internal_id = ?', [internalId]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
@@ -306,6 +314,24 @@ const queryBase = () => {
         + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
 }
 
+const queryBaseView = () => {
+    return 'SELECT trn.internal_id'
+        + '     , trn.id'
+        + '     , trn.data_criacao'
+        + '     , trn.installment'
+        + '     , trn.total_installments'
+        + '     , trn.value'
+        + '     , trn.consolidated'
+        + '     , ope.name AS operation_name'
+        + '     , ope.type AS operation_type'
+        + '     , act.name AS portfolio_name'
+        + '     , dest_act.name AS dest_act_name'
+        + '  FROM transactions trn'
+        + '       INNER JOIN operations ope ON trn.operation_id = ope.internal_id'
+        + '       INNER JOIN portfolios act ON trn.portfolio_id = act.internal_id'
+        + '       LEFT JOIN portfolios dest_act ON dest_act.internal_id = trn.destination_portfolio_id';
+}
+
 const formatResult = (item: any): Transaction => {
     const transaction: Transaction = {
         InternalId: item.internal_id,
@@ -359,7 +385,7 @@ const formatResult = (item: any): Transaction => {
             DataCriacao: item.operation_data_criacao,
             DataAlteracao: item.operation_data_alteracao
         }
-    }
+    };
 
     if (item.dest_act_internal_id) {
         transaction.DestinationPortfolio = {
@@ -381,7 +407,7 @@ const formatResult = (item: any): Transaction => {
             },
             DataCriacao: item.dest_act_data_criacao,
             DataAlteracao: item.dest_act_data_alteracao
-        }
+        };
     }
 
     if (item.par_trn_internal_id) {
@@ -404,6 +430,24 @@ const formatResult = (item: any): Transaction => {
 
     return transaction;
 }
+
+const formatResultView = (item: any): TransactionView => {
+    const transaction: TransactionView = {
+        InternalId: item.internal_id,
+        Id: item.id,
+        Value: item.value,
+        Consolidated: (item.consolidated === 1),
+        Installment: item.installment,
+        TotalInstallments: item.total_installments,
+        DataCriacao: item.data_criacao,
+        OperationType: item.operation_type,
+        OperationName: item.operation_name,
+        PortfolioName: item.portfolio_name,
+        DestinationPortfolioName: item.dest_act_name
+    };
+
+    return transaction;
+};
 
 const formatResultTotals = (rows: any): TransactionTotals => {
     let transactionTotals: TransactionTotals = {

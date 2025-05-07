@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 import {TypesTransaction} from '../../enums/enums';
@@ -132,7 +132,7 @@ const Transaction = ({navigation}) => {
             loadTransactions(false);
         }
     }, [pageNumber]);
-
+        
     const getTransactionsGroupByDate = () => {
         let transactionsGroup: I.TransactionsGroup[] = [] as I.TransactionsGroup[];
 
@@ -253,7 +253,7 @@ const Transaction = ({navigation}) => {
             {cancelable: false}
         );
     }
-
+    
     const handleNewClick = () => {
         navigation.navigate("TransactionCreate", {
             isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
@@ -318,25 +318,23 @@ const Transaction = ({navigation}) => {
                     </View>
                 </View>
                 <CustomScroll
+                    data={transactions.filter((item) => {
+                        return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
+                    })}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
                     styles={transactionStyle.scroll}
-                >
-                    {transactions != null && transactions.filter((item) => {
-                        return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
-                    }).map((item, key) => (
+                    renderItem={({ item }) => (
                         <TransactionItem
-                            key={key}
                             data={item}
                             onPress={handleTransactionItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                    ))
-                    }
-                </CustomScroll>
+                    )}
+                />
                 <TouchableOpacity
                     style={transactionStyle.buttonPlus}
                     onPress={handleNewClick}>

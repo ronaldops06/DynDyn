@@ -15,7 +15,9 @@ interface CategoryItemParms {
 const CategoryItem = (props: CategoryItemParms) => {
 
     const [touchX, setTouchX] = useState(0);
+    const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
+    const [moveY, setMoveY] = useState(0);
     const [executeSipe, setExecuteSwipe] = useState(false);
 
     const executeSwipeLeft = (move: number) => {
@@ -37,20 +39,26 @@ const CategoryItem = (props: CategoryItemParms) => {
     };
 
     const onTouchMove = (e: any) => {
-        let move = touchX - e.nativeEvent.pageX;
-        if (move >= 0) {
-            executeSwipeLeft(move);
+        let auxMoveX = touchX - e.nativeEvent.pageX;
+        let auxMoveY = touchY - e.nativeEvent.pageY;
+
+        if (auxMoveX >= 0) {
+            executeSwipeLeft(auxMoveX);
         } else {
-            executeSwipeRight(move);
+            executeSwipeRight(auxMoveX);
         }
+
+        setMoveY(auxMoveY);
     };
 
     const onTouchEnd = async (e: any) => {
         setExecuteSwipe(false);
-        if (moveX > -5 && moveX < 5) {
+
+        if ((moveX > -5 && moveX < 5) && (moveY > -1 && moveY < 1)){
             props.onPress(props.data)
         }
         setMoveX(0);
+        setMoveY(0);
     };
 
     return (
@@ -58,8 +66,10 @@ const CategoryItem = (props: CategoryItemParms) => {
             style={cardStyle.cardBackground}>
             <View
                 style={[cardStyle.card, {marginLeft: moveX * -1, marginRight: moveX}]}
-                // onTouchEndCapture={() => onTouchEnd}
-                onTouchStart={e => setTouchX(e.nativeEvent.pageX)}
+                onTouchStart={e => {
+                    setTouchX(e.nativeEvent.pageX);
+                    setTouchY(e.nativeEvent.pageY);
+                }}
                 onTouchEnd={e => onTouchEnd(e)}
                 onTouchCancel={e => onTouchEnd(e)}
                 onTouchMove={e => onTouchMove(e)}
