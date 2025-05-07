@@ -18,10 +18,12 @@ interface TransactionItemParms {
     onSwipeRight?: any
 }
 
-const TransactionItem = (props: TransactionItemParms) => {
+const TransactionItem = React.memo((props: TransactionItemParms) => {
 
     const [touchX, setTouchX] = useState(0);
+    const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
+    const [moveY, setMoveY] = useState(0);
     const [executeSipe, setExecuteSwipe] = useState(false);
 
     const executeSwipeLeft = (move: number) => {
@@ -43,29 +45,38 @@ const TransactionItem = (props: TransactionItemParms) => {
     };
 
     const onTouchMove = (e: any) => {
-        let move = touchX - e.nativeEvent.pageX;
-        if (move >= 0) {
-            executeSwipeLeft(move);
+        let auxMoveX = touchX - e.nativeEvent.pageX;
+        let auxMoveY = touchY - e.nativeEvent.pageY;
+        
+        if (auxMoveX >= 0) {
+            executeSwipeLeft(auxMoveX);
         } else {
-            executeSwipeRight(move);
+            executeSwipeRight(auxMoveX);
         }
+        
+        setMoveY(auxMoveY);
     };
-
+    
     const onTouchEnd = async (e: any) => {
         setExecuteSwipe(false);
-        if (moveX > -5 && moveX < 5) {
+        
+        if ((moveX > -5 && moveX < 5) && (moveY > -1 && moveY < 1)){
             props.onPress(props.data)
         }
         setMoveX(0);
+        setMoveY(0);
     };
 
     return (
         <View
+            key={props.data.Id.toString()}
             style={transactionItemStyle.cardBackground}>
             <View
                 style={[transactionItemStyle.card, {marginLeft: moveX * -1, marginRight: moveX}]}
-                // onTouchEndCapture={() => onTouchEnd}
-                onTouchStart={e => setTouchX(e.nativeEvent.pageX)}
+                onTouchStart={e => {
+                    setTouchX(e.nativeEvent.pageX); 
+                    setTouchY(e.nativeEvent.pageY);
+                }}
                 onTouchEnd={e => onTouchEnd(e)}
                 onTouchCancel={e => onTouchEnd(e)}
                 onTouchMove={e => onTouchMove(e)}
@@ -108,6 +119,6 @@ const TransactionItem = (props: TransactionItemParms) => {
             </View>
         </View>
     );
-}
+});
 
 export default TransactionItem;

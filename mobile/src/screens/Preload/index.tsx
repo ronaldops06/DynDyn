@@ -14,12 +14,14 @@ const Preload = ({navigation}) => {
     },[])
     
     useEffect(()=>{
-        checkToken();
+        //checkToken();
+        navigation.navigate('SignIn');
     },[apiUrl])
 
     const handleRefreshClick = async () => {
         await getBaseUrl();
-        await checkToken();
+        //await checkToken();
+        navigation.navigate('SignIn');
     };
 
     const getBaseUrl = async () => {

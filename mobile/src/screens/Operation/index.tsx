@@ -182,22 +182,20 @@ const Operation = ({navigation}) => {
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
+                    data={operations}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
-                >
-                    {operations != null && operations.map((item, key) => (
+                    renderItem={({ item }) => (
                         <OperationItem
-                            key={key}
                             data={item}
                             onPress={handleItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                    ))
-                    }
-                </CustomScroll>
+                    )}
+                />
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>

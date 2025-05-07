@@ -82,9 +82,23 @@ export interface Transaction {
     DataAlteracao: Date
 }
 
+export interface TransactionView {
+    InternalId: number,
+    Id: number,
+    DataCriacao: Date,
+    Installment: number,
+    TotalInstallments: number,
+    Value: number,
+    Consolidated: boolean,
+    OperationType: number,
+    OperationName: string,
+    PortfolioName: string,
+    DestinationPortfolioName: string | null
+}
+
 export interface TransactionsGroup {
     date: string,
-    transactions: Transaction[]
+    transactions: TransactionView[]
 }
 
 export interface TransactionTotals {

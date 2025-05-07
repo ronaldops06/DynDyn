@@ -24,10 +24,15 @@ const isInternetConnected = async (): Promise<boolean> => {
 
 export const fetchApiUrl = async (): Promise<string | null> => {
     try {
+        //Se estiver executando em modo debug (localmente), usa o endereço local da API.
+        if (__DEV__)
+            return "http://192.168.18.3:5000";
+        
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Erro ao buscar configuração');
 
         const data = await response.json();
+        
         return data.api_url;
     } catch (error) {
         console.error('Erro ao buscar API URL:', error);

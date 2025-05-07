@@ -186,22 +186,21 @@ const Category = ({navigation}) => {
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
+                    data={categories}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
-                >
-                    {categories != null && categories.map((item, key) => (
+                    renderItem={({ item }) => (
                         <CategoryItem
-                            key={key}
                             data={item}
                             onPress={handleItemClick}
                             onSwipeLeft={onSwipeLeft}
                             onSwipeRight={onSwipeRight}/>
-                    ))
+                        )
                     }
-                </CustomScroll>
+                />
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>
