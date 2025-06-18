@@ -5,8 +5,8 @@ namespace Domain.Interfaces.Services.User
 {
     public interface ILoginService
     {
-        Task<UserModel> GetLoginAsync(UserModel userModel);
+        Task<TransientUserModel> GetLoginAsync(TransientUserModel userModel);
 
-        string GenerateToken(UserModel userModel);
+        string GenerateToken(TransientUserModel userModel);
     }
 }

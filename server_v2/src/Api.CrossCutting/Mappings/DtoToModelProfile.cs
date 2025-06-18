@@ -18,10 +18,12 @@ namespace CrossCutting.Mappings
 
         public DtoToModelProfile()
         {
+            CreateMap<LoginDto, TransientUserModel>();
+            CreateMap<UserRequestDto, TransientUserModel>();
+            CreateMap<TransientUserModel, LoginResponseDto>();
             CreateMap<UserDto, UserModel>().ReverseMap();
-            CreateMap<LoginDto, UserModel>().ReverseMap();
-            CreateMap<UserResponseDto, UserModel>().ReverseMap();
-            CreateMap<UserRequestDto, UserModel>().ReverseMap();
+            CreateMap<UserRequestDto, UserModel>();
+            CreateMap<UserModel, UserResponseDto>();
 
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))

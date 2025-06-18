@@ -1,15 +1,13 @@
-﻿using AutoMapper;
+﻿using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using AutoMapper;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Domain.Repository;
 using Domain.Security;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Service.Services
 {
@@ -28,13 +26,13 @@ namespace Service.Services
             _mapper = mapper;
         }
 
-        public async Task<UserModel> GetLoginAsync(UserModel userModel)
+        public async Task<TransientUserModel> GetLoginAsync(TransientUserModel userModel)
         {
             var userEntity = await _repository.FindUsuarioByUsernamaAndPassword(userModel.Login, userModel.Password);
             if (userEntity == null)
                 throw new Exception("Usuário ou senha inválidos");
 
-            userModel = _mapper.Map<UserModel>(userEntity);
+            userModel = _mapper.Map<TransientUserModel>(userEntity);
 
             var token = GenerateToken(userModel);
             userModel.AccessToken = token;
@@ -42,13 +40,12 @@ namespace Service.Services
              return userModel;
         }
 
-        public string GenerateToken(UserModel userModel)
+        public string GenerateToken(TransientUserModel userModel)
         {
             var identity = new ClaimsIdentity(new Claim[]
                     {
                         new Claim(ClaimTypes.SerialNumber, userModel.Id.ToString()),
-                        new Claim(ClaimTypes.Name, userModel.Login.ToString()),
-                        new Claim(ClaimTypes.Role, (string.IsNullOrEmpty(userModel.Role) ? "" : userModel.Role.ToString()))
+                        new Claim(ClaimTypes.Name, userModel.Login.ToString())
                     });
 
             DateTimeOffset createDate = DateTimeOffset.UtcNow;

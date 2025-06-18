@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
 using System.Runtime.CompilerServices;
+using System.Security.Authentication;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -30,6 +31,7 @@ var config = new MapperConfiguration(cfg =>
     cfg.AddProfile(new DtoToModelProfile());
     cfg.AddProfile(new EntityToModelProfile());
     cfg.AddProfile(new DictionaryToModelProfile());
+    cfg.AddProfile(new ModelToModelProfile());
 });
 
 IMapper mapper = config.CreateMapper();
@@ -103,7 +105,7 @@ builder.Services.AddAuthorization(auth =>
 });
 
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile), typeof(DictionaryToModelProfile));
+builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelProfile), typeof(DictionaryToModelProfile), typeof(ModelToModelProfile));
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();

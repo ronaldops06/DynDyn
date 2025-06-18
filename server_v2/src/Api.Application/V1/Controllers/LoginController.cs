@@ -40,13 +40,14 @@ namespace Application.V1.Controllers
 
             if (loginDto == null)
                 return BadRequest("Usuário e senha não informados");
-
+            
+            var userResultDto = new LoginResponseDto();
+            
             try
             {
-                var userModel = _mapper.Map<UserModel>(loginDto);
-                var result = await service.GetLoginAsync(userModel);
-                
-                return Ok(result);
+                var userModel = _mapper.Map<TransientUserModel>(loginDto);
+                userModel = await service.GetLoginAsync(userModel);
+                userResultDto = _mapper.Map<LoginResponseDto>(userModel);
             }
             catch (ArgumentException ex)
             {
@@ -56,6 +57,8 @@ namespace Application.V1.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            
+            return Ok(userResultDto);
         }
 
         /// <summary>

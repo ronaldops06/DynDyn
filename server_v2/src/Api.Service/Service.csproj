@@ -8,6 +8,11 @@
     <ProjectReference Include="..\Api.Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Templates\VerificationEmail.html" />
+    <EmbeddedResource Include="Templates\VerificationEmail.html" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DebugType>none</DebugType>

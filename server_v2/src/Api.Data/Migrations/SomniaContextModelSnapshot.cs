@@ -19,57 +19,12 @@ namespace Data.Migrations
                 .HasAnnotation("ProductVersion", "5.0.17")
                 .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-            modelBuilder.Entity("Api.Domain.Entities.AccountEntity", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("CategoryId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime?>("DataAlteracao")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<DateTime?>("DataCriacao")
-                        .HasColumnType("timestamp without time zone");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("character varying(100)");
-
-                    b.Property<int?>("ParentAccountId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CategoryId");
-
-                    b.HasIndex("Name")
-                        .IsUnique();
-
-                    b.HasIndex("ParentAccountId");
-
-                    b.ToTable("Account");
-                });
-
             modelBuilder.Entity("Api.Domain.Entities.BalanceEntity", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("integer");
-
-                    b.Property<DateTime>("BalanceDate")
-                        .HasColumnType("timestamp without time zone");
 
                     b.Property<double>("Credit")
                         .HasColumnType("double precision");
@@ -89,11 +44,23 @@ namespace Data.Migrations
                     b.Property<double?>("Income")
                         .HasColumnType("double precision");
 
+                    b.Property<double>("Inflow")
+                        .HasColumnType("double precision");
+
+                    b.Property<int>("Month")
+                        .HasColumnType("integer");
+
+                    b.Property<double>("Outflow")
+                        .HasColumnType("double precision");
+
                     b.Property<double?>("PercentageIncome")
                         .HasColumnType("double precision");
 
                     b.Property<double?>("PercentageValuation")
                         .HasColumnType("double precision");
+
+                    b.Property<int>("PortfolioId")
+                        .HasColumnType("integer");
 
                     b.Property<double?>("SalaryCredit")
                         .HasColumnType("double precision");
@@ -101,17 +68,25 @@ namespace Data.Migrations
                     b.Property<double?>("SalaryDebit")
                         .HasColumnType("double precision");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.Property<double?>("Valuation")
                         .HasColumnType("double precision");
 
                     b.Property<double>("Value")
                         .HasColumnType("double precision");
 
+                    b.Property<int>("Year")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
+                    b.HasIndex("PortfolioId");
 
-                    b.HasIndex("BalanceDate")
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Year", "Month", "PortfolioId", "UserId")
                         .IsUnique();
 
                     b.ToTable("Balance");
@@ -141,21 +116,17 @@ namespace Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "Type", "UserId")
                         .IsUnique();
 
                     b.ToTable("Category");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Transferência",
-                            Status = 1,
-                            Type = 2
-                        });
                 });
 
             modelBuilder.Entity("Api.Domain.Entities.OperationEntity", b =>
@@ -191,11 +162,16 @@ namespace Data.Migrations
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("Name")
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "UserId")
                         .IsUnique();
 
                     b.ToTable("Operation");
@@ -208,9 +184,6 @@ namespace Data.Migrations
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("AccountId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Consolidated")
                         .HasColumnType("integer");
 
@@ -220,7 +193,7 @@ namespace Data.Migrations
                     b.Property<DateTime?>("DataCriacao")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<int?>("DestinationAccountId")
+                    b.Property<int?>("DestinationPortfolioId")
                         .HasColumnType("integer");
 
                     b.Property<int?>("Installment")
@@ -236,7 +209,13 @@ namespace Data.Migrations
                     b.Property<int?>("ParentTransactionId")
                         .HasColumnType("integer");
 
+                    b.Property<int>("PortfolioId")
+                        .HasColumnType("integer");
+
                     b.Property<int?>("TotalInstallments")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
                         .HasColumnType("integer");
 
                     b.Property<double>("Value")
@@ -244,15 +223,110 @@ namespace Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId");
-
-                    b.HasIndex("DestinationAccountId");
+                    b.HasIndex("DestinationPortfolioId");
 
                     b.HasIndex("OperationId");
 
                     b.HasIndex("ParentTransactionId");
 
+                    b.HasIndex("PortfolioId");
+
+                    b.HasIndex("UserId");
+
                     b.ToTable("Transaction");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PortfolioEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime?>("DataAlteracao")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<int>("Group")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<int?>("ParentPortfolioId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Type")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("ParentPortfolioId");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("Type", "Group", "Name", "Status", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Portfolio");
+                });
+
+            modelBuilder.Entity("Domain.Entities.TransientUserEntity", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<DateTime?>("DataAlteracao")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime?>("DataCriacao")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<DateTime>("ExpirationDate")
+                        .HasColumnType("timestamp without time zone");
+
+                    b.Property<string>("Login")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("character varying(100)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
+
+                    b.Property<int>("VerificationCode")
+                        .HasMaxLength(6)
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Login")
+                        .IsUnique();
+
+                    b.ToTable("TransientUser");
                 });
 
             modelBuilder.Entity("Domain.Entities.UserEntity", b =>
@@ -280,8 +354,8 @@ namespace Data.Migrations
 
                     b.Property<string>("Password")
                         .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("character varying(50)");
+                        .HasMaxLength(500)
+                        .HasColumnType("character varying(500)");
 
                     b.Property<string>("Role")
                         .HasMaxLength(500)
@@ -298,41 +372,51 @@ namespace Data.Migrations
                         new
                         {
                             Id = 1,
-                            DataCriacao = new DateTime(2025, 1, 9, 16, 30, 51, 490, DateTimeKind.Local).AddTicks(272),
+                            DataCriacao = new DateTime(2025, 5, 26, 20, 5, 47, 142, DateTimeKind.Local).AddTicks(3930),
                             Login = "admin@gmail.com",
                             Name = "Administrador",
+                            Password = "pgadmin",
+                            Role = ""
+                        },
+                        new
+                        {
+                            Id = 2,
+                            DataCriacao = new DateTime(2025, 5, 26, 20, 5, 47, 245, DateTimeKind.Local).AddTicks(170),
+                            Login = "ope@gmail.com",
+                            Name = "Operação",
                             Password = "pgadmin",
                             Role = ""
                         });
                 });
 
-            modelBuilder.Entity("Api.Domain.Entities.AccountEntity", b =>
-                {
-                    b.HasOne("Api.Domain.Entities.CategoryEntity", "Category")
-                        .WithMany()
-                        .HasForeignKey("CategoryId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Api.Domain.Entities.AccountEntity", "ParentAccount")
-                        .WithMany()
-                        .HasForeignKey("ParentAccountId")
-                        .OnDelete(DeleteBehavior.Restrict);
-
-                    b.Navigation("Category");
-
-                    b.Navigation("ParentAccount");
-                });
-
             modelBuilder.Entity("Api.Domain.Entities.BalanceEntity", b =>
                 {
-                    b.HasOne("Api.Domain.Entities.AccountEntity", "Account")
+                    b.HasOne("Domain.Entities.PortfolioEntity", "Portfolio")
                         .WithMany()
-                        .HasForeignKey("AccountId")
+                        .HasForeignKey("PortfolioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Account");
+                    b.HasOne("Domain.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Portfolio");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Api.Domain.Entities.CategoryEntity", b =>
+                {
+                    b.HasOne("Domain.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Api.Domain.Entities.OperationEntity", b =>
@@ -343,20 +427,22 @@ namespace Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Domain.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Category");
+
+                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("Api.Domain.Entities.TransactionEntity", b =>
                 {
-                    b.HasOne("Api.Domain.Entities.AccountEntity", "Account")
+                    b.HasOne("Domain.Entities.PortfolioEntity", "DestinationPortfolio")
                         .WithMany()
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Api.Domain.Entities.AccountEntity", "DestinationAccount")
-                        .WithMany()
-                        .HasForeignKey("DestinationAccountId")
+                        .HasForeignKey("DestinationPortfolioId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.HasOne("Api.Domain.Entities.OperationEntity", "Operation")
@@ -370,13 +456,53 @@ namespace Data.Migrations
                         .HasForeignKey("ParentTransactionId")
                         .OnDelete(DeleteBehavior.Restrict);
 
-                    b.Navigation("Account");
+                    b.HasOne("Domain.Entities.PortfolioEntity", "Portfolio")
+                        .WithMany()
+                        .HasForeignKey("PortfolioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
 
-                    b.Navigation("DestinationAccount");
+                    b.HasOne("Domain.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("DestinationPortfolio");
 
                     b.Navigation("Operation");
 
                     b.Navigation("ParentTransaction");
+
+                    b.Navigation("Portfolio");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Domain.Entities.PortfolioEntity", b =>
+                {
+                    b.HasOne("Api.Domain.Entities.CategoryEntity", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Domain.Entities.PortfolioEntity", "ParentPortfolio")
+                        .WithMany()
+                        .HasForeignKey("ParentPortfolioId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Domain.Entities.UserEntity", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("ParentPortfolio");
+
+                    b.Navigation("User");
                 });
 #pragma warning restore 612, 618
         }

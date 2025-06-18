@@ -1,5 +1,4 @@
-﻿using Domain.Dtos.User;
-using Domain.Entities;
+﻿using Domain.Entities;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
@@ -14,8 +13,6 @@ namespace Api.Service.Test.User
         [Fact(DisplayName = "É possível executar o método GET.")]
         public async Task Eh_Possivel_Executar_Metodo_Get()
         {
-            LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<UserModel>())).Returns(AccessToken);
-
             var userEntityResult = Mapper.Map<UserEntity>(userModelResult);
             var listUserEntity = Mapper.Map<List<UserEntity>>(listUserModelResult);
 
@@ -24,7 +21,7 @@ namespace Api.Service.Test.User
             RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
             RepositoryMock.Setup(m => m.FindUsuarioByUsernamaAndPassword(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(userEntityResult);
             RepositoryMock.Setup(m => m.SelectByParamAsync( It.IsAny<PageParams>())).ReturnsAsync(data);
-            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, null);
 
             var resultByLogin = await service.GetUsuarioByLogin(userModelResult.Login);
             ApplyTest(userModelResult, resultByLogin);

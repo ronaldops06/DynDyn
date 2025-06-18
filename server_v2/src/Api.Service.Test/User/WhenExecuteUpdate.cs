@@ -1,6 +1,5 @@
 ﻿using Domain.Entities;
 using Domain.Interfaces.Services.User;
-using Domain.Models;
 using Moq;
 using Service.Services;
 using Xunit;
@@ -14,13 +13,11 @@ namespace Api.Service.Test.User
         {
             var userEntityUpdateResult = Mapper.Map<UserEntity>(userModelUpdateResult);
             var userEntityUpdate = Mapper.Map<UserEntity>(userModelUpdate);
-
-            LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<UserModel>())).Returns(AccessToken);
-
+            
             RepositoryMock.Setup(m => m.FindUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityUpdate);
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>())).ReturnsAsync(userEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<UserEntity>())).ReturnsAsync(userEntityUpdateResult);
-            IUserService service = new UserService(RepositoryMock.Object, Mapper, LoginServiceMock.Object, null);
+            IUserService service = new UserService(RepositoryMock.Object, Mapper, null);
 
             var resultUpdate = await service.Put(userModelUpdate);
             ApplyTest(userModelUpdate, resultUpdate);

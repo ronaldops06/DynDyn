@@ -10,7 +10,9 @@ namespace CrossCutting.Mappings
     {
         public EntityToModelProfile()
         {
-            CreateMap<UserEntity, LoginModel>().ReverseMap();
+            CreateMap<TransientUserEntity, TransientUserModel>().ReverseMap();
+            CreateMap<TransientUserEntity, UserModel>().ReverseMap();
+            CreateMap<UserEntity, TransientUserModel>().ReverseMap();
             CreateMap<UserEntity, UserModel>().ReverseMap();
             CreateMap<CategoryEntity, CategoryModel>().ReverseMap();
             CreateMap<PortfolioModel, PortfolioEntity>();

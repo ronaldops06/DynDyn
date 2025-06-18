@@ -31,6 +31,7 @@ namespace Api.Service.Test
                 cfg.AddProfile(new DtoToModelProfile());
                 cfg.AddProfile(new EntityToModelProfile());
                 cfg.AddProfile(new DictionaryToModelProfile());
+                cfg.AddProfile(new ModelToModelProfile());
             });
 
             return config.CreateMapper();

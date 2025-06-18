@@ -17,16 +17,15 @@ namespace Api.Service.Test.Login
             var email = Faker.Internet.Email();
             var password = Faker.Name.FullName();
 
-            var userModelReturn = new UserModel
+            var userModelReturn = new TransientUserModel
             {
                 Id = 1,
                 Login = email,
                 Name = password,
-                Password = Faker.Lorem.GetFirstWord(),
-                Role = ""                
+                Password = Faker.Lorem.GetFirstWord()
             };
 
-            var userModel = new UserModel
+            var userModel = new TransientUserModel
             {
                 Login = email,
                 Password = password

@@ -1,7 +1,7 @@
 ﻿using Domain.Helpers;
-using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Domain.Repository;
+using Faker;
 using Moq;
 using Xunit;
 
@@ -9,8 +9,6 @@ namespace Api.Service.Test.User
 {
     public class UserTest : BaseTestService
     {
-        protected string AccessToken;
-        protected Mock<ILoginService> LoginServiceMock = new Mock<ILoginService>();
         protected Mock<IUserRepository> RepositoryMock = new Mock<IUserRepository>();
         protected List<UserModel> listUserModel = new List<UserModel>();
         protected List<UserModel> listUserModelResult = new List<UserModel>();
@@ -22,8 +20,6 @@ namespace Api.Service.Test.User
 
         protected UserTest()
         {
-            AccessToken = "kkjk3jjj3hhh3hh5h3kjhkjhdha.jh3hjhdhdjhdjhj";
-
             pageParams = new PageParams()
             {
                 PageNumber = 1,
@@ -35,9 +31,9 @@ namespace Api.Service.Test.User
                 var dto = new UserModel()
                 {
                     Id = i,
-                    Name = Faker.Name.FullName(),
-                    Login = Faker.Internet.Email(),
-                    Role = Faker.Lorem.GetFirstWord(),
+                    Name = Name.FullName(),
+                    Login = Internet.Email(),
+                    Role = Lorem.GetFirstWord(),
                     DataCriacao = DateTime.UtcNow,
                     DataAlteracao = DateTime.UtcNow
                 };
@@ -52,9 +48,9 @@ namespace Api.Service.Test.User
             userModel = new UserModel
             {
                 Id = 1,
-                Name = Faker.Name.FullName(),
-                Login = Faker.Internet.Email(),
-                Role = Faker.Lorem.GetFirstWord()
+                Name = Name.FullName(),
+                Login = Internet.Email(),
+                Role = Lorem.GetFirstWord()
             };
 
             userModelResult = new UserModel
@@ -70,9 +66,9 @@ namespace Api.Service.Test.User
             userModelUpdate = new UserModel
             {
                 Id = userModel.Id,
-                Name = Faker.Name.FullName(),
-                Login = Faker.Internet.Email(),
-                Role = Faker.Lorem.GetFirstWord()
+                Name = Name.FullName(),
+                Login = Internet.Email(),
+                Role = Lorem.GetFirstWord()
             };
 
             userModelUpdateResult = new UserModel
