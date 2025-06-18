@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.TestHost;
 using Newtonsoft.Json;
 using System.Net.Http.Headers;
 using System.Text;
+using Xunit;
 
 namespace Api.Integration.Test
 {
@@ -45,6 +46,7 @@ namespace Api.Integration.Test
 
             var resultLogin = await PostJsonAsync(loginDto, $"{HostApi}/Login/Auth", Client);
             var jsonLogin = await resultLogin.Content.ReadAsStringAsync();
+            Assert.NotNull(jsonLogin);
             var loginObject = JsonConvert.DeserializeObject<LoginResponseDto>(jsonLogin);
 
             Client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(BEARER_TOKEN, loginObject.AccessToken);

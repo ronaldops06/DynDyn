@@ -10,6 +10,7 @@ namespace Data.Context
 {
     public class SomniaContext : DbContext
     {
+        public DbSet<TransientUserEntity> TransientUsers { get; set; }
         public DbSet<UserEntity> Users { get; set; }
         public DbSet<CategoryEntity> Category { get; set; }
         public DbSet<PortfolioEntity> Portfolio { get; set; }
@@ -22,6 +23,7 @@ namespace Data.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<TransientUserEntity>(new TransientUserMap().Configure);
             modelBuilder.Entity<UserEntity>(new UserMap().Configure);
             modelBuilder.Entity<CategoryEntity>(new CategoryMap().Configure);
             modelBuilder.Entity<OperationEntity>(new OperationMap().Configure);

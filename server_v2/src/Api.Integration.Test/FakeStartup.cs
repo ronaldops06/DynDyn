@@ -49,6 +49,7 @@ namespace Api.Integration.Test
                 cfg.AddProfile(new DtoToModelProfile());
                 cfg.AddProfile(new EntityToModelProfile());
                 cfg.AddProfile(new DictionaryToModelProfile());
+                cfg.AddProfile(new ModelToModelProfile());
             });
 
             IMapper mapper = config.CreateMapper();
@@ -116,7 +117,7 @@ namespace Api.Integration.Test
                 options.ReportApiVersions = true;
             });
 
-            services.AddAutoMapper(typeof(DtoToModelProfile), typeof(DictionaryToModelProfile)/*, typeof(ModelToEntityProfile)*/);
+            services.AddAutoMapper(typeof(DtoToModelProfile), typeof(DictionaryToModelProfile), typeof(ModelToModelProfile)/*, typeof(ModelToEntityProfile)*/);
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, SomniaContext context)

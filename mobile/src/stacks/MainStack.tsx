@@ -11,6 +11,7 @@ import Preload from '../screens/Preload';
 import {RootStackParamList} from '../screens/RootStackParams';
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
+import Validation from "../screens/SignUp/validation.tsx";
 import Transaction from '../screens/Transaction';
 import TransactionCreate from '../screens/Transaction/create';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -30,6 +31,7 @@ const MainStack = () => {
             <Stack.Screen name="Preload" component={Preload}/>
             <Stack.Screen name="SignIn" component={SignIn}/>
             <Stack.Screen name="SignUp" component={SignUp}/>
+            <Stack.Screen name="Validation" component={Validation}/>
             <Stack.Screen name="MainTab" component={MainTab}/>
             <Stack.Screen name="Dashboard" component={Dashboard}/>
             <Stack.Screen name="Account" component={Account}/>

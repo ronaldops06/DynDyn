@@ -26,7 +26,7 @@ export const fetchApiUrl = async (): Promise<string | null> => {
     try {
         //Se estiver executando em modo debug (localmente), usa o endereço local da API.
         if (__DEV__)
-            return "http://192.168.18.3:5000";
+            return "http://192.168.0.11:5000";
         
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Erro ao buscar configuração');
@@ -210,6 +210,41 @@ export const getLogin = async (path: string, navigation: any) => {
         });
     }
 }
+
+export const postTransientUser = async (path: string, data: I.User): Promise<I.Response> => {
+    let dataResponse: I.Response = {} as I.Response;
+
+    let api = await getApiInstance();
+    await api.post(path, data
+    ).then(response => {
+        dataResponse.success = true;
+        dataResponse.status = response.data.status;
+    }).catch((error) => {
+        dataResponse.error = error.response.data;
+        dataResponse.status = error.response.status;
+        dataResponse.success = false;
+    });
+
+    return dataResponse;
+};
+
+export const postValidateUser = async (path: string, data: I.VerificationUser): Promise<I.Response> => {
+    let dataResponse: I.Response = {} as I.Response;
+
+    let api = await getApiInstance();
+    await api.post(path, data
+    ).then(response => {
+        dataResponse.data = response.data;
+        dataResponse.success = true;
+        dataResponse.status = response.data.status;
+    }).catch((error) => {
+        dataResponse.error = error.response.data;
+        dataResponse.status = error.response.status;
+        dataResponse.success = false;
+    });
+
+    return dataResponse;
+};
 
 export const postLogin = async (path: string, data: I.Login): Promise<I.User | null> => {
     let dataResponse: I.User | null = {} as I.User;

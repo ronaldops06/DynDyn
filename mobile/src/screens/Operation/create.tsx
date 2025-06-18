@@ -57,9 +57,6 @@ const OperationCreate = ({navigation, route}) => {
     };
 
     const handleBackClick = () => {
-        if (route.params?.onGoBack)
-            route.params.onGoBack(constants.actionNavigation.none);
-        
         navigation.goBack();
     };
 
@@ -115,7 +112,7 @@ const OperationCreate = ({navigation, route}) => {
             response = await createOperation(operationDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, route);
+        validateSuccess(response, navigation, 'Operation');
     };
 
     const validateRequiredFields = () => {

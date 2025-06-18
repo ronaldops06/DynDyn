@@ -10,12 +10,15 @@ import {login} from './signin.api';
 import {style} from '../../styles/styles';
 import {signInStyle} from './styles';
 import {encrypt} from "../../utils.ts";
+import VisibilityIcon from "../../assets/visibility.svg";
+import VisibilityOffIcon from "../../assets/visibility_off.svg";
 
 const SignIn = ({navigation}) => {
     
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
     useEffect(() => {
         validateBiometricActivated();
@@ -140,7 +143,9 @@ const SignIn = ({navigation}) => {
                         text={"Senha"}
                         value={valuePassword}
                         setValue={setValuePassword}
-                        secureTextEntry={true}
+                        secureTextEntry={!showPassword}
+                        icon={showPassword ? <VisibilityOffIcon width={30} fill="#6E8BB8"/> : <VisibilityIcon width={30} fill="#6E8BB8"/>}
+                        onPressIcon={() => setShowPassword(!showPassword)}
                     />
                     <TouchableOpacity
                         style={signInStyle.button}

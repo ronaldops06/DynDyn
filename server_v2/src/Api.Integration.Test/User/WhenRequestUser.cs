@@ -4,7 +4,7 @@ using System.Net;
 using System.Text;
 using Xunit;
 
-namespace Api.Integration.Test
+namespace Api.Integration.Test.User
 {
     public class WhenRequestUser : BaseIntegration
     {

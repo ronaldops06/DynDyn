@@ -14,7 +14,7 @@ interface CustomTabBarParms {
     navigation: any,
     descriptors: any,
     insets: any
-};
+}
 
 const CustomTabBar = (props: CustomTabBarParms) => {
     const goTo = (screenName: string) => {

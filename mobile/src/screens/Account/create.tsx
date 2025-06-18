@@ -65,9 +65,6 @@ const PortfolioCreate = ({navigation, route}) => {
     };
 
     const handleBackClick = () => {
-        if (route.params?.onGoBack) 
-            route.params.onGoBack(constants.actionNavigation.none);
-        
         navigation.goBack();
     };
 
@@ -138,7 +135,7 @@ const PortfolioCreate = ({navigation, route}) => {
             response = await createPortfolio(portfolioDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, route);
+        validateSuccess(response, navigation, 'Account');
     };
     
     return(

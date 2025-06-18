@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import { useFocusEffect } from '@react-navigation/native';
 import _ from 'lodash';
 import {TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
@@ -19,10 +20,11 @@ import {
 import {style} from '../../styles/styles';
 import {transactionStyle} from './styles';
 import CustomScroll from "../../components/CustomScroll";
-import {validateLogin} from "../../utils.ts";
+import {validateLogin, getDate} from "../../utils.ts";
 import {constants} from "../../constants";
 import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
+import Moment from "moment";
 
 const months = [
     'Janeiro',
@@ -39,7 +41,7 @@ const months = [
     'Dezembro'
 ];
 
-const Transaction = ({navigation}) => {
+const Transaction = ({navigation, route}) => {
     
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
@@ -54,6 +56,16 @@ const Transaction = ({navigation}) => {
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setTransactions([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
+    
     const appendTransactions = (data: I.Transaction[]) => {
         let transactionsNew = transactions;
         if (data.length > 0) {
@@ -66,12 +78,12 @@ const Transaction = ({navigation}) => {
 
     const loadTransactions = async (loadTotals: boolean = true) => {
         setLoading(true);
-
+                
         if (selectedYear != 0) {
 
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
             let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
-
+            
             let responseTransactions = null;
 
             if (isLoadInternal) {
@@ -115,14 +127,13 @@ const Transaction = ({navigation}) => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return;
-        }
-
-        if (transactions.length === 0) {
-            setPageNumber(1);
-            loadTransactions();
         } else {
-            getTransactionsGroupByDate();
+            if (transactions.length === 0) {
+                setPageNumber(1);
+                loadTransactions();
+            } else {
+                getTransactionsGroupByDate();
+            }
         }
     }, [transactions])
 
@@ -189,12 +200,7 @@ const Transaction = ({navigation}) => {
     const handleTransactionItemClick = (data: I.Transaction) => {
         if (!isScrolling)
             navigation.navigate("TransactionCreate", {
-                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
-                    if (actionNavigation === constants.actionNavigation.reload) {
-                        setIsLoadInternal(true);
-                        setTransactions([]);
-                    }
-                }
+                isEditing: true, data: data
             });
     }
 

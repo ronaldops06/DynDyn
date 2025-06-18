@@ -165,7 +165,7 @@ export const selectCategoryById = async (id: number): Promise<Category | undefin
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-const formatResult = async (item: any): Promise<Category> => {
+const formatResult = (item: any): Category => {
     const category: Category = {
         InternalId: item.internal_id,
         Id: item.id,
