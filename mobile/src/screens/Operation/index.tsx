@@ -19,7 +19,7 @@ import {style} from "../../styles/styles.ts";
 import {categoryStyle} from "../Category/styles";
 import HistoryIcon from '../../assets/history.svg';
 
-const Operation = ({navigation}) => {
+const Operation = ({navigation, route}) => {
 
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
@@ -30,6 +30,13 @@ const Operation = ({navigation}) => {
     const [operations, setOperations] = useState<I.Operation[]>([]);
     const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
 
+    useEffect(() => {
+        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+            setIsLoadInternal(true);
+            setOperations([]);
+        }
+    }, [route.params?.actionNavigation]);
+    
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
@@ -108,12 +115,7 @@ const Operation = ({navigation}) => {
     const handleItemClick = (data: I.Operation) => {
         if (!isScrolling)
             navigation.navigate("OperationCreate", {
-                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
-                    if (actionNavigation === constants.actionNavigation.reload) {
-                        setIsLoadInternal(true);
-                        setOperations([]);
-                    }
-                }
+                isEditing: true, data: data
             });
     }
 

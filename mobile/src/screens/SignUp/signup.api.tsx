@@ -1,7 +1,8 @@
-import { post } from '../../services/api';
+import {post, postTransientUser, postValidateUser} from '../../services/api';
 import * as I from '../../interfaces/interfaces';
 import { Alert } from 'react-native';
 import { StatusHttp, Action } from '../../enums/enums';
+import {VerificationUser} from "../../interfaces/interfaces";
 
 export const validateResponse = (action: Action, response: I.Response, navigation: any) => {
     if (response.status == StatusHttp.Unauthorized) {
@@ -22,11 +23,10 @@ export const validateResponse = (action: Action, response: I.Response, navigatio
     return true;
 };
 
-export const postUser = async(data: I.User, navigation: any) => {
-    let response = {} as I.Response;
-    response = await post('User', data);
-    
-    if (!validateResponse(Action.Post, response, navigation)) return null;
+export const postUser = async(data: I.User) => {
+    return await postTransientUser('TransientUser', data);
+};
 
-    return response;
+export const userValidate = async(data: I.VerificationUser) => {
+    return await postValidateUser('TransientUser/UserValidate', data);
 };

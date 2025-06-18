@@ -5,19 +5,25 @@ import { customTextInputStyle } from './styles';
 
 interface CustomTextInputParams {
     text: string;
-    isMoveText?: boolean;
+    isMoveText?: boolean | undefined;
     value: string;
     setValue: any;
-    messageText?: string;
-    secureTextEntry?: boolean;
-    icon?: any;
-    onPressIcon?: any;
-    width?: string;
-    editable: boolean;
-};
+    messageText?: string | undefined;
+    secureTextEntry?: boolean | undefined;
+    icon?: any | undefined;
+    onPressIcon?: any | undefined;
+    width?: string | undefined;
+    editable?: boolean;
+}
 
 const CustomTextInput = (props: CustomTextInputParams) => {
-    const moveText = useRef(new Animated.Value((props.isMoveText) ? 0 : 1)).current;
+    const {
+        isMoveText = true,
+        width = "100%",
+        editable = true,
+    } = props;
+    
+    const moveText = useRef(new Animated.Value((isMoveText) ? 0 : 1)).current;
 
     useEffect(() => {
         if (props.value !== ""){
@@ -52,7 +58,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
     };
 
     const moveTextBottom = () => {
-        if (props.isMoveText) {
+        if (isMoveText) {
             Animated.timing(moveText, {
                 toValue: 0,
                 duration: 200,
@@ -83,7 +89,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
     };    
 
     return(
-        <View style={[customTextInputStyle.container, {width:props.width}]}>
+        <View style={[customTextInputStyle.container, {width:width}]}>
             <View style={customTextInputStyle.containerInput}>
                 <Animated.View style={[customTextInputStyle.animatedStyle, animStyle]}>
                     <Text style={customTextInputStyle.label}>{props.text}</Text>
@@ -94,7 +100,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
                     value={props.value}
                     secureTextEntry={props.secureTextEntry}
                     onChangeText={(text: string) => onChangeText(text)}
-                    editable={props.editable}
+                    editable={editable}
                     onFocus={onFocusHandler}
                     onBlur={onBlurHandler}
                     blurOnSubmit
@@ -111,10 +117,5 @@ const CustomTextInput = (props: CustomTextInputParams) => {
         </View>
     );
 };
-
-CustomTextInput.defaultProps = {
-    isMoveText: true,
-    width: "100%"
-}
 
 export default CustomTextInput;

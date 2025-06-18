@@ -17,12 +17,12 @@ export const validateLogin = (response: I.Response, navigation: any) => {
         navigation.navigate("SignIn");
 }
 
-export const validateSuccess = (response: I.Response, navigation: any, route: any) => {
+export const validateSuccess = (response: I.Response, navigation: any, screem: string) => {
     if (response.success) {
-        if (route?.params?.onGoBack)
-            route.params.onGoBack(constants.actionNavigation.reload);
-        
-        navigation.goBack();
+        if (screem)
+            navigation.popTo(screem, { actionNavigation: constants.actionNavigation.reload });
+        else
+            navigation.goBack();
     }
 }
 

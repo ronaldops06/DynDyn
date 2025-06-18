@@ -37,15 +37,15 @@ const radioButtonsData: RadioButtonProps[] = [{
     labelStyle: transactionCreateStyle.labelRadioRepeat,
     selected: true
 },
-    {
-        id: '2',
-        label: 'Parcelar',
-        value: 'parcelar',
-        color: constants.colors.primaryTextColor,
-        size: 16,
-        labelStyle: transactionCreateStyle.labelRadioRepeat,
-        selected: false
-    }];
+{
+    id: '2',
+    label: 'Parcelar',
+    value: 'parcelar',
+    color: constants.colors.primaryTextColor,
+    size: 16,
+    labelStyle: transactionCreateStyle.labelRadioRepeat,
+    selected: false
+}];
 
 const TransactionCreate = ({navigation, route}) => {
     const stepInput: React.RefObject<any> = React.createRef();
@@ -105,7 +105,7 @@ const TransactionCreate = ({navigation, route}) => {
             setIsSalary(data.Operation.Salary);
             setValueTimes(data.TotalInstallments);
             setValeuMultiply(data.Operation.Recurrent || (data.TotalInstallments > 1));
-            setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : '2');
+            setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : ((data.TotalInstallments > 1) ? '2' : '0'));
         }
     };
 
@@ -174,7 +174,7 @@ const TransactionCreate = ({navigation, route}) => {
             return false;
         }
 
-        if (valueRadioRepeatSelectedId === '1' && valueTimes == 0) {
+        if (valueRadioRepeatSelectedId === '2' && valueTimes == 0) {
             Alert.alert("Atenção!", "A quantidade de vezes deve ser informada.");
             return false;
         }
@@ -192,7 +192,7 @@ const TransactionCreate = ({navigation, route}) => {
 
         const currentDate = date;
 
-        if (mode == 'date') {
+        if (mode === 'date') {
             setValueDate(Moment(currentDate).local().format('DD/MM/YYYY'));
         } else {
             setValueTime(Moment(currentDate).local().format('HH:mm:ss'));
@@ -212,9 +212,6 @@ const TransactionCreate = ({navigation, route}) => {
     };
 
     const handleBackClick = () => {
-        if (route.params?.onGoBack)
-            route.params.onGoBack(constants.actionNavigation.none);
-        
         navigation.goBack();
     };
 
@@ -309,7 +306,7 @@ const TransactionCreate = ({navigation, route}) => {
             response = await createTransaction(transactionDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, route);
+        validateSuccess(response, navigation, 'Transaction');
     };
 
     return (

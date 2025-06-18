@@ -20,7 +20,7 @@ import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
-const Category = ({navigation}) => {
+const Category = ({navigation, route}) => {
     const keys: string[] = Object.keys(constants.categoryType);
     
     const [loading, setLoading] = useState(false);
@@ -35,6 +35,13 @@ const Category = ({navigation}) => {
     useEffect(() => {
         setCategoryType(constants.categoryType.operation.Id);
     }, []);
+
+    useEffect(() => {
+        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+            setIsLoadInternal(true);
+            setCategories([]);
+        }
+    }, [route.params?.actionNavigation]);
 
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
@@ -101,12 +108,7 @@ const Category = ({navigation}) => {
     const handleItemClick = (data: I.Category) => {
         if (!isScrolling)
             navigation.navigate("CategoryCreate", {
-                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
-                    if (actionNavigation === constants.actionNavigation.reload) {
-                        setIsLoadInternal(true);
-                        setCategories([]);
-                    }
-                }
+                isEditing: true, data: data
             });
     }
 

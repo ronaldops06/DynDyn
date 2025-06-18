@@ -47,9 +47,6 @@ const CategoryCreate = ({navigation, route}) => {
     };
     
     const handleBackClick = () => {
-        if (route.params?.onGoBack)
-            route.params.onGoBack(constants.actionNavigation.none);
-        
         navigation.goBack();
     };
 
@@ -107,7 +104,7 @@ const CategoryCreate = ({navigation, route}) => {
             response = await createCategory(categoryDTO);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, route);
+        validateSuccess(response, navigation, 'Category');
     };
 
     return (

@@ -18,7 +18,7 @@ import {constants} from "../../constants";
 import {validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
-const Portfolio = ({navigation}) => {
+const Portfolio = ({navigation, route}) => {
 
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
@@ -40,6 +40,13 @@ const Portfolio = ({navigation}) => {
             }
         }, [])
     );*/
+
+    useEffect(() => {
+        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+            setIsLoadInternal(true);
+            setPortfolios([]);
+        }
+    }, [route.params?.actionNavigation]);
 
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
@@ -158,12 +165,7 @@ const Portfolio = ({navigation}) => {
 
     const handleNewClick = () => {
         navigation.navigate("AccountCreate", {
-            isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
-                if (actionNavigation === constants.actionNavigation.reload) {
-                    setIsLoadInternal(true);
-                    setPortfolios([]);
-                }
-            }
+            isEditing: false, data: null
         });
     }
 

@@ -21,6 +21,11 @@ export interface User {
     AccessToken: string
 }
 
+export interface VerificationUser {
+    Login: string,
+    VerificationCode: number
+}
+
 export interface Synchronization {
     InternalId: number | null,
     Operation: string,
@@ -98,7 +103,7 @@ export interface TransactionView {
 
 export interface TransactionsGroup {
     date: string,
-    transactions: TransactionView[]
+    transactions: Transaction[]
 }
 
 export interface TransactionTotals {
