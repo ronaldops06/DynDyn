@@ -4,9 +4,14 @@ import EncryptedStorage from 'react-native-encrypted-storage';
 
 import {fetchApiUrl} from '../../services/api.ts';
 import {login} from './preload.api';
-import {preloadStyle} from './styles';
+
+import { useTheme } from '../../contexts/ThemeContext';
+import {getPreloadStyle} from './styles';
 
 const Preload = ({navigation}) => {
+    const { theme } = useTheme();
+    const preloadStyle = getPreloadStyle(theme);
+    
     const [apiUrl, setApiUrl] = useState<string>("");
     
     useEffect(()=>{

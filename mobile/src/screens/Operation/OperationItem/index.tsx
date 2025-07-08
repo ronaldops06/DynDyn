@@ -2,10 +2,12 @@ import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
 import {constants} from "../../../constants";
-import {cardStyle} from "../../../styles/styles.card"
 import DoneIcon from "../../../assets/done.svg";
 import PaymentIcon from "../../../assets/payments.svg";
 import CurrencyExchangeIcon from "../../../assets/currency_exchange.svg";
+
+import { useTheme } from '../../../contexts/ThemeContext';
+import {getCardStyle} from "../../../styles/styles.card"
 
 interface OperationItemProps {
     data: I.Operation,
@@ -15,7 +17,9 @@ interface OperationItemProps {
 }
 
 const OperationItem = (props: OperationItemProps) => {
-
+    const { theme } = useTheme();
+    const cardStyle = getCardStyle(theme);
+    
     const [touchX, setTouchX] = useState(0);
     const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
@@ -84,10 +88,10 @@ const OperationItem = (props: OperationItemProps) => {
                         {props.data.Category.Name}
                     </Text>
                     <View style={cardStyle.boxEnd}>
-                        <CurrencyExchangeIcon style={{opacity: props.data.Recurrent ? 1 : 0}} width="20" height="20" fill="#00A519"/>
-                        <PaymentIcon style={{opacity: props.data.Salary ? 1 : 0}} width="20" height="20" fill="#00A519"/>
+                        <CurrencyExchangeIcon style={{opacity: props.data.Recurrent ? 1 : 0}} width="20" height="20" fill={theme.colors.tertiaryIcon}/>
+                        <PaymentIcon style={{opacity: props.data.Salary ? 1 : 0}} width="20" height="20" fill={theme.colors.tertiaryIcon}/>
                         <DoneIcon style={{opacity: 1}} width="20" height="20"
-                                  fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>
+                                  fill={(props.data.Status === constants.status.active.Id) ? theme.colors.tertiaryIcon : theme.colors.secondaryIcon}/>
                     </View>
                 </View>
             </View>

@@ -5,11 +5,12 @@ import ExpandIcon from '../../assets/expand.svg';
 import * as I from '../../interfaces/interfaces';
 import TextItem from '../CustomTextInput';
 import OperationItem from '../OperationItem';
-import { getOperations } from './operation.modal.api';
 
-import { style } from '../../styles/styles';
-import { operationModalStyle } from './styles';
 import {loadAllOperation} from "../../controller/operation.controller.tsx";
+
+import { useTheme } from '../../contexts/ThemeContext';
+import { getStyle } from '../../styles/styles';
+import { getOperationModalStyle } from './styles';
 
 interface OperationModalParams {
     show: boolean,
@@ -19,7 +20,10 @@ interface OperationModalParams {
 }
 
 const OperationModal = (props: OperationModalParams) => {
-
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const operationModalStyle = getOperationModalStyle(theme);
+    
     const [loading, setLoading] = useState(false);
     const [valueSearch, setValueSearch] = useState("");
     const [operations, setOperations] = useState<I.Operation[]>([]);

@@ -22,32 +22,39 @@ import {alterTransaction, createTransaction, excludeTransaction} from '../../con
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {loadAllPortfolio} from "../../controller/portfolio.controller.tsx";
 
-import {style} from '../../styles/styles';
-import {styleCadastro} from '../../styles/styles.cadastro';
-import {transactionCreateStyle} from './create.styles';
 import {constants} from "../../constants";
 import {validateLogin, validateSuccess, toLocalDate, getDate} from "../../utils.ts";
 
-const radioButtonsData: RadioButtonProps[] = [{
-    id: '1',
-    label: 'Repetir',
-    value: 'repetir',
-    color: constants.colors.primaryTextColor,
-    size: 16,
-    labelStyle: transactionCreateStyle.labelRadioRepeat,
-    selected: true
-},
-{
-    id: '2',
-    label: 'Parcelar',
-    value: 'parcelar',
-    color: constants.colors.primaryTextColor,
-    size: 16,
-    labelStyle: transactionCreateStyle.labelRadioRepeat,
-    selected: false
-}];
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getStyleCadastro} from '../../styles/styles.cadastro';
+import {getTransactionCreateStyle} from './create.styles';
 
 const TransactionCreate = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const styleCadastro = getStyleCadastro(theme);
+    const transactionCreateStyle = getTransactionCreateStyle(theme);
+
+    const radioButtonsData: RadioButtonProps[] = [{
+        id: '1',
+        label: 'Repetir',
+        value: 'repetir',
+        color: theme.colors.primaryTextColor,
+        size: 16,
+        labelStyle: transactionCreateStyle.labelRadioRepeat,
+        selected: true
+    },
+    {
+        id: '2',
+        label: 'Parcelar',
+        value: 'parcelar',
+        color: theme.colors.primaryTextColor,
+        size: 16,
+        labelStyle: transactionCreateStyle.labelRadioRepeat,
+        selected: false
+    }];
+    
     const stepInput: React.RefObject<any> = React.createRef();
     
     const transactionId = route.params?.data?.Id ?? 0;
@@ -316,13 +323,13 @@ const TransactionCreate = ({navigation, route}) => {
                     <TouchableOpacity
                         style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill="#F1F1F1"/>
+                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill="#F1F1F1"/>
+                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
@@ -351,7 +358,7 @@ const TransactionCreate = ({navigation, route}) => {
                                 isMoveText={false}
                                 value={valueDescription}
                                 setValue={setValueDescription}
-                                icon={<HistoryIcon width={30} fill="#6E8BB8"/>}
+                                icon={<HistoryIcon width={30} fill={theme.colors.quintenaryIcon}/>}
                                 onPressIcon={handleOperationsClick}
                             />
                         }
@@ -361,7 +368,7 @@ const TransactionCreate = ({navigation, route}) => {
                                 isMoveText={false}
                                 value={valueDate}
                                 setValue={setValueDate}
-                                icon={<TodayIcon width={30} fill="#6E8BB8"/>}
+                                icon={<TodayIcon width={30} fill={theme.colors.quintenaryIcon}/>}
                                 onPressIcon={() => handleDateTimeClick(true, 'date')}
                                 width={"49%"}
                             />
@@ -370,7 +377,7 @@ const TransactionCreate = ({navigation, route}) => {
                                 isMoveText={false}
                                 value={valueTime}
                                 setValue={setValueTime}
-                                icon={<ClockIcon width={30} fill="#6E8BB8"/>}
+                                icon={<ClockIcon width={30} fill={theme.colors.quintenaryIcon}/>}
                                 onPressIcon={() => handleDateTimeClick(true, 'time')}
                                 width={"49%"}
                             />
@@ -417,7 +424,7 @@ const TransactionCreate = ({navigation, route}) => {
                                     <CheckBox
                                         value={valueConsolidated}
                                         onValueChange={setValueConsolidated}
-                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                        tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
                                     />
                                     <Text
                                         style={styleCadastro.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
@@ -427,7 +434,7 @@ const TransactionCreate = ({navigation, route}) => {
                                         disabled={operation.Id !== undefined}
                                         value={isSalary}
                                         onValueChange={setIsSalary}
-                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                        tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
                                     />
                                     <Text style={styleCadastro.textCheckbox}>Salário</Text>
                                 </View>
@@ -435,7 +442,7 @@ const TransactionCreate = ({navigation, route}) => {
                                     <CheckBox
                                         value={valueMultiply}
                                         onValueChange={setValeuMultiply}
-                                        tintColors={{true: "#6E8BB8", false: "#6E8BB8"}}
+                                        tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
                                         disabled={isEditing}
                                     />
                                     <Text style={styleCadastro.textCheckbox}>Multiplicar</Text>

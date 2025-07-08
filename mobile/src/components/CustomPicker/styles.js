@@ -1,14 +1,13 @@
 import { StyleSheet } from "react-native";
-import {constants} from "../../constants";
 
-export const customPickerStyle = StyleSheet.create({
+export const getCustomPickerStyle = (theme) => StyleSheet.create({
     container: {
         marginBottom: 15,
         marginTop: 10,
-        backgroundColor: constants.colors.secondaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
         paddingTop: 5,
         borderBottomWidth: 1,
-        borderColor: constants.colors.primaryBorderColor,
+        borderColor: theme.colors.primaryBorderColor,
         borderRadius: 3,
         width: "100%",
         alignSelf: "center",
@@ -24,10 +23,10 @@ export const customPickerStyle = StyleSheet.create({
         width: "100%",
         fontSize: 16,
         height: 40,
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
     },
     label: {
-        color: constants.colors.secondaryTextColor,
+        color: theme.colors.secondaryTextColor,
         fontSize: 14,
     },
     animatedStyle: {

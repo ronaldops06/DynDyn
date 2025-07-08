@@ -2,8 +2,6 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import _ from 'lodash';
 
-import {style} from '../../styles/styles';
-import {categoryStyle} from './styles';
 import PlusIcon from "../../assets/plus.svg";
 import * as I from "../../interfaces/interfaces.tsx";
 import CategoryItem from "./CategoryItem";
@@ -20,7 +18,15 @@ import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getCategoryStyle} from './styles';
+
 const Category = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const categoryStyle = getCategoryStyle(theme);
+    
     const keys: string[] = Object.keys(constants.categoryType);
     
     const [loading, setLoading] = useState(false);
@@ -180,7 +186,7 @@ const Category = ({navigation, route}) => {
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Categorias</Text>
                     </View>
                 </View>
@@ -206,7 +212,7 @@ const Category = ({navigation, route}) => {
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

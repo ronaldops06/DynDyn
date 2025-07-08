@@ -5,6 +5,8 @@ export type RootStackParamList = {
     SignIn: undefined;
     SignUp: undefined;
     Validation: { data: I.User | null } | undefined;
+    Home: undefined;
+    UserAccount: undefined;
     Dashboard: undefined;
     Account: undefined;
     AccountCreate: { isEditing: boolean, data: I.Portfolio | null } | undefined;

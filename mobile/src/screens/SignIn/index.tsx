@@ -7,13 +7,18 @@ import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
 import {login} from './signin.api';
 
-import {style} from '../../styles/styles';
-import {signInStyle} from './styles';
-import {encrypt} from "../../utils.ts";
+import {encrypt, getUserByStorage} from "../../utils.ts";
 import VisibilityIcon from "../../assets/visibility.svg";
 import VisibilityOffIcon from "../../assets/visibility_off.svg";
 
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getSignInStyle} from './styles';
+
 const SignIn = ({navigation}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const signInStyle = getSignInStyle(theme);
     
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [valueEmail, setValueEmail] = useState("");
@@ -70,20 +75,7 @@ const SignIn = ({navigation}) => {
             JSON.stringify(userStorage)
         );
     };
-
-    const getUserByStorage = async (): Promise<I.User | null> => {
-        const session = await EncryptedStorage.getItem("user_session");
-
-        if (session) {
-            let userStorage = JSON.parse(session);
-            
-            if (userStorage !== null)
-                return userStorage;
-        }
-        
-        return null;
-    }
-
+    
     const handleAuthenticateByBiometric = async () => {
         const {success} = await ReactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'});
         
@@ -144,7 +136,7 @@ const SignIn = ({navigation}) => {
                         value={valuePassword}
                         setValue={setValuePassword}
                         secureTextEntry={!showPassword}
-                        icon={showPassword ? <VisibilityOffIcon width={30} fill="#6E8BB8"/> : <VisibilityIcon width={30} fill="#6E8BB8"/>}
+                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
                         onPressIcon={() => setShowPassword(!showPassword)}
                     />
                     <TouchableOpacity

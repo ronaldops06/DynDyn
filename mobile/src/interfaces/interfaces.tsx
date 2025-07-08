@@ -147,3 +147,8 @@ export interface CalculateBalance {
     OperationType: number,
     Salary: boolean
 }
+
+export interface DashboardItem {
+    Label: string;
+    Value: number;
+}

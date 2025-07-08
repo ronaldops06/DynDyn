@@ -1,7 +1,6 @@
 import {StyleSheet} from "react-native";
-import { constants} from "../../constants";
 
-export const carouselSelectionStyles = StyleSheet.create({
+export const getCarouselSelectionStyles = (theme) => StyleSheet.create({
     viewSelect: {
         flexDirection: "row",
         marginTop: 10
@@ -21,7 +20,7 @@ export const carouselSelectionStyles = StyleSheet.create({
         alignItems: "center"
     },
     textTitle: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.tertiaryTextColor,
         fontSize: 17,
         fontWeight: "bold"
     },

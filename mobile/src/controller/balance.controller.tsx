@@ -10,11 +10,17 @@ import {
     selectAllBalances,
     selectBalanceByBalanceMonthAndYear,
     selectContAllBalances,
+    selectDashboardBalanceGroupByMonth,
     updateBalance
 } from "../repository/balance.repository.tsx";
 import {deleteBalance, getBalances, postBalance, putBalance} from "../services/balance.api.ts";
 import {Alert} from "react-native";
 import moment from "moment/moment";
+import {DashboardItem} from "../interfaces/interfaces";
+
+export const loadDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
+    return await selectDashboardBalanceGroupByMonth(year, month);
+}
 
 export const loadAllBalanceInternal = async (pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
@@ -38,7 +44,7 @@ export const loadAllBalance = async (pageNumber: Number | null): Promise<I.Respo
 
     var balances = response?.data ?? [];
     
-    //Armazena as constas em memória e só irá buscar no banco se não existir nela (array). Isso melhora a performance.
+    //Armazena as contas em memória e só irá buscar no banco se não existir nela (array). Isso melhora a performance.
     var portfolios = [] as I.Portfolio[];
     for (const item of balances) {        
         if (!portfolios.some(x => x.Id === item.Portfolio.Id))

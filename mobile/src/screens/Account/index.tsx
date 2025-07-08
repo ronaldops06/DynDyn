@@ -1,8 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 
-import {style} from '../../styles/styles';
-import {accountStyle} from './styles';
 import * as I from "../../interfaces/interfaces.tsx";
 import {
     alterPortfolio,
@@ -18,8 +16,15 @@ import {constants} from "../../constants";
 import {validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
-const Portfolio = ({navigation, route}) => {
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
+import {getAccountStyle} from './styles';
 
+const Portfolio = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const accountStyle = getAccountStyle(theme);
+    
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -86,6 +91,7 @@ const Portfolio = ({navigation, route}) => {
         } else {
             responsePortfolios = await loadAllPortfolio(pageNumber);
             validateLogin(responsePortfolios, navigation);
+            
             let response = await loadAllBalance(null);
             //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
             responsePortfolios = await loadAllPortfolioInternal(pageNumber);
@@ -174,7 +180,7 @@ const Portfolio = ({navigation, route}) => {
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <AccountIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <AccountIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Contas</Text>
                     </View>
                 </View>
@@ -199,7 +205,7 @@ const Portfolio = ({navigation, route}) => {
                 <TouchableOpacity
                     style={accountStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

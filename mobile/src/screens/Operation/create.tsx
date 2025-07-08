@@ -5,19 +5,25 @@ import {constants} from "../../constants";
 import * as I from "../../interfaces/interfaces.tsx";
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
-import {style} from "../../styles/styles.ts";
-import {styleCadastro} from "../../styles/styles.cadastro.ts";
 import PrevIcon from "../../assets/nav_prev.svg";
 import TrashIcon from "../../assets/trash.svg";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
-import {operationCreateStyle} from "./create.styles";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
-const OperationCreate = ({navigation, route}) => {
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
+import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
+import {getOperationCreateStyle} from "./create.styles";
 
+const OperationCreate = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const styleCadastro = getStyleCadastro(theme);
+    const operationCreateStyle = getOperationCreateStyle(theme);
+    
     const operationId = route.params?.data?.Id ?? 0;
     const operationInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
@@ -142,13 +148,13 @@ const OperationCreate = ({navigation, route}) => {
                     <TouchableOpacity
                         style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill={constants.colors.secondaryBaseColor}/>
+                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill={constants.colors.secondaryBaseColor}/>
+                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
@@ -176,7 +182,7 @@ const OperationCreate = ({navigation, route}) => {
                                 <CheckBox
                                     value={isRecurrent}
                                     onValueChange={setIsRecurrent}
-                                    tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
+                                    tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                                 />
                                 <Text
                                     style={styleCadastro.textCheckbox}>Recorrente</Text>
@@ -185,7 +191,7 @@ const OperationCreate = ({navigation, route}) => {
                                 <CheckBox
                                     value={isSalary}
                                     onValueChange={setIsSalary}
-                                    tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
+                                    tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                                 />
                                 <Text
                                     style={styleCadastro.textCheckbox}>Salário</Text>
@@ -195,7 +201,7 @@ const OperationCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
+                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>

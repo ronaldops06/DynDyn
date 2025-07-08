@@ -2,6 +2,7 @@ import * as I from "./interfaces/interfaces.tsx";
 import sha256 from 'crypto-js/sha256';
 import {constants} from "./constants";
 import Moment from "moment/moment";
+import EncryptedStorage from "react-native-encrypted-storage";
 
 export function isEndScroll(event: any) {
     let mHeight = event.nativeEvent.layoutMeasurement.height;
@@ -24,6 +25,19 @@ export const validateSuccess = (response: I.Response, navigation: any, screem: s
         else
             navigation.goBack();
     }
+}
+
+export const getUserByStorage = async (): Promise<I.User | null> => {
+    const session = await EncryptedStorage.getItem("user_session");
+
+    if (session) {
+        let userStorage = JSON.parse(session);
+
+        if (userStorage !== null)
+            return userStorage;
+    }
+
+    return null;
 }
 
 export const encrypt = async (value: string): Promise<string> => {

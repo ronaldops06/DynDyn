@@ -1,5 +1,5 @@
 import {openDatabase} from "./database.ts";
-import {Balance, BalanceTotals} from "../interfaces/interfaces.tsx";
+import {Balance, BalanceTotals, DashboardItem} from "../interfaces/interfaces.tsx";
 import Moment from "moment/moment";
 import {constants} from "../constants";
 import {ResultSet, Transaction} from "react-native-sqlite-storage";
@@ -289,6 +289,44 @@ export const selectBalanceByBalanceMonthAndYear = async (internalPortfolioId: nu
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
+export const selectDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
+    const db = await openDatabase();
+
+    const results = await db.executeSql(
+        'WITH RECURSIVE portfolio_hierarchy AS (' +
+        '   SELECT internal_id, parent_portfolio_id' +
+        '     FROM portfolios' +
+        '    WHERE parent_portfolio_id IS NULL' +
+        '    UNION ALL' +
+        '   SELECT act.internal_id, act.parent_portfolio_id' +
+        '     FROM portfolios act' +
+        '    INNER JOIN portfolio_hierarchy act_hrc ON act.parent_portfolio_id = act_hrc.internal_id' +
+        ')' +
+        '   SELECT blc.year' +
+        '        , blc.month' +
+        '        , SUM(blc.value) AS value' +
+        '     FROM portfolio_hierarchy act' +
+        '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id' +
+        '    WHERE ((blc.year > ?)' +
+        '       OR (blc.year  = ? AND blc.month >= ?))' +
+        '    GROUP BY blc.year' +
+        '        , blc.month' +
+        '    ORDER BY blc.year' +
+        '        , blc.month;'
+        , [ year
+          , month]
+    );
+
+    const dashboardItens: DashboardItem[] = [];
+    results.forEach(result => {
+        for (let i = 0; i < result.rows.length; i++) {
+            dashboardItens.push(formatResultDashboard(result.rows.item(i)));
+        }
+    });
+    
+    return dashboardItens;
+}
+
 const queryBase = () => {
     return 'SELECT bal.*'
         + '     , act.internal_id AS act_internal_id'
@@ -363,4 +401,13 @@ const formatResultTotals = (row: any): BalanceTotals => {
     };
 
     return balanceTotals
+}
+
+const formatResultDashboard = (row: any): DashboardItem => {
+    const dashboardItem: DashboardItem = {
+        Label: `${row.month}\\${row.year}`,
+        Value: row.value,
+    }
+    
+    return dashboardItem;
 }

@@ -1,14 +1,19 @@
 import {Image, TextInput, SafeAreaView, Text, View, TouchableOpacity, Alert, ActivityIndicator} from "react-native";
 import React, {useState, useRef, useEffect} from "react";
-import {styleCadastro} from "../../styles/styles.cadastro.ts";
-import {validationStyle} from "./validation.styles";
 import {postUser, userValidate} from "./signup.api.tsx";
 import * as I from "../../interfaces/interfaces.tsx";
 import EncryptedStorage from "react-native-encrypted-storage";
 import ReactNativeBiometrics from "react-native-biometrics";
-import {constants} from "../../constants";
+
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
+import {getValidationStyle} from "./validation.styles";
 
 const Validation = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const styleCadastro = getStyleCadastro(theme);
+    const validationStyle = getValidationStyle(theme);
+    
     const inputRefs = useRef([]);
     const [loading, setLoading] = useState(false);
     const [biometricAvailable, setBiometricAvailable] = useState(false);
@@ -158,7 +163,7 @@ const Validation = ({navigation, route}) => {
                 </View>
                 {loading && (
                     <View style={validationStyle.overlay}>
-                        <ActivityIndicator size="large" color={constants.colors.primaryTextColor} />
+                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
                     </View>
                 )}
             </View>

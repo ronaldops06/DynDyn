@@ -10,18 +10,24 @@ import {
     excludePortfolio,
     loadAllPortfolio
 } from "../../controller/portfolio.controller.tsx";
-import {style} from "../../styles/styles.ts";
-import {styleCadastro} from "../../styles/styles.cadastro.ts";
 import PrevIcon from "../../assets/nav_prev.svg";
 import TrashIcon from "../../assets/trash.svg";
-import {accountCreateStyle} from "./create.styles";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
+import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
+import {getAccountCreateStyle} from "./create.styles";
+
 const PortfolioCreate = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const styleCadastro = getStyleCadastro(theme);
+    const accountCreateStyle = getAccountCreateStyle(theme);
     
     const portfolioId = route.params?.data?.Id ?? 0;
     const portfolioInternalId = route.params?.data?.InternalId ?? 0;
@@ -145,13 +151,13 @@ const PortfolioCreate = ({navigation, route}) => {
                     <TouchableOpacity
                         style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill="#F1F1F1"/>
+                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill="#F1F1F1"/>
+                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
@@ -184,7 +190,7 @@ const PortfolioCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
+                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>

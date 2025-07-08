@@ -2,7 +2,8 @@ import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
 
-import { customPickerStyle } from './styles';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getCustomPickerStyle } from './styles';
 
 interface PickerParams {
     text: string,
@@ -15,7 +16,9 @@ interface PickerParams {
 }
 
 const CustomPicker = (props: PickerParams) => {
-
+    const { theme } = useTheme();
+    const customPickerStyle = getCustomPickerStyle(theme);
+    
     const moveText = useRef(new Animated.Value(0)).current;
 
     useEffect(() => {

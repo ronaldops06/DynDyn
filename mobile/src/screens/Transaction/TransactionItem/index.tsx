@@ -9,7 +9,8 @@ import MoneyInIcon from '../../../assets/money_in.svg';
 import MoneyOutIcon from '../../../assets/money_out.svg';
 import MoneyTransfIcon from '../../../assets/money_transf.svg';
 
-import {transactionItemStyle} from './styles';
+import { useTheme } from '../../../contexts/ThemeContext';
+import {getTransactionItemStyle} from './styles';
 
 interface TransactionItemParms {
     data: I.Transaction,
@@ -19,7 +20,9 @@ interface TransactionItemParms {
 }
 
 const TransactionItem = React.memo((props: TransactionItemParms) => {
-
+    const { theme } = useTheme();
+    const transactionItemStyle = getTransactionItemStyle(theme);
+    
     const [touchX, setTouchX] = useState(0);
     const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
@@ -113,7 +116,7 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
                             {props.data.Portfolio?.Name}
                             {props.data.Operation?.Type == TypesTransaction.Transference && " para " + props.data.DestinationPortfolio?.Name}
                         </Text>
-                        <DoneIcon width="20" height="20" fill={(props.data.Consolidated) ? "#00A519" : "#A4BCE3"}/>
+                        <DoneIcon width="20" height="20" fill={(props.data.Consolidated) ? theme.colors.tertiaryIcon : theme.colors.secondaryIcon}/>
                     </View>
                 </View>
             </View>

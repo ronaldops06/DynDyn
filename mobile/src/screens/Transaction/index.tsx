@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import _ from 'lodash';
@@ -17,14 +17,15 @@ import {
     loadAndPersistAll,
     loadTotalsTransactions
 } from '../../controller/transaction.controller';
-import {style} from '../../styles/styles';
-import {transactionStyle} from './styles';
 import CustomScroll from "../../components/CustomScroll";
-import {validateLogin, getDate} from "../../utils.ts";
+import {validateLogin} from "../../utils.ts";
 import {constants} from "../../constants";
 import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
-import Moment from "moment";
+
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getTransactionStyle} from './styles';
 
 const months = [
     'Janeiro',
@@ -42,6 +43,9 @@ const months = [
 ];
 
 const Transaction = ({navigation, route}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const transactionStyle = getTransactionStyle(theme);
     
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
@@ -281,22 +285,22 @@ const Transaction = ({navigation, route}) => {
             <View style={style.viewHeaderConsulta}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <CashRegisterIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <CashRegisterIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Transações</Text>
                     </View>
                     <TouchableOpacity style={style.titleScreenMoreInfo} onPress={handleRecurringAndInstallmentPaymentsClick}>
-                        <CurrencyExchangeIcon width="24" height="24" fill="#F5F5F5"/>
+                        <CurrencyExchangeIcon width="24" height="24" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                 </View>
                 <View style={transactionStyle.viewSelectDate}>
                     <TouchableOpacity onPress={handleLeftDateClick} style={transactionStyle.buttonPrev}>
-                        <NavPrevIcon width="35" height="35" fill="#F5F5F5"/>
+                        <NavPrevIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                     <View style={transactionStyle.viewDateTitle}>
                         <Text style={transactionStyle.textDateTitle}>{months[selectedMonth]} {selectedYear}</Text>
                     </View>
                     <TouchableOpacity onPress={handleRightDateClick} style={transactionStyle.buttonNext}>
-                        <NavNextIcon width="35" height="35" fill="#F5F5F5"/>
+                        <NavNextIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -344,7 +348,7 @@ const Transaction = ({navigation, route}) => {
                 <TouchableOpacity
                     style={transactionStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

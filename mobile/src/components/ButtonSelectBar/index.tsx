@@ -1,7 +1,8 @@
 import React from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
 
-import {buttonSelectStyle} from './styles';
+import { useTheme } from '../../contexts/ThemeContext';
+import {getButtonSelectStyle} from './styles';
 
 export interface ButtonsSelectedProps {
     value: number;
@@ -16,6 +17,9 @@ interface ButtonSelectProps {
 }
 
 const ButtonSelectBar = (props: ButtonSelectProps) => {
+    const { theme } = useTheme();
+    const buttonSelectStyle = getButtonSelectStyle(theme);
+    
     const getButtonStyle = (type: number) => {
         return [buttonSelectStyle.button, (props.valueSelected == type ?
             buttonSelectStyle.buttonSelected :

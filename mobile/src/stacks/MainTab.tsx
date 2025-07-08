@@ -5,12 +5,12 @@ import CustomTabBar from '../components/CustomTabBar';
 
 import Account from '../screens/Account';
 import Category from '../screens/Category';
-import Dashboard from '../screens/Dashboard';
+import Home from '../screens/Home';
 import Transaction from '../screens/Transaction';
 import Operation from '../screens/Operation';
 
 type TabNavigatorParamList = {
-    Dashboard: undefined,
+    Home: undefined,
     Account: undefined,
     Transaction: undefined,
     Category: undefined,
@@ -27,7 +27,7 @@ const MainTab = () => {
             }}
             tabBar={props => <CustomTabBar {...props} />}
         >
-            <Tab.Screen name="Dashboard" component={Dashboard} />
+            <Tab.Screen name="Home" component={Home} />
             <Tab.Screen name="Account" component={Account} />
             <Tab.Screen name="Transaction" component={Transaction} />
             <Tab.Screen name="Category" component={Category} />

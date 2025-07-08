@@ -1,15 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import { style } from '../../styles/styles';
-import {constants} from "../../constants";
+import { getStyle } from '../../styles/styles';
 
-export const signUpStyle = StyleSheet.create({
+export const getSignUpStyle = (theme) => StyleSheet.create({
     container: {
-        ...style.container,
-        backgroundColor: constants.colors.primaryBaseColor
+        ...getStyle(theme).container,
+        backgroundColor: theme.colors.primaryBaseColor
     },
     viewBodyCadastro: {
-        ...style.viewBodyCadastro,
+        ...getStyle(theme).viewBodyCadastro,
         flexDirection: "column",
         justifyContent: "center"
     },
@@ -32,12 +31,12 @@ export const signUpStyle = StyleSheet.create({
         width: 130,
         height: 40,
         borderRadius: 30,
-        backgroundColor: constants.colors.primaryBaseColor,
+        backgroundColor: theme.colors.primaryBaseColor,
         justifyContent: "center",
         alignItems: "center"
     },
     buttonText: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.tertiaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
@@ -49,12 +48,12 @@ export const signUpStyle = StyleSheet.create({
         alignItems: "center",
     },
     loginText: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
     loginTextLink: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline"
@@ -63,7 +62,7 @@ export const signUpStyle = StyleSheet.create({
         justifyContent: "center",
         marginTop: 80,
         margin: 20,
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryBaseColor,
         fontSize: 22,
         fontFamily: "Open Sans"
     },

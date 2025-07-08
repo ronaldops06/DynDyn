@@ -1,10 +1,9 @@
 import { StyleSheet } from "react-native";
-import {constants} from "../../constants";
 
-export const customTabBarStyle = StyleSheet.create({
+export const getCustomTabBarStyle = (theme) => StyleSheet.create({
     tabArea: {
         height: 60,
-        backgroundColor: constants.colors.tertiaryBaseColor,
+        backgroundColor: theme.colors.tertiaryBaseColor,
         flexDirection: "row"
     },
     tabItem: {
@@ -13,14 +12,19 @@ export const customTabBarStyle = StyleSheet.create({
         alignItems: "center"
     },
     tabItemCenter: {
-        width: 70,
-        height: 70,
+        width: 85,
+        height: 85,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: constants.colors.tertiaryBaseColor,
-        borderRadius: 35,
+        backgroundColor: theme.colors.tertiaryBaseColor,
+        borderRadius: 42,
         borderWidth: 1,
-        borderColor: constants.colors.secondaryTextColor,
-        marginTop: -25
-    }
+        borderColor: theme.colors.primaryBaseColor,
+        marginTop: -30,
+    },
+    textItem: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 14,
+        fontFamily: "Open Sans"
+    },
 });

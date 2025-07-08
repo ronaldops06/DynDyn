@@ -1,20 +1,24 @@
 import React, {useState} from 'react';
 import {Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
 import {postUser} from './signup.api';
 import {encrypt} from "../../utils.ts";
 
-import {style} from '../../styles/styles';
-import {styleCadastro} from "../../styles/styles.cadastro.ts";
-import {signUpStyle} from './styles';
 import VisibilityIcon from "../../assets/visibility.svg";
 import VisibilityOffIcon from "../../assets/visibility_off.svg";
-import {constants} from "../../constants";
+
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
+import {getSignUpStyle} from './styles';
 
 const SignUp = ({navigation}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const styleCadastro = getStyleCadastro(theme);
+    const signUpStyle = getSignUpStyle(theme);
 
     const [loading, setLoading] = useState(false);
     const [valueName, setValueName] = useState("");
@@ -74,7 +78,7 @@ const SignUp = ({navigation}) => {
                             value={valuePassword}
                             setValue={setValuePassword}
                             secureTextEntry={!showPassword}
-                            icon={showPassword ? <VisibilityOffIcon width={30} fill="#6E8BB8"/> : <VisibilityIcon width={30} fill="#6E8BB8"/>}
+                            icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
                             onPressIcon={() => setShowPassword(!showPassword)}
                         />
                         <TextInput
@@ -82,7 +86,7 @@ const SignUp = ({navigation}) => {
                             value={valuePasswordConfirm}
                             setValue={setValuePasswordConfirm}
                             secureTextEntry={!showPasswordConfirm}
-                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill="#6E8BB8"/> : <VisibilityIcon width={30} fill="#6E8BB8"/>}
+                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
                             onPressIcon={() => setShowPasswordConfirm(!showPasswordConfirm)}
                         />
                     </View>
@@ -107,7 +111,7 @@ const SignUp = ({navigation}) => {
                 </View>
                 {loading && (
                     <View style={signUpStyle.overlay}>
-                        <ActivityIndicator size="large" color={constants.colors.primaryTextColor} />
+                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
                     </View>
                 )}
             </ScrollView>

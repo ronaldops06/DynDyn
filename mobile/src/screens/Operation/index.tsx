@@ -15,12 +15,17 @@ import CarouselSelection from "../../components/CarouselSelection";
 import OperationItem from "./OperationItem";
 import {validateLogin} from "../../utils.ts";
 
-import {style} from "../../styles/styles.ts";
-import {categoryStyle} from "../Category/styles";
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
+import {getCategoryStyle} from "../Category/styles";
+
 import HistoryIcon from '../../assets/history.svg';
 
 const Operation = ({navigation, route}) => {
-
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const categoryStyle = getCategoryStyle(theme);
+    
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -176,7 +181,7 @@ const Operation = ({navigation, route}) => {
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Operações</Text>
                     </View>
                 </View>
@@ -201,7 +206,7 @@ const Operation = ({navigation, route}) => {
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

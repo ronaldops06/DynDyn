@@ -1,6 +1,8 @@
-import {style} from "../../styles/styles.ts";
-import {ActivityIndicator, FlatList, TextStyle} from "react-native";
 import React from "react";
+import {ActivityIndicator, FlatList, TextStyle} from "react-native";
+
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
 
 interface CustomScrollParams {
     data: any[];
@@ -14,7 +16,9 @@ interface CustomScrollParams {
 }
 
 const CustomScroll = (props: CustomScrollParams) => {
-        
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    
     const reloadPage = () => {
         if (!props.loading && props.pageNumber <= props.totalPages) {
             props.handlePageNumber(props.pageNumber + 1);

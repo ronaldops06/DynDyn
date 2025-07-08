@@ -3,7 +3,8 @@ import { Text, View } from 'react-native';
 
 import * as I from '../../interfaces/interfaces';
 
-import { operationItemStyle } from './styles';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getOperationItemStyle } from './styles';
 
 interface OperationItemParms {
     data: I.Operation,
@@ -11,7 +12,9 @@ interface OperationItemParms {
 }
 
 const OperationItem = (props: OperationItemParms) => {
-
+    const { theme } = useTheme();
+    const operationItemStyle = getOperationItemStyle(theme);
+    
     return (
         <View
             style={operationItemStyle.card}

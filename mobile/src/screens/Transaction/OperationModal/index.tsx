@@ -6,9 +6,11 @@ import * as I from '../../../interfaces/interfaces';
 import TextItem from '../../../components/CustomTextInput';
 import OperationItem from './OperationItem';
 
-import { style } from '../../../styles/styles';
-import { operationModalStyle } from './styles';
 import {loadAllOperation} from "../../../controller/operation.controller";
+
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getStyle } from '../../../styles/styles';
+import { getOperationModalStyle } from './styles';
 
 interface OperationModalParams {
     show: boolean,
@@ -18,7 +20,10 @@ interface OperationModalParams {
 }
 
 const OperationModal = (props: OperationModalParams) => {
-
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const operationModalStyle = getOperationModalStyle(theme);
+    
     const [loading, setLoading] = useState(false);
     const [valueSearch, setValueSearch] = useState("");
     const [operations, setOperations] = useState<I.Operation[]>([]);
@@ -55,7 +60,7 @@ const OperationModal = (props: OperationModalParams) => {
                 <TouchableOpacity
                     style={operationModalStyle.buttonClose}
                     onPress={handleCloseClick}>
-                    <ExpandIcon width="40" height="40" fill="#F1F1F1" />
+                    <ExpandIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                 </TouchableOpacity>
                 <View style={operationModalStyle.areaContent}>
                     <ScrollView>
@@ -67,7 +72,7 @@ const OperationModal = (props: OperationModalParams) => {
                         />
                         <View >
                             {loading &&
-                                <ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8" />
+                                <ActivityIndicator style={style.loadingIcon} size="large" color={theme.colors.primaryBaseColor} />
                             }
                             {operations != null && operations.map((item, key) => {
                                 return ( item.Name.toUpperCase().includes(valueSearch.toUpperCase()) &&
