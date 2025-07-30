@@ -95,7 +95,7 @@ const SignUp = ({navigation}) => {
                             style={styleCadastro.buttonSave}
                             onPress={handleRegisterClick}
                         >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
+                            <Text style={styleCadastro.textButtonSave}>Cadastrar</Text>
                         </TouchableOpacity>
                     </View>
                     <View style={signUpStyle.areaTextLogin}>
@@ -110,7 +110,7 @@ const SignUp = ({navigation}) => {
                     </View>
                 </View>
                 {loading && (
-                    <View style={signUpStyle.overlay}>
+                    <View style={style.overlay}>
                         <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
                     </View>
                 )}

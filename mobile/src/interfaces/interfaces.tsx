@@ -21,9 +21,21 @@ export interface User {
     AccessToken: string
 }
 
+export interface ChangePasswordUser {
+    Login: string,
+    Password: string,
+    NewPassword: string
+}
+
 export interface VerificationUser {
     Login: string,
     VerificationCode: number
+}
+
+export interface PasswordRecreation {
+    Login: string,
+    Password: string,
+    VerificationToken: string
 }
 
 export interface Synchronization {

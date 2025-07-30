@@ -124,8 +124,8 @@ export const post = async (path: string, data?: any) => {
         responseRequest.success = true;
     }).catch((error) => {
         console.log('erro',error?.response);
-        responseRequest.error = error.response.data.errors.Value.join();
-        responseRequest.status = error.response.status;
+        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.status = error?.response?.status;
         responseRequest.success = false;
     });
 
@@ -211,7 +211,7 @@ export const getLogin = async (path: string, navigation: any) => {
     }
 }
 
-export const postTransientUser = async (path: string, data: I.User): Promise<I.Response> => {
+export const postTransientUser = async (path: string, data: any): Promise<I.Response> => {
     let dataResponse: I.Response = {} as I.Response;
 
     let api = await getApiInstance();
@@ -228,17 +228,53 @@ export const postTransientUser = async (path: string, data: I.User): Promise<I.R
     return dataResponse;
 };
 
-export const postValidateUser = async (path: string, data: I.VerificationUser): Promise<I.Response> => {
+export const postTransientUserParamQuery = async (path: string): Promise<I.Response> => {
     let dataResponse: I.Response = {} as I.Response;
 
+    dataResponse.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        dataResponse.isConnected = false;
+        dataResponse.success = true;
+        return dataResponse;
+    }
+    
     let api = await getApiInstance();
-    await api.post(path, data
+    await api.post(path
     ).then(response => {
         dataResponse.data = response.data;
         dataResponse.success = true;
         dataResponse.status = response.data.status;
     }).catch((error) => {
         dataResponse.error = error.response.data;
+        dataResponse.status = error.response.status;
+        dataResponse.success = false;
+    });
+
+    return dataResponse;
+};
+
+export const postValidateUser = async (path: string, data: any): Promise<I.Response> => {
+    let dataResponse: I.Response = {} as I.Response;
+
+    dataResponse.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        dataResponse.isConnected = false;
+        dataResponse.success = true;
+        return dataResponse;
+    }
+    
+    let api = await getApiInstance();
+    await api.post(path, data
+    ).then(response => {
+        dataResponse.data = response?.data;
+        dataResponse.success = true;
+        dataResponse.status = response.data.status;
+    }).catch((error) => {
+        dataResponse.error = error?.response?.data;
         dataResponse.status = error.response.status;
         dataResponse.success = false;
     });

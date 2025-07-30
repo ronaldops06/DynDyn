@@ -27,6 +27,13 @@ export const validateSuccess = (response: I.Response, navigation: any, screem: s
     }
 }
 
+export const setUserInStorage = async (userStorage: I.User) => {
+    await EncryptedStorage.setItem(
+        "user_session",
+        JSON.stringify(userStorage)
+    );
+};
+
 export const getUserByStorage = async (): Promise<I.User | null> => {
     const session = await EncryptedStorage.getItem("user_session");
 

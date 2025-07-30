@@ -65,9 +65,5 @@ export const getSignUpStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryBaseColor,
         fontSize: 22,
         fontFamily: "Open Sans"
-    },
-    overlay: {
-        marginTop: 20,
-        alignItems: 'center',
-    },
+    }
 });

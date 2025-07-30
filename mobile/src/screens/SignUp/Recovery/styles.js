@@ -1,7 +1,7 @@
 import {StyleSheet} from "react-native";
-import {getStyle} from "../../styles/styles";
+import {getStyle} from "../../../styles/styles";
 
-export const getValidationStyle = (theme) => StyleSheet.create({
+export const getRecoveryStyle = (theme) => StyleSheet.create({
     container: {
         ...getStyle(theme).container,
         backgroundColor: theme.colors.primaryBaseColor
@@ -14,14 +14,24 @@ export const getValidationStyle = (theme) => StyleSheet.create({
     },
     text: {
         textAlign: "justify",
-        marginTop: 80,
+        marginTop: 40,
         margin: 20,
         color: theme.colors.primaryTextColor,
         fontSize: 22,
         fontFamily: "Open Sans"
     },
     areaFields: {
-        marginTop: 10,
+        marginTop: 40,
+        marginLeft: 5,
+        marginRight: 5,
+        style: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        paddingHorizontal: 20,
+    },
+    areaFieldsValidation: {
+        marginTop: 50,
         marginLeft: 5,
         marginRight: 5,
         flexDirection: "row",
@@ -37,7 +47,7 @@ export const getValidationStyle = (theme) => StyleSheet.create({
         borderBottomColor: theme.colors.tertiaryBorderColor
     },
     areaButtonValidate: {
-        marginTop: 50,
+        marginTop: 60,
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "flex-end"

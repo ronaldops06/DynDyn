@@ -11,7 +11,7 @@ import { loadInternalCategory } from './category.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
 import {constants} from "../constants";
 import Moment from "moment";
-import {getOperations, postOperation, putOperation, deleteOperation} from "../services/operation.api.tsx";
+import {getOperations, postOperation, putOperation, deleteOperation} from "../services/operation.api.ts";
 import {Alert} from "react-native";
 import {existsTransactionRelationshipOperation} from "../repository/transaction.repository.tsx";
 

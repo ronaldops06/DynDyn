@@ -5,25 +5,29 @@ import * as I from "../../interfaces/interfaces.tsx";
 import EncryptedStorage from "react-native-encrypted-storage";
 import ReactNativeBiometrics from "react-native-biometrics";
 
+import { setUserInStorage } from "../../utils.ts";
+
 import { useTheme } from '../../contexts/ThemeContext';
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getValidationStyle} from "./validation.styles";
+import { getStyle } from "../../styles/styles"
 
 const Validation = ({navigation, route}) => {
     const { theme } = useTheme();
     const styleCadastro = getStyleCadastro(theme);
     const validationStyle = getValidationStyle(theme);
+    const style = getStyle(theme);
     
     const inputRefs = useRef([]);
     const [loading, setLoading] = useState(false);
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [valueVerificationCode, setValueVerificationCode] = useState(Array(6).fill(""));
-    const [email, seEmail] = useState("");
+    const [email, setEmail] = useState("");
 
     useEffect(() => {
         let data = route.params?.data;
         validateBiometricActivated();
-        seEmail(data.Login);
+        setEmail(data.Login);
     }, []);
     
     const handleChange = (text, index) => {
@@ -110,14 +114,7 @@ const Validation = ({navigation, route}) => {
             }
         }
     };
-
-    const setUserInStorage = async (userStorage: I.User) => {
-        await EncryptedStorage.setItem(
-            "user_session",
-            JSON.stringify(userStorage)
-        );
-    };
-
+    
     return (
         <SafeAreaView style={[validationStyle.container, validationStyle.containerCadastro]}>
             <Image
@@ -162,7 +159,7 @@ const Validation = ({navigation, route}) => {
                     </Text>
                 </View>
                 {loading && (
-                    <View style={validationStyle.overlay}>
+                    <View style={style.overlay}>
                         <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
                     </View>
                 )}

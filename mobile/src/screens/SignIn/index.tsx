@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import ReactNativeBiometrics from 'react-native-biometrics';
 
@@ -14,6 +14,7 @@ import VisibilityOffIcon from "../../assets/visibility_off.svg";
 import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getSignInStyle} from './styles';
+import {executeLoginPasswordRecovery} from "../../controller/user.controller.tsx";
 
 const SignIn = ({navigation}) => {
     const { theme } = useTheme();
@@ -24,6 +25,7 @@ const SignIn = ({navigation}) => {
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         validateBiometricActivated();
@@ -87,12 +89,14 @@ const SignIn = ({navigation}) => {
     };
 
     const validateLogin = async (email: string, password: string) => {
+        setLoading(true);
         let isBiometricActivated = await EncryptedStorage.getItem("biometrics");
         
         let loginDTO = {} as I.Login;
         loginDTO.Login = email;
         loginDTO.Password = password;
         let userResponse = await login(loginDTO);
+        setLoading(false);
         
         if (userResponse !== null) {
             if (biometricAvailable && isBiometricActivated !== "yes")
@@ -117,6 +121,12 @@ const SignIn = ({navigation}) => {
     const handleRegisterClick = () => {
         navigation.navigate("SignUp");
     };
+    
+    const handlePasswordRecoveryClick = async () => {
+        navigation.navigate("RecoveryLogin", {
+            login: valueEmail
+        });
+    }
 
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
@@ -145,6 +155,11 @@ const SignIn = ({navigation}) => {
                     >
                         <Text style={signInStyle.buttonText}>Login</Text>
                     </TouchableOpacity>
+                    {loading && (
+                        <View style={style.overlay}>
+                            <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
+                        </View>
+                    )}
                     <Text style={signInStyle.registerText}>
                         Não possui uma conta?&nbsp;
                         <Text
@@ -153,6 +168,12 @@ const SignIn = ({navigation}) => {
                         >
                             Cadastrar-se.
                         </Text>
+                    </Text>
+                    <Text
+                        style={signInStyle.registerTextLink}
+                        onPress={handlePasswordRecoveryClick}
+                    >
+                        Esqueceu a senha?
                     </Text>
                 </View>
             </View>

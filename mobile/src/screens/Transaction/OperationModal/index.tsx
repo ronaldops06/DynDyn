@@ -10,7 +10,6 @@ import {loadAllOperation} from "../../../controller/operation.controller";
 
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getStyle } from '../../../styles/styles';
-import { getOperationModalStyle } from './styles';
 
 interface OperationModalParams {
     show: boolean,
@@ -22,7 +21,6 @@ interface OperationModalParams {
 const OperationModal = (props: OperationModalParams) => {
     const { theme } = useTheme();
     const style = getStyle(theme);
-    const operationModalStyle = getOperationModalStyle(theme);
     
     const [loading, setLoading] = useState(false);
     const [valueSearch, setValueSearch] = useState("");
@@ -56,13 +54,13 @@ const OperationModal = (props: OperationModalParams) => {
             transparent={true}
             visible={props.show}
             animationType="slide">
-            <View style={operationModalStyle.areaModal}>
+            <View style={style.areaModal}>
                 <TouchableOpacity
-                    style={operationModalStyle.buttonClose}
+                    style={style.buttonCloseModal}
                     onPress={handleCloseClick}>
                     <ExpandIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                 </TouchableOpacity>
-                <View style={operationModalStyle.areaContent}>
+                <View style={style.areaContentModal}>
                     <ScrollView>
                         <TextItem
                             text="Search"
