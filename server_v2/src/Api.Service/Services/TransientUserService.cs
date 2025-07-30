@@ -55,7 +55,7 @@ namespace Service.Services
 
             return transientUserModel;
         }
-
+        
         public async Task<TransientUserModel> Post(TransientUserModel userModel)
         {
             var userEntityAux = await _userService.GetUsuarioByLogin(userModel.Login);
@@ -82,9 +82,77 @@ namespace Service.Services
             
             userModel = _mapper.Map<TransientUserModel>(userEntity);
 
-            await SendMailVerification(userModel.Login, userModel.VerificationCode);
+            await SendMailVerification(userModel.Login, userModel.VerificationCode, "Service.Templates.VerificationEmail.html");
 
             return userModel;
+        }
+        
+        public async Task<TransientUserModel> PostLoginPasswordRecovery(string login)
+        {
+            var userEntityAux = await _userService.GetUsuarioByLogin(login);
+
+            if (userEntityAux == null)
+                return null;
+
+            var userModel = new TransientUserModel();
+            userModel.Login = login;
+            userModel.Name = userEntityAux.Name;
+            userModel.Password = "";
+            userModel.VerificationCode = new Random().Next(100000, 999999);
+            userModel.ExpirationDate = DateTime.Now.AddMinutes(EXPIRATION_DATE_FIFTEEN_MINUTES);
+            
+            var userEntity = _mapper.Map<TransientUserEntity>(userModel);
+
+            var transientUserEntityAux = await _repository.SelectUsuarioByLogin(userModel.Login);
+
+            if (transientUserEntityAux == null)
+            {
+                userEntity = await _repository.InsertAsync(userEntity);
+            }
+            else
+            {
+                userEntity.Id = transientUserEntityAux.Id;
+                userEntity = await _repository.UpdateAsync(userEntity);
+            }
+            
+            userModel = _mapper.Map<TransientUserModel>(userEntity);
+
+            await SendMailVerification(userModel.Login, userModel.VerificationCode, "Service.Templates.PasswordRecoveryEmail.html");
+
+            return userModel;
+        }
+        
+        public async Task<TransientUserModel> ExecuteVerificationCodeChangePassword(string login, int verificationCode)
+        {
+            var userEntityAux = await _repository.SelectUsuarioByLogin(login);
+            
+            if (userEntityAux == null || userEntityAux.VerificationCode != verificationCode ||userEntityAux.ExpirationDate < DateTime.Now)
+                throw new Exception("Dados inconsistentes, não foi possível recuperar a senha.");
+
+            userEntityAux.VerificationCode = null;
+            userEntityAux.VerificationToken = Guid.NewGuid().ToString();
+            
+            userEntityAux = await _repository.UpdateAsync(userEntityAux);
+
+            return _mapper.Map<TransientUserModel>(userEntityAux);
+        }
+
+        public async Task<TransientUserModel> ExecutePasswordRecreation(string login, string verificationToken, string password)
+        {
+            var userEntityAux = await _repository.SelectUsuarioByLogin(login);
+            if (userEntityAux == null || userEntityAux.VerificationToken != verificationToken ||userEntityAux.ExpirationDate < DateTime.Now)
+                throw new Exception("Dados inconsistentes, não foi possível recuperar a senha.");
+
+            var userModel = await _userService.GetUsuarioByLogin(login);
+            userModel.Password = password;
+            userModel = await _userService.Put(userModel);
+            
+            var transientUserModel = _mapper.Map<TransientUserModel>(userModel);
+            transientUserModel.AccessToken = _loginService.GenerateToken(transientUserModel);
+
+            var result = await Delete(userEntityAux.Id);
+
+            return transientUserModel;
         }
 
         public async Task<TransientUserModel> Put(TransientUserModel userModel)
@@ -100,7 +168,7 @@ namespace Service.Services
             return await _repository.DeleteAsync(id);
         }
         
-        private async Task SendMailVerification(string emailTo, int? verificationCode)
+        private async Task SendMailVerification(string emailTo, int? verificationCode, string template)
         {
             var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
             var smtpPass =  Environment.GetEnvironmentVariable("SMTP_PASS");
@@ -114,7 +182,7 @@ namespace Service.Services
                 };
                 
                 var assembly = Assembly.GetExecutingAssembly();
-                using var stream = assembly.GetManifestResourceStream("Service.Templates.VerificationEmail.html");
+                using var stream = assembly.GetManifestResourceStream(template);
                 using var reader = new StreamReader(stream!);
                 string htmlTemplate = reader.ReadToEnd();
                 string htmlContent = htmlTemplate.Replace("{{CODE}}", verificationCode.ToString());

@@ -65,6 +65,6 @@ public class WhenRequestTransientUser : BaseIntegration
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         
         //Post validação
-        //Não é possível validar pois o VerificationCode só é gerado internamente e enviado por e-mail, não sendo exposto
+        //Não é possível validar pois o VerificationCode só é gerado internamente e enviado por e-mail, não sendo exposto   
     }
 }

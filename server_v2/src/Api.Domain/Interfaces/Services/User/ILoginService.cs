@@ -7,6 +7,8 @@ namespace Domain.Interfaces.Services.User
     {
         Task<TransientUserModel> GetLoginAsync(TransientUserModel userModel);
 
+        Task<TransientUserModel> ExecuteChangePassword(string login, string password, string newPassword);
+
         string GenerateToken(TransientUserModel userModel);
     }
 }

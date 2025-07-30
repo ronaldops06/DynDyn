@@ -43,7 +43,7 @@ public class ReturnCreated : BaseTestApplication
         url.Setup(x => x.Link(It.IsAny<string>(), It.IsAny<object>())).Returns("http://localhost:5000");
         _controller.Url = url.Object;
 
-        var validationUserDto = new ValidationUserDto
+        var validationUserDto = new ValidationUserRequestDto
         {
             Login = login,
             VerificationCode = verificationCode,

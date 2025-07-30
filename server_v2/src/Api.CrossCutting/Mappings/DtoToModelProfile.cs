@@ -24,6 +24,7 @@ namespace CrossCutting.Mappings
             CreateMap<UserDto, UserModel>().ReverseMap();
             CreateMap<UserRequestDto, UserModel>();
             CreateMap<UserModel, UserResponseDto>();
+            CreateMap<TransientUserModel, ValidationUserResponseDto>();
 
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
