@@ -99,6 +99,10 @@ const RecoveryPassword = ({navigation, route}) => {
             }
         }
     }
+
+    const handleCancelClick = async () => {
+        navigation.navigate("SignIn");
+    }
         
     return (
         <SafeAreaView style={[recoveryStyle.container, recoveryStyle.containerCadastro]}>
@@ -143,6 +147,12 @@ const RecoveryPassword = ({navigation, route}) => {
                     >
                         <Text style={styleCadastro.textButtonSave}>Recuperar</Text>
                     </TouchableOpacity>
+                </View>
+                <View style={recoveryStyle.areaCancel}>
+                    <Text style={recoveryStyle.cancelTextLink}
+                          onPress={handleCancelClick}>
+                        Cancelar
+                    </Text>
                 </View>
                 {loading && (
                     <View style={style.overlay}>

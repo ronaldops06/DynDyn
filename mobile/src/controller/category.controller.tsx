@@ -14,6 +14,7 @@ import {deleteCategory, getCategories, postCategory, putCategory} from "../servi
 import {Alert} from "react-native";
 import {existsPortfolioRelationshipCategory} from "../repository/portfolio.repository.tsx";
 import {existsOperationRelationshipCategory} from "../repository/operation.repository.tsx";
+import {getUserLoginEncrypt} from "../utils.ts";
 
 /**
  * Método responsável por retornar a categoria persistida internamente para ser utilizada como referência.
@@ -25,10 +26,11 @@ import {existsOperationRelationshipCategory} from "../repository/operation.repos
  * @returns {Promise<I.Category>} - Promisse com o objeto da categoria interno
  */
 export const loadInternalCategory = async (category: I.Category): Promise<I.Category> => {
-    let internalCategory = await selectCategoryById(category.Id);
+    let login = await getUserLoginEncrypt();
+    let internalCategory = await selectCategoryById(login, category.Id);
 
     if (internalCategory === undefined){
-        internalCategory = await insertCategory(category);
+        internalCategory = await insertCategory(login, category);
     }
 
     return internalCategory;
@@ -36,10 +38,11 @@ export const loadInternalCategory = async (category: I.Category): Promise<I.Cate
 
 export const loadAllCategoryInternal = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
-
+    
+    let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllCategories(type as number, pageNumber as number);
-    response.totalPages = await selectContAllCategories(type as number);
+    response.data = await selectAllCategories(login, type as number, pageNumber as number);
+    response.totalPages = await selectContAllCategories(login, type as number);
 
     return response;
 }
@@ -56,11 +59,12 @@ export const loadAllCategory = async (type: Number | null, pageNumber: Number | 
     
     var categories = response?.data ?? [];
 
+    let login = await getUserLoginEncrypt();
     for (const item of categories) {
-        var category = await selectCategoryById(item.Id);
+        var category = await selectCategoryById(login, item.Id);
 
         if (category === undefined) {
-            category = await insertCategory(item);
+            category = await insertCategory(login, item);
         } else {
             item.InternalId = category.InternalId;
             await updateCategory(item);
@@ -80,11 +84,13 @@ export const createCategory = async (category: I.Category): Promise<I.Response> 
     populateInternalFields(category, response);
 
     if (!response.isConnected) {
-        category = await insertCategory(category);
+        let login = await getUserLoginEncrypt();
+        category = await insertCategory(login, category);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null){
-        category = await insertCategory(response.data);
+        let login = await getUserLoginEncrypt();
+        category = await insertCategory(login, response.data);
     }
     
     return response;

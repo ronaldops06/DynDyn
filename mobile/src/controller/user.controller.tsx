@@ -1,14 +1,20 @@
 import * as I from "../interfaces/interfaces.tsx";
 import {Alert} from "react-native";
 import {
+    postCleanupUserAccount,
     postLoginPasswordRecovery,
     postPasswordRecoveryValidate,
     postPasswordRecreation,
     postPasswordUser
 } from "../services/user.api.ts";
-import { setUserInStorage } from "../utils.ts";
+import {getUserLoginEncrypt, setUserInStorage} from "../utils.ts";
 import EncryptedStorage from "react-native-encrypted-storage";
-import {postTransientUserParamQuery} from "../services/api.ts";
+import {deleteAllBalances} from "../repository/balance.repository.tsx";
+import {deleteAllPortfolios} from "../repository/portfolio.repository.tsx";
+import {deleteAllOperations} from "../repository/operation.repository.tsx";
+import {deleteAllCategories} from "../repository/category.repository.tsx";
+import {deleteAllSynchronizations} from "../repository/synchronization.repository.tsx";
+import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
 
 export const alterPasswordUser = async (changePasswordUser: I.ChangePasswordUser): Promise<I.Response> => {
     let response = await postPasswordUser(changePasswordUser);
@@ -56,3 +62,23 @@ export const executePasswordRecreation = async (data: I.PasswordRecreation): Pro
 
     return response;
 }
+
+export const executeCleanupUserAccount = async (): Promise<I.Response> => {
+    let response = await postCleanupUserAccount();
+    
+    if (!response.isConnected) {
+        Alert.alert("Atenção!", "Sem conexão com a internet, não foi possível excluir sua conta.");
+    } else if (response.data !== null) {
+        let login = await getUserLoginEncrypt();
+        await deleteAllBalances(login);
+        await deleteAllTransactions(login);
+        await deleteAllPortfolios(login);
+        await deleteAllOperations(login);
+        await deleteAllCategories(login);
+        await deleteAllSynchronizations(login);
+        
+        await EncryptedStorage.removeItem("user_session");
+    }
+
+    return response;
+} 

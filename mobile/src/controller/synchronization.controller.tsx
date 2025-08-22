@@ -1,10 +1,11 @@
 import moment from 'moment';
 import { Synchronization } from "../interfaces/interfaces";
 import { insertSynchronization, selectSynchronizationByCreationsDateAndOperation, updateSynchronization } from "../repository/synchronization.repository";
+import {getUserLoginEncrypt} from "../utils.ts";
 
 export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization> => {
-
-    let synchronization = await selectSynchronizationByCreationsDateAndOperation(startCreationDate, endCreationDate, operation);
+    let login = await getUserLoginEncrypt();
+    let synchronization = await selectSynchronizationByCreationsDateAndOperation(login, startCreationDate, endCreationDate, operation);
     
     if (!synchronization){
         const executionDate = moment().utc(true);
@@ -18,7 +19,7 @@ export const loadSynchronizationByCreationsDateAndOperation = async (startCreati
             EndCreationDate: endCreationDate
         };
 
-        synchronization = await insertSynchronization(synchronization);
+        synchronization = await insertSynchronization(login, synchronization);
     }
 
     return synchronization;

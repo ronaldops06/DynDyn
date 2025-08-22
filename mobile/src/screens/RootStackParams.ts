@@ -1,6 +1,7 @@
 import * as I from '../interfaces/interfaces';
 import Recovery from "./SignUp/Recovery";
 import RecoveryValidation from "./SignUp/Recovery/recovery.validation.tsx";
+import DeleteAccount from "./Home/UserAccount/DeleteAccount";
 
 export type RootStackParamList = { 
     Preload: undefined; 
@@ -13,6 +14,7 @@ export type RootStackParamList = {
     Home: undefined;
     UserAccount: undefined;
     ChangePassword: undefined;
+    DeleteAccount: { login: string } | undefined;
     Dashboard: undefined;
     Account: undefined;
     AccountCreate: { isEditing: boolean, data: I.Portfolio | null } | undefined;

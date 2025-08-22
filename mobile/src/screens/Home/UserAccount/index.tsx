@@ -42,6 +42,12 @@ const UserAccount = ({navigation, route}) => {
         navigation.navigate("ChangePassword");
     }
     
+    const handleClickDeleteAccount = () => {
+        navigation.navigate("DeleteAccount", {
+            login: user.Login
+        });
+    }
+    
     const handleLogoutClick = () => {
         Alert.alert("Atenção!",
             "Deseja realmente sair do aplicativo?",
@@ -133,7 +139,7 @@ const UserAccount = ({navigation, route}) => {
                                   fill={theme.colors.primaryIconDashboard}
                         />
                     </View>
-                    <View style={accountUserStyles.menuItem}>
+                    <View style={accountUserStyles.menuItem} onTouchEndCapture={handleClickDeleteAccount}>
                         <TrashIcon width="30" height="30" fill={theme.colors.dangerBaseColor}/>
                         <Text style={[accountUserStyles.menuItemText, accountUserStyles.menuItemTextDanger]}>Excluir
                             conta</Text>

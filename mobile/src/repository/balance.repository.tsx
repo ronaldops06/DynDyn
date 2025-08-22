@@ -28,7 +28,8 @@ export const createTableBalance = async () => {
             month                NUMBER,
             year                 NUMBER,
             data_criacao         TEXT,
-            data_alteracao       TEXT
+            data_alteracao       TEXT,
+            reference            TEXT
         );
     `);
 
@@ -41,7 +42,7 @@ export const createTableBalance = async () => {
  *  essa abordagem melhora significativamente a performance (em até 10x).
  * @param {Balance[]} balances - Array de saldos a serem salvos (atualizado ou inserido) 
  */
-export const saveBalances = async (balances: Balance[]): Promise<void> => {
+export const saveBalances = async (userLogin: string, balances: Balance[]): Promise<void> => {
     const db = await openDatabase();
     
     db.transaction((tx) => {
@@ -49,15 +50,16 @@ export const saveBalances = async (balances: Balance[]): Promise<void> => {
             tx.executeSql(
                 'SELECT bal.internal_id ' +
                 '  FROM balances bal ' +
-                ' WHERE bal.id = ?', 
-                [balances[i].Id],
+                ' WHERE bal.id        = ?' +
+                '   AND bal.reference = ?', 
+                [balances[i].Id, userLogin],
                 (_, result) => {
                     let internalBalanceId : number = 0;
                     
                     if (result.rows.length > 0)
                         internalBalanceId = result.rows.item(0).internal_id;
                     
-                    executeCommand(internalBalanceId, balances[i], tx);
+                    executeCommand(userLogin, internalBalanceId, balances[i], tx);
                 },
                 (_, error) => {
                     console.log('Erro ao buscar os balances', error);
@@ -66,12 +68,12 @@ export const saveBalances = async (balances: Balance[]): Promise<void> => {
     });
 };
 
-const executeCommand = (internalBalanceId: number, balance: Balance, tx: Transaction) => {
+const executeCommand = (userLogin: string, internalBalanceId: number, balance: Balance, tx: Transaction) => {
     
     if (internalBalanceId === null || internalBalanceId === 0) {
         tx.executeSql(
             getCommandInsert(),
-            getParameters(balance, constants.acao.insert),
+            getParameters(userLogin, balance, constants.acao.insert),
             (_, result) => {},
             (_, error) => {
                 console.log('Erro no insert de Balance', error);
@@ -81,7 +83,7 @@ const executeCommand = (internalBalanceId: number, balance: Balance, tx: Transac
         balance.InternalId = internalBalanceId
         tx.executeSql(
             getCommandUpdate(),
-            getParameters(balance, constants.acao.update),
+            getParameters(userLogin, balance, constants.acao.update),
             (_, result) => {},
             (_, error) => {
                 console.log('Erro no update de Balance', error);
@@ -90,21 +92,20 @@ const executeCommand = (internalBalanceId: number, balance: Balance, tx: Transac
     }
 }
 
-export const insertBalance = async (balance: Balance, transaction: Transaction): Promise<Balance> => {
+export const insertBalance = async (userLogin: string, balance: Balance): Promise<Balance> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql(getCommandInsert(), getParameters(balance, constants.acao.insert));
+    const result = await db.executeSql(getCommandInsert(), getParameters(userLogin, balance, constants.acao.insert));
 
     balance.InternalId = result[0].insertId;
 
     return balance;
 };
 
-export const updateBalance = async (balance: Balance): Promise<Balance> => {
+export const updateBalance = async (userLogin: string, balance: Balance): Promise<Balance> => {
     const db = await openDatabase();
 
-    var result = await db.executeSql(getCommandUpdate(), getParameters(balance, constants.acao.update));
-    console.log(result);
+    var result = await db.executeSql(getCommandUpdate(), getParameters(userLogin, balance, constants.acao.update));
 
     return balance;
 };
@@ -129,7 +130,8 @@ export const getCommandInsert = () => {
         + ', year'
         + ', data_criacao'
         + ', data_alteracao'
-        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+        + ', reference'
+        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 };
 
 export const getCommandUpdate = () => {
@@ -152,10 +154,11 @@ export const getCommandUpdate = () => {
         + '   , year = ?'
         + '   , data_criacao = ?'
         + '   , data_alteracao = ?'
+        + '   , reference = ?'
         + ' WHERE internal_id = ?';
 }
 
-export const getParameters = (balance: Balance, acao: string): any[] => {
+export const getParameters = (userLogin: string, balance: Balance, acao: string): any[] => {
     const {
         Id,
         Value,
@@ -195,7 +198,8 @@ export const getParameters = (balance: Balance, acao: string): any[] => {
         Month,
         Year,
         DataCriacao,
-        DataAlteracao];
+        DataAlteracao,
+        userLogin];
     
     if (acao === constants.acao.update) {
         parameters.push(InternalId);
@@ -212,14 +216,22 @@ export const deleteInternalBalance = async (internalId: number) => {
         + ' WHERE internal_id = ?', [internalId]);
 };
 
-export const selectAllBalances = async (pageNumber: number | null): Promise<Balance[]> => {
+export const deleteAllBalances = async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM balances' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectAllBalances = async (userLogin: string, pageNumber: number | null): Promise<Balance[]> => {
     const db = await openDatabase();
 
     let results: ResultSet[];
     if (pageNumber)
-        results = await db.executeSql(queryBase() + ' ORDER BY bal.month, bal.year LIMIT ? OFFSET ?', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+        results = await db.executeSql(queryBase() + ' ORDER BY bal.month, bal.year LIMIT ? OFFSET ?', [userLogin, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
     else
-        results = await db.executeSql(queryBase() + ' ORDER BY bal.month, bal.year');
+        results = await db.executeSql(queryBase() + ' ORDER BY bal.month, bal.year', [userLogin,]);
 
     const balances: Balance[] = [];
     results.forEach(result => {
@@ -231,12 +243,14 @@ export const selectAllBalances = async (pageNumber: number | null): Promise<Bala
     return balances;
 };
 
-export const selectContAllBalances = async (): Promise<number> => {
+export const selectContAllBalances = async (userLogin: string): Promise<number> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
         'SELECT * ' +
-        '  FROM balances ');
+        '  FROM balances' +
+        ' WHERE reference = ?',
+        [userLogin,]);
 
     let count: number = 0;
     results.forEach(result => {
@@ -246,7 +260,7 @@ export const selectContAllBalances = async (): Promise<number> => {
     return count
 };
 
-export const selectTotalsByTreePortfolio = async (internalPortfolioId: number): Promise<BalanceTotals | undefined> => {
+export const selectTotalsByTreePortfolio = async (userLogin: string, internalPortfolioId: number): Promise<BalanceTotals | undefined> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
@@ -261,35 +275,37 @@ export const selectTotalsByTreePortfolio = async (internalPortfolioId: number): 
         ')' +
         '   SELECT SUM(blc.value) AS value' +
         '     FROM portfolio_hierarchy act' +
-        '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id'
-        , [internalPortfolioId]
+        '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id' +
+        '    WHERE blc.reference = ?'
+        , [internalPortfolioId, userLogin]
     );
 
     return result[0]?.rows.length > 0 ? formatResultTotals(result[0]?.rows?.item(0)) : undefined;
 };
 
-export const selectBalanceById = async (id: number): Promise<Balance | undefined> => {
+export const selectBalanceById = async (userLogin: string, id: number): Promise<Balance | undefined> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql(queryBase() + ' WHERE bal.id = ?', [id]);
+    const result = await db.executeSql(queryBase() + ' AND bal.id = ?', [userLogin, id]);
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const selectBalanceByBalanceMonthAndYear = async (internalPortfolioId: number, month: number, year: number): Promise<Balance | undefined> => {
+export const selectBalanceByBalanceMonthAndYear = async (userLogin: string, internalPortfolioId: number, month: number, year: number): Promise<Balance | undefined> => {
     const db = await openDatabase();
     const result = await db.executeSql(
         queryBase() +
-        ' WHERE bal.month      = ?' +
+        '   AND bal.month      = ?' +
         '   AND bal.year       = ?' +
         '   AND bal.portfolio_id = ?',
-        [month,
+        [userLogin,
+            month,
             year,
             internalPortfolioId]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const selectDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
+export const selectDashboardBalanceGroupByMonth = async (userLogin: string, year: number, month: number): Promise<DashboardItem[]> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
@@ -297,6 +313,7 @@ export const selectDashboardBalanceGroupByMonth = async (year: number, month: nu
         '   SELECT internal_id, parent_portfolio_id' +
         '     FROM portfolios' +
         '    WHERE parent_portfolio_id IS NULL' +
+        '      AND reference = ?' +
         '    UNION ALL' +
         '   SELECT act.internal_id, act.parent_portfolio_id' +
         '     FROM portfolios act' +
@@ -307,14 +324,17 @@ export const selectDashboardBalanceGroupByMonth = async (year: number, month: nu
         '        , SUM(blc.value) AS value' +
         '     FROM portfolio_hierarchy act' +
         '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id' +
-        '    WHERE ((blc.year > ?)' +
+        '    WHERE blc.reference  = ?' +
+        '      AND ((blc.year > ?)' +
         '       OR (blc.year  = ? AND blc.month >= ?))' +
         '    GROUP BY blc.year' +
         '        , blc.month' +
         '    ORDER BY blc.year' +
         '        , blc.month;'
-        , [ year
-          , month]
+        , [ userLogin
+            , userLogin
+            , year
+            , month]
     );
 
     const dashboardItens: DashboardItem[] = [];
@@ -346,7 +366,8 @@ const queryBase = () => {
         + '     , act_cat.data_alteracao AS act_cat_data_alteracao'
         + '  FROM balances bal'
         + '       INNER JOIN portfolios act ON bal.portfolio_id = act.internal_id'
-        + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id';
+        + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
+        + ' WHERE bal.login = ?';
 };
 
 const formatResult = (item: any): Balance => {

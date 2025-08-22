@@ -9,6 +9,7 @@ import OperationCreate from '../screens/Operation/create';
 import Home from '../screens/Home';
 import UserAccount from "../screens/Home/UserAccount";
 import ChangePassword from "../screens/Home/UserAccount/ChangePassword";
+import DeleteAccount from "../screens/Home/UserAccount/DeleteAccount";
 import Dashboard from '../screens/Dashboard';
 import Preload from '../screens/Preload';
 import {RootStackParamList} from '../screens/RootStackParams';
@@ -44,6 +45,7 @@ const MainStack = () => {
             <Stack.Screen name="Home" component={Home}/>
             <Stack.Screen name="UserAccount" component={UserAccount}/>
             <Stack.Screen name="ChangePassword" component={ChangePassword}/>
+            <Stack.Screen name="DeleteAccount" component={DeleteAccount}/>
             <Stack.Screen name="MainTab" component={MainTab}/>
             <Stack.Screen name="Dashboard" component={Dashboard}/>
             <Stack.Screen name="Account" component={Account}/>

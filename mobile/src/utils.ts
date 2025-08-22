@@ -47,6 +47,13 @@ export const getUserByStorage = async (): Promise<I.User | null> => {
     return null;
 }
 
+export const getUserLoginEncrypt = async (): Promise<string> => {
+    let user = await getUserByStorage();
+    
+    if (user)
+        return encrypt(user.Login);
+}
+
 export const encrypt = async (value: string): Promise<string> => {
     return sha256(value).toString();
 }

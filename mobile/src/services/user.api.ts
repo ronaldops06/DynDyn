@@ -1,5 +1,5 @@
 import * as I from "../interfaces/interfaces.tsx";
-import {del, get, post, postTransientUserParamQuery, postValidateUser} from "./api.ts";
+import {del, postPasswordRecovery, post, postParamQuery, postValidateUser} from "./api.ts";
 import {validateLogin} from "./helper.api.ts";
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import {Alert} from "react-native";
@@ -39,7 +39,7 @@ export const postPasswordUser = async (data: I.ChangePasswordUser): Promise<I.Re
 };
 
 export const postLoginPasswordRecovery = async (login: string): Promise<I.Response> => {
-    let response = await postTransientUserParamQuery(`TransientUser/LoginPasswordRecovery?login=${login}`);
+    let response = await postPasswordRecovery(`TransientUser/LoginPasswordRecovery?login=${login}`);
     if (response.success) {
         Alert.alert("Info!", response.data);
     } else {
@@ -48,6 +48,17 @@ export const postLoginPasswordRecovery = async (login: string): Promise<I.Respon
     
     return response;
 };
+
+export const postCleanupUserAccount = async (): Promise<I.Response> => {
+    let response = await postParamQuery(`Maintenance/Cleanup`);
+    if (response.success) {
+        Alert.alert("Info!", response.data);
+    } else {
+        Alert.alert("Erro!", response.error);
+    }
+
+    return response;
+}
 
 export const postPasswordRecoveryValidate = async (data: I.VerificationUser): Promise<I.Response> => {
     return await postValidateUser(`TransientUser/PasswordRecoveryValidate`, data);

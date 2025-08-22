@@ -3,19 +3,19 @@ import {ActivityIndicator, Alert, Image, SafeAreaView, Text, TouchableOpacity, V
 
 import StepIndicator from "../../../components/StepIndicator";
 
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getRecoveryStyle } from "./styles";
-import { getStyle } from "../../../styles/styles";
-import { getStyleCadastro } from "../../../styles/styles.cadastro";
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getRecoveryStyle} from "./styles";
+import {getStyle} from "../../../styles/styles";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
 import TextInput from "../../../components/CustomTextInput";
 import {executeLoginPasswordRecovery} from "../../../controller/user.controller.tsx";
 
 const RecoveryLogin = ({navigation, route}) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const recoveryStyle = getRecoveryStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const style = getStyle(theme);
-    
+
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
     const [loading, setLoading] = useState(false);
@@ -23,10 +23,10 @@ const RecoveryLogin = ({navigation, route}) => {
     useEffect(() => {
         setEmail(route.params?.login);
     }, []);
-    
+
     const handleValidateClick = async () => {
-        
-        if (email === null || email === ""){
+
+        if (email === null || email === "") {
             Alert.alert("O e-mail deve ser informado.");
         } else {
             setLoading(true);
@@ -40,7 +40,11 @@ const RecoveryLogin = ({navigation, route}) => {
             setLoading(true);
         }
     }
-    
+
+    const handleCancelClick = async () => {
+        navigation.navigate("SignIn");
+    }
+
     return (
         <SafeAreaView style={[recoveryStyle.container, recoveryStyle.containerCadastro]}>
             <Image
@@ -48,7 +52,7 @@ const RecoveryLogin = ({navigation, route}) => {
                 source={require('../../../assets/header.jpg')}
             />
             <View style={recoveryStyle.viewBodyCadastro}>
-                <StepIndicator currentStep={step} steps={['Usuário', 'Validação', 'Nova Senha']} />
+                <StepIndicator currentStep={step} steps={['Usuário', 'Validação', 'Nova Senha']}/>
                 <Text
                     style={recoveryStyle.text}>
                     Para recuperar sua senha, precisaremos seguir alguns passos. Para começar, informe seu e-mail.
@@ -68,9 +72,15 @@ const RecoveryLogin = ({navigation, route}) => {
                         <Text style={styleCadastro.textButtonSave}>Enviar</Text>
                     </TouchableOpacity>
                 </View>
+                <View style={recoveryStyle.areaCancel}>
+                    <Text style={recoveryStyle.cancelTextLink}
+                          onPress={handleCancelClick}>
+                        Cancelar
+                    </Text>
+                </View>
                 {loading && (
                     <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
+                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor}/>
                     </View>
                 )}
             </View>

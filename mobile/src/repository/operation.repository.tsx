@@ -18,7 +18,8 @@ export const createTableOperation = async () => {
             status         NUMBER,
             category_id    NUMBER,
             data_criacao   TEXT,
-            data_alteracao TEXT
+            data_alteracao TEXT,
+            reference      TEXT
         );
     `);
 
@@ -27,7 +28,7 @@ export const createTableOperation = async () => {
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_category_id ON operations (category_id);`);
 };
 
-export const insertOperation = async (operation: Operation): Promise<Operation> => {
+export const insertOperation = async (userLogin: string, operation: Operation): Promise<Operation> => {
     const db = await openDatabase();
     const {
         Id,
@@ -52,7 +53,8 @@ export const insertOperation = async (operation: Operation): Promise<Operation> 
         + ', category_id'
         + ', data_criacao'
         + ', data_alteracao'
-        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        + ', reference'
+        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [Id,
             Name,
             Type,
@@ -61,7 +63,8 @@ export const insertOperation = async (operation: Operation): Promise<Operation> 
             Status,
             Category?.InternalId,
             DataCriacao,
-            DataAlteracao]
+            DataAlteracao,
+            userLogin]
     );
 
     operation.InternalId = result[0].insertId;
@@ -121,14 +124,22 @@ export const deleteInternalOperation = async (internalId: number) => {
         , [internalId]);
 };
 
-export const selectAllOperations = async (type: number, pageNumber: number | null): Promise<Operation[]> => {
+export const deleteAllOperations= async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM operations' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectAllOperations = async (userLogin: string, type: number, pageNumber: number | null): Promise<Operation[]> => {
     const db = await openDatabase();
 
     let results: ResultSet[];
     if (pageNumber)
-        results = await db.executeSql(queryBase() + ' WHERE ope.type = ? ORDER BY ope.name LIMIT ? OFFSET ?', [type, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+        results = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.type = ? ORDER BY ope.name LIMIT ? OFFSET ?', [userLogin, type, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
     else
-        results = await db.executeSql(queryBase() + ' WHERE ope.type = ? ORDER BY ope.name', [type]);
+        results = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.type = ? ORDER BY ope.name', [userLogin, type]);
 
     const operations: Operation[] = [];
     results.forEach(result => {
@@ -140,10 +151,14 @@ export const selectAllOperations = async (type: number, pageNumber: number | nul
     return operations;
 };
 
-export const selectContAllOperations = async (type: number): Promise<number> => {
+export const selectContAllOperations = async (userLogin: string, type: number): Promise<number> => {
     const db = await openDatabase();
 
-    const results = await db.executeSql('SELECT * FROM operations WHERE type = ?', [type]);
+    const results = await db.executeSql('SELECT * ' +
+        ' FROM operations ' +
+        'WHERE reference = ?' +
+        '  AND type = ?', 
+        [userLogin, type]);
 
     let count: number = 0;
     results.forEach(result => {
@@ -153,23 +168,24 @@ export const selectContAllOperations = async (type: number): Promise<number> => 
     return count
 };
 
-export const selectOperationById = async (id: number): Promise<Operation | undefined> => {
+export const selectOperationById = async (userLogin: string, id: number): Promise<Operation | undefined> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql(queryBase() + ' WHERE ope.id = ?', [id]);
+    const result = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.id = ?', [userLogin, id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const existsOperationRelationshipCategory = async (categoryInternalId: number): Promise<boolean> => {
+export const existsOperationRelationshipCategory = async (userLogin: string, categoryInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM operations' +
-        ' WHERE category_id = ?' +
+        ' WHERE reference = ?' +
+        '   AND category_id = ?' +
         ' LIMIT 1'
-        , [categoryInternalId]);
+        , [userLogin, categoryInternalId]);
 
     return result[0]?.rows.length > 0;
 }

@@ -15,6 +15,7 @@ import {deletePortfolio, getPortfolios, postPortfolio, putPortfolio} from "../se
 import {Alert} from "react-native";
 import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository.tsx";
 import {selectTotalsByTreePortfolio} from "../repository/balance.repository.tsx";
+import {getUserLoginEncrypt} from "../utils.ts";
 
 /**
  * Método responsável por retornar a conta persistida internamente para ser utilizada como referência.
@@ -32,10 +33,11 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
     if (portfolio.ParentPortfolio !== null)
         portfolio.ParentPortfolio = await loadInternalPortfolio(portfolio.ParentPortfolio);
 
-    let internalPortfolio = await selectPortfolioById(portfolio.Id);
+    let login = await getUserLoginEncrypt();
+    let internalPortfolio = await selectPortfolioById(login, portfolio.Id);
 
     if (internalPortfolio === undefined) {
-        internalPortfolio = await insertPortfolio(portfolio);
+        internalPortfolio = await insertPortfolio(login, portfolio);
     }
 
     return internalPortfolio;
@@ -44,14 +46,15 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
 export const loadAllPortfolioInternal = async (pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
+    let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllPortfolios(pageNumber as number);
+    response.data = await selectAllPortfolios(login, pageNumber as number);
     
     for (let portfolio of response.data) {
-        portfolio.BalanceTotals = await selectTotalsByTreePortfolio(portfolio.InternalId);
+        portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
     }
 
-    response.totalPages = await selectContAllPortfolios();
+    response.totalPages = await selectContAllPortfolios(login);
 
     return response;
 }
@@ -68,15 +71,16 @@ export const loadAllPortfolio = async (pageNumber: Number | null): Promise<I.Res
 
     var portfolios = response?.data ?? [];
     
+    let login = await getUserLoginEncrypt();
     for (const item of portfolios) {
         item.Category = await loadInternalCategory(item.Category);
 
         if (item.ParentPortfolio)
             item.ParentPortfolio = await loadInternalPortfolio(item.ParentPortfolio);
 
-        var portfolio = await selectPortfolioById(item.Id);
+        var portfolio = await selectPortfolioById(login, item.Id);
         if (portfolio === undefined) {
-            portfolio = await insertPortfolio(item);
+            portfolio = await insertPortfolio(login, item);
         } else {
             item.InternalId = portfolio.InternalId;
             await updatePortfolio(item);
@@ -96,11 +100,13 @@ export const createPortfolio = async (portfolio: I.Portfolio): Promise<I.Respons
     populateInternalFields(portfolio, response);
 
     if (!response.isConnected) {
-        portfolio = await insertPortfolio(portfolio);
+        let login = await getUserLoginEncrypt();
+        portfolio = await insertPortfolio(login, portfolio);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null) {
-        portfolio = await insertPortfolio(response.data);
+        let login = await getUserLoginEncrypt();
+        portfolio = await insertPortfolio(login, response.data);
     }
 
     return response;
@@ -146,7 +152,8 @@ export const excludePortfolio = async (portfolioId: number, portfolioInternalId:
         return response;
     }
 
-    if (await existsPortfolioRelationshipPortfolio(portfolioInternalId)) {
+    let login = await getUserLoginEncrypt();
+    if (await existsPortfolioRelationshipPortfolio(login, portfolioInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a conta, pois existem contas filhas relacionadas a ela.");
         return response;
     }

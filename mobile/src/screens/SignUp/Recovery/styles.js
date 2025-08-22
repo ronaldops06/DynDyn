@@ -52,7 +52,7 @@ export const getRecoveryStyle = (theme) => StyleSheet.create({
         alignItems: "center",
         justifyContent: "flex-end"
     },
-    areaResend: {
+    areaCancel: {
         marginTop: 100,
         margin: 20,
         flexDirection: "column",
@@ -64,7 +64,7 @@ export const getRecoveryStyle = (theme) => StyleSheet.create({
         fontSize: 18,
         fontFamily: "Open Sans"
     },
-    resendTextLink: {
+    cancelTextLink: {
         color: theme.colors.primaryTextColor,
         fontSize: 18,
         fontFamily: "Open Sans",

@@ -23,7 +23,8 @@ export const createTableTransaction = async () => {
             operation_id           NUMBER,
             parent_transaction_id  NUMBER,
             data_criacao           TEXT,
-            data_alteracao         TEXT
+            data_alteracao         TEXT,
+            reference              TEXT
         );
     `);
 
@@ -33,7 +34,7 @@ export const createTableTransaction = async () => {
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_data_criacao ON transactions (data_criacao);`);
 };
 
-export const insertTransaction = async (transaction: Transaction): Promise<Transaction> => {
+export const insertTransaction = async (userLogin: string, transaction: Transaction): Promise<Transaction> => {
     const db = await openDatabase();
     const {
         Id,
@@ -64,7 +65,8 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
         + ', parent_transaction_id'
         + ', data_criacao'
         + ', data_alteracao'
-        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        + ', reference'
+        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [Id,
             Value,
             Observation,
@@ -76,7 +78,8 @@ export const insertTransaction = async (transaction: Transaction): Promise<Trans
             Operation?.InternalId,
             ParentTransaction?.InternalId,
             DataCriacao,
-            DataAlteracao]
+            DataAlteracao,
+            userLogin]
     );
 
     transaction.InternalId = result[0].insertId;
@@ -144,16 +147,25 @@ export const deleteInternalTransaction = async (internalId: number) => {
         + ' WHERE internal_id = ?', [internalId]);
 };
 
-export const selectAllTransactions = async (dateInicio: Date, dateFim: Date, pageNumber: number): Promise<Transaction[]> => {
+export const deleteAllTransactions = async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM transactions' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectAllTransactions = async (userLogin: string, dateInicio: Date, dateFim: Date, pageNumber: number): Promise<Transaction[]> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
         queryBase()
-        + ' WHERE strftime(\'%Y-%m-%d %H:%M:%S\', trn.data_criacao) BETWEEN ? AND ?'
+        + '   AND strftime(\'%Y-%m-%d %H:%M:%S\', trn.data_criacao) BETWEEN ? AND ?'
         + ' ORDER BY trn.data_criacao DESC'
         + '  LIMIT ? '
         + '  OFFSET ?',
-        [Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+        [userLogin,
+            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
             Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
             constants.pageSize,
             (pageNumber - 1) * constants.pageSize
@@ -169,14 +181,16 @@ export const selectAllTransactions = async (dateInicio: Date, dateFim: Date, pag
     return transactions;
 };
 
-export const selectContAll = async (dateInicio: Date, dateFim: Date): Promise<number> => {
+export const selectContAll = async (userLogin: string, dateInicio: Date, dateFim: Date): Promise<number> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
         'SELECT * '
         + '  FROM transactions '
-        + ' WHERE strftime(\'%Y-%m-%d %H:%M:%S\', data_criacao) BETWEEN ? AND ?',
-        [Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+        + ' WHERE reference = ?'
+        + '   AND strftime(\'%Y-%m-%d %H:%M:%S\', data_criacao) BETWEEN ? AND ?',
+        [userLogin,
+            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
             Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
         ]);
 
@@ -188,7 +202,7 @@ export const selectContAll = async (dateInicio: Date, dateFim: Date): Promise<nu
     return count
 };
 
-export const selectTransactionsTotals = async (dateInicio: Date, dateFim: Date): Promise<TransactionTotals> => {
+export const selectTransactionsTotals = async (userLogin: string, dateInicio: Date, dateFim: Date): Promise<TransactionTotals> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
@@ -196,52 +210,57 @@ export const selectTransactionsTotals = async (dateInicio: Date, dateFim: Date):
         + '     , SUM(trn.value) AS value'
         + '  FROM transactions trn'
         + '       INNER JOIN operations ope ON ope.internal_id = trn.operation_id'
-        + ' WHERE trn.data_criacao BETWEEN ? AND ?'
+        + ' WHERE trn.reference = ?'
+        + '   AND trn.data_criacao BETWEEN ? AND ?'
         + ' GROUP BY ope.type',
-        [Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+        [userLogin, 
+            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
             Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
         ]);
 
     return formatResultTotals(results[0]?.rows)
 }
 
-export const selectTransactionById = async (id: number): Promise<Transaction | undefined> => {
+export const selectTransactionById = async (userLogin: string, id: number): Promise<Transaction | undefined> => {
     const db = await openDatabase();
-    const result = await db.executeSql(queryBase() + ' WHERE trn.id = ?', [id]);
+    const result = await db.executeSql(queryBase() + '   AND trn.id = ?', [userLogin, id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const selectTransactionByInternalId = async (internalId: number): Promise<Transaction | undefined> => {
+export const selectTransactionByInternalId = async (userLogin: string, internalId: number): Promise<Transaction | undefined> => {
     const db = await openDatabase();
-    const result = await db.executeSql(queryBase() + ' WHERE trn.internal_id = ?', [internalId]);
+    const result = await db.executeSql(queryBase() + '   AND trn.internal_id = ?', [userLogin, internalId]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const existsTransactionRelationshipOperation = async (operationInternalId: number): Promise<boolean> => {
+export const existsTransactionRelationshipOperation = async (userLogin: string, operationInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM transactions' +
-        ' WHERE operation_id = ?' +
+        ' WHERE reference = ?' +
+        '   AND operation_id = ?' +
         ' LIMIT 1'
-        , [operationInternalId]);
+        , [userLogin, operationInternalId]);
 
     return result[0]?.rows.length > 0;
 }
 
-export const existsTransactionRelationshipPortfolio = async (portfolioInternalId: number): Promise<boolean> => {
+export const existsTransactionRelationshipPortfolio = async (userLogin: string, portfolioInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM transactions' +
-        ' WHERE portfolio_id = ?' +
-        '    OR destination_portfolio_id = ?' +
+        ' WHERE reference = ?' +
+        '   AND (portfolio_id = ?' +
+        '    OR destination_portfolio_id = ?)' +
         ' LIMIT 1'
-        , [ portfolioInternalId, 
+        , [ userLogin,
+            portfolioInternalId, 
             portfolioInternalId ]);
     
     return result[0]?.rows.length > 0;
@@ -311,7 +330,8 @@ const queryBase = () => {
         + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
         + '       LEFT JOIN portfolios dest_act ON dest_act.internal_id = trn.destination_portfolio_id'
         + '       LEFT JOIN categories dest_act_cat ON dest_act_cat.internal_id = dest_act.category_id'
-        + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id';
+        + '       LEFT JOIN transactions par_trn ON par_trn.internal_id = trn.parent_transaction_id'
+        + ' WHERE trn.reference = ?';
 }
 
 const queryBaseView = () => {

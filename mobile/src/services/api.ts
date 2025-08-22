@@ -26,7 +26,7 @@ export const fetchApiUrl = async (): Promise<string | null> => {
     try {
         //Se estiver executando em modo debug (localmente), usa o endereço local da API.
         if (__DEV__)
-            return "http://192.168.0.11:5000";
+            return "http://192.168.0.8:5000";
         
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Erro ao buscar configuração');
@@ -94,8 +94,9 @@ export const get = async (path: string): Promise<I.Response> => {
             responseRequest.totalPages = Number(totalPages);
         }
     }).catch((error) => {
-        responseRequest.error = error.response.data;
-        responseRequest.status = error.response.status;
+        console.log('erro', error?.response?.data);
+        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.status = error?.response?.status;
         responseRequest.success = false;
     });
 
@@ -132,6 +133,36 @@ export const post = async (path: string, data?: any) => {
     return responseRequest;
 };
 
+export const postParamQuery = async (path: string): Promise<I.Response> => {
+    let dataResponse: I.Response = {} as I.Response;
+
+    dataResponse.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        dataResponse.isConnected = false;
+        dataResponse.success = true;
+        return dataResponse;
+    }
+
+    let token = await getToken();
+    let api = await getApiInstance();
+    await api.post(path, null, {
+        headers: {'Authorization': 'Bearer ' + token ?? ""}
+    }).then(response => {
+        dataResponse.data = response.data;
+        dataResponse.success = true;
+        dataResponse.status = response.data.status;
+    }).catch((error) => {
+        console.log('erro', error);
+        dataResponse.error = error?.response?.data?.errors?.Value.join();
+        dataResponse.status = error.response.status;
+        dataResponse.success = false;
+    });
+
+    return dataResponse;
+};
+
 export const put = async (path: string, data: any) => {
     let token = await getToken();
     
@@ -154,7 +185,7 @@ export const put = async (path: string, data: any) => {
         responseRequest.success = true;
     }).catch((error) => {
         console.log('erro', error?.response?.data);
-        responseRequest.error = error.response.data.errors.Value.join();
+        responseRequest.error = error?.response?.data?.errors?.Value.join();
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });
@@ -183,7 +214,8 @@ export const del = async (path: string) => {
         responseRequest.status = response.data.status;
         responseRequest.success = true;
     }).catch((error) => {
-        responseRequest.error = error.response.data;
+        console.log('erro', error?.response?.data);
+        responseRequest.error = error?.response?.data?.errors?.Value.join();
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });
@@ -211,6 +243,7 @@ export const getLogin = async (path: string, navigation: any) => {
     }
 }
 
+//Anonymous
 export const postTransientUser = async (path: string, data: any): Promise<I.Response> => {
     let dataResponse: I.Response = {} as I.Response;
 
@@ -220,7 +253,8 @@ export const postTransientUser = async (path: string, data: any): Promise<I.Resp
         dataResponse.success = true;
         dataResponse.status = response.data.status;
     }).catch((error) => {
-        dataResponse.error = error.response.data;
+        console.log('erro', error?.response?.data);
+        dataResponse.error = error?.response?.data?.errors?.Value.join();
         dataResponse.status = error.response.status;
         dataResponse.success = false;
     });
@@ -228,7 +262,7 @@ export const postTransientUser = async (path: string, data: any): Promise<I.Resp
     return dataResponse;
 };
 
-export const postTransientUserParamQuery = async (path: string): Promise<I.Response> => {
+export const postPasswordRecovery = async (path: string): Promise<I.Response> => {
     let dataResponse: I.Response = {} as I.Response;
 
     dataResponse.isConnected = true;
@@ -247,7 +281,8 @@ export const postTransientUserParamQuery = async (path: string): Promise<I.Respo
         dataResponse.success = true;
         dataResponse.status = response.data.status;
     }).catch((error) => {
-        dataResponse.error = error.response.data;
+        console.log('erro', error);
+        dataResponse.error = error;
         dataResponse.status = error.response.status;
         dataResponse.success = false;
     });
