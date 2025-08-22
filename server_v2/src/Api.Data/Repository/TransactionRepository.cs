@@ -8,6 +8,7 @@ using Api.Domain.Repository;
 using Data.Context;
 using Data.Repository;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +17,28 @@ namespace Api.Data.Repository
     /// <summary>
     /// Gerenciador de repositório das transações/movimentos.
     /// </summary>
-    public class TransactionRepository : BaseRepository<TransactionEntity>, ITransactionRepository
+    public class TransactionRepository : BaseRepository<TransactionEntity>, ITransactionRepository, ICleanupRepository
     {
         public TransactionRepository(SomniaContext context) : base(context) { }
 
+        public int CleanupOrder => 4;
+        
+        public async Task<bool> DeleteAllByUserAsync(int userId)
+        {
+            try
+            {
+                var registros = await _context.Transaction.Where(x => x.UserId == userId).ToListAsync();
+                _context.Transaction.RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return true;
+        }
+        
         public override async Task<IEnumerable<TransactionEntity>> SelectAsync(int userId)
         {
             var result = new List<TransactionEntity>();

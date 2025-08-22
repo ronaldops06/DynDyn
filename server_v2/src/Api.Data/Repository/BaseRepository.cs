@@ -87,12 +87,12 @@ namespace Data.Repository
 
             return true;
         }
-
+        
         public async Task<bool> ExistsAsync(int id)
         {
             return await _dataset.AnyAsync(x => x.Id.Equals(id));
         }
-
+        
         public virtual Task<T> SelectByIdAsync(int userId, int id) => null;
 
         public virtual Task<IEnumerable<T>> SelectAsync(int userId) => null;

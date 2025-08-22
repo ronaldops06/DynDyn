@@ -8,6 +8,7 @@ using Api.Domain.Repository;
 using Data.Context;
 using Domain.Entities;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,10 +17,28 @@ namespace Data.Repository
     /// <summary>
     /// Gerenciador de repositório das categorias.
     /// </summary>
-    public class CategoryRepository : BaseRepository<CategoryEntity>, ICategoryRepository
+    public class CategoryRepository : BaseRepository<CategoryEntity>, ICategoryRepository, ICleanupRepository
     {
         public CategoryRepository(SomniaContext context) : base(context) { }
 
+        public int CleanupOrder => 1;
+
+        public async Task<bool> DeleteAllByUserAsync(int userId)
+        {
+            try
+            {
+                var registros = await _context.Category.Where(x => x.UserId == userId).ToListAsync();
+                _context.Category.RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return true;
+        }
+        
         public override async Task<IEnumerable<CategoryEntity>> SelectAsync(int userId)
         {
             var result = new List<CategoryEntity>();

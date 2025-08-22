@@ -8,6 +8,7 @@ using Api.Domain.Repository;
 using Data.Context;
 using Data.Repository;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,12 +17,30 @@ namespace Api.Data.Repository
     /// <summary>
     /// Gerenciador de repositório das operações.
     /// </summary>
-    public class OperationRepository : BaseRepository<OperationEntity>, IOperationRepository
+    public class OperationRepository : BaseRepository<OperationEntity>, IOperationRepository, ICleanupRepository
     {
         public OperationRepository(SomniaContext context) : base(context)
         {
         }
+        
+        public int CleanupOrder => 4;
+        
+        public async Task<bool> DeleteAllByUserAsync(int userId)
+        {
+            try
+            {
+                var registros = await _context.Operation.Where(x => x.UserId == userId).ToListAsync();
+                _context.Operation.RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
+            return true;
+        }
+        
         public override async Task<IEnumerable<OperationEntity>> SelectAsync(int userId)
         {
             var result = new List<OperationEntity>();

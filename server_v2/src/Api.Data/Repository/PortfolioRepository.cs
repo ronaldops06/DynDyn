@@ -10,6 +10,7 @@ using Data.Context;
 using Data.Repository;
 using Domain.Entities;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,12 +19,30 @@ namespace Api.Data.Repository
     /// <summary>
     /// Gerenciador de repositório das contas.
     /// </summary>
-    public class PortfolioRepository : BaseRepository<PortfolioEntity>, IPortfolioRepository
+    public class PortfolioRepository : BaseRepository<PortfolioEntity>, IPortfolioRepository, ICleanupRepository
     {
         public PortfolioRepository(SomniaContext context) : base(context)
         {
         }
+        
+        public int CleanupOrder => 2;
+        
+        public async Task<bool> DeleteAllByUserAsync(int userId)
+        {
+            try
+            {
+                var registros = await _context.Portfolio.Where(x => x.UserId == userId).ToListAsync();
+                _context.Portfolio.RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
 
+            return true;
+        }
+        
         public override async Task<IEnumerable<PortfolioEntity>> SelectAsync(int userId)
         {
             var result = new List<PortfolioEntity>();

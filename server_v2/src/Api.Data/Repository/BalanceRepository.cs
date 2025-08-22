@@ -6,6 +6,7 @@ using Api.Domain.Entities;
 using Data.Context;
 using Domain.Models;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
@@ -14,9 +15,27 @@ namespace Data.Repository
     /// <summary>
     /// Gerenciador de repositório do saldo.
     /// </summary>
-    public class BalanceRepository: BaseRepository<BalanceEntity>, IBalanceRepository
+    public class BalanceRepository: BaseRepository<BalanceEntity>, IBalanceRepository, ICleanupRepository
     {
         public BalanceRepository(SomniaContext context) : base(context) { }
+        
+        public int CleanupOrder => 5;
+        
+        public async Task<bool> DeleteAllByUserAsync(int userId)
+        {
+            try
+            {
+                var registros = await _context.Balance.Where(x => x.UserId == userId).ToListAsync();
+                _context.Balance.RemoveRange(registros);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return true;
+        }
         
         public override async Task<IEnumerable<BalanceEntity>> SelectAsync(int userId)
         {
