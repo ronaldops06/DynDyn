@@ -95,7 +95,7 @@ export const get = async (path: string): Promise<I.Response> => {
         }
     }).catch((error) => {
         console.log('erro', error?.response?.data);
-        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.error = error?.response?.data?.errors?.Value.join() ?? error?.response?.data;
         responseRequest.status = error?.response?.status;
         responseRequest.success = false;
     });

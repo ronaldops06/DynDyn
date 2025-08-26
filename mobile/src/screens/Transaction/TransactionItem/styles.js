@@ -28,6 +28,11 @@ export const getTransactionItemStyle = (theme) => StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between"
     },
+    rowHeaderDate: {
+      flexDirection: "row",
+      width: 60,
+      justifyContent: "space-between",
+    },
     textHeader: {
         color: theme.colors.secondaryTextColor,
         fontSize: 14,

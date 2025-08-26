@@ -43,7 +43,7 @@ export const getTransactionStyle = (theme) => StyleSheet.create({
         justifyContent: "space-between",
         height: 60,
         marginTop: -30,
-        marginLeft: 25,
+        marginLeft: 12,
         marginRight: 25
     },
     cardTotais: {
@@ -51,9 +51,10 @@ export const getTransactionStyle = (theme) => StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        width: 110,
+        width: 120,
         backgroundColor: theme.colors.secondaryBaseColor ,
-        borderRadius: 15  
+        borderRadius: 15,
+        paddingTop: 10
     },
     textLabelTotais: {
         fontSize: 13,
@@ -63,6 +64,10 @@ export const getTransactionStyle = (theme) => StyleSheet.create({
         fontSize: 16,
         fontFamily: "Open Sans",
         fontWeight: "bold"
+    },
+    textPersentTotais: {
+        fontSize: 13,
+        fontFamily: "Open Sans"
     },
     textLabelReceita: {
         color: theme.colors.primaryMonetaryColor,

@@ -367,7 +367,7 @@ const queryBase = () => {
         + '  FROM balances bal'
         + '       INNER JOIN portfolios act ON bal.portfolio_id = act.internal_id'
         + '       INNER JOIN categories act_cat ON act.category_id = act_cat.internal_id'
-        + ' WHERE bal.login = ?';
+        + ' WHERE bal.reference = ?';
 };
 
 const formatResult = (item: any): Balance => {

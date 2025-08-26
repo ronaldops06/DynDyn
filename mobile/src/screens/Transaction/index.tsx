@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
-import { useFocusEffect } from '@react-navigation/native';
+import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
 import {TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
@@ -23,7 +23,7 @@ import {constants} from "../../constants";
 import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getTransactionStyle} from './styles';
 
@@ -43,10 +43,10 @@ const months = [
 ];
 
 const Transaction = ({navigation, route}) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const style = getStyle(theme);
     const transactionStyle = getTransactionStyle(theme);
-    
+
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [transactions, setTransactions] = useState<I.Transaction[]>([]);
@@ -69,7 +69,7 @@ const Transaction = ({navigation, route}) => {
             }
         }, [route.params?.actionNavigation])
     );
-    
+
     const appendTransactions = (data: I.Transaction[]) => {
         let transactionsNew = transactions;
         if (data.length > 0) {
@@ -82,12 +82,12 @@ const Transaction = ({navigation, route}) => {
 
     const loadTransactions = async (loadTotals: boolean = true) => {
         setLoading(true);
-                
+
         if (selectedYear != 0) {
 
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
             let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
-            
+
             let responseTransactions = null;
 
             if (isLoadInternal) {
@@ -147,7 +147,7 @@ const Transaction = ({navigation, route}) => {
             loadTransactions(false);
         }
     }, [pageNumber]);
-        
+
     const getTransactionsGroupByDate = () => {
         let transactionsGroup: I.TransactionsGroup[] = [] as I.TransactionsGroup[];
 
@@ -164,6 +164,16 @@ const Transaction = ({navigation, route}) => {
 
         setTransactionsGroup(transactionsGroup);
     }
+
+    const sorting = (transactions: I.Transaction[]): I.Transaction[] => {
+        
+        let unconsolidated = [...transactions.filter(x => !x.Consolidated ?? false).sort((a, b) => new Date(a.DataCriacao) - new Date(b.DataCriacao))] ?? [];
+        
+        let consolidated = [...transactions.filter(x => x.Consolidated).sort((a, b) => new Date(b.DataCriacao) - new Date(b.DataCriacao))] ?? [];
+        
+        return [...unconsolidated, ...consolidated];
+    }
+    
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
         mountDate.setMonth(mountDate.getMonth() - 1);
@@ -219,13 +229,13 @@ const Transaction = ({navigation, route}) => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        
-                        var prevtransactions = { ...data};
-                        
+
+                        var prevtransactions = {...data};
+
                         data.Consolidated = !data.Consolidated;
                         let response = await alterTransaction(prevtransactions, data);
                         validateLogin(response, navigation);
-                        
+
                         //Atualiza a transação alterada para que fique certa na tela e não seja necessário recarregar
                         setTransactions((prevTransactions) =>
                             prevTransactions.map((item) =>
@@ -263,7 +273,7 @@ const Transaction = ({navigation, route}) => {
             {cancelable: false}
         );
     }
-    
+
     const handleNewClick = () => {
         navigation.navigate("TransactionCreate", {
             isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
@@ -288,7 +298,8 @@ const Transaction = ({navigation, route}) => {
                         <CashRegisterIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Transações</Text>
                     </View>
-                    <TouchableOpacity style={style.titleScreenMoreInfo} onPress={handleRecurringAndInstallmentPaymentsClick}>
+                    <TouchableOpacity style={style.titleScreenMoreInfo}
+                                      onPress={handleRecurringAndInstallmentPaymentsClick}>
                         <CurrencyExchangeIcon width="24" height="24" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                 </View>
@@ -325,10 +336,12 @@ const Transaction = ({navigation, route}) => {
                         <Text style={[transactionStyle.textLabelTotais, transactionStyle.textLabelSaldo]}>Saldo</Text>
                         <Text
                             style={[transactionStyle.textTotais, transactionStyle.textSaldo]}>R$ {((transactionTotals?.Credit ?? 0) - (transactionTotals?.Debit ?? 0)).toFixed(2)}</Text>
+                        <Text
+                            style={[transactionStyle.textPersentTotais, transactionStyle.textSaldo]}>{(transactionTotals?.Credit ? ((transactionTotals?.Credit ?? 0) - (transactionTotals?.Debit ?? 0)) * 100 / (transactionTotals?.Credit ?? 0) : 0).toFixed(2)}%</Text>
                     </View>
                 </View>
                 <CustomScroll
-                    data={transactions.filter((item) => {
+                    data={sorting(transactions).filter((item) => {
                         return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
                     })}
                     loading={loading}
@@ -337,7 +350,7 @@ const Transaction = ({navigation, route}) => {
                     handlePageNumber={setPageNumber}
                     handleScrolling={setIsScrolling}
                     styles={transactionStyle.scroll}
-                    renderItem={({ item }) => (
+                    renderItem={({item}) => (
                         <TransactionItem
                             data={item}
                             onPress={handleTransactionItemClick}

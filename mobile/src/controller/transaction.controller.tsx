@@ -141,7 +141,7 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
 export const alterTransaction = async (sourceTransaction: I.Transaction, transaction: I.Transaction): Promise<I.Response> => {
     
     let response = await putTransaction(transaction);
-    if (response && !response.isLogged)
+    if (response && (!response.isLogged || !response.data))
         return response;
     
     populateInternalFields(transaction, response);
