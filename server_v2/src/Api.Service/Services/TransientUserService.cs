@@ -168,7 +168,7 @@ namespace Service.Services
             return await _repository.DeleteAsync(id);
         }
         
-        private async Task SendMailVerification(string emailTo, int? verificationCode, string template)
+        protected virtual async Task SendMailVerification(string emailTo, int? verificationCode, string template)
         {
             var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
             var smtpPass =  Environment.GetEnvironmentVariable("SMTP_PASS");

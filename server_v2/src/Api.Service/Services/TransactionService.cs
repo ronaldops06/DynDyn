@@ -10,76 +10,75 @@ using AutoMapper;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
+using Service.Services;
+using Service.Types;
 
 namespace Api.Service.Services
 {
-    public class TransactionService : ITransactionService
+    public class TransactionService : BaseService, ITransactionService
     {
-        private IUserService _userService;
         private ITransactionRepository _repository;
         private IOperationService _operationService;
-        private readonly IMapper _mapper;
 
         public TransactionService(IUserService userService,
             ITransactionRepository repository,
             IOperationService operationService,
-            IMapper mapper)
+            IDeviceService deviceService,
+            IMapper mapper) : base(deviceService, userService, mapper)
         {
-            _userService = userService;
             _repository = repository;
             _operationService = operationService;
-            _mapper = mapper;
         }
 
         public async Task<TransactionModel> GetById(int id)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var entity = await _repository.SelectByIdAsync(user.Id, id);
 
             if (entity == null)
                 throw new Exception("Transação não encontrada.");
 
-            return _mapper.Map<TransactionModel>(entity);
+            return mapper.Map<TransactionModel>(entity);
         }
 
         public async Task<TransactionTotalModel> GetTotais(PageParams pageParams)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var transactionTotals = await _repository.SelectTransactionsTotalsAsync(user.Id, pageParams);
-            return _mapper.Map<TransactionTotalModel>(transactionTotals);
+            return mapper.Map<TransactionTotalModel>(transactionTotals);
         }
 
         public async Task<PageList<TransactionModel>> Get(PageParams pageParams)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var data = await _repository.SelectByParamAsync(user.Id, pageParams);
-            var itens = _mapper.Map<List<TransactionModel>>(data.Itens);
+            var itens = mapper.Map<List<TransactionModel>>(data.Itens);
 
             return PageList<TransactionModel>.Create(pageParams, itens, data.Count);
         }
 
         public async Task<TransactionModel> Post(TransactionModel model)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             model.User = user;
             model.UserId = user.Id;
             TransferValidate(model);
 
             await OperacaoNotExists(model);
 
-            var transactionEntity = _mapper.Map<TransactionEntity>(model);
+            var transactionEntity = mapper.Map<TransactionEntity>(model);
 
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.InsertAsync(transactionEntity);
 
-            model = _mapper.Map<TransactionModel>(transactionEntity);
+            model = mapper.Map<TransactionModel>(transactionEntity);
             
             return model;
         }
 
         public async Task<TransactionModel> Put(TransactionModel model)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var transactionEntityAux = await _repository.SelectByIdAsync(user.Id, model.Id);
 
             if (transactionEntityAux == null)
@@ -91,22 +90,24 @@ namespace Api.Service.Services
 
             await OperacaoNotExists(model);
 
-            var transactionEntity = _mapper.Map<TransactionEntity>(model);
+            var transactionEntity = mapper.Map<TransactionEntity>(model);
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.UpdateAsync(transactionEntity);
 
-            return _mapper.Map<TransactionModel>(transactionEntity);
+            return mapper.Map<TransactionModel>(transactionEntity);
         }
 
         public async Task<bool> Delete(int id)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var transactionEntityAux = await _repository.SelectByIdAsync(user.Id, id);
 
             if (transactionEntityAux == null)
                 throw new Exception("Transação não encontrada.");
 
             var result = await _repository.DeleteAsync(id);
+            if (result)
+                await ProcessExcludeEntityAsync(EntitiesNames.Transaction, id);
             
             return result;
         }
@@ -116,7 +117,7 @@ namespace Api.Service.Services
             var startDayOfMonth = 5;
             var periodPreviousMonth = DateHelper.CalculatePeriod(baseDate, startDayOfMonth, -1);
             var periodCurrentMonth = DateHelper.CalculatePeriod(baseDate, startDayOfMonth, 0);
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
 
             await GenerateRecurring(user, periodPreviousMonth, periodCurrentMonth);
 
@@ -213,7 +214,7 @@ namespace Api.Service.Services
 
         private async Task ExistsOperationByNameAndType(TransactionModel transactionModel)
         {
-            var operationEntity = _mapper.Map<OperationEntity>(transactionModel.Operation);
+            var operationEntity = mapper.Map<OperationEntity>(transactionModel.Operation);
 
             // Verifica se não existe uma operação com o mesmo nome e tipo, se já existir irá somente vincular à que já existe.
             var operacaoAux = await _operationService.GetByNameAndType(operationEntity.Name, operationEntity.Type);

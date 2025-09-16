@@ -51,6 +51,8 @@ public class TransientUserTest : BaseTestService
         Assert.NotEqual(userModelSource.ExpirationDate, userModelDest.ExpirationDate);
         
         Assert.True(userModelDest.VerificationCode.ToString().Length == 6);
-        Assert.True(userModelDest.ExpirationDate == new DateTime().AddMinutes(15));
+        // O teste não pode levar mais do que 2 minutos senão o teste abaixo irá falhar
+        Assert.True(userModelDest.ExpirationDate >= DateTime.Now.AddMinutes(14));
+        Assert.True(userModelDest.ExpirationDate <= DateTime.Now.AddMinutes(16));
     }
 }

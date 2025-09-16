@@ -1,4 +1,5 @@
 using Api.Domain.Enums;
+using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Api.Domain.Repository;
 using Domain.Helpers;
@@ -14,6 +15,7 @@ namespace Api.Service.Test.Portfolio
         private static readonly int RECORD_NUMBER = 10;
         
         protected Mock<IPortfolioRepository> RepositoryMock = new Mock<IPortfolioRepository>();
+        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
         protected List<PortfolioModel> listPortfolioModel = new List<PortfolioModel>();
         protected List<PortfolioModel> listPortfolioModelResult = new List<PortfolioModel>();
         protected PortfolioModel PortfolioModel;
@@ -21,6 +23,7 @@ namespace Api.Service.Test.Portfolio
         protected PortfolioModel PortfolioModelUpdate;
         protected PortfolioModel PortfolioModelUpdateResult;
         protected PageParams pageParams;
+        protected NotificationModel notificationModel;
 
         protected PortfolioTest()
         {
@@ -129,6 +132,17 @@ namespace Api.Service.Test.Portfolio
                 DataAlteracao = DateTime.UtcNow,
                 User = UserModelFake,
                 UserId = UserModelFake.Id
+            };
+            
+            notificationModel = new NotificationModel
+            {
+                Title = "Exclude Entity",
+                Body = new
+                {
+                    Operation = "DELETE",
+                    Reference = "portfolio",
+                    Id = PortfolioModel.Id
+                }
             };
         }
 

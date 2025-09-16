@@ -18,7 +18,7 @@ namespace Api.Service.Test.Portfolio
             RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(),It.IsAny<string>(), It.IsAny<StatusType>())).ReturnsAsync(portfolioEntityUpdate);
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(portfolioEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<PortfolioEntity>())).ReturnsAsync(portfolioEntityUpdateResult);
-            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
+            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
 
             var resultUpdate = await service.Put(PortfolioModelUpdate);
             ApplyTest(PortfolioModelUpdate, resultUpdate);

@@ -1,8 +1,10 @@
 using Domain.Entities;
 using Domain.Models;
 using Moq;
+using Moq.Protected;
 using Service.Services;
 using Xunit;
+using static Api.Service.Test.Helpers.BaseHelper;
 
 namespace Api.Service.Test.TransientUser;
 
@@ -13,10 +15,18 @@ public class WhenExecuteCreate : TransientUserTest
     {
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
         
-        RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransientUserEntity>())).ReturnsAsync(userEntityResult);
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        UserModelFake = GetLoggedUserFake();
+        UserServiceMock.Setup(m => m.GetLoggedUser()).ReturnsAsync(UserModelFake);
         
-        var result = await service.Post(transientUserModel);
+        RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransientUserEntity>())).ReturnsAsync(userEntityResult);
+        
+        //Implementado criando mock da própria classe pois o método SendMailVerification também precisa ser mocado.
+        var service = new Mock<TransientUserService>(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        service.CallBase = true;
+        service.Protected()
+            .Setup<Task>("SendMailVerification", ItExpr.IsAny<string>(), ItExpr.IsAny<int?>(), ItExpr.IsAny<string>()).Returns(Task.CompletedTask);
+        
+        var result = await service.Object.Post(transientUserModel);
         ApplyTest(transientUserModel, result);
     }
     

@@ -17,6 +17,7 @@ namespace Data.Context
         public DbSet<OperationEntity> Operation { get; set; }
         public DbSet<TransactionEntity> Transaction { get; set; }
         public DbSet<BalanceEntity> Balance { get; set; }
+        public DbSet<DeviceEntity> Device { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -30,6 +31,7 @@ namespace Data.Context
             modelBuilder.Entity<TransactionEntity>(new TransactionMap().Configure);
             modelBuilder.Entity<BalanceEntity>(new BalanceMap().Configure);
             modelBuilder.Entity<PortfolioEntity>(new PortfolioMap().Configure);
+            modelBuilder.Entity<DeviceEntity>(new DeviceMap().Configure);
 
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity

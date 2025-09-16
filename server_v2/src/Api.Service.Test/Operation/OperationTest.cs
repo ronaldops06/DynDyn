@@ -1,7 +1,9 @@
 using Api.Domain.Enums;
+using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Api.Domain.Repository;
 using Domain.Helpers;
+using Domain.Models;
 using Moq;
 using Xunit;
 using static Api.Service.Test.Helpers.BaseHelper;
@@ -14,6 +16,7 @@ namespace Api.Service.Test.Operation
         private static readonly int RECORD_NUMBER = 10;
 
         protected Mock<IOperationRepository> RepositoryMock = new Mock<IOperationRepository>();
+        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
         protected List<OperationModel> listOperationModel = new List<OperationModel>();
         protected List<OperationModel> listOperationModelResult = new List<OperationModel>();
         protected OperationModel operationModel;
@@ -21,6 +24,7 @@ namespace Api.Service.Test.Operation
         protected OperationModel operationModelUpdate;
         protected OperationModel operationModelUpdateResult;
         protected PageParams pageParams;
+        protected NotificationModel notificationModel;
 
         protected OperationTest()
         {
@@ -118,6 +122,17 @@ namespace Api.Service.Test.Operation
                 DataAlteracao = DateTime.UtcNow,
                 User = UserModelFake,
                 UserId = UserModelFake.Id
+            };
+            
+            notificationModel = new NotificationModel
+            {
+                Title = "Exclude Entity",
+                Body = new
+                {
+                    Operation = "DELETE",
+                    Reference = "operation",
+                    Id = operationModel.Id
+                }
             };
         }
 

@@ -19,7 +19,7 @@ namespace Api.Service.Test.Portfolio
 
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(portfolioEntityResult);
             RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(),It.IsAny<PageParams>())).ReturnsAsync(data);
-            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, Mapper);
+            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
 
             var resultById = await service.GetById(PortfolioModelResult.Id);
             ApplyTest(PortfolioModelResult, resultById);

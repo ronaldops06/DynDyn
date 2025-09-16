@@ -8,46 +8,46 @@ using Domain.Entities;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
+using Service.Services;
+using Service.Types;
 
 namespace Api.Service.Services
 {
-    public class PortfolioService : IPortfolioService
+    public class PortfolioService : BaseService, IPortfolioService
     {
-        private IUserService _userService;
         private IPortfolioRepository _repository;
-        private IMapper _mapper;
+        
         public PortfolioService(IUserService userService,
                               IPortfolioRepository repository,
-                              IMapper mapper)
+                              IDeviceService deviceService,
+                              IMapper mapper) : base(deviceService, userService, mapper)
         {
-            _userService = userService;
             _repository = repository;
-            _mapper = mapper;
         }
 
         public async Task<PortfolioModel> GetById(int id)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var entity = await _repository.SelectByIdAsync(user.Id, id);
 
             if (entity == null)
                 throw new Exception("Conta não encontrada.");
 
-            return _mapper.Map<PortfolioModel>(entity);
+            return mapper.Map<PortfolioModel>(entity);
         }
 
         public async Task<PageList<PortfolioModel>> Get(PageParams pageParams)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var data = await _repository.SelectByParamAsync(user.Id, pageParams);
-            var itens = _mapper.Map<List<PortfolioModel>>(data.Itens);
+            var itens = mapper.Map<List<PortfolioModel>>(data.Itens);
 
             return PageList<PortfolioModel>.Create(pageParams, itens, data.Count);
         }
 
         public async Task<PortfolioModel> Post(PortfolioModel model)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var categoryEntityAux = await _repository.SelectByUkAsync(user.Id, model.Name, model.Status);
 
             if (categoryEntityAux != null)
@@ -55,18 +55,18 @@ namespace Api.Service.Services
 
             model.User = user;
             model.UserId = user.Id;
-            var accountEntity = _mapper.Map<PortfolioEntity>(model);
+            var accountEntity = mapper.Map<PortfolioEntity>(model);
             _repository.UnchangedParentAccount(accountEntity);
             accountEntity = await _repository.InsertAsync(accountEntity);
 
-            model = _mapper.Map<PortfolioModel>(accountEntity);
+            model = mapper.Map<PortfolioModel>(accountEntity);
 
             return model;
         }
 
         public async Task<PortfolioModel> Put(PortfolioModel model)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var accountEntityAux = await _repository.SelectByUkAsync(user.Id, model.Name, model.Status);
 
             if (accountEntityAux != null && model.Id != accountEntityAux.Id)
@@ -79,21 +79,25 @@ namespace Api.Service.Services
             
             model.User = user;
             model.UserId = user.Id;
-            var accountEntity = _mapper.Map<PortfolioEntity>(model);
+            var accountEntity = mapper.Map<PortfolioEntity>(model);
             _repository.UnchangedParentAccount(accountEntity);
             accountEntity = await _repository.UpdateAsync(accountEntity);
 
-            return _mapper.Map<PortfolioModel>(accountEntity);
+            return mapper.Map<PortfolioModel>(accountEntity);
         }
         public async Task<bool> Delete(int id)
         {
-            var user = await _userService.GetLoggedUser();
+            var user = await userService.GetLoggedUser();
             var accountEntityAux = await _repository.SelectByIdAsync(user.Id, id);
 
             if (accountEntityAux == null)
                 throw new Exception("Conta não encontrada.");
 
-            return await _repository.DeleteAsync(id);
+            var result = await _repository.DeleteAsync(id);
+            if (result)
+                await ProcessExcludeEntityAsync(EntitiesNames.Portfolio, id);
+
+            return result;
         }
     }
 }
