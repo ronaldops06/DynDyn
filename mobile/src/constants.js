@@ -28,6 +28,7 @@ export const constants = {
     acao: {
         update: 'UPDATE',
         insert: 'INSERT',
+        delete: 'DELETE'
     },
     actionNavigation: {
         none: 'NONE',

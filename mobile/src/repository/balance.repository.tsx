@@ -208,6 +208,16 @@ export const getParameters = (userLogin: string, balance: Balance, acao: string)
     return parameters;
 }
 
+export const deleteInternalBalanceByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM balances' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteInternalBalance = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(

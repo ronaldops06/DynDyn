@@ -11,6 +11,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getValidationStyle} from "./validation.styles";
 import { getStyle } from "../../styles/styles"
+import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
 
 const Validation = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -107,7 +108,9 @@ const Validation = ({navigation, route}) => {
                 
                 response.data.Password = data?.Password;
                 await setUserInStorage(response.data);
-
+                
+                await updateTokenCloudMessaging();
+                
                 navigation.reset({
                     routes: [{name: 'MainTab'}]
                 });

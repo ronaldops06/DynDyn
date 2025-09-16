@@ -9,19 +9,25 @@ import { createTableOperation } from './src/repository/operation.repository';
 import { createTableSynchronization } from './src/repository/synchronization.repository';
 import { createTableTransaction } from './src/repository/transaction.repository';
 import MainStack from './src/stacks/MainStack';
-import {createTableBalance} from "./src/repository/balance.repository.tsx";
+import { createTableBalance } from "./src/repository/balance.repository.tsx";
+import { setupFirebaseListeners } from "./src/controller/firebase.controller.tsx";
 
 const App = () => {
   
   useEffect(() => {
+    const cleanup = setupFirebaseListeners();
     createTableCategory();
     createTablePortfolios();
     createTableOperation();
     createTableTransaction();
     createTableBalance();
     createTableSynchronization();
-  }, []);
 
+    return () => {
+      if (typeof cleanup === 'function') cleanup();
+    };
+  }, []);
+  
   return (
     <UserContextProvider>
       <NavigationContainer>

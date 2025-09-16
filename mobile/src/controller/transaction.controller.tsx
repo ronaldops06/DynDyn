@@ -5,6 +5,7 @@ import {constants} from '../constants';
 import * as I from '../interfaces/interfaces';
 import {
     deleteInternalTransaction,
+    deleteInternalTransactionByExternalId,
     insertTransaction,
     selectAllTransactions,
     selectContAll,
@@ -22,7 +23,7 @@ import {
 import {loadInternalPortfolio} from './portfolio.controller';
 import {loadInternalOperation} from './operation.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
-import {calculateBalanceByTransaction, calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
+import {calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
 import {getUserLoginEncrypt} from "../utils.ts";
 
 /**
@@ -203,4 +204,11 @@ export const executeRecurringTransaction = async (mountDateInicio: Date): Promis
     let response = await postRecurringTransactions(params);
 
     return response;
+}
+
+export const processNotificationsTransaction = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalTransactionByExternalId(login, id);
 }

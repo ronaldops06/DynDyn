@@ -1,10 +1,12 @@
 import * as I from '../interfaces/interfaces';
 import {
-    deleteInternalPortfolio, existsPortfolioRelationshipPortfolio,
+    deleteInternalPortfolio,
+    deleteInternalPortfolioByExternalId,
+    existsPortfolioRelationshipPortfolio,
     insertPortfolio,
-    selectPortfolioById,
     selectAllPortfolios,
     selectContAllPortfolios,
+    selectPortfolioById,
     updatePortfolio
 } from '../repository/portfolio.repository';
 import {loadInternalCategory} from './category.controller';
@@ -146,13 +148,13 @@ const populateInternalFields = (portfolio: I.Portfolio, response: I.Response) =>
 export const excludePortfolio = async (portfolioId: number, portfolioInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
-    
-    if (await existsTransactionRelationshipPortfolio(portfolioInternalId)) {
+
+    let login = await getUserLoginEncrypt();
+    if (await existsTransactionRelationshipPortfolio(login, portfolioInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a conta, pois existem transações vinculadas a ela.");
         return response;
     }
-
-    let login = await getUserLoginEncrypt();
+    
     if (await existsPortfolioRelationshipPortfolio(login, portfolioInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a conta, pois existem contas filhas relacionadas a ela.");
         return response;
@@ -172,4 +174,11 @@ export const excludePortfolio = async (portfolioId: number, portfolioInternalId:
     }
 
     return response;
+}
+
+export const processNotificationsPortfolio = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalPortfolioByExternalId(login, id);
 }

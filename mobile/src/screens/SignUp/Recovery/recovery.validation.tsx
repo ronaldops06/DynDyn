@@ -54,7 +54,7 @@ const RecoveryValidation = ({navigation, route}) => {
             verificationUserDTO.VerificationCode = parseInt(valueVerificationCode.join('').trim());
 
             var response = await executePasswordRecoveryValidate(verificationUserDTO);
-            console.log(response)
+
             setLoading(false);
             
             if (!response.success){

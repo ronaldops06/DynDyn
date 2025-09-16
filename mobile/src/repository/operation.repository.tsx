@@ -115,6 +115,16 @@ export const updateOperation = async (operation: Operation) => {
     return operation;
 };
 
+export const deleteInternalOperationByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM operations' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteInternalOperation = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(

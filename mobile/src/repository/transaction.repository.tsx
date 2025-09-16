@@ -139,6 +139,16 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
     return transaction;
 };
 
+export const deleteInternalTransactionByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM transactions' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteInternalTransaction = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(

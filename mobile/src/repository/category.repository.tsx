@@ -98,6 +98,16 @@ export const deleteInternalCategory = async (internalId: number) => {
         , [internalId]);
 };
 
+export const deleteInternalCategoryByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM categories' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteAllCategories = async (userLogin: string) => {
     const db = await openDatabase();
     await db.executeSql(

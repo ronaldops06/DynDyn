@@ -5,7 +5,7 @@ import TextInput from "../../../components/CustomTextInput";
 import StepIndicator from "../../../components/StepIndicator";
 import VisibilityOffIcon from "../../../assets/visibility_off.svg";
 import VisibilityIcon from "../../../assets/visibility.svg";
-import {executeLoginPasswordRecovery, executePasswordRecreation} from "../../../controller/user.controller.tsx";
+import { executePasswordRecreation} from "../../../controller/user.controller.tsx";
 
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getRecoveryStyle } from "./styles";
@@ -13,9 +13,9 @@ import { getStyle } from "../../../styles/styles";
 import { getStyleCadastro } from "../../../styles/styles.cadastro";
 import * as I from "../../../interfaces/interfaces.tsx";
 import {encrypt, setUserInStorage} from "../../../utils.ts";
-import {postUser} from "../signup.api.tsx";
 import EncryptedStorage from "react-native-encrypted-storage";
 import ReactNativeBiometrics from "react-native-biometrics";
+import {updateTokenCloudMessaging} from "../../../controller/firebase.controller.tsx";
 
 const RecoveryPassword = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -93,6 +93,8 @@ const RecoveryPassword = ({navigation, route}) => {
                 response.data.Password = passwordRecreation.Password;
                 await setUserInStorage(response.data);
 
+                await updateTokenCloudMessaging();
+                
                 navigation.reset({
                     routes: [{name: 'MainTab'}]
                 });

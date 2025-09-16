@@ -38,6 +38,17 @@ export interface PasswordRecreation {
     VerificationToken: string
 }
 
+export interface NotificationOperation {
+    Operation: string,
+    Reference: string,
+    Id: number
+}
+
+export interface Device {
+    NotificationToken: string,
+    PhisicalDeviceId: string
+}
+
 export interface Synchronization {
     InternalId: number | null,
     Operation: string,

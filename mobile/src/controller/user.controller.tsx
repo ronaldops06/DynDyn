@@ -15,6 +15,7 @@ import {deleteAllOperations} from "../repository/operation.repository.tsx";
 import {deleteAllCategories} from "../repository/category.repository.tsx";
 import {deleteAllSynchronizations} from "../repository/synchronization.repository.tsx";
 import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
+import {updateTokenCloudMessaging, useFirebaseCloudMessaging} from "./firebase.controller.tsx";
 
 export const alterPasswordUser = async (changePasswordUser: I.ChangePasswordUser): Promise<I.Response> => {
     let response = await postPasswordUser(changePasswordUser);
@@ -28,6 +29,7 @@ export const alterPasswordUser = async (changePasswordUser: I.ChangePasswordUser
         response.data.Password = changePasswordUser.NewPassword;
         await EncryptedStorage.removeItem("user_session");
         await setUserInStorage(response.data);
+        await updateTokenCloudMessaging();
     }
 
     return response;

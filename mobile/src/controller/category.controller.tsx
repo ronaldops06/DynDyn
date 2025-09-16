@@ -2,10 +2,11 @@ import Moment from 'moment';
 import { constants } from '../constants';
 import * as I from '../interfaces/interfaces';
 import {
-    deleteInternalCategory,
+    deleteInternalCategory, 
+    deleteInternalCategoryByExternalId,
     insertCategory,
     selectAllCategories,
-    selectCategoryById, 
+    selectCategoryById,
     selectContAllCategories,
     updateCategory
 } from '../repository/category.repository';
@@ -124,13 +125,14 @@ const populateInternalFields = (category: I.Category, response: I.Response) => {
 export const excludeCategory = async (categoryId: number, categoryInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+    let login = await getUserLoginEncrypt();
     
-    if (await existsPortfolioRelationshipCategory(categoryInternalId)) {
+    if (await existsPortfolioRelationshipCategory(login, categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem contas vinculadas a ela.");
         return response;
     }
     
-    if (await existsOperationRelationshipCategory(categoryInternalId)) {
+    if (await existsOperationRelationshipCategory(login, categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem operações relacionadas a ela.");
         return response;
     }
@@ -149,4 +151,11 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
     }
     
     return response;
+}
+
+export const processNotificationsCategory = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+    
+    if (operation === constants.acao.delete)
+        await deleteInternalCategoryByExternalId(login, id);
 }

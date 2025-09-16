@@ -18,6 +18,7 @@ import {Alert} from "react-native";
 import moment from "moment/moment";
 import {DashboardItem} from "../interfaces/interfaces";
 import {getUserLoginEncrypt} from "../utils.ts";
+import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
 
 export const loadDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
     let login = await getUserLoginEncrypt();
@@ -276,4 +277,11 @@ export const balanceCalculation = async (calculateBalance: I.CalculateBalance, e
         else
             await updateBalance(login, balance);
     }
+}
+
+export const processNotificationsBalance = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalBalanceByExternalId(login, id);
 }

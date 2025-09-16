@@ -15,6 +15,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getSignInStyle} from './styles';
 import {executeLoginPasswordRecovery} from "../../controller/user.controller.tsx";
+import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
 
 const SignIn = ({navigation}) => {
     const { theme } = useTheme();
@@ -105,6 +106,8 @@ const SignIn = ({navigation}) => {
             userResponse.Password = loginDTO.Password;
             await setUserInStorage(userResponse);
 
+            await updateTokenCloudMessaging();
+            
             navigation.reset({
                 routes: [{name: 'MainTab'}]
             });
@@ -115,7 +118,7 @@ const SignIn = ({navigation}) => {
     }
 
     const handleSignClick = async () => {
-        validateLogin(valueEmail, await encrypt(valuePassword));
+        await validateLogin(valueEmail, await encrypt(valuePassword));
     };
 
     const handleRegisterClick = () => {

@@ -113,6 +113,16 @@ export const updatePortfolio = async (portfolio: Portfolio) => {
     return portfolio;
 };
 
+export const deleteInternalPortfolioByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM portfolios' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteInternalPortfolio = async (internalId: number) => {
     const db = await openDatabase();
     

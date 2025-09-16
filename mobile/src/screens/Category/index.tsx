@@ -27,8 +27,6 @@ const Category = ({navigation, route}) => {
     const style = getStyle(theme);
     const categoryStyle = getCategoryStyle(theme);
     
-    const keys: string[] = Object.keys(constants.categoryType);
-    
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -37,10 +35,6 @@ const Category = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [categoryType, setCategoryType] = useState<number>(constants.categoryType.operation.Id);
-
-    useEffect(() => {
-        setCategoryType(constants.categoryType.operation.Id);
-    }, []);
 
     useEffect(() => {
         if (route.params?.actionNavigation === constants.actionNavigation.reload) {
@@ -63,7 +57,7 @@ const Category = ({navigation, route}) => {
     }, [categories]);
 
     useEffect(() => {
-        if (categories?.length !== 0) {
+        if (categories.length !== 0) {
             setIsLoadInternal(true);
             loadCategories();
         }
@@ -75,12 +69,16 @@ const Category = ({navigation, route}) => {
         return () => updateCategories.cancel();
     }, [categoryType]);
 
-    /*Se clicar várias vezes na troca de datas essa lógica faz com que não seja efetuado a busca em todas as trocas de 
-    datas, o "debounce" faz com que aguarde para executar a função e se for chamada novamente enquanto o tempo não acabou
+    /*Se clicar várias vezes na troca de tipos essa lógica faz com que não seja efetuado a busca em todas as trocas, 
+    o "debounce" faz com que aguarde para executar a função e se for chamada novamente enquanto o tempo não acabou
     cancela a chamada anterior e começa a aguardar novamente.*/
     const updateCategories = _.debounce(() => {
         setCategories([]);
     }, 500);
+    
+   /* useEffect(() => {
+        setCategoryType(constants.categoryType.operation.Id);
+    }, []);*/
 
     const appendCategories = (data: I.Category[]) => {
         let categoriesNew = categories;

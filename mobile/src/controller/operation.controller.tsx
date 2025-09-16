@@ -3,9 +3,9 @@ import {
     insertOperation,
     selectAllOperations,
     selectContAllOperations,
-    selectOperationById, 
+    selectOperationById,
     updateOperation,
-    deleteInternalOperation
+    deleteInternalOperation, deleteInternalOperationByExternalId
 } from '../repository/operation.repository';
 import { loadInternalCategory } from './category.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
@@ -15,6 +15,7 @@ import {getOperations, postOperation, putOperation, deleteOperation} from "../se
 import {Alert} from "react-native";
 import {existsTransactionRelationshipOperation} from "../repository/transaction.repository.tsx";
 import {getUserLoginEncrypt} from "../utils.ts";
+import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
 
 /**
  * Método responsável por retornar a operação persistida internamente para ser utilizada como referência.
@@ -127,8 +128,10 @@ const populateInternalFields = (operation: I.Operation, response: I.Response) =>
 export const excludeOperation = async (operationId: number, operationInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+
+    let login = await getUserLoginEncrypt();
     
-    if (await existsTransactionRelationshipOperation(operationInternalId)) {
+    if (await existsTransactionRelationshipOperation(login, operationInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a operação, pois existem transações relacionadas a ela.");
         return response;
     }
@@ -147,4 +150,11 @@ export const excludeOperation = async (operationId: number, operationInternalId:
     }
 
     return response;
+}
+
+export const processNotificationsOperation = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalOperationByExternalId(login, id);
 }

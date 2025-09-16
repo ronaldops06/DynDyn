@@ -67,3 +67,14 @@ export const postPasswordRecoveryValidate = async (data: I.VerificationUser): Pr
 export const postPasswordRecreation = async (data: I.PasswordRecreation): Promise<I.Response> => {
     return await postValidateUser(`TransientUser/PasswordRecreation`, data);
 };
+
+export const postDevice = async (data: I.Device): Promise<I.Response> => {
+    let response = await post('Device/RegisterDevice', data);
+    
+    if (!response.isLogged || !response.isConnected)
+        return response;
+    
+    if (!response.success) {
+        Alert.alert("Erro!", response.error);
+    }
+}
