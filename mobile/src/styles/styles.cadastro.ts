@@ -71,6 +71,7 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         height: 40,
         borderRadius: 30,
         backgroundColor: theme.colors.primaryBaseColor,
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center"
     },

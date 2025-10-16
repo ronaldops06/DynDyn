@@ -15,7 +15,7 @@ import {deleteAllOperations} from "../repository/operation.repository.tsx";
 import {deleteAllCategories} from "../repository/category.repository.tsx";
 import {deleteAllSynchronizations} from "../repository/synchronization.repository.tsx";
 import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
-import {updateTokenCloudMessaging, useFirebaseCloudMessaging} from "./firebase.controller.tsx";
+import {updateTokenCloudMessaging} from "./firebase.controller.tsx";
 
 export const alterPasswordUser = async (changePasswordUser: I.ChangePasswordUser): Promise<I.Response> => {
     let response = await postPasswordUser(changePasswordUser);

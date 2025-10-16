@@ -9,6 +9,7 @@ import {getStyle} from "../../../styles/styles";
 import {getStyleCadastro} from "../../../styles/styles.cadastro";
 import TextInput from "../../../components/CustomTextInput";
 import {executeLoginPasswordRecovery} from "../../../controller/user.controller.tsx";
+import Button from "../../../components/Button";
 
 const RecoveryLogin = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -65,12 +66,12 @@ const RecoveryLogin = ({navigation, route}) => {
                     />
                 </View>
                 <View style={recoveryStyle.areaButtonValidate}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonSave}
+                    <Button
+                        label={"Enviar"}
                         onPress={handleValidateClick}
-                    >
-                        <Text style={styleCadastro.textButtonSave}>Enviar</Text>
-                    </TouchableOpacity>
+                        loading={loading}
+                        disabled={loading}
+                    />
                 </View>
                 <View style={recoveryStyle.areaCancel}>
                     <Text style={recoveryStyle.cancelTextLink}
@@ -78,11 +79,6 @@ const RecoveryLogin = ({navigation, route}) => {
                         Cancelar
                     </Text>
                 </View>
-                {loading && (
-                    <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor}/>
-                    </View>
-                )}
             </View>
         </SafeAreaView>
     );

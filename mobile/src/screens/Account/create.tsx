@@ -22,6 +22,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getAccountCreateStyle} from "./create.styles";
+import Button from "../../components/Button";
 
 const PortfolioCreate = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -33,6 +34,7 @@ const PortfolioCreate = ({navigation, route}) => {
     const portfolioInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>(1);
     const [category, setCategory] = useState(0);
@@ -123,7 +125,9 @@ const PortfolioCreate = ({navigation, route}) => {
     const handleSaveClick = async () => {
 
         if (!validateRequiredFields()) return;
-
+        
+        setLoading(true);
+        
         let portfolioDTO = {} as I.Portfolio;
         portfolioDTO.Id = portfolioId;
         portfolioDTO.InternalId = portfolioInternalId;
@@ -140,6 +144,8 @@ const PortfolioCreate = ({navigation, route}) => {
         else
             response = await createPortfolio(portfolioDTO);
 
+        setLoading(false);
+        
         validateLogin(response, navigation);
         validateSuccess(response, navigation, 'Account');
     };
@@ -197,13 +203,13 @@ const PortfolioCreate = ({navigation, route}) => {
                         </View>
                     </View>
                     <View style={accountCreateStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button 
+                            label={"Salvar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
-                        </TouchableOpacity>
-                    </View>
+                            loading={loading}
+                            disabled={loading}
+                        />
+                    </View> 
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -43,7 +43,9 @@ export const loadAllCategoryInternal = async (type: Number | null, pageNumber: N
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
     response.data = await selectAllCategories(login, type as number, pageNumber as number);
-    response.totalPages = await selectContAllCategories(login, type as number);
+    let totalRecords = await selectContAllCategories(login, type as number);
+    
+    response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
 
     return response;
 }

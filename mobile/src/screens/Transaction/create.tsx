@@ -62,6 +62,7 @@ const TransactionCreate = ({navigation, route}) => {
     const isEditing = route.params?.isEditing ?? false;
     const baseOperation = {} as I.Operation;
 
+    const [loading, setLoading] = useState(false);
     const [typeSelected, setTypeSelected] = useState(1);
     const [showDate, setShowDate] = useState(false);
     const [mode, setMode] = useState('date');
@@ -78,7 +79,7 @@ const TransactionCreate = ({navigation, route}) => {
     const [valueNote, setValueNote] = useState("");
     const [valueConsolidated, setValueConsolidated] = useState(false);
     const [isSalary, setIsSalary] = useState(false);
-    const [valueMultiply, setValeuMultiply] = useState(false);
+    const [valueMultiply, setValueMultiply] = useState(false);
     const [valueRadioRepeatSelectedId, setValueRadioRepeatSelectedId] = useState<string>();
     const [valueTimes, setValueTimes] = useState(1);
     const [showModal, setShowModal] = useState(false);
@@ -111,7 +112,7 @@ const TransactionCreate = ({navigation, route}) => {
             setValueConsolidated(data.Consolidated);
             setIsSalary(data.Operation.Salary);
             setValueTimes(data.TotalInstallments);
-            setValeuMultiply(data.Operation.Recurrent || (data.TotalInstallments > 1));
+            setValueMultiply(data.Operation.Recurrent || (data.TotalInstallments > 1));
             setValueRadioRepeatSelectedId(data.Operation.Recurrent ? '1' : ((data.TotalInstallments > 1) ? '2' : '0'));
         }
     };
@@ -276,7 +277,9 @@ const TransactionCreate = ({navigation, route}) => {
     const handleSaveClick = async () => {
 
         if (!validateRequiredFields()) return;
-
+        
+        setLoading(true);
+        
         const data = route.params?.data ?? {} as I.Transaction;
 
         let operationDTO = {} as I.Operation;
@@ -312,6 +315,8 @@ const TransactionCreate = ({navigation, route}) => {
         else
             response = await createTransaction(transactionDTO);
 
+        setLoading(false);
+        
         validateLogin(response, navigation);
         validateSuccess(response, navigation, 'Transaction');
     };
@@ -441,7 +446,7 @@ const TransactionCreate = ({navigation, route}) => {
                                 <View style={styleCadastro.areaCheckbox}>
                                     <CheckBox
                                         value={valueMultiply}
-                                        onValueChange={setValeuMultiply}
+                                        onValueChange={setValueMultiply}
                                         tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
                                         disabled={isEditing}
                                     />
@@ -475,12 +480,12 @@ const TransactionCreate = ({navigation, route}) => {
                         }
                     </View>
                     <View style={styleCadastro.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button
+                            label={"Salvar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}
+                        />
                     </View>
                     <OperationModal
                         show={showModal}

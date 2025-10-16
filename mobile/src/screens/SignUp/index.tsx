@@ -13,6 +13,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getSignUpStyle} from './styles';
+import Button from "../../components/Button";
 
 const SignUp = ({navigation}) => {
     const { theme } = useTheme();
@@ -91,12 +92,12 @@ const SignUp = ({navigation}) => {
                         />
                     </View>
                     <View style={signUpStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button
+                            label={"Cadastrar"}
                             onPress={handleRegisterClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Cadastrar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}
+                        />
                     </View>
                     <View style={signUpStyle.areaTextLogin}>
                         <Text style={signUpStyle.loginText}>
@@ -109,11 +110,6 @@ const SignUp = ({navigation}) => {
                         </Text>
                     </View>
                 </View>
-                {loading && (
-                    <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                    </View>
-                )}
             </ScrollView>
         </SafeAreaView>
     );

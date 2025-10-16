@@ -56,7 +56,8 @@ export const loadAllPortfolioInternal = async (pageNumber: Number | null): Promi
         portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
     }
 
-    response.totalPages = await selectContAllPortfolios(login);
+    let totalRecords = await selectContAllPortfolios(login);
+    response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
 
     return response;
 }

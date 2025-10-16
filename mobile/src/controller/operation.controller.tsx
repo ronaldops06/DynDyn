@@ -46,7 +46,10 @@ export const loadAllOperationInternal = async (type: Number, pageNumber: Number 
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
     response.data = await selectAllOperations(login, type as number, pageNumber as number);
-    response.totalPages = await selectContAllOperations(login, type as number);
+    let totalRecords = await selectContAllOperations(login, type as number);
+
+    response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
+    
     return response;
 }
 

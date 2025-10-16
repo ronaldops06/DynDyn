@@ -9,6 +9,7 @@ import {getCarouselSelectionStyles} from "./styles";
 interface CarouselSelectionProps {
     data: any;
     handleItemSelectedId: any;
+    disabled?: boolean | false;
 }
 
 const CarouselSelection = (props: CarouselSelectionProps) => {
@@ -32,13 +33,13 @@ const CarouselSelection = (props: CarouselSelectionProps) => {
     
     return(
         <View style={carouselSelectionStyles.viewSelect}>
-            <TouchableOpacity onPress={handleLeftClick} style={carouselSelectionStyles.buttonPrev}>
+            <TouchableOpacity disabled={props.disabled} onPress={handleLeftClick} style={carouselSelectionStyles.buttonPrev}>
                 <NavPrevIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
             </TouchableOpacity>
             <View style={carouselSelectionStyles.viewTitle}>
                 <Text style={carouselSelectionStyles.textTitle}>{props.data[keys[itemIndex]]?.Name}</Text>
             </View>
-            <TouchableOpacity onPress={handleRightClick} style={carouselSelectionStyles.buttonNext}>
+            <TouchableOpacity disabled={props.disabled} onPress={handleRightClick} style={carouselSelectionStyles.buttonNext}>
                 <NavNextIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
             </TouchableOpacity>
         </View>

@@ -10,12 +10,13 @@ import { createTableSynchronization } from './src/repository/synchronization.rep
 import { createTableTransaction } from './src/repository/transaction.repository';
 import MainStack from './src/stacks/MainStack';
 import { createTableBalance } from "./src/repository/balance.repository.tsx";
-import { setupFirebaseListeners } from "./src/controller/firebase.controller.tsx";
+import {createAndroidChannel, setupFirebaseListeners} from "./src/controller/firebase.controller.tsx";
 
 const App = () => {
   
   useEffect(() => {
     const cleanup = setupFirebaseListeners();
+    createAndroidChannel();
     createTableCategory();
     createTablePortfolios();
     createTableOperation();

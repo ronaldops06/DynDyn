@@ -10,6 +10,7 @@ import {getRecoveryStyle} from "./styles";
 import { getStyle } from "../../../styles/styles"
 import StepIndicator from "../../../components/StepIndicator";
 import {executePasswordRecoveryValidate} from "../../../controller/user.controller.tsx";
+import Button from "../../../components/Button";
 
 const RecoveryValidation = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -100,12 +101,12 @@ const RecoveryValidation = ({navigation, route}) => {
                     ))}
                 </View>
                 <View style={recoveryStyle.areaButtonValidate}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonSave}
+                    <Button
+                        label={"Validar"}
                         onPress={handleValidateClick}
-                    >
-                        <Text style={styleCadastro.textButtonSave}>Validar</Text>
-                    </TouchableOpacity>
+                        loading={loading}
+                        disabled={loading}
+                    />
                 </View>
                 <View style={recoveryStyle.areaCancel}>
                     <Text style={recoveryStyle.cancelTextLink}
@@ -113,11 +114,6 @@ const RecoveryValidation = ({navigation, route}) => {
                         Cancelar
                     </Text>
                 </View>
-                {loading && (
-                    <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                    </View>
-                )}
             </View>
         </SafeAreaView>
     );

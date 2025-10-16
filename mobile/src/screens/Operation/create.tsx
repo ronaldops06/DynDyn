@@ -17,6 +17,7 @@ import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getOperationCreateStyle} from "./create.styles";
+import Button from "../../components/Button";
 
 const OperationCreate = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -28,6 +29,7 @@ const OperationCreate = ({navigation, route}) => {
     const operationInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>(constants.operationType.revenue.Id);
     const [category, setCategory] = useState(0);
@@ -101,6 +103,8 @@ const OperationCreate = ({navigation, route}) => {
 
         if (!validateRequiredFields()) return;
 
+        setLoading(true);
+        
         let operationDTO = {} as I.Operation;
         operationDTO.Id = operationId;
         operationDTO.InternalId = operationInternalId;
@@ -117,6 +121,8 @@ const OperationCreate = ({navigation, route}) => {
         else
             response = await createOperation(operationDTO);
 
+        setLoading(false);
+        
         validateLogin(response, navigation);
         validateSuccess(response, navigation, 'Operation');
     };
@@ -208,12 +214,12 @@ const OperationCreate = ({navigation, route}) => {
                         </View>
                     </View>
                     <View style={operationCreateStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button
+                            label={"Salvar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}
+                        />
                     </View>
                 </View>
             </ScrollView>

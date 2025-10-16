@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {useFocusEffect} from "@react-navigation/native";
 
 import * as I from "../../interfaces/interfaces.tsx";
 import {
@@ -32,27 +33,17 @@ const Portfolio = ({navigation, route}) => {
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
-    const [executado, setExecutado] = useState(false);
-
-    /*useFocusEffect(
-        useCallback(() => {
-            
-            if (!executado) {
-                setPageNumber(1);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
                 setPortfolios([]);
-                loadPortfolios();
-                setExecutado(true);
             }
-        }, [])
-    );*/
-
-    useEffect(() => {
-        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
-            setIsLoadInternal(true);
-            setPortfolios([]);
-        }
-    }, [route.params?.actionNavigation]);
-
+        }, [route.params?.actionNavigation])
+    );
+    
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {

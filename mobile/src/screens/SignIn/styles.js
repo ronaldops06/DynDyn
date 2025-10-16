@@ -20,14 +20,8 @@ export const getSignInStyle = (theme) => StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    button: {
-        marginTop: 40,
-        width: 130,
-        height: 40,
-        borderRadius: 30,
-        backgroundColor: theme.colors.primaryBaseColor,
-        justifyContent: "center",
-        alignItems: "center"
+    areaButton: {
+        marginTop: 40
     },
     buttonFingerprint:{
         marginTop: 40,

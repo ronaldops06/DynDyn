@@ -12,10 +12,11 @@ import * as I from "../../interfaces/interfaces.tsx";
 import {alterCategory, createCategory, excludeCategory} from "../../controller/category.controller.tsx";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyleCadastro} from '../../styles/styles.cadastro';
 import {getStyle} from "../../styles/styles.ts";
 import {getCategoryCreateStyle} from "./create.styles";
+import Button from "../../components/Button";
 
 const CategoryCreate = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -26,11 +27,12 @@ const CategoryCreate = ({navigation, route}) => {
     const categoryId = route.params?.data?.Id ?? 0;
     const categoryInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
-
+    
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>();
     const [status, setStatus] = useState<boolean>(true);
-
+    
     useEffect(() => {
         if (isEditing) {
             loadDataSreen();
@@ -90,6 +92,8 @@ const CategoryCreate = ({navigation, route}) => {
 
         if (!validateRequiredFields()) return;
 
+        setLoading(true);
+        
         let categoryDTO = {} as I.Category;
         categoryDTO.Id = categoryId;
         categoryDTO.InternalId = categoryInternalId;
@@ -103,6 +107,8 @@ const CategoryCreate = ({navigation, route}) => {
         else
             response = await createCategory(categoryDTO);
 
+        setLoading(false);
+        
         validateLogin(response, navigation);
         validateSuccess(response, navigation, 'Category');
     };
@@ -148,12 +154,11 @@ const CategoryCreate = ({navigation, route}) => {
                         </View>
                     </View>
                     <View style={categoryCreateStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button 
+                            label={"Salvar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}/>
                     </View>
                 </View>
             </ScrollView>

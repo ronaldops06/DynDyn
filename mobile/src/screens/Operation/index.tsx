@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import PlusIcon from "../../assets/plus.svg";
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
 import _ from 'lodash';
 import * as I from "../../interfaces/interfaces.tsx";
 import {
@@ -34,13 +35,16 @@ const Operation = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [operations, setOperations] = useState<I.Operation[]>([]);
     const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
-
-    useEffect(() => {
-        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
-            setIsLoadInternal(true);
-            setOperations([]);
-        }
-    }, [route.params?.actionNavigation]);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setOperations([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
     
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
@@ -185,7 +189,7 @@ const Operation = ({navigation, route}) => {
                         <Text style={style.titleScreemText}>Operações</Text>
                     </View>
                 </View>
-                <CarouselSelection data={constants.operationType} handleItemSelectedId={setOperationType}/>
+                <CarouselSelection disabled={loading} data={constants.operationType} handleItemSelectedId={setOperationType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll

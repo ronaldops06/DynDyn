@@ -14,8 +14,8 @@ import VisibilityOffIcon from "../../assets/visibility_off.svg";
 import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getSignInStyle} from './styles';
-import {executeLoginPasswordRecovery} from "../../controller/user.controller.tsx";
 import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
+import Button from "../../components/Button";
 
 const SignIn = ({navigation}) => {
     const { theme } = useTheme();
@@ -152,17 +152,15 @@ const SignIn = ({navigation}) => {
                         icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
                         onPressIcon={() => setShowPassword(!showPassword)}
                     />
-                    <TouchableOpacity
-                        style={signInStyle.button}
-                        onPress={handleSignClick}
-                    >
-                        <Text style={signInStyle.buttonText}>Login</Text>
-                    </TouchableOpacity>
-                    {loading && (
-                        <View style={style.overlay}>
-                            <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                        </View>
-                    )}
+                    <View
+                        style={signInStyle.areaButton}>
+                        <Button
+                            label={"Login"}
+                            onPress={handleSignClick}
+                            loading={loading}
+                            disabled={loading}
+                        />
+                    </View>
                     <Text style={signInStyle.registerText}>
                         Não possui uma conta?&nbsp;
                         <Text

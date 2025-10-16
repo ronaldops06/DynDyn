@@ -16,6 +16,7 @@ import {encrypt, setUserInStorage} from "../../../utils.ts";
 import EncryptedStorage from "react-native-encrypted-storage";
 import ReactNativeBiometrics from "react-native-biometrics";
 import {updateTokenCloudMessaging} from "../../../controller/firebase.controller.tsx";
+import Button from "../../../components/Button";
 
 const RecoveryPassword = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -143,12 +144,12 @@ const RecoveryPassword = ({navigation, route}) => {
                     />
                 </View>
                 <View style={recoveryStyle.areaButtonValidate}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonSave}
+                    <Button
+                        label={"Recuperar"}
                         onPress={handleRecuperarContaClick}
-                    >
-                        <Text style={styleCadastro.textButtonSave}>Recuperar</Text>
-                    </TouchableOpacity>
+                        loading={loading}
+                        disabled={loading}
+                    />
                 </View>
                 <View style={recoveryStyle.areaCancel}>
                     <Text style={recoveryStyle.cancelTextLink}
@@ -156,11 +157,6 @@ const RecoveryPassword = ({navigation, route}) => {
                         Cancelar
                     </Text>
                 </View>
-                {loading && (
-                    <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                    </View>
-                )}
             </View>
         </SafeAreaView>
     );

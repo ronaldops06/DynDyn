@@ -1,5 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
 
 import PlusIcon from "../../assets/plus.svg";
@@ -29,30 +30,31 @@ const Category = ({navigation, route}) => {
     
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
-    const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [categoryType, setCategoryType] = useState<number>(constants.categoryType.operation.Id);
-
-    useEffect(() => {
-        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
-            setIsLoadInternal(true);
-            setCategories([]);
-        }
-    }, [route.params?.actionNavigation]);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setCategories([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
 
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return;
-        }
-
-        if (categories.length === 0) {
-            setPageNumber(1);
-            loadCategories();
+        } else {
+            if (categories.length === 0) {
+                loadCategories();
+            }
         }
     }, [categories]);
 
@@ -64,8 +66,9 @@ const Category = ({navigation, route}) => {
     }, [pageNumber]);
 
     useEffect(() => {
+        setPageNumber(1);
         updateCategories();
-
+        
         return () => updateCategories.cancel();
     }, [categoryType]);
 
@@ -76,10 +79,6 @@ const Category = ({navigation, route}) => {
         setCategories([]);
     }, 500);
     
-   /* useEffect(() => {
-        setCategoryType(constants.categoryType.operation.Id);
-    }, []);*/
-
     const appendCategories = (data: I.Category[]) => {
         let categoriesNew = categories;
         if (data.length > 0) {
@@ -103,8 +102,9 @@ const Category = ({navigation, route}) => {
         }
 
         setTotalPages(responseCategories?.totalPages ?? 1);
+        
         appendCategories(responseCategories?.data ?? []);
-
+        
         setLoading(false);
         setIsLoadInternal(false);
     };
@@ -188,7 +188,7 @@ const Category = ({navigation, route}) => {
                         <Text style={style.titleScreemText}>Categorias</Text>
                     </View>
                 </View>
-                <CarouselSelection data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
+                <CarouselSelection disabled={loading} data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
