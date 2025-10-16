@@ -5,9 +5,8 @@ on:
     branches:
       - main
     paths:
-      - 'server_v2/**'
-      -' !server_v2/src/Worker.Service/**'
-      - '.github/workflows/deploy.yml'
+      -' server_v2/src/Worker.Service/**'
+      - '.github/workflows/deploy-worker.yml'
 
 jobs:
   build-and-deploy:
@@ -20,19 +19,19 @@ jobs:
       - name: Configurar .NET
         uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: '6.0.x'
+          dotnet-version: '8.0.x'
           
       - name: Ir para a pasta do projeto
-        working-directory: ./server_v2/src/Api.Application
+        working-directory: ./server_v2/src/Worker.Service
         run: |
            echo "Diretório atual: $(pwd)"
 
       - name: Restaurar dependências
-        working-directory: ./server_v2/src/Api.Application
+        working-directory: ./server_v2/src/Worker.Service
         run: dotnet restore
 
       - name: Publicar app
-        working-directory: ./server_v2/src/Api.Application
+        working-directory: ./server_v2/src/Worker.Service
         run: |
            dotnet publish -c Release -r linux-x64 --self-contained true -o ./publish
 
@@ -42,8 +41,8 @@ jobs:
           host: ${{ secrets.AWS_EC2_HOST }}
           username: ${{ secrets.AWS_EC2_USER }}
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          source: "./server_v2/src/Api.Application/publish/"
-          target: "/home/ubuntu/sagemoney"
+          source: "./server_v2/src/Worker.Service/publish/"
+          target: "/home/ubuntu/worker"
           strip_components: 5
           
       - name: Executar comandos no EC2 (opcional, tipo restart)
@@ -54,5 +53,4 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
             sudo systemctl daemon-reload && 
-            sudo systemctl restart sagemoney.service && 
-            sudo systemctl restart nginx
+            sudo systemctl restart worker.service
