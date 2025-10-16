@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      -' server_v2/src/Worker.Service/**'
+      - 'server_v2/src/Worker.Service/**'
       - '.github/workflows/deploy-worker.yml'
 
 jobs:
