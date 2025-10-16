@@ -1,0 +1,13 @@
+﻿{
+  "profiles": {
+    "Worker.Service": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development",
+        "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.ldmjuumtcoaslaenmasw;Password=!4JVFrejvHKNZyz;Database=postgres",
+        "GOOGLE_APPLICATION_CREDENTIALS": "/home/ronaldo/.ssh/sage-money-firebase-adminsdk-fbsvc-31a6ee6588.json"
+      }
+    }
+  }
+}

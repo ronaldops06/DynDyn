@@ -1,17 +1,17 @@
 import {StyleSheet} from "react-native";
-import {styleCadastro} from "../../styles/styles.cadastro";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
 
-export const operationCreateStyle = StyleSheet.create({
+export const getOperationCreateStyle = (theme) => StyleSheet.create({
     areaFields: {
-      ...styleCadastro.areaFields,
+      ...getStyleCadastro(theme).areaFields,
       marginTop: 40,  
     },
     areaButtonSave: {
-        ...styleCadastro.areaButtonSave,
+        ...getStyleCadastro(theme).areaButtonSave,
         marginTop: 40,
     },
     areaCheckbox: {
-        ...styleCadastro.areaCheckbox,
+        ...getStyleCadastro(theme).areaCheckbox,
         marginTop: 30,
     }
 });

@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
-import { constants } from '~/constants';
 
-export const categoryItemStyle = StyleSheet.create({
+export const getCategoryItemStyle = (theme) => StyleSheet.create({
     card: {
         flexDirection: "column",
-        backgroundColor: constants.colors.secondaryBaseColor,
-        borderColor: constants.colors.quaternaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderColor: theme.colors.quaternaryBaseColor,
         borderWidth: 1,
         borderRadius: 8,
         padding: 15,
@@ -14,7 +13,7 @@ export const categoryItemStyle = StyleSheet.create({
     cardBackground: {
         marginBottom: 20,
         borderRadius: 8,
-        backgroundColor: constants.colors.quaternaryBaseColor,
+        backgroundColor: theme.colors.quaternaryBaseColor,
     },
     rowHeader: {
         flexDirection: "row",
@@ -22,7 +21,7 @@ export const categoryItemStyle = StyleSheet.create({
 
     },
     textHeader: {
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 12,
         fontFamily: "Open Sans"
     },
@@ -35,12 +34,12 @@ export const categoryItemStyle = StyleSheet.create({
         justifyContent: "space-between"
     },
     textFooter: {
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 12,
         fontFamily: "Open Sans"
     },
     textCategoryName: {
-        color: constants.colors.secondaryTextColor,
+        color: theme.colors.secondaryTextColor,
         fontSize: 15,
         fontFamily: "Open Sans"
     },

@@ -1,23 +1,22 @@
 import {StyleSheet} from "react-native";
-import {style} from "../../styles/styles";
-import {constants} from "../../constants";
+import {getStyle} from "../../styles/styles";
 
-export const validationStyle = StyleSheet.create({
+export const getValidationStyle = (theme) => StyleSheet.create({
     container: {
-        ...style.container,
-        backgroundColor: constants.colors.primaryBaseColor
+        ...getStyle(theme).container,
+        backgroundColor: theme.colors.primaryBaseColor
     },
     containerCadastro: {
-        ...style.containerCadastro,
+        ...getStyle(theme).containerCadastro,
     },
     viewHeaderCadastro: {
-        ...style.viewHeaderCadastro,
+        ...getStyle(theme).viewHeaderCadastro,
     },
     text: {
         textAlign: "justify",
         marginTop: 80,
         margin: 20,
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 22,
         fontFamily: "Open Sans"
     },
@@ -33,9 +32,9 @@ export const validationStyle = StyleSheet.create({
     input: {
         fontSize: 32,
         height: 80,
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
         borderBottomWidth: 1,
-        borderBottomColor: constants.colors.primaryBaseColor
+        borderBottomColor: theme.colors.tertiaryBorderColor
     },
     areaButtonValidate: {
         marginTop: 50,
@@ -51,18 +50,14 @@ export const validationStyle = StyleSheet.create({
         alignItems: "center",
     },
     resendText: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 18,
         fontFamily: "Open Sans"
     },
     resendTextLink: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 18,
         fontFamily: "Open Sans",
         textDecorationLine: "underline"
-    },
-    overlay: {
-        marginTop: 20,
-        alignItems: 'center',
-    },
+    }
 });

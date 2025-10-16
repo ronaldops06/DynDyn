@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from "react";
 import { View, TextInput, Text, Animated, TouchableOpacity } from "react-native";
 
-import { customTextInputStyle } from './styles';
+import { useTheme } from '../../contexts/ThemeContext';
+import { getCustomTextInputStyle } from './styles';
 
 interface CustomTextInputParams {
     text: string;
@@ -17,6 +18,9 @@ interface CustomTextInputParams {
 }
 
 const CustomTextInput = (props: CustomTextInputParams) => {
+    const { theme } = useTheme();
+    const customTextInputStyle = getCustomTextInputStyle(theme);
+    
     const {
         isMoveText = true,
         width = "100%",

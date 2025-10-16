@@ -21,9 +21,32 @@ export interface User {
     AccessToken: string
 }
 
+export interface ChangePasswordUser {
+    Login: string,
+    Password: string,
+    NewPassword: string
+}
+
 export interface VerificationUser {
     Login: string,
     VerificationCode: number
+}
+
+export interface PasswordRecreation {
+    Login: string,
+    Password: string,
+    VerificationToken: string
+}
+
+export interface NotificationOperation {
+    Operation: string,
+    Reference: string,
+    Id: number
+}
+
+export interface Device {
+    NotificationToken: string,
+    PhisicalDeviceId: string
 }
 
 export interface Synchronization {
@@ -146,4 +169,9 @@ export interface CalculateBalance {
     CalculateBalanceType: number,
     OperationType: number,
     Salary: boolean
+}
+
+export interface DashboardItem {
+    Label: string;
+    Value: number;
 }

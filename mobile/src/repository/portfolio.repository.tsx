@@ -18,14 +18,15 @@ export const createTablePortfolios = async () => {
             category_id       NUMBER,
             parent_portfolio_id NUMBER,
             data_criacao      TEXT,
-            data_alteracao    TEXT
+            data_alteracao    TEXT,
+            reference         TEXT
         );
     `);
     
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_portfolios_id ON portfolios (id);`);
 };
 
-export const insertPortfolio = async (portfolio: Portfolio): Promise<Portfolio> => {
+export const insertPortfolio = async (userLogin: string, portfolio: Portfolio): Promise<Portfolio> => {
     const db = await openDatabase();
     const {
         Id,
@@ -50,7 +51,8 @@ export const insertPortfolio = async (portfolio: Portfolio): Promise<Portfolio> 
         + ', parent_portfolio_id'
         + ', data_criacao'
         + ', data_alteracao'
-        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        + ', reference'
+        + ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
         [Id, 
             Name,
             Type,
@@ -59,7 +61,8 @@ export const insertPortfolio = async (portfolio: Portfolio): Promise<Portfolio> 
             Category?.InternalId,
             ParentPortfolio?.InternalId,
             DataCriacao,
-            DataAlteracao]
+            DataAlteracao,
+            userLogin]
     );
 
     portfolio.InternalId = result[0].insertId;
@@ -110,6 +113,16 @@ export const updatePortfolio = async (portfolio: Portfolio) => {
     return portfolio;
 };
 
+export const deleteInternalPortfolioByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM portfolios' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
 export const deleteInternalPortfolio = async (internalId: number) => {
     const db = await openDatabase();
     
@@ -120,14 +133,22 @@ export const deleteInternalPortfolio = async (internalId: number) => {
         , [internalId]);
 };
 
-export const selectAllPortfolios = async (pageNumber: number | null): Promise<Portfolio[]> => {
+export const deleteAllPortfolios = async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM portfolios' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectAllPortfolios = async (userLogin: string, pageNumber: number | null): Promise<Portfolio[]> => {
     const db = await openDatabase();
 
     let results: ResultSet[];
     if (pageNumber)
-        results = await db.executeSql(queryBase() + ' ORDER BY act.name LIMIT ? OFFSET ? ', [constants.pageSize, (pageNumber - 1) * constants.pageSize]);
+        results = await db.executeSql(queryBase() + ' ORDER BY act.name LIMIT ? OFFSET ? ', [userLogin, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
     else
-        results = await db.executeSql(queryBase() + ' ORDER BY act.name');
+        results = await db.executeSql(queryBase() + ' ORDER BY act.name', [userLogin,]);
 
     const portfolios: Portfolio[] = [];
     for (let j = 0; j < results.length; j++) {
@@ -139,12 +160,14 @@ export const selectAllPortfolios = async (pageNumber: number | null): Promise<Po
     return portfolios;
 };
 
-export const selectContAllPortfolios = async (): Promise<number> => {
+export const selectContAllPortfolios = async (userLogin: string): Promise<number> => {
     const db = await openDatabase();
 
     const results = await db.executeSql(
         'SELECT * ' +
-        '  FROM portfolios'
+        '  FROM portfolios' +
+        ' WHERE reference = ?',
+        [userLogin,]
     );
 
     let count: number = 0;
@@ -155,35 +178,37 @@ export const selectContAllPortfolios = async (): Promise<number> => {
     return count
 };
 
-export const selectPortfolioById = async (id: number): Promise<Portfolio | undefined> => {
+export const selectPortfolioById = async (userLogin: string, id: number): Promise<Portfolio | undefined> => {
     const db = await openDatabase();
-    const result = await db.executeSql(queryBase() + ' WHERE act.id = ?', [id]);
+    const result = await db.executeSql(queryBase() + ' AND act.id = ?', [userLogin, id]);
 
     return result[0]?.rows.length > 0 ? await formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
-export const existsPortfolioRelationshipCategory = async (categoryInternalId: number): Promise<boolean> => {
+export const existsPortfolioRelationshipCategory = async (userLogin: string, categoryInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM portfolios' +
-        ' WHERE category_id = ?' +
+        ' WHERE reference = ?' +
+        '   AND category_id = ?' +
         ' LIMIT 1'
-        , [categoryInternalId]);
+        , [userLogin, categoryInternalId]);
 
     return result[0]?.rows.length > 0;
 }
 
-export const existsPortfolioRelationshipPortfolio = async (portfolioInternalId: number): Promise<boolean> => {
+export const existsPortfolioRelationshipPortfolio = async (userLogin: string, portfolioInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT *' +
         ' FROM portfolios' +
-        ' WHERE parent_portfolio_id = ? ' +
+        ' WHERE reference = ?' +
+        '   AND parent_portfolio_id = ? ' +
         ' LIMIT 1'
-        , [ portfolioInternalId ]);
+        , [userLogin, portfolioInternalId]);
 
     return result[0]?.rows.length > 0;
 }
@@ -215,7 +240,8 @@ const queryBase = () => {
         + '  FROM portfolios act'
         + '       INNER JOIN categories cat ON act.category_id = cat.internal_id'
         + '       LEFT JOIN portfolios par_act ON act.parent_portfolio_id = par_act.internal_id'
-        + '       LEFT JOIN categories par_cat ON par_act.category_id = par_cat.internal_id';
+        + '       LEFT JOIN categories par_cat ON par_act.category_id = par_cat.internal_id'
+        + ' WHERE act.reference = ?';
 }
 
 const formatResult = async (item: any): Promise<Portfolio> => {

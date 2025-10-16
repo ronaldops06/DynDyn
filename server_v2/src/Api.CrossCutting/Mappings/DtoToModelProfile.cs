@@ -1,5 +1,6 @@
 ﻿using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Dtos.Device;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Dtos.Transaction;
@@ -24,6 +25,7 @@ namespace CrossCutting.Mappings
             CreateMap<UserDto, UserModel>().ReverseMap();
             CreateMap<UserRequestDto, UserModel>();
             CreateMap<UserModel, UserResponseDto>();
+            CreateMap<TransientUserModel, ValidationUserResponseDto>();
 
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
@@ -61,6 +63,9 @@ namespace CrossCutting.Mappings
             CreateMap<BalanceRequestDto, BalanceModel>()
                 .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id));
             CreateMap<BalanceModel, BalanceResponseDto>();
+
+            CreateMap<DeviceRequestDto, DeviceModel>();
+            CreateMap<DeviceModel, DeviceResponseDto>();
         }
     }
 }

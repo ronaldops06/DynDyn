@@ -14,9 +14,9 @@ namespace Service.Services
 {
     public class UserService : IUserService
     {
-        private IUserRepository _repository;
         private readonly IMapper _mapper;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IUserRepository _repository;
 
         public UserService(IUserRepository repository,
                            IMapper mapper,
@@ -54,7 +54,7 @@ namespace Service.Services
 
             return PageList<UserModel>.Create(pageParams, itens, data.Count);
         }
-
+        
         public async Task<UserModel> Post(UserModel userModel)
         {
             var userEntityAux = await _repository.FindUsuarioByLogin(userModel.Login);

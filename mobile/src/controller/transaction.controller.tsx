@@ -5,6 +5,7 @@ import {constants} from '../constants';
 import * as I from '../interfaces/interfaces';
 import {
     deleteInternalTransaction,
+    deleteInternalTransactionByExternalId,
     insertTransaction,
     selectAllTransactions,
     selectContAll,
@@ -22,7 +23,8 @@ import {
 import {loadInternalPortfolio} from './portfolio.controller';
 import {loadInternalOperation} from './operation.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
-import {calculateBalanceByTransaction, calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
+import {calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
+import {getUserLoginEncrypt} from "../utils.ts";
 
 /**
  * Método responsável por retornar a transação persistida internamente para ser utilizada como referência.
@@ -35,7 +37,8 @@ import {calculateBalanceByTransaction, calculateBalanceByTransactionFromUpdate} 
  */
 export const loadInternalTransaction = async (transaction: I.Transaction): Promise<I.Transaction> => {
 
-    transaction = await selectTransactionById(transaction.Id) ?? transaction;
+    let login = await getUserLoginEncrypt();
+    transaction = await selectTransactionById(login, transaction.Id) ?? transaction;
         
     transaction.Operation = await loadInternalOperation(transaction.Operation ?? {} as I.Operation);
     transaction.Portfolio = await loadInternalPortfolio(transaction.Portfolio ?? {} as I.Portfolio);
@@ -46,10 +49,10 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
     if (transaction.ParentTransaction !== null)
         transaction.ParentTransaction = await loadInternalTransaction(transaction.ParentTransaction);
 
-    let internalTransaction = await selectTransactionById(transaction.Id);
+    let internalTransaction = await selectTransactionById(login, transaction.Id);
 
     if (internalTransaction === undefined){
-        internalTransaction = await insertTransaction(transaction);
+        internalTransaction = await insertTransaction(login, transaction);
     }  
 
     return internalTransaction;
@@ -58,9 +61,10 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
 export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
     let responseTransactions = {} as I.Response;
 
+    let login = await getUserLoginEncrypt();
     responseTransactions.isLogged = true;
-    responseTransactions.data = await selectAllTransactions(mountDateInicio, mountDateFim, pageNumber as number);
-    let totalRecords = await selectContAll(mountDateInicio, mountDateFim);
+    responseTransactions.data = await selectAllTransactions(login, mountDateInicio, mountDateFim, pageNumber as number);
+    let totalRecords = await selectContAll(login, mountDateInicio, mountDateFim);
     
     responseTransactions.totalPages = Math.ceil(totalRecords / constants.pageSize);
 
@@ -78,9 +82,10 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
         return response;
 
     var transactions = response?.data ?? [];
-    
+
+    let login = await getUserLoginEncrypt();
     for (const item of transactions) {
-        var transaction = await selectTransactionById(item.Id);
+        var transaction = await selectTransactionById(login, item.Id);
         
         item.Operation = await loadInternalOperation(item.Operation?? {} as I.Operation);
         item.Portfolio = await loadInternalPortfolio(item.Portfolio ?? {} as I.Portfolio);
@@ -92,7 +97,7 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
             item.ParentTransaction = await loadInternalTransaction(item.ParentTransaction ?? {} as I.Transaction);
         
         if (transaction === undefined) {
-            let transaction: I.Transaction = await insertTransaction(item);
+            let transaction: I.Transaction = await insertTransaction(login, item);
         } else {
             item.InternalId = transaction.InternalId;
             await updateTransaction(item);
@@ -104,7 +109,8 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
 }
 
 export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim: Date): Promise<I.TransactionTotals> => {
-    return await selectTransactionsTotals(mountDateInicio, mountDateFim);
+    let login = await getUserLoginEncrypt();
+    return await selectTransactionsTotals(login, mountDateInicio, mountDateFim);
 }
 
 export const createTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
@@ -119,11 +125,13 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
         transaction.Operation = await loadInternalOperation(response.data.Operation);
 
     if (!response.isConnected) {
-        transaction = await insertTransaction(transaction);
+        let login = await getUserLoginEncrypt();
+        transaction = await insertTransaction(login, transaction);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null){
-        transaction = await insertTransaction(response.data);
+        let login = await getUserLoginEncrypt();
+        transaction = await insertTransaction(login, response.data);
     }
 
     await calculateBalanceByTransactionFromUpdate(null, transaction);
@@ -134,7 +142,7 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
 export const alterTransaction = async (sourceTransaction: I.Transaction, transaction: I.Transaction): Promise<I.Response> => {
     
     let response = await putTransaction(transaction);
-    if (response && !response.isLogged)
+    if (response && (!response.isLogged || !response.data))
         return response;
     
     populateInternalFields(transaction, response);
@@ -196,4 +204,11 @@ export const executeRecurringTransaction = async (mountDateInicio: Date): Promis
     let response = await postRecurringTransactions(params);
 
     return response;
+}
+
+export const processNotificationsTransaction = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalTransactionByExternalId(login, id);
 }

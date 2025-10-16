@@ -1,10 +1,9 @@
 import {StyleSheet} from 'react-native';
 
-import {style} from "./styles.ts";
-import {constants} from "../constants";
-export const styleCadastro = StyleSheet.create({
+export const getStyleCadastro = (theme) => StyleSheet.create({
     viewHeaderCadastro: {
-        ...style.viewHeaderCadastro,
+        width: "100%",
+        backgroundColor: theme.colors.primaryBaseColor,
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
@@ -12,7 +11,10 @@ export const styleCadastro = StyleSheet.create({
         borderBottomLeftRadius: 40
     },
     viewBodyCadastro: {
-        ...style.viewBodyCadastro,
+        display: "flex",
+        width: "100%",
+        height: "100%",
+        backgroundColor: theme.colors.secondaryBaseColor,
         flex: 1
     },
     buttonBack: {
@@ -50,12 +52,12 @@ export const styleCadastro = StyleSheet.create({
         marginBottom: 5
     },
     checkbox: {
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
     },
     textCheckbox: {
         fontSize: 16,
         fontFamily: "Open Sans",
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
     },
     areaButtonSave: {
         flex: 1,
@@ -68,12 +70,13 @@ export const styleCadastro = StyleSheet.create({
         width: 130,
         height: 40,
         borderRadius: 30,
-        backgroundColor: constants.colors.primaryBaseColor,
+        backgroundColor: theme.colors.primaryBaseColor,
+        flexDirection: "row",
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonSave: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.tertiaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },

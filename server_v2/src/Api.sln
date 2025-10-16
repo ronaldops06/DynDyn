@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Api.Integration.Test", "Api
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Api.Data\Data.csproj", "{B6023F17-3CC5-45D6-B035-AFA75F2CBBDD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker.Service", "Worker.Service\Worker.Service.csproj", "{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +65,10 @@ Global
 		{B6023F17-3CC5-45D6-B035-AFA75F2CBBDD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B6023F17-3CC5-45D6-B035-AFA75F2CBBDD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B6023F17-3CC5-45D6-B035-AFA75F2CBBDD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

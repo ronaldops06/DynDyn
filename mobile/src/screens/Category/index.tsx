@@ -1,9 +1,8 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
 
-import {style} from '../../styles/styles';
-import {categoryStyle} from './styles';
 import PlusIcon from "../../assets/plus.svg";
 import * as I from "../../interfaces/interfaces.tsx";
 import CategoryItem from "./CategoryItem";
@@ -20,62 +19,66 @@ import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getCategoryStyle} from './styles';
+
 const Category = ({navigation, route}) => {
-    const keys: string[] = Object.keys(constants.categoryType);
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const categoryStyle = getCategoryStyle(theme);
     
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
-    const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [categoryType, setCategoryType] = useState<number>(constants.categoryType.operation.Id);
-
-    useEffect(() => {
-        setCategoryType(constants.categoryType.operation.Id);
-    }, []);
-
-    useEffect(() => {
-        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
-            setIsLoadInternal(true);
-            setCategories([]);
-        }
-    }, [route.params?.actionNavigation]);
+    const [pageNumber, setPageNumber] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setCategories([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
 
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return;
-        }
-
-        if (categories.length === 0) {
-            setPageNumber(1);
-            loadCategories();
+        } else {
+            if (categories.length === 0) {
+                loadCategories();
+            }
         }
     }, [categories]);
 
     useEffect(() => {
-        if (categories?.length !== 0) {
+        if (categories.length !== 0) {
             setIsLoadInternal(true);
             loadCategories();
         }
     }, [pageNumber]);
 
     useEffect(() => {
+        setPageNumber(1);
         updateCategories();
-
+        
         return () => updateCategories.cancel();
     }, [categoryType]);
 
-    /*Se clicar várias vezes na troca de datas essa lógica faz com que não seja efetuado a busca em todas as trocas de 
-    datas, o "debounce" faz com que aguarde para executar a função e se for chamada novamente enquanto o tempo não acabou
+    /*Se clicar várias vezes na troca de tipos essa lógica faz com que não seja efetuado a busca em todas as trocas, 
+    o "debounce" faz com que aguarde para executar a função e se for chamada novamente enquanto o tempo não acabou
     cancela a chamada anterior e começa a aguardar novamente.*/
     const updateCategories = _.debounce(() => {
         setCategories([]);
     }, 500);
-
+    
     const appendCategories = (data: I.Category[]) => {
         let categoriesNew = categories;
         if (data.length > 0) {
@@ -99,8 +102,9 @@ const Category = ({navigation, route}) => {
         }
 
         setTotalPages(responseCategories?.totalPages ?? 1);
+        
         appendCategories(responseCategories?.data ?? []);
-
+        
         setLoading(false);
         setIsLoadInternal(false);
     };
@@ -180,11 +184,11 @@ const Category = ({navigation, route}) => {
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Categorias</Text>
                     </View>
                 </View>
-                <CarouselSelection data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
+                <CarouselSelection disabled={loading} data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
@@ -206,7 +210,7 @@ const Category = ({navigation, route}) => {
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

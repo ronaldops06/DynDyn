@@ -1,10 +1,9 @@
 import { StyleSheet } from "react-native";
-import { constants } from "../constants";
-export const cardStyle = StyleSheet.create({
+export const getCardStyle = (theme) => StyleSheet.create({
     card: {
         flexDirection: "column",
-        backgroundColor: constants.colors.secondaryBaseColor,
-        borderColor: constants.colors.primaryBorderColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderColor: theme.colors.primaryBorderColor,
         borderWidth: 1,
         borderRadius: 8,
         padding: 15,
@@ -13,7 +12,7 @@ export const cardStyle = StyleSheet.create({
     cardBackground: {
         marginBottom: 5,
         borderRadius: 8,
-        backgroundColor: constants.colors.primaryBorderColor,
+        backgroundColor: theme.colors.primaryBorderColor,
     },
     rowHeader: {
         flexDirection: "row",
@@ -21,7 +20,7 @@ export const cardStyle = StyleSheet.create({
 
     },
     textHeader: {
-        color: constants.colors.secondaryTextColor,
+        color: theme.colors.secondaryTextColor,
         fontSize: 12,
         fontFamily: "Open Sans"
     },
@@ -34,12 +33,12 @@ export const cardStyle = StyleSheet.create({
         justifyContent: "space-between"
     },
     textFooter: {
-        color: constants.colors.secondaryTextColor,
+        color: theme.colors.secondaryTextColor,
         fontSize: 14,
         fontFamily: "Open Sans"
     },
     textName: {
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 15,
         fontFamily: "Open Sans"
     },

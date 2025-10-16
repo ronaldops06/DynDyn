@@ -10,18 +10,28 @@ import {
     selectAllBalances,
     selectBalanceByBalanceMonthAndYear,
     selectContAllBalances,
+    selectDashboardBalanceGroupByMonth,
     updateBalance
 } from "../repository/balance.repository.tsx";
 import {deleteBalance, getBalances, postBalance, putBalance} from "../services/balance.api.ts";
 import {Alert} from "react-native";
 import moment from "moment/moment";
+import {DashboardItem} from "../interfaces/interfaces";
+import {getUserLoginEncrypt} from "../utils.ts";
+import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
+
+export const loadDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
+    let login = await getUserLoginEncrypt();
+    return await selectDashboardBalanceGroupByMonth(login, year, month);
+}
 
 export const loadAllBalanceInternal = async (pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
-
+    let login = await getUserLoginEncrypt();
+    
     response.isLogged = true;
-    response.data = await selectAllBalances(pageNumber as number);
-    response.totalPages = await selectContAllBalances();
+    response.data = await selectAllBalances(login, pageNumber as number);
+    response.totalPages = await selectContAllBalances(login);
 
     return response;
 }
@@ -38,7 +48,7 @@ export const loadAllBalance = async (pageNumber: Number | null): Promise<I.Respo
 
     var balances = response?.data ?? [];
     
-    //Armazena as constas em memória e só irá buscar no banco se não existir nela (array). Isso melhora a performance.
+    //Armazena as contas em memória e só irá buscar no banco se não existir nela (array). Isso melhora a performance.
     var portfolios = [] as I.Portfolio[];
     for (const item of balances) {        
         if (!portfolios.some(x => x.Id === item.Portfolio.Id))
@@ -46,8 +56,9 @@ export const loadAllBalance = async (pageNumber: Number | null): Promise<I.Respo
         
         item.Portfolio = portfolios.find(x => x.Id === item.Portfolio.Id);
     }
-
-    await saveBalances(balances);
+    
+    let login = await getUserLoginEncrypt();
+    await saveBalances(login, balances);
     
     await setLastSynchronization(synchronization);
     return response ?? {} as I.Response;
@@ -62,11 +73,13 @@ export const createBalance = async (balance: I.Balance): Promise<I.Response> => 
     populateInternalFields(balance, response);
 
     if (!response.isConnected) {
-        balance = await insertBalance(balance, null);
+        let login = await getUserLoginEncrypt();
+        balance = await insertBalance(login, balance);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null) {
-        balance = await insertBalance(response.data, null);
+        let login = await getUserLoginEncrypt();
+        balance = await insertBalance(login, response.data);
     }
 
     return response;
@@ -81,11 +94,13 @@ export const alterBalance = async (balance: I.Balance): Promise<I.Response> => {
     populateInternalFields(balance, response);
 
     if (!response.isConnected) {
-        balance = await updateBalance(balance);
+        let login = await getUserLoginEncrypt();
+        balance = await updateBalance(login, balance);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null) {
-        balance = await updateBalance(response.data);
+        let login = await getUserLoginEncrypt();
+        balance = await updateBalance(login, response.data);
     }
 
     return response;
@@ -202,7 +217,8 @@ export const calculateBalanceByTransaction = async (transaction: I.Transaction, 
 }
 
 export const balanceCalculation = async (calculateBalance: I.CalculateBalance, executeSync: boolean) => {
-    var balance = await selectBalanceByBalanceMonthAndYear(calculateBalance.Portfolio.InternalId, calculateBalance.Month, calculateBalance.Year);
+    let login = await getUserLoginEncrypt();
+    var balance = await selectBalanceByBalanceMonthAndYear(login, calculateBalance.Portfolio.InternalId, calculateBalance.Month, calculateBalance.Year);
     
     if (balance === undefined) {
         balance = {} as I.Balance;
@@ -254,11 +270,18 @@ export const balanceCalculation = async (calculateBalance: I.CalculateBalance, e
         if (executeSync)
             await createBalance(balance);
         else
-            await insertBalance(balance, null);
+            await insertBalance(login, balance);
     } else {
         if (executeSync)
             await alterBalance(balance);
         else
-            await updateBalance(balance, null);
+            await updateBalance(login, balance);
     }
+}
+
+export const processNotificationsBalance = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+
+    if (operation === constants.acao.delete)
+        await deleteInternalBalanceByExternalId(login, id);
 }

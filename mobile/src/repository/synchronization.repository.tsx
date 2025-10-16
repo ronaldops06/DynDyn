@@ -11,12 +11,13 @@ export const createTableSynchronization = async () => {
         operation           TEXT,
         execution_date      TEXT,
         start_creation_date TEXT,
-        end_creation_date   TEXT
+        end_creation_date   TEXT,
+        reference           TEXT
       );
     `);
 };
 
-export const insertSynchronization = async (synchronization: Synchronization): Promise<Synchronization> => {
+export const insertSynchronization = async (userLogin: string, synchronization: Synchronization): Promise<Synchronization> => {
     
     const db = await openDatabase();
     const { Operation,
@@ -30,11 +31,13 @@ export const insertSynchronization = async (synchronization: Synchronization): P
                 + ', execution_date'
                 + ', start_creation_date'
                 + ', end_creation_date'
-                + ') VALUES (?, ?, ?, ?)',
+                + ', reference'
+                + ') VALUES (?, ?, ?, ?, ?)',
       [ Operation,
         ExecutionDate.toString(), 
         StartCreationDate?.toString(), 
-        EndCreationDate?.toString()]
+        EndCreationDate?.toString(),
+        userLogin]
     );
     
     synchronization.InternalId = result[0].insertId;
@@ -73,11 +76,19 @@ export const deleteSynchronization = async (internalId: number) => {
     await db.executeSql(`DELETE FROM synchronizations WHERE internal_id = ?`, [internalId]);
 };
 
-export const selectSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization | undefined> => {
+export const deleteAllSynchronizations = async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM synchronizations' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectSynchronizationByCreationsDateAndOperation = async (userLogin: string, startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization | undefined> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(getQuery(startCreationDate, endCreationDate),
-                            getParams(startCreationDate, endCreationDate, operation)
+                            getParams(userLogin, startCreationDate, endCreationDate, operation)
                         );
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
@@ -96,9 +107,10 @@ const formatResult = (item: any): Synchronization => {
 }
 
 const getQuery = (startCreationDate: Date | null, endCreationDate: Date | null): string => {
-    let query = 'SELECT * '
-            + '  FROM synchronizations '
-            + ' WHERE operation = ?';
+    let query = 'SELECT * ' +
+            '  FROM synchronizations ' +
+            ' WHERE reference = ?' +
+            '   AND operation = ?';
     
     if (startCreationDate)
         query += '   AND start_creation_date = ? ';
@@ -109,8 +121,9 @@ const getQuery = (startCreationDate: Date | null, endCreationDate: Date | null):
     return query;
 } 
 
-const getParams = (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): any[] => {
+const getParams = (userLogin: string, startCreationDate: Date | null, endCreationDate: Date | null, operation: string): any[] => {
     let params: any[] = [];
+    params.push(userLogin);
     params.push(operation);
     
     if (startCreationDate)

@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
-import { constants } from "../../constants";
-export const transactionCreateStyle = StyleSheet.create({
+
+export const getTransactionCreateStyle = (theme) => StyleSheet.create({
     areaValue: {
         flexDirection: "row",
         width: "100%",
@@ -12,13 +12,13 @@ export const transactionCreateStyle = StyleSheet.create({
         height: 35,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: constants.colors.primaryBaseColor,
-        backgroundColor: constants.colors.secondaryBaseColor, 
+        borderColor: theme.colors.primaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor, 
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonMinus: {
-        color: constants.colors.primaryBaseColor
+        color: theme.colors.primaryBaseColor
     },
     inputValue: {
         fontSize: 24,
@@ -26,29 +26,29 @@ export const transactionCreateStyle = StyleSheet.create({
         alignSelf: "center"
     },
     inputValueRevenue: {
-        color: constants.colors.primaryMonetaryColor
+        color: theme.colors.primaryMonetaryColor
     },
     inputValueTransfer: {
-        color: constants.colors.primaryTextColor
+        color: theme.colors.primaryTextColor
     },
     inputValueExpense: {
-        color: constants.colors.secondaryMonetaryColor
+        color: theme.colors.secondaryMonetaryColor
     },
     buttonPlus: {
         width: 35,
         height: 35,
         borderRadius: 5,
         borderWidth: 1,
-        borderColor: constants.colors.secondaryBaseColor,
-        backgroundColor: constants.colors.primaryBaseColor, 
+        borderColor: theme.colors.secondaryBaseColor,
+        backgroundColor: theme.colors.primaryBaseColor, 
         justifyContent: "center",
         alignItems: "center"
     },
     textButtonPlus: {
-        color: constants.colors.secondaryBaseColor
+        color: theme.colors.secondaryBaseColor
     },
     textListOperations: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryBaseColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline",
@@ -69,20 +69,20 @@ export const transactionCreateStyle = StyleSheet.create({
         borderRadius: 30
     },
     buttonDefault: {
-        backgroundColor: constants.colors.primaryBaseColor,
+        backgroundColor: theme.colors.primaryBaseColor,
     },
     buttonSelected: {
-        backgroundColor: constants.colors.secondaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
     },
     textButton: {
         fontSize: 14,
         fontFamily: "Open Sans",
     },
     textButtonDefault: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.secondaryBaseColor,
     },
     textButtonSelected: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryBaseColor,
     },
     areaRepeat: {
         flexDirection: "row",
@@ -97,7 +97,7 @@ export const transactionCreateStyle = StyleSheet.create({
     labelRadioRepeat: {
         fontSize: 14,
         fontFamily: "Open Sans",
-        color: constants.colors.primaryTextColor,
+        color: theme.colors.primaryTextColor,
     },
     areaTimes: {
         flexDirection: "column",

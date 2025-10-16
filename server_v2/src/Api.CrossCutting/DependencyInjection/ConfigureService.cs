@@ -18,6 +18,10 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddTransient<IOperationService, OperationService>();
             serviceCollection.AddTransient<ITransactionService, TransactionService>();
             serviceCollection.AddTransient<IBalanceService, BalanceService>();
+            serviceCollection.AddTransient<IDeviceService, DeviceService>();
+            serviceCollection.AddTransient<INotificationService, NotificationService>();
+            
+            serviceCollection.AddTransient<ICleanupService, CleanupService>();
         }
     }
 }

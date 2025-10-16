@@ -1,15 +1,14 @@
 import { StyleSheet } from 'react-native';
 
-import { style } from '../../styles/styles';
-import { constants } from '../../constants';
+import { getStyle } from '../../styles/styles';
 
-export const signInStyle = StyleSheet.create({
+export const getSignInStyle = (theme) => StyleSheet.create({
     container: {
-        ...style.container,
-        backgroundColor: constants.colors.secondaryBaseColor
+        ...getStyle(theme).container,
+        backgroundColor: theme.colors.secondaryBaseColor
     },
     viewBodyCadastro: {
-        ...style.viewBodyCadastro,
+        ...getStyle(theme).viewBodyCadastro,
         flexDirection: "column",
         justifyContent: "center"
     },
@@ -21,14 +20,8 @@ export const signInStyle = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center"
     },
-    button: {
-        marginTop: 40,
-        width: 130,
-        height: 40,
-        borderRadius: 30,
-        backgroundColor: constants.colors.primaryBaseColor,
-        justifyContent: "center",
-        alignItems: "center"
+    areaButton: {
+        marginTop: 40
     },
     buttonFingerprint:{
         marginTop: 40,
@@ -36,18 +29,18 @@ export const signInStyle = StyleSheet.create({
         alignItems: "center"
     },
     buttonText: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.tertiaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
     registerText: {
         marginTop: 120,
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
     },
     registerTextLink: {
-        color: constants.colors.primaryBaseColor,
+        color: theme.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans",
         textDecorationLine: "underline"

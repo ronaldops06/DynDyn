@@ -5,16 +5,26 @@ using System.Threading.Tasks;
 using Data.Context;
 using Domain.Entities;
 using Domain.Helpers;
+using Domain.Interfaces;
 using Domain.Models;
 using Domain.Repository;
 using Microsoft.EntityFrameworkCore;
 
 namespace Data.Repository
 {
-    public class UserRepository : BaseRepository<UserEntity>, IUserRepository
+    public class UserRepository : BaseRepository<UserEntity>, IUserRepository, ICleanupRepository
     {
         public UserRepository(SomniaContext context) : base(context) { }
+        
+        public int CleanupOrder => 7;
+        
+        public async Task<bool> DeleteAllByUserAsync(int id)
+        {
+            await DeleteAsync(id);
 
+            return true;
+        }
+        
         public async Task<UserEntity> FindUsuarioByLogin(string login)
         {
             var result = new UserEntity();

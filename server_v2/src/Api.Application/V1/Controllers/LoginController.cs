@@ -16,10 +16,10 @@ namespace Application.V1.Controllers
     [Route("api/v{version:apiVersion}/[controller]")]
     public class LoginController : ControllerBase
     {
-        private readonly IUserService _service;
+        private readonly ILoginService _service;
         private readonly IMapper _mapper;
 
-        public LoginController(IUserService service, IMapper mapper)
+        public LoginController(ILoginService service, IMapper mapper)
         {
             _service = service;
             _mapper = mapper;
@@ -33,7 +33,7 @@ namespace Application.V1.Controllers
         [HttpPost]
         [AllowAnonymous]
         [Route("Auth")]
-        public async Task<IActionResult> Authenticate([FromBody] LoginDto loginDto, [FromServices] ILoginService service)
+        public async Task<IActionResult> Authenticate([FromBody] LoginDto loginDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -46,7 +46,7 @@ namespace Application.V1.Controllers
             try
             {
                 var userModel = _mapper.Map<TransientUserModel>(loginDto);
-                userModel = await service.GetLoginAsync(userModel);
+                userModel = await _service.GetLoginAsync(userModel);
                 userResultDto = _mapper.Map<LoginResponseDto>(userModel);
             }
             catch (ArgumentException ex)
@@ -59,6 +59,32 @@ namespace Application.V1.Controllers
             }
             
             return Ok(userResultDto);
+        }
+        
+        [HttpPost]
+        [AllowAnonymous]
+        [Route("ChangePassword")]
+        public async Task<IActionResult> Post([FromBody] UserPasswordRequestDto userPassword)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+        
+            var loginResponseDto = new LoginResponseDto();
+            try
+            {
+                var userModel = await _service.ExecuteChangePassword(userPassword.Login, userPassword.Password, userPassword.NewPassword);
+                loginResponseDto = _mapper.Map<LoginResponseDto>(userModel);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+            return Created($"/api/user", loginResponseDto);
         }
 
         /// <summary>

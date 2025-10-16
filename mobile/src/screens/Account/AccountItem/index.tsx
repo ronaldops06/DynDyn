@@ -3,7 +3,9 @@ import React, {useState} from "react";
 import {Text, View} from "react-native";
 import DoneIcon from "../../../assets/done.svg";
 import {constants} from "../../../constants";
-import {cardStyle} from "../../../styles/styles.card";
+
+import { useTheme } from '../../../contexts/ThemeContext';
+import { getCardStyle } from "../../../styles/styles.card";
 
 interface AccountItemProps {
     data: I.Portfolio,
@@ -13,7 +15,9 @@ interface AccountItemProps {
 }
 
 const AccountItem = (props: AccountItemProps) => {
-
+    const { theme } = useTheme();
+    const cardStyle = getCardStyle(theme);
+    
     const [touchX, setTouchX] = useState(0);
     const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
@@ -85,7 +89,7 @@ const AccountItem = (props: AccountItemProps) => {
                     <Text style={cardStyle.textFooter} >
                         {props.data.Category.Name}
                     </Text>
-                    <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>
+                    <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? theme.colors.tertiaryIcon : theme.colors.secondaryIcon}/>
                 </View>
             </View>
         </View>

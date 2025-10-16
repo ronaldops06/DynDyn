@@ -20,6 +20,7 @@ namespace CrossCutting.Mappings
             CreateMap<OperationEntity, OperationModel>().ReverseMap();
             CreateMap<TransactionEntity, TransactionModel>().ReverseMap();
             CreateMap<BalanceEntity, BalanceModel>().ReverseMap();
+            CreateMap<DeviceEntity, DeviceModel>().ReverseMap();
         }
     }
 }

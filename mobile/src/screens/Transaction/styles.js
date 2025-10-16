@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
-import { constants } from "../../constants";
 
-export const transactionStyle = StyleSheet.create({
+export const getTransactionStyle = (theme) => StyleSheet.create({
     viewSelectDate: {
         flexDirection: "row",
         marginTop: 10
@@ -19,8 +18,8 @@ export const transactionStyle = StyleSheet.create({
         bottom: 15,
         right: 15,
         borderWidth: 2,
-        borderColor: constants.colors.primaryBaseColor,
-        backgroundColor: constants.colors.secondaryBaseColor,
+        borderColor: theme.colors.primaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
         alignItems: "center",
         justifyContent: "center",
     },
@@ -30,7 +29,7 @@ export const transactionStyle = StyleSheet.create({
         alignItems: "center"
     },
     textDateTitle: {
-        color: constants.colors.secondaryBaseColor,
+        color: theme.colors.tertiaryTextColor,
         fontSize: 17,
         fontWeight: "bold"
     },
@@ -44,7 +43,7 @@ export const transactionStyle = StyleSheet.create({
         justifyContent: "space-between",
         height: 60,
         marginTop: -30,
-        marginLeft: 25,
+        marginLeft: 12,
         marginRight: 25
     },
     cardTotais: {
@@ -52,9 +51,10 @@ export const transactionStyle = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "center",
         alignItems: "center",
-        width: 110,
-        backgroundColor: constants.colors.secondaryBaseColor ,
-        borderRadius: 15  
+        width: 120,
+        backgroundColor: theme.colors.secondaryBaseColor ,
+        borderRadius: 15,
+        paddingTop: 10
     },
     textLabelTotais: {
         fontSize: 13,
@@ -65,23 +65,27 @@ export const transactionStyle = StyleSheet.create({
         fontFamily: "Open Sans",
         fontWeight: "bold"
     },
+    textPersentTotais: {
+        fontSize: 13,
+        fontFamily: "Open Sans"
+    },
     textLabelReceita: {
-        color: constants.colors.primaryMonetaryColor,
+        color: theme.colors.primaryMonetaryColor,
     },
     textReceita: {
-        color: constants.colors.primaryMonetaryColor
+        color: theme.colors.primaryMonetaryColor
     },
     textLabelDespesa: {
-        color: constants.colors.secondaryMonetaryColor,
+        color: theme.colors.secondaryMonetaryColor,
     },
     textDespesa: {
-        color: constants.colors.secondaryMonetaryColor
+        color: theme.colors.secondaryMonetaryColor
     },
     textLabelSaldo: {
-        color: constants.colors.tertiaryMonetaryColor,
+        color: theme.colors.tertiaryMonetaryColor,
     },
     textSaldo: {
-        color: constants.colors.tertiaryMonetaryColor
+        color: theme.colors.tertiaryMonetaryColor
     },
     viewList: {
         flex: 1,

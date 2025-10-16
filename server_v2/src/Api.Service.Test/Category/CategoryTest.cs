@@ -1,10 +1,12 @@
 using Api.Domain.Enums;
+using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Domain.Helpers;
 using static Api.Service.Test.Helpers.CategoryHelpers;
 using static Api.Service.Test.Helpers.BaseHelper;
 using Moq;
 using Api.Domain.Repository;
+using Domain.Models;
 using Xunit;
 
 namespace Api.Service.Test.Category
@@ -14,6 +16,7 @@ namespace Api.Service.Test.Category
         private static readonly int RECORD_NUMBER = 10;
 
         protected Mock<ICategoryRepository> RepositoryMock = new Mock<ICategoryRepository>();
+        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
         protected List<CategoryModel> listCategoryModel = new List<CategoryModel>();
         protected List<CategoryModel> listCategoryModelResult = new List<CategoryModel>();
         protected CategoryModel categoryModel;
@@ -21,6 +24,7 @@ namespace Api.Service.Test.Category
         protected CategoryModel categoryModelUpdate;
         protected CategoryModel categoryModelUpdateResult;
         protected PageParams pageParams;
+        protected NotificationModel notificationModel;
 
         protected CategoryTest()
         {
@@ -93,6 +97,17 @@ namespace Api.Service.Test.Category
                 DataAlteracao = DateTime.UtcNow,
                 User = UserModelFake,
                 UserId = UserModelFake.Id
+            };
+            
+            notificationModel = new NotificationModel
+            {
+                Title = "Exclude Entity",
+                Body = new
+                {
+                    Operation = "DELETE",
+                    Reference = "category",
+                    Id = categoryModel.Id
+                }
             };
         }
 

@@ -1,5 +1,6 @@
 using System.Globalization;
 using Api.Domain.Enums;
+using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Domain.Helpers;
 using Domain.Models;
@@ -14,6 +15,7 @@ public class BalanceTest : BaseTestService
     private static readonly int RECORD_NUMBER = 10;
 
     protected Mock<IBalanceRepository> RepositoryMock = new Mock<IBalanceRepository>();
+    protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
     protected List<BalanceModel> listBalanceModel = new List<BalanceModel>();
     protected List<BalanceModel> listBalanceModelResult = new List<BalanceModel>();
     protected BalanceModel balanceModel;
@@ -21,6 +23,7 @@ public class BalanceTest : BaseTestService
     protected BalanceModel balanceModelUpdate;
     protected BalanceModel balanceModelUpdateResult;
     protected PageParams pageParams;
+    protected NotificationModel notificationModel;
 
     protected BalanceTest()
     {
@@ -189,6 +192,17 @@ public class BalanceTest : BaseTestService
             DataAlteracao = DateTime.UtcNow,
             User = UserModelFake,
             UserId = UserModelFake.Id
+        };
+        
+        notificationModel = new NotificationModel
+        {
+            Title = "Exclude Entity",
+            Body = new
+            {
+                Operation = "DELETE",
+                Reference = "balance",
+                Id = balanceModel.Id
+            }
         };
     }
 

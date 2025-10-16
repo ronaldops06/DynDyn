@@ -14,7 +14,8 @@ export const createTableCategory = async () => {
         type         NUMBER,
         status       NUMBER,
         data_criacao TEXT,
-        data_alteracao TEXT
+        data_alteracao TEXT,
+        reference    TEXT
       );
     `);
 
@@ -22,7 +23,7 @@ export const createTableCategory = async () => {
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_categories_type ON categories (type);`);
 };
 
-export const insertCategory = async (category: Category): Promise<Category> => {
+export const insertCategory = async (userLogin: string, category: Category): Promise<Category> => {
     
     const db = await openDatabase();
     const { Id,
@@ -40,13 +41,15 @@ export const insertCategory = async (category: Category): Promise<Category> => {
                 + ', status'
                 + ', data_criacao'
                 + ', data_alteracao'
-                + ') VALUES (?, ?, ?, ?, ?, ?)',
+                + ', reference'
+                + ') VALUES (?, ?, ?, ?, ?, ?, ?)',
       [ Id,
         Name, 
         Type, 
         Status, 
         DataCriacao, 
-        DataAlteracao ]
+        DataAlteracao, 
+        userLogin]
     );
 
     category.InternalId = result[0].insertId;
@@ -90,22 +93,42 @@ export const updateCategory = async (category: Category): Promise<Category> => {
 export const deleteInternalCategory = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(
-        'DELETE FROM categories ' +
-        'WHERE internal_id = ?'
+        'DELETE FROM categories' +
+        ' WHERE internal_id = ?'
         , [internalId]);
 };
 
-export const selectAllCategories = async (type: number | null, pageNumber: number | null): Promise<Category[]> => {
+export const deleteInternalCategoryByExternalId = async (userLogin: string, id: number) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM categories' +
+        ' WHERE reference = ?' +
+        '   AND id = ?'
+        , [userLogin,
+            id]);
+};
+
+export const deleteAllCategories = async (userLogin: string) => {
+    const db = await openDatabase();
+    await db.executeSql(
+        'DELETE' +
+        '  FROM categories' +
+        ' WHERE reference = ?', [userLogin]);
+}
+
+export const selectAllCategories = async (userLogin: string, type: number | null, pageNumber: number | null): Promise<Category[]> => {
     const db = await openDatabase();
     
     let results: ResultSet[];
-    let query = 'SELECT *' +
-                       ' FROM categories';
+    let query = 'SELECT *' + 
+        '  FROM categories' +
+        ' WHERE reference = ?';
     
     let params = [];
+    params.push(userLogin);
     
     if (type){
-        query += ' WHERE type = ?';
+        query += ' AND type = ?';
         params.push(type);
     }
 
@@ -130,16 +153,18 @@ export const selectAllCategories = async (type: number | null, pageNumber: numbe
     return categories;
 };
 
-export const selectContAllCategories = async (type: number | null): Promise<number> => {
+export const selectContAllCategories = async (userLogin: string, type: number | null): Promise<number> => {
     const db = await openDatabase();
     
     let query = 'SELECT * ' +
-        '  FROM categories ';
+        '  FROM categories ' +
+        ' WHERE reference = ?';
 
     let params = [];
+    params.push(userLogin);
 
     if (type){
-        query += ' WHERE type = ?';
+        query += ' AND type = ?';
         params.push(type);
     }
     
@@ -153,14 +178,15 @@ export const selectContAllCategories = async (type: number | null): Promise<numb
     return count
 };
 
-export const selectCategoryById = async (id: number): Promise<Category | undefined> => {
+export const selectCategoryById = async (userLogin: string, id: number): Promise<Category | undefined> => {
     const db = await openDatabase();
 
     const result = await db.executeSql(
         'SELECT * ' +
         '  FROM categories ' +
-        ' WHERE id = ?'
-        , [id]);
+        ' WHERE reference = ?' +
+        '   AND id        = ?'
+        , [userLogin, id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }

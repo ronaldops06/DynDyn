@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="12.0.1" />
+      <PackageReference Include="Google.Apis.Auth" Version="1.70.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -9,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="Templates\VerificationEmail.html" />
+    <EmbeddedResource Include="Templates\PasswordRecoveryEmail.html" />
     <EmbeddedResource Include="Templates\VerificationEmail.html" />
   </ItemGroup>
 

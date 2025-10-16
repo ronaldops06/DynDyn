@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import ReactNativeBiometrics from 'react-native-biometrics';
 
@@ -7,18 +7,26 @@ import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
 import {login} from './signin.api';
 
-import {style} from '../../styles/styles';
-import {signInStyle} from './styles';
-import {encrypt} from "../../utils.ts";
+import {encrypt, getUserByStorage} from "../../utils.ts";
 import VisibilityIcon from "../../assets/visibility.svg";
 import VisibilityOffIcon from "../../assets/visibility_off.svg";
 
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from '../../styles/styles';
+import {getSignInStyle} from './styles';
+import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
+import Button from "../../components/Button";
+
 const SignIn = ({navigation}) => {
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const signInStyle = getSignInStyle(theme);
     
     const [biometricAvailable, setBiometricAvailable] = useState(false);
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         validateBiometricActivated();
@@ -70,20 +78,7 @@ const SignIn = ({navigation}) => {
             JSON.stringify(userStorage)
         );
     };
-
-    const getUserByStorage = async (): Promise<I.User | null> => {
-        const session = await EncryptedStorage.getItem("user_session");
-
-        if (session) {
-            let userStorage = JSON.parse(session);
-            
-            if (userStorage !== null)
-                return userStorage;
-        }
-        
-        return null;
-    }
-
+    
     const handleAuthenticateByBiometric = async () => {
         const {success} = await ReactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'});
         
@@ -95,12 +90,14 @@ const SignIn = ({navigation}) => {
     };
 
     const validateLogin = async (email: string, password: string) => {
+        setLoading(true);
         let isBiometricActivated = await EncryptedStorage.getItem("biometrics");
         
         let loginDTO = {} as I.Login;
         loginDTO.Login = email;
         loginDTO.Password = password;
         let userResponse = await login(loginDTO);
+        setLoading(false);
         
         if (userResponse !== null) {
             if (biometricAvailable && isBiometricActivated !== "yes")
@@ -109,6 +106,8 @@ const SignIn = ({navigation}) => {
             userResponse.Password = loginDTO.Password;
             await setUserInStorage(userResponse);
 
+            await updateTokenCloudMessaging();
+            
             navigation.reset({
                 routes: [{name: 'MainTab'}]
             });
@@ -119,12 +118,18 @@ const SignIn = ({navigation}) => {
     }
 
     const handleSignClick = async () => {
-        validateLogin(valueEmail, await encrypt(valuePassword));
+        await validateLogin(valueEmail, await encrypt(valuePassword));
     };
 
     const handleRegisterClick = () => {
         navigation.navigate("SignUp");
     };
+    
+    const handlePasswordRecoveryClick = async () => {
+        navigation.navigate("RecoveryLogin", {
+            login: valueEmail
+        });
+    }
 
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
@@ -144,15 +149,18 @@ const SignIn = ({navigation}) => {
                         value={valuePassword}
                         setValue={setValuePassword}
                         secureTextEntry={!showPassword}
-                        icon={showPassword ? <VisibilityOffIcon width={30} fill="#6E8BB8"/> : <VisibilityIcon width={30} fill="#6E8BB8"/>}
+                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
                         onPressIcon={() => setShowPassword(!showPassword)}
                     />
-                    <TouchableOpacity
-                        style={signInStyle.button}
-                        onPress={handleSignClick}
-                    >
-                        <Text style={signInStyle.buttonText}>Login</Text>
-                    </TouchableOpacity>
+                    <View
+                        style={signInStyle.areaButton}>
+                        <Button
+                            label={"Login"}
+                            onPress={handleSignClick}
+                            loading={loading}
+                            disabled={loading}
+                        />
+                    </View>
                     <Text style={signInStyle.registerText}>
                         Não possui uma conta?&nbsp;
                         <Text
@@ -161,6 +169,12 @@ const SignIn = ({navigation}) => {
                         >
                             Cadastrar-se.
                         </Text>
+                    </Text>
+                    <Text
+                        style={signInStyle.registerTextLink}
+                        onPress={handlePasswordRecoveryClick}
+                    >
+                        Esqueceu a senha?
                     </Text>
                 </View>
             </View>

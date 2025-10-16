@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from "react";
 import PlusIcon from "../../assets/plus.svg";
 import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
 import _ from 'lodash';
 import * as I from "../../interfaces/interfaces.tsx";
 import {
@@ -15,12 +16,17 @@ import CarouselSelection from "../../components/CarouselSelection";
 import OperationItem from "./OperationItem";
 import {validateLogin} from "../../utils.ts";
 
-import {style} from "../../styles/styles.ts";
-import {categoryStyle} from "../Category/styles";
+import { useTheme } from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles.ts";
+import {getCategoryStyle} from "../Category/styles";
+
 import HistoryIcon from '../../assets/history.svg';
 
 const Operation = ({navigation, route}) => {
-
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const categoryStyle = getCategoryStyle(theme);
+    
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -29,13 +35,16 @@ const Operation = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [operations, setOperations] = useState<I.Operation[]>([]);
     const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
-
-    useEffect(() => {
-        if (route.params?.actionNavigation === constants.actionNavigation.reload) {
-            setIsLoadInternal(true);
-            setOperations([]);
-        }
-    }, [route.params?.actionNavigation]);
+    
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setOperations([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
     
     useEffect(() => {
         //Faz com que não execute na abertura da tela (renderização)
@@ -176,11 +185,11 @@ const Operation = ({navigation, route}) => {
             <View style={style.viewHeaderConsultaReduced}>
                 <View style={style.titleScreen}>
                     <View style={style.titleScreenTitle}>
-                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill="#F1F1F1"/>
+                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
                         <Text style={style.titleScreemText}>Operações</Text>
                     </View>
                 </View>
-                <CarouselSelection data={constants.operationType} handleItemSelectedId={setOperationType}/>
+                <CarouselSelection disabled={loading} data={constants.operationType} handleItemSelectedId={setOperationType}/>
             </View>
             <View style={style.viewBodyConsultaLarger}>
                 <CustomScroll
@@ -201,7 +210,7 @@ const Operation = ({navigation, route}) => {
                 <TouchableOpacity
                     style={categoryStyle.buttonPlus}
                     onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill="#6E8BB8"/>
+                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

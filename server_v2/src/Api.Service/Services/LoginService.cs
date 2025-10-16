@@ -39,6 +39,21 @@ namespace Service.Services
 
              return userModel;
         }
+        
+        public async Task<TransientUserModel> ExecuteChangePassword(string login, string password, string newPassword)
+        {
+            var entity = await _repository.FindUsuarioByUsernamaAndPassword(login, password);
+            if (entity == null)
+                throw new Exception("A senha atual está incorreta.");
+
+            entity.Password = newPassword;
+            entity = await _repository.UpdateAsync(entity);
+
+            var userModel = _mapper.Map<TransientUserModel>(entity);
+            userModel.AccessToken = GenerateToken(userModel);
+            
+            return _mapper.Map<TransientUserModel>(entity);
+        }
 
         public string GenerateToken(TransientUserModel userModel)
         {

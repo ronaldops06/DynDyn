@@ -12,9 +12,9 @@
     "Application": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": true,
-      "launchUrl": "docs",
-      "applicationUrl": "http://192.168.0.11:5000",
+      "launchBrowser": false,
+      "launchUrl": "swagger",
+      "applicationUrl": "http://192.168.0.8:5000",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "DB_CONNECTION": "Host=aws-0-sa-east-1.pooler.supabase.com;Username=postgres.ldmjuumtcoaslaenmasw;Password=!4JVFrejvHKNZyz;Database=postgres",
@@ -22,7 +22,10 @@
         "DATABASE": "POSTGRES",
         "Issuer": "ExemploIssuer",
         "Audience": "r",
-        "MIGRATION": "APLICAR"
+        "MIGRATION": "APLICAR",
+        "SMTP_USER": "AKIA6HHYKXOS6PA6M7NL",
+        "SMTP_PASS": "BMWPzlJpaLLx2mKm1yaQ9B/5h0+1z+ugzuvN0XXa5tRe",
+        "GOOGLE_APPLICATION_CREDENTIALS": "/home/ronaldo/.ssh/sage-money-firebase-adminsdk-fbsvc-31a6ee6588.json"
       }
     },
     "IIS Express": {

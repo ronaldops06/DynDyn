@@ -1,9 +1,11 @@
 import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
-import {cardStyle} from "../../../styles/styles.card";
 import DoneIcon from "../../../assets/done.svg";
 import {constants} from "../../../constants";
+
+import { useTheme } from '../../../contexts/ThemeContext';
+import {getCardStyle} from "../../../styles/styles.card";
 
 interface CategoryItemParms {
     data: I.Category,
@@ -13,7 +15,9 @@ interface CategoryItemParms {
 }
 
 const CategoryItem = (props: CategoryItemParms) => {
-
+    const { theme } = useTheme();
+    const cardStyle = getCardStyle(theme);
+    
     const [touchX, setTouchX] = useState(0);
     const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
@@ -83,7 +87,7 @@ const CategoryItem = (props: CategoryItemParms) => {
                     <Text style={cardStyle.textFooter}>
                         {props.data.Type === constants.categoryType.account.Id ? "Conta" : "Operação"}
                     </Text>
-                    <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? "#00A519" : "#A4BCE3"}/>
+                    <DoneIcon width="20" height="20" fill={(props.data.Status === constants.status.active.Id) ? theme.colors.tertiaryIcon : theme.colors.secondaryIcon}/>
                 </View>
             </View>
         </View>

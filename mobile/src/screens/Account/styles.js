@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
-import { constants } from '../../constants';
 
-export const accountStyle = StyleSheet.create({
+export const getAccountStyle = (theme) => StyleSheet.create({
     buttonPlus: {
         width: 50,
         height: 50,
@@ -10,8 +9,8 @@ export const accountStyle = StyleSheet.create({
         bottom: 15,
         right: 15,
         borderWidth: 2,
-        borderColor: constants.colors.primaryBaseColor,
-        backgroundColor: constants.colors.secondaryBaseColor,
+        borderColor: theme.colors.primaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor,
         alignItems: "center",
         justifyContent: "center",
     },

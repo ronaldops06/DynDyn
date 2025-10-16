@@ -105,7 +105,7 @@ namespace Application.V1.Controllers
 
             return Created($"/api/user/{userResultDto.Id}", userResultDto);
         }
-
+        
         [HttpDelete("{id}")]
         [Authorize("Bearer")]
         public async Task<IActionResult> Delete(int id)

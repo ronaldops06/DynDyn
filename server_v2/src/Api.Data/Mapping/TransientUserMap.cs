@@ -28,8 +28,13 @@ namespace Data.Mapping
                 .HasMaxLength(500);
 
             builder.Property(u => u.VerificationCode)
-                .IsRequired()
                 .HasMaxLength(6);
+            
+            builder.Property(u => u.VerificationToken)
+                .HasMaxLength(500);
+            
+            builder.Property(u => u.Attempts)
+                .IsRequired();
 
             builder.Property(u => u.ExpirationDate);
         }

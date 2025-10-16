@@ -2,10 +2,11 @@ import Moment from 'moment';
 import { constants } from '../constants';
 import * as I from '../interfaces/interfaces';
 import {
-    deleteInternalCategory,
+    deleteInternalCategory, 
+    deleteInternalCategoryByExternalId,
     insertCategory,
     selectAllCategories,
-    selectCategoryById, 
+    selectCategoryById,
     selectContAllCategories,
     updateCategory
 } from '../repository/category.repository';
@@ -14,6 +15,7 @@ import {deleteCategory, getCategories, postCategory, putCategory} from "../servi
 import {Alert} from "react-native";
 import {existsPortfolioRelationshipCategory} from "../repository/portfolio.repository.tsx";
 import {existsOperationRelationshipCategory} from "../repository/operation.repository.tsx";
+import {getUserLoginEncrypt} from "../utils.ts";
 
 /**
  * Método responsável por retornar a categoria persistida internamente para ser utilizada como referência.
@@ -25,10 +27,11 @@ import {existsOperationRelationshipCategory} from "../repository/operation.repos
  * @returns {Promise<I.Category>} - Promisse com o objeto da categoria interno
  */
 export const loadInternalCategory = async (category: I.Category): Promise<I.Category> => {
-    let internalCategory = await selectCategoryById(category.Id);
+    let login = await getUserLoginEncrypt();
+    let internalCategory = await selectCategoryById(login, category.Id);
 
     if (internalCategory === undefined){
-        internalCategory = await insertCategory(category);
+        internalCategory = await insertCategory(login, category);
     }
 
     return internalCategory;
@@ -36,10 +39,13 @@ export const loadInternalCategory = async (category: I.Category): Promise<I.Cate
 
 export const loadAllCategoryInternal = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;
-
+    
+    let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllCategories(type as number, pageNumber as number);
-    response.totalPages = await selectContAllCategories(type as number);
+    response.data = await selectAllCategories(login, type as number, pageNumber as number);
+    let totalRecords = await selectContAllCategories(login, type as number);
+    
+    response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
 
     return response;
 }
@@ -56,11 +62,12 @@ export const loadAllCategory = async (type: Number | null, pageNumber: Number | 
     
     var categories = response?.data ?? [];
 
+    let login = await getUserLoginEncrypt();
     for (const item of categories) {
-        var category = await selectCategoryById(item.Id);
+        var category = await selectCategoryById(login, item.Id);
 
         if (category === undefined) {
-            category = await insertCategory(item);
+            category = await insertCategory(login, item);
         } else {
             item.InternalId = category.InternalId;
             await updateCategory(item);
@@ -80,11 +87,13 @@ export const createCategory = async (category: I.Category): Promise<I.Response> 
     populateInternalFields(category, response);
 
     if (!response.isConnected) {
-        category = await insertCategory(category);
+        let login = await getUserLoginEncrypt();
+        category = await insertCategory(login, category);
         Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
         //TO-DO: Guardar o registro em uma fila de envio
     } else if (response.data !== null){
-        category = await insertCategory(response.data);
+        let login = await getUserLoginEncrypt();
+        category = await insertCategory(login, response.data);
     }
     
     return response;
@@ -118,13 +127,14 @@ const populateInternalFields = (category: I.Category, response: I.Response) => {
 export const excludeCategory = async (categoryId: number, categoryInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+    let login = await getUserLoginEncrypt();
     
-    if (await existsPortfolioRelationshipCategory(categoryInternalId)) {
+    if (await existsPortfolioRelationshipCategory(login, categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem contas vinculadas a ela.");
         return response;
     }
     
-    if (await existsOperationRelationshipCategory(categoryInternalId)) {
+    if (await existsOperationRelationshipCategory(login, categoryInternalId)) {
         Alert.alert("Atenção!", "Não é possível excluir a categoria, pois existem operações relacionadas a ela.");
         return response;
     }
@@ -143,4 +153,11 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
     }
     
     return response;
+}
+
+export const processNotificationsCategory = async (operation: string, id: number) => {
+    let login = await getUserLoginEncrypt();
+    
+    if (operation === constants.acao.delete)
+        await deleteInternalCategoryByExternalId(login, id);
 }

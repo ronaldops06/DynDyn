@@ -1,36 +1,38 @@
 import React, {useEffect, useState} from "react";
-import {StackNavigationProp} from "@react-navigation/stack";
-import {RootStackParamList} from "../RootStackParams.ts";
-import {RouteProp, useNavigation, useRoute} from '@react-navigation/core';
 import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
 import TextInput from "../../components/CustomTextInput";
 
-import {categoryCreateStyle} from "./create.styles";
 import PrevIcon from "../../assets/nav_prev.svg";
 import TrashIcon from "../../assets/trash.svg";
 import Picker from "../../components/CustomPicker";
 import {constants} from "../../constants";
 import CheckBox from "@react-native-community/checkbox";
 
-import {style} from "../../styles/styles.ts";
-import {styleCadastro} from '../../styles/styles.cadastro';
 import * as I from "../../interfaces/interfaces.tsx";
 import {alterCategory, createCategory, excludeCategory} from "../../controller/category.controller.tsx";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
-type homeScreenProp = StackNavigationProp<RootStackParamList, 'CategoryCreate'>;
+import {useTheme} from '../../contexts/ThemeContext';
+import {getStyleCadastro} from '../../styles/styles.cadastro';
+import {getStyle} from "../../styles/styles.ts";
+import {getCategoryCreateStyle} from "./create.styles";
+import Button from "../../components/Button";
+
 const CategoryCreate = ({navigation, route}) => {
-    //const navigation = useNavigation<homeScreenProp>();
-    //const route = useRoute<RouteProp<RootStackParamList, 'CategoryCreate'>>();
+    const { theme } = useTheme();
+    const style = getStyle(theme);
+    const styleCadastro = getStyleCadastro(theme);
+    const categoryCreateStyle = getCategoryCreateStyle(theme);
 
     const categoryId = route.params?.data?.Id ?? 0;
     const categoryInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
-
+    
+    const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>();
     const [status, setStatus] = useState<boolean>(true);
-
+    
     useEffect(() => {
         if (isEditing) {
             loadDataSreen();
@@ -90,6 +92,8 @@ const CategoryCreate = ({navigation, route}) => {
 
         if (!validateRequiredFields()) return;
 
+        setLoading(true);
+        
         let categoryDTO = {} as I.Category;
         categoryDTO.Id = categoryId;
         categoryDTO.InternalId = categoryInternalId;
@@ -103,6 +107,8 @@ const CategoryCreate = ({navigation, route}) => {
         else
             response = await createCategory(categoryDTO);
 
+        setLoading(false);
+        
         validateLogin(response, navigation);
         validateSuccess(response, navigation, 'Category');
     };
@@ -114,13 +120,13 @@ const CategoryCreate = ({navigation, route}) => {
                     <TouchableOpacity
                         style={styleCadastro.buttonBack}
                         onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill="#F1F1F1"/>
+                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                     {isEditing &&
                         <TouchableOpacity
                             style={styleCadastro.buttonTrash}
                             onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill="#F1F1F1"/>
+                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                         </TouchableOpacity>}
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
@@ -141,19 +147,18 @@ const CategoryCreate = ({navigation, route}) => {
                             <CheckBox
                                 value={status}
                                 onValueChange={setStatus}
-                                tintColors={{true: constants.colors.primaryTextColor, false: constants.colors.primaryTextColor}}
+                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                             />
                             <Text
                                 style={styleCadastro.textCheckbox}>Ativo</Text>
                         </View>
                     </View>
                     <View style={categoryCreateStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button 
+                            label={"Salvar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Salvar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}/>
                     </View>
                 </View>
             </ScrollView>
