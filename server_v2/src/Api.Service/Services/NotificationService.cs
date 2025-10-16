@@ -6,17 +6,21 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Api.Domain.Interfaces.Services;
+using Domain.Entities;
+using Domain.Repository;
 using Google.Apis.Auth.OAuth2;
 
 namespace Service.Services
 {
     public class NotificationService : INotificationService
     {
+        private readonly INotificationRepository _repository;
         private readonly string _projectId;
         private readonly GoogleCredential _googleCredential;
         
-        public NotificationService()
+        public NotificationService(INotificationRepository repository)
         {
+            _repository = repository;
             _projectId = "sage-money";
             
             string jsonKey = Environment.GetEnvironmentVariable("GOOGLE_APPLICATION_CREDENTIALS");
@@ -29,14 +33,15 @@ namespace Service.Services
         {
             foreach (var token in targetTokens)
             {
-                try
+                var notificationEntity = new NotificationEntity
                 {
-                    await SendMessageAsync(token, title, body);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Erro ao enviar para {token}: {ex.Message}");
-                }
+                    DeviceToken = token,
+                    Title = title,
+                    Message = body,
+                    Sent = false
+                };
+                
+                await _repository.InsertAsync(notificationEntity);
             }
         }
 

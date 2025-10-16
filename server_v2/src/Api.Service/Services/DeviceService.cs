@@ -132,7 +132,7 @@ namespace Service.Services
             var devices = await _repository.SelectAsync(user.Id);
 
             var targetTokens = devices.Select(x => x.NotificationToken);
-            Console.WriteLine(JsonConvert.SerializeObject(notificationModel.Body));
+            
             await _notificationService.SendMulticastMessageAsync(targetTokens, notificationModel.Title, JsonConvert.ToString(JsonConvert.SerializeObject(notificationModel.Body)));
         }
     }
