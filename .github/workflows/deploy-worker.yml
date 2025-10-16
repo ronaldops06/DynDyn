@@ -1,4 +1,4 @@
-name: Deploy SageMoney .NET App to AWS EC2
+name: Deploy Worker .NET App to AWS EC2
 
 on:
   push:
