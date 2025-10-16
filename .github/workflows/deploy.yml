@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'server_v2/**'
-      -' !server_v2/src/Worker.Service/**'
+      - '!server_v2/src/Worker.Service/**'
       - '.github/workflows/deploy.yml'
 
 jobs:
