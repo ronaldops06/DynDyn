@@ -206,7 +206,7 @@ export const executeRecurringTransaction = async (mountDateInicio: Date): Promis
     return response;
 }
 
-export const processNotificationsTransaction = async (operation: string, id: number) => {
+export const processActionTransaction = async (operation: string, id: number) => {
     let login = await getUserLoginEncrypt();
 
     if (operation === constants.acao.delete)

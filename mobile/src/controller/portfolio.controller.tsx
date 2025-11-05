@@ -177,7 +177,7 @@ export const excludePortfolio = async (portfolioId: number, portfolioInternalId:
     return response;
 }
 
-export const processNotificationsPortfolio = async (operation: string, id: number) => {
+export const processActionPortfolio = async (operation: string, id: number) => {
     let login = await getUserLoginEncrypt();
 
     if (operation === constants.acao.delete)

@@ -3,13 +3,7 @@ import notifee from "@notifee/react-native";
 import messaging, {AuthorizationStatus} from "@react-native-firebase/messaging";
 
 import {postDevice} from "../services/user.api.ts";
-import {Device, NotificationOperation} from "../interfaces/interfaces.tsx";
-import {constants} from "../constants";
-import {processNotificationsCategory} from "./category.controller.tsx";
-import {processNotificationsOperation} from "./operation.controller.tsx";
-import {processNotificationsTransaction} from "./transaction.controller.tsx";
-import {processNotificationsBalance} from "./balance.controller.tsx";
-import {processNotificationsPortfolio} from "./portfolio.controller.tsx";
+import {Device} from "../interfaces/interfaces.tsx";
 
 async function validateUserPermission() {
     const authStatus = await messaging().requestPermission();
@@ -42,18 +36,13 @@ export async function setupFirebaseListeners() {
     // Foreground
     const unsubscribeForeground = messaging().onMessage(async remoteMessage => {
 
-        if (remoteMessage.notification?.title === "Excluded Entity"){
-            let body = JSON.parse(JSON.parse(remoteMessage.notification?.body ?? '')) as NotificationOperation;
-            executeExcludeEntity(body);
-        } else {
-            await notifee.displayNotification({
-                title: remoteMessage.notification?.title,
-                body: remoteMessage.notification?.body,
-                android: {
-                    channelId: 'default',
-                },
-            });
-        }
+        await notifee.displayNotification({
+            title: remoteMessage.notification?.title,
+            body: remoteMessage.notification?.body,
+            android: {
+                channelId: 'default',
+            },
+        });
     });
 
     // Background (quando o usuário clica na notificação)
@@ -74,20 +63,6 @@ export async function setupFirebaseListeners() {
         unsubscribeOpened();
     };
 }
-
-const executeExcludeEntity = async (body: NotificationOperation) => {
-    if (body && body.Reference === constants.operations.category) {
-        await processNotificationsCategory(body.Operation, body.Id);
-    } else if (body && body.Reference === constants.operations.operation) {
-        await processNotificationsOperation(body.Reference, body.Id);
-    } else if (body && body.Reference === constants.operations.portfolio) {
-        await processNotificationsPortfolio(body.Reference, body.Id);
-    } else if (body && body.Reference === constants.operations.balance) {
-        await processNotificationsBalance(body.Reference, body.Id);
-    } else if (body && body.Reference === constants.operations.transaction) {
-        await processNotificationsTransaction(body.Reference, body.Id);
-    }
-};
 
 export const createAndroidChannel = async() => {
     await notifee.createChannel({

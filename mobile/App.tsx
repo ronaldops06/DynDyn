@@ -11,6 +11,8 @@ import { createTableTransaction } from './src/repository/transaction.repository'
 import MainStack from './src/stacks/MainStack';
 import { createTableBalance } from "./src/repository/balance.repository.tsx";
 import {createAndroidChannel, setupFirebaseListeners} from "./src/controller/firebase.controller.tsx";
+import {initBackgroundFetch} from "./src/background.fetch";
+import { getLogs } from './src/logger';
 
 const App = () => {
   
@@ -23,6 +25,13 @@ const App = () => {
     createTableTransaction();
     createTableBalance();
     createTableSynchronization();
+    initBackgroundFetch();
+
+      getLogs().then(logs => {
+          logs.map(log => {
+              console.log('Log', log);
+          })
+      });
 
     return () => {
       if (typeof cleanup === 'function') cleanup();

@@ -12,17 +12,17 @@ namespace Api.Service.Test.Portfolio
         {
             var portfolioEntity = Mapper.Map<PortfolioEntity>(PortfolioModel);
             
-            DeviceServiceMock.Setup(m => m.SendNotificationByUser(notificationModel));
+            TrashServiceMock.Setup(m => m.Post(trashModel));
             
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(portfolioEntity);
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
-            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            PortfolioService service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             var result = await service.Delete(PortfolioModel.Id);
             Assert.True(result);
 
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(false);
-            service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            service = new PortfolioService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             result = await service.Delete(99989);
             Assert.False(result);

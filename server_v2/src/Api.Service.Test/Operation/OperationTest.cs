@@ -16,7 +16,7 @@ namespace Api.Service.Test.Operation
         private static readonly int RECORD_NUMBER = 10;
 
         protected Mock<IOperationRepository> RepositoryMock = new Mock<IOperationRepository>();
-        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
+        protected Mock<ITrashService> TrashServiceMock = new Mock<ITrashService>();
         protected List<OperationModel> listOperationModel = new List<OperationModel>();
         protected List<OperationModel> listOperationModelResult = new List<OperationModel>();
         protected OperationModel operationModel;
@@ -24,7 +24,7 @@ namespace Api.Service.Test.Operation
         protected OperationModel operationModelUpdate;
         protected OperationModel operationModelUpdateResult;
         protected PageParams pageParams;
-        protected NotificationModel notificationModel;
+        protected TrashModel trashModel;
 
         protected OperationTest()
         {
@@ -124,15 +124,10 @@ namespace Api.Service.Test.Operation
                 UserId = UserModelFake.Id
             };
             
-            notificationModel = new NotificationModel
+            trashModel = new TrashModel()
             {
-                Title = "Exclude Entity",
-                Body = new
-                {
-                    Operation = "DELETE",
-                    Reference = "operation",
-                    Id = operationModel.Id
-                }
+                Reference = "operation",
+                ReferenceId = operationModel.Id
             };
         }
 

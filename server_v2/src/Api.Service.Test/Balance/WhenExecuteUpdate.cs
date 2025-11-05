@@ -17,7 +17,7 @@ namespace Api.Service.Test.Balance
             RepositoryMock.Setup(m => m.SelectByUkAsync(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(balanceEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<BalanceEntity>())).ReturnsAsync(balanceEntityUpdateResult);
-            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             var resultUpdate = await service.Put(balanceModelUpdate);
             ApplyTest(balanceModelUpdate, resultUpdate);

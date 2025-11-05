@@ -15,7 +15,7 @@ public class BalanceTest : BaseTestService
     private static readonly int RECORD_NUMBER = 10;
 
     protected Mock<IBalanceRepository> RepositoryMock = new Mock<IBalanceRepository>();
-    protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
+    protected Mock<ITrashService> TrashServiceMock = new Mock<ITrashService>();
     protected List<BalanceModel> listBalanceModel = new List<BalanceModel>();
     protected List<BalanceModel> listBalanceModelResult = new List<BalanceModel>();
     protected BalanceModel balanceModel;
@@ -23,7 +23,7 @@ public class BalanceTest : BaseTestService
     protected BalanceModel balanceModelUpdate;
     protected BalanceModel balanceModelUpdateResult;
     protected PageParams pageParams;
-    protected NotificationModel notificationModel;
+    protected TrashModel trashModel;
 
     protected BalanceTest()
     {
@@ -194,15 +194,10 @@ public class BalanceTest : BaseTestService
             UserId = UserModelFake.Id
         };
         
-        notificationModel = new NotificationModel
+        trashModel = new TrashModel()
         {
-            Title = "Exclude Entity",
-            Body = new
-            {
-                Operation = "DELETE",
-                Reference = "balance",
-                Id = balanceModel.Id
-            }
+            Reference = "balance",
+            ReferenceId = balanceModel.Id
         };
     }
 

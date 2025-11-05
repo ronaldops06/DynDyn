@@ -20,7 +20,7 @@ namespace Api.Service.Test.Transaction
 
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(transactionEntityUpdate);
             RepositoryMock.Setup(m => m.UpdateAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityUpdateResult);
-            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, DeviceServiceMock.Object, Mapper);
+            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
 
             var resultUpdate = await service.Put(transactionModelUpdate);
             ApplyTest(transactionModelUpdate, resultUpdate);

@@ -6,7 +6,8 @@ export const constants = {
         portfolio: 'portfolio',
         operation: 'operation',
         transaction: 'transaction',
-        balance: 'balance'
+        balance: 'balance',
+        trash: 'trash'
     },
     categoryType: {
         account: { Id: 1, Name: 'Conta' },

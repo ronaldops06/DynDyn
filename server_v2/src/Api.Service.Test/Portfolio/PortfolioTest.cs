@@ -15,7 +15,7 @@ namespace Api.Service.Test.Portfolio
         private static readonly int RECORD_NUMBER = 10;
         
         protected Mock<IPortfolioRepository> RepositoryMock = new Mock<IPortfolioRepository>();
-        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
+        protected Mock<ITrashService> TrashServiceMock = new Mock<ITrashService>();
         protected List<PortfolioModel> listPortfolioModel = new List<PortfolioModel>();
         protected List<PortfolioModel> listPortfolioModelResult = new List<PortfolioModel>();
         protected PortfolioModel PortfolioModel;
@@ -23,7 +23,7 @@ namespace Api.Service.Test.Portfolio
         protected PortfolioModel PortfolioModelUpdate;
         protected PortfolioModel PortfolioModelUpdateResult;
         protected PageParams pageParams;
-        protected NotificationModel notificationModel;
+        protected TrashModel trashModel;
 
         protected PortfolioTest()
         {
@@ -134,15 +134,10 @@ namespace Api.Service.Test.Portfolio
                 UserId = UserModelFake.Id
             };
             
-            notificationModel = new NotificationModel
+            trashModel = new TrashModel()
             {
-                Title = "Exclude Entity",
-                Body = new
-                {
-                    Operation = "DELETE",
-                    Reference = "portfolio",
-                    Id = PortfolioModel.Id
-                }
+                Reference = "portfolio",
+                ReferenceId = PortfolioModel.Id
             };
         }
 

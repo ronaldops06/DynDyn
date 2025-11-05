@@ -134,7 +134,9 @@ dependencies {
         exclude group: 'com.squareup.okhttp3', module: 'okhttp'
     }
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}")*/
-    // Outras dependências do Flipper, se necessário
+    // Outras dependências do Flipper, se necessário  
 }
 
+apply plugin: 'com.google.gms.google-services'
 //apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+

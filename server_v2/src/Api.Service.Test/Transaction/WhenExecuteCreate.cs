@@ -27,7 +27,7 @@ namespace Api.Service.Test.Transaction
             OperationServiceMock.Setup(m => m.Post(It.IsAny<OperationModel>())).ReturnsAsync(operationModel);
 
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
-            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, DeviceServiceMock.Object, Mapper);
+            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
 
             var result = await service.Post(transactionModel);
             ApplyTest(transactionModel, result);
@@ -38,7 +38,7 @@ namespace Api.Service.Test.Transaction
             var transactionEntityResult = Mapper.Map<TransactionEntity>(installmentTransactionModelResult);
 
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
-            var service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, DeviceServiceMock.Object, Mapper);
+            var service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
 
             transactionModel.TotalInstallments = installmentTransactionModelResult.TotalInstallments;
             transactionModel.Installment = installmentTransactionModelResult.Installment;
@@ -52,7 +52,7 @@ namespace Api.Service.Test.Transaction
             var transactionEntityResult = Mapper.Map<TransactionEntity>(transferTransactionModelResult);
 
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
-            var service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, DeviceServiceMock.Object, Mapper);
+            var service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
 
             transactionModel.DestinationPortfolio = DestinationPortfolioModel;
             transactionModel.DestinationPortfolioId = DestinationPortfolioModel.Id;

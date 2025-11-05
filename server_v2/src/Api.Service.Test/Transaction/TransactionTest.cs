@@ -13,7 +13,7 @@ namespace Api.Service.Test.Transaction
     {
         private static readonly int RECORD_NUMBER = 10;
         
-        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
+        protected Mock<ITrashService> TrashServiceMock = new Mock<ITrashService>();
         protected Mock<IOperationService> OperationServiceMock = new Mock<IOperationService>();
         protected Mock<ITransactionRepository> RepositoryMock = new Mock<ITransactionRepository>();
         protected List<TransactionModel> listTransactionModel = new List<TransactionModel>();
@@ -29,7 +29,7 @@ namespace Api.Service.Test.Transaction
         protected TransactionModel transactionModelUpdate;
         protected TransactionModel transactionModelUpdateResult;
         protected PageParams pageParams;
-        protected NotificationModel notificationModel;
+        protected TrashModel trashModel;
 
         public TransactionTest()
         {
@@ -177,15 +177,10 @@ namespace Api.Service.Test.Transaction
             transactionTotals.Add(OperationType.Debito, 500.45);
             transactionTotals.Add(OperationType.Transferencia, 250);
             
-            notificationModel = new NotificationModel
+            trashModel = new TrashModel()
             {
-                Title = "Exclude Entity",
-                Body = new
-                {
-                    Operation = "DELETE",
-                    Reference = "transaction",
-                    Id = transactionModel.Id
-                }
+                Reference = "transaction",
+                ReferenceId = transactionModel.Id
             };
         }
 

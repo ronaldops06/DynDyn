@@ -1,6 +1,7 @@
 ﻿using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Device;
+using Api.Domain.Dtos.Maintenance;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Dtos.Transaction;
@@ -66,6 +67,8 @@ namespace CrossCutting.Mappings
 
             CreateMap<DeviceRequestDto, DeviceModel>();
             CreateMap<DeviceModel, DeviceResponseDto>();
+
+            CreateMap<TrashModel, TrashResponseDto>();
         }
     }
 }

@@ -8,7 +8,7 @@ using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Domain.Repository;
-using Service.Types;
+using Domain.Types;
 
 namespace Service.Services
 {
@@ -18,8 +18,8 @@ namespace Service.Services
         
         public BalanceService(IUserService userService,
                               IBalanceRepository repository,
-                              IDeviceService deviceService,
-                              IMapper mapper) : base(deviceService, userService, mapper)
+                              ITrashService trashService,
+                              IMapper mapper) : base(trashService, userService, mapper)
         {
             _repository = repository;
         }

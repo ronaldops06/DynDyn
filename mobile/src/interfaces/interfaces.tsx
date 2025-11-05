@@ -49,6 +49,11 @@ export interface Device {
     PhisicalDeviceId: string
 }
 
+export interface Trash {
+    Reference: string,
+    ReferenceId: number
+}
+
 export interface Synchronization {
     InternalId: number | null,
     Operation: string,
