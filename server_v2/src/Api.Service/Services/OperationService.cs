@@ -10,7 +10,7 @@ using AutoMapper;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Service.Services;
-using Service.Types;
+using Domain.Types;
 
 namespace Api.Service.Services
 {
@@ -20,8 +20,8 @@ namespace Api.Service.Services
 
         public OperationService(IUserService userService,
                                 IOperationRepository repository,
-                                IDeviceService deviceService,
-                                IMapper mapper) : base(deviceService, userService, mapper)
+                                ITrashService trashService,
+                                IMapper mapper) : base(trashService, userService, mapper)
         {
             _repository = repository;
         }

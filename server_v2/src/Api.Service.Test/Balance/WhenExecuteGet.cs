@@ -20,7 +20,7 @@ namespace Api.Service.Test.Balance
 
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(),It.IsAny<int>())).ReturnsAsync(balanceEntityResult);
             RepositoryMock.Setup(m => m.SelectByParamAsync(It.IsAny<int>(), It.IsAny<PageParams>())).ReturnsAsync(data);
-            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            BalanceService service = new BalanceService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             var resultById = await service.GetById(balanceModelResult.Id);
             ApplyTest(balanceModelResult, resultById);

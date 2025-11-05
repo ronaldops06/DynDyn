@@ -16,7 +16,7 @@ namespace Api.Service.Test.Category
         private static readonly int RECORD_NUMBER = 10;
 
         protected Mock<ICategoryRepository> RepositoryMock = new Mock<ICategoryRepository>();
-        protected Mock<IDeviceService> DeviceServiceMock = new Mock<IDeviceService>();
+        protected Mock<ITrashService> TrashServiceMock = new Mock<ITrashService>();
         protected List<CategoryModel> listCategoryModel = new List<CategoryModel>();
         protected List<CategoryModel> listCategoryModelResult = new List<CategoryModel>();
         protected CategoryModel categoryModel;
@@ -24,7 +24,7 @@ namespace Api.Service.Test.Category
         protected CategoryModel categoryModelUpdate;
         protected CategoryModel categoryModelUpdateResult;
         protected PageParams pageParams;
-        protected NotificationModel notificationModel;
+        protected TrashModel trashModel;
 
         protected CategoryTest()
         {
@@ -99,15 +99,10 @@ namespace Api.Service.Test.Category
                 UserId = UserModelFake.Id
             };
             
-            notificationModel = new NotificationModel
+            trashModel = new TrashModel()
             {
-                Title = "Exclude Entity",
-                Body = new
-                {
-                    Operation = "DELETE",
-                    Reference = "category",
-                    Id = categoryModel.Id
-                }
+                Reference = "category",
+                ReferenceId = categoryModel.Id
             };
         }
 

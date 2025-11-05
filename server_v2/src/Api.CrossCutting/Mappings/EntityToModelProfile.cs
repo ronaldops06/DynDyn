@@ -21,6 +21,7 @@ namespace CrossCutting.Mappings
             CreateMap<TransactionEntity, TransactionModel>().ReverseMap();
             CreateMap<BalanceEntity, BalanceModel>().ReverseMap();
             CreateMap<DeviceEntity, DeviceModel>().ReverseMap();
+            CreateMap<TrashEntity, TrashModel>().ReverseMap();
         }
     }
 }

@@ -32,6 +32,7 @@ namespace CrossCutting.DependencyInjection
                 serviceCollection.AddScoped<IBalanceRepository, BalanceRepository>();
                 serviceCollection.AddScoped<IDeviceRepository, DeviceRepository>();
                 serviceCollection.AddScoped<INotificationRepository, NotificationRepository>();
+                serviceCollection.AddScoped<ITrashRepository, TrashRepository>();
                 
                 serviceCollection.AddScoped<ICleanupRepository, CategoryRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, PortfolioRepository>();
@@ -42,6 +43,7 @@ namespace CrossCutting.DependencyInjection
                 serviceCollection.AddScoped<ICleanupRepository, BalanceRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, DeviceRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, NotificationRepository>();
+                serviceCollection.AddScoped<ICleanupRepository, TrashRepository>();
                 
                 logger.LogInformation("Dependencias injetadas");
                 logger.LogInformation("Configurando database");

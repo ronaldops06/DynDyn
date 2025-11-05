@@ -16,7 +16,7 @@ namespace Data.Repository
     {
         public UserRepository(SomniaContext context) : base(context) { }
         
-        public int CleanupOrder => 7;
+        public int CleanupOrder => 8;
         
         public async Task<bool> DeleteAllByUserAsync(int id)
         {

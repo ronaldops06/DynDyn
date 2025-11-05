@@ -1,4 +1,4 @@
-namespace Service.Types
+namespace Domain.Types
 {
     /// <summary>
     /// Nome das entidades implementadas.

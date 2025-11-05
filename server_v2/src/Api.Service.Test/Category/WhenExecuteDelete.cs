@@ -13,17 +13,17 @@ namespace Api.Service.Test.Category
         {
             var categoryEntity = Mapper.Map<CategoryEntity>(categoryModel);
 
-            DeviceServiceMock.Setup(m => m.SendNotificationByUser(notificationModel));
+            TrashServiceMock.Setup(m => m.Post(trashModel));
             
             RepositoryMock.Setup(m => m.SelectByIdAsync(It.IsAny<int>(), It.IsAny<int>())).ReturnsAsync(categoryEntity);
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(true);
-            ICategoryService service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            ICategoryService service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             var result = await service.Delete(categoryModel.Id);
             Assert.True(result);
 
             RepositoryMock.Setup(m => m.DeleteAsync(It.IsAny<int>())).ReturnsAsync(false);
-            service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, DeviceServiceMock.Object, Mapper);
+            service = new CategoryService(UserServiceMock.Object, RepositoryMock.Object, TrashServiceMock.Object, Mapper);
 
             result = await service.Delete(99989);
             Assert.False(result);

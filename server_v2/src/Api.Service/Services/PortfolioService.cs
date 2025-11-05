@@ -9,7 +9,7 @@ using Domain.Helpers;
 using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Service.Services;
-using Service.Types;
+using Domain.Types;
 
 namespace Api.Service.Services
 {
@@ -19,8 +19,8 @@ namespace Api.Service.Services
         
         public PortfolioService(IUserService userService,
                               IPortfolioRepository repository,
-                              IDeviceService deviceService,
-                              IMapper mapper) : base(deviceService, userService, mapper)
+                              ITrashService trashService,
+                              IMapper mapper) : base(trashService, userService, mapper)
         {
             _repository = repository;
         }

@@ -8,33 +8,28 @@ namespace Service.Services
 {
     public class BaseService
     {
-        private readonly IDeviceService _deviceService;
+        private readonly ITrashService _trashService;
         protected readonly IUserService userService;
         protected readonly IMapper mapper;
         
-        public BaseService(IDeviceService deviceService,
+        public BaseService(ITrashService trashService,
                            IUserService userService,
                            IMapper mapper)
         {
-            _deviceService = deviceService;
+            _trashService = trashService;
             this.userService = userService;
             this.mapper = mapper;
         }
 
         protected async Task ProcessExcludeEntityAsync(string reference, int referenceId)
         {
-            var notification = new NotificationModel
+            var trashModel = new TrashModel()
             {
-                Title = "Excluded Entity",
-                Body = new
-                {
-                    Operation = "DELETE",
-                    Reference = reference,
-                    Id = referenceId
-                }
+                Reference = reference,
+                ReferenceId = referenceId
             };
 
-            await _deviceService.SendNotificationByUser(notification);
+            await _trashService.Post(trashModel);
         }
     }
 }
