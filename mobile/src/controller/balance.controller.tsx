@@ -279,7 +279,7 @@ export const balanceCalculation = async (calculateBalance: I.CalculateBalance, e
     }
 }
 
-export const processNotificationsBalance = async (operation: string, id: number) => {
+export const processActionBalance = async (operation: string, id: number) => {
     let login = await getUserLoginEncrypt();
 
     if (operation === constants.acao.delete)

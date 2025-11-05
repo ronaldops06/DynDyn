@@ -155,7 +155,7 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
     return response;
 }
 
-export const processNotificationsCategory = async (operation: string, id: number) => {
+export const processActionCategory = async (operation: string, id: number) => {
     let login = await getUserLoginEncrypt();
     
     if (operation === constants.acao.delete)

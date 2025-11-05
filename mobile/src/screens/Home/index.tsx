@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, SafeAreaView, Text, TouchableOpacity, View, ScrollView} from "react-native";
-import {Response, User, DashboardItem} from "../../interfaces/interfaces.tsx"
-import {VictoryLine, VictoryChart, VictoryTheme, VictoryAxis} from 'victory-native';
+import {ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {DashboardItem, Response, User} from "../../interfaces/interfaces.tsx"
+import {VictoryAxis, VictoryChart, VictoryLine, VictoryTheme} from 'victory-native';
 
 import UserIcon from "../../assets/user.svg";
 import VisibilityIcon from "../../assets/visibility.svg";
@@ -13,13 +13,10 @@ import HistoryIcon from '../../assets/history.svg';
 import DashboardIcon from '../../assets/dashboard.svg';
 
 import {getUserByStorage, validateLogin} from "../../utils.ts";
-import {
-    loadAllBalance,
-    loadDashboardBalanceGroupByMonth
-} from '../../controller/balance.controller.tsx'
+import {loadAllBalance, loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller.tsx'
 import {loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller.tsx";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getHomeStyle} from "./styles";
 

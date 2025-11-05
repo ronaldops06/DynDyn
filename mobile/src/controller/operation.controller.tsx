@@ -155,7 +155,7 @@ export const excludeOperation = async (operationId: number, operationInternalId:
     return response;
 }
 
-export const processNotificationsOperation = async (operation: string, id: number) => {
+export const processActionOperation = async (operation: string, id: number) => {
     let login = await getUserLoginEncrypt();
 
     if (operation === constants.acao.delete)
