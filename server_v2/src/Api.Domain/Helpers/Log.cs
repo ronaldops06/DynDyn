@@ -7,8 +7,8 @@ namespace Domain.Helpers
     {
         public static void Info<T>(string message)
         {
-            string caminhoArquivo = "/home/ronaldo/Logs";
-            string nomeArquivo = "sagemoney.txt";
+            string caminhoArquivo = "/var/log/sagemoney";
+            string nomeArquivo = "sagemoney.log";
             
             Directory.CreateDirectory(Path.GetDirectoryName(caminhoArquivo));
             
