@@ -125,15 +125,6 @@ namespace Service.Services
 
             return _mapper.Map<DeviceModel>(deviceEntity);
         }
-
-        public async Task SendNotificationByUser(NotificationModel notificationModel)
-        {
-            var user = await _userService.GetLoggedUser();
-            var devices = await _repository.SelectAsync(user.Id);
-
-            var targetTokens = devices.Select(x => x.NotificationToken);
-            
-            await _notificationService.SendMulticastMessageAsync(targetTokens, notificationModel.Title, JsonConvert.ToString(JsonConvert.SerializeObject(notificationModel.Body)));
-        }
+        
     }
 }

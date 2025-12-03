@@ -8,8 +8,6 @@ namespace Api.Domain.Interfaces.Services
     /// </summary>
     public interface IDeviceService : IService<DeviceModel>
     {
-        Task SendNotificationByUser(NotificationModel notificationModel);
-        
         /// <summary>
         /// Método responsável por retornar o dispositivo com base no identificador.
         /// </summary>
