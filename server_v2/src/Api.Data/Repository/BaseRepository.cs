@@ -40,7 +40,7 @@ namespace Data.Repository
                 if (ex.InnerException != null)
                     message = $"Inner Exception: {ex.InnerException.Message}";
                 
-                Log.Info<BaseRepository<T>>(message);
+                //Log.Info<BaseRepository<T>>(message);
                 throw new Exception(message);
             }
 
