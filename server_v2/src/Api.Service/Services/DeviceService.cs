@@ -16,18 +16,15 @@ namespace Service.Services
     public class DeviceService : IDeviceService
     {
         private readonly IUserService _userService;
-        private readonly INotificationService _notificationService;
         private readonly IDeviceRepository _repository;
         private readonly IMapper _mapper;
 
         public DeviceService(IUserService userService, 
                              IDeviceRepository repository, 
-                             INotificationService notificationService,
                              IMapper mapper)
         {
             _userService = userService;
             _repository = repository;
-            _notificationService = notificationService;
             _mapper = mapper;
         }
         

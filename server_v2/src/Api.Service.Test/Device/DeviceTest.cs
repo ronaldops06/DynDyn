@@ -9,7 +9,6 @@ namespace Api.Service.Test.Device;
 public class DeviceTest : BaseTestService
 {
     protected Mock<IDeviceRepository> RepositoryMock = new Mock<IDeviceRepository>();
-    protected Mock<INotificationService> NotificationServiceMock = new Mock<INotificationService>();
     protected DeviceModel deviceModel;
     protected DeviceModel deviceModelResult;
     protected DeviceModel deviceModelUpdate;
