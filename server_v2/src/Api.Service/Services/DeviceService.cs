@@ -16,18 +16,15 @@ namespace Service.Services
     public class DeviceService : IDeviceService
     {
         private readonly IUserService _userService;
-        private readonly INotificationService _notificationService;
         private readonly IDeviceRepository _repository;
         private readonly IMapper _mapper;
 
         public DeviceService(IUserService userService, 
                              IDeviceRepository repository, 
-                             INotificationService notificationService,
                              IMapper mapper)
         {
             _userService = userService;
             _repository = repository;
-            _notificationService = notificationService;
             _mapper = mapper;
         }
         
@@ -125,15 +122,6 @@ namespace Service.Services
 
             return _mapper.Map<DeviceModel>(deviceEntity);
         }
-
-        public async Task SendNotificationByUser(NotificationModel notificationModel)
-        {
-            var user = await _userService.GetLoggedUser();
-            var devices = await _repository.SelectAsync(user.Id);
-
-            var targetTokens = devices.Select(x => x.NotificationToken);
-            
-            await _notificationService.SendMulticastMessageAsync(targetTokens, notificationModel.Title, JsonConvert.ToString(JsonConvert.SerializeObject(notificationModel.Body)));
-        }
+        
     }
 }
