@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
@@ -62,12 +63,12 @@ namespace Api.Service.Services
             var user = await userService.GetLoggedUser();
             model.User = user;
             model.UserId = user.Id;
+            
             TransferValidate(model);
-
             await OperacaoNotExists(model);
-
+            
             var transactionEntity = mapper.Map<TransactionEntity>(model);
-
+            
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.InsertAsync(transactionEntity);
 
@@ -218,16 +219,24 @@ namespace Api.Service.Services
 
             // Verifica se não existe uma operação com o mesmo nome e tipo, se já existir irá somente vincular à que já existe.
             var operacaoAux = await _operationService.GetByNameAndType(operationEntity.Name, operationEntity.Type);
-
+            
             if (operacaoAux != null && operacaoAux.Id != 0)
             {
                 transactionModel.OperationId = operacaoAux.Id;
+                operacaoAux.User = null;
+                operacaoAux.UserId = 0;
+                operacaoAux.Category.User = null;
+                operacaoAux.Category.UserId = 0;
                 transactionModel.Operation = operacaoAux;
             }
             else
             {
                 operacaoAux = await _operationService.Post(transactionModel.Operation);
                 transactionModel.OperationId = operacaoAux.Id;
+                operacaoAux.User = null;
+                operacaoAux.UserId = 0;
+                operacaoAux.Category.User = null;
+                operacaoAux.Category.UserId = 0;
                 transactionModel.Operation = operacaoAux;
             }
         }

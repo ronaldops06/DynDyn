@@ -1,16 +1,14 @@
+using System.Runtime.CompilerServices;
 using Api.CrossCutting.Mappings;
 using AutoMapper;
 using CrossCutting.DependencyInjection;
 using CrossCutting.Mappings;
+using Domain.Helpers;
 using Domain.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
-using System.Runtime.CompilerServices;
-using System.Security.Authentication;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 
 [assembly: InternalsVisibleTo("Api.Integration.Test")]
 var builder = WebApplication.CreateBuilder(args);
@@ -113,6 +111,7 @@ builder.Logging.AddConsole();
 
 var app = builder.Build();
 
+Log.Configure(app.Services.GetRequiredService<ILoggerFactory>());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

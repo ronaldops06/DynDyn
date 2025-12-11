@@ -142,10 +142,12 @@ namespace Api.Application.V1.Controllers
             }
             catch (ArgumentException ex)
             {
+                Log.Info<TransactionController>($"Erro no cadastro de transação. Erro: {ex.Message}");
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                Log.Info<TransactionController>($"Erro no cadastro de transação. Erro: {ex.Message}");
                 return BadRequest(ex.Message);
             }
 

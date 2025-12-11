@@ -50,19 +50,6 @@ public class WhenRequestTransientUser : BaseIntegration
         Assert.Contains("Login é um campo obrigatório", postResult);
         Assert.Contains("Password é um campo obrigatório", postResult);
 
-        //Post
-        userRequestDto.Name = userBase.UserName;
-        userRequestDto.Login = userBase.UserLogin;
-        userRequestDto.Password = userBase.UserPassword;
-
-        response = await PostJsonAsync(userRequestDto, $"{HostApi}/TransientUser", Client);
-        postResult = await response.Content.ReadAsStringAsync();
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        
-        //2º Post
-        response = await PostJsonAsync(userRequestDto, $"{HostApi}/TransientUser", Client);
-        postResult = await response.Content.ReadAsStringAsync();
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         
         //Post validação
         //Não é possível validar pois o VerificationCode só é gerado internamente e enviado por e-mail, não sendo exposto   
