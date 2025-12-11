@@ -48,7 +48,7 @@ namespace Api.Integration.Test.Transaction
         protected void GenerateRequestDto()
         {
             PortfolioAccountRequestDto = GenerateAccount(2, "Cach");
-            OperationRequestDto = GenerateOperation(1, "Compra de Monitor", OperationType.Debito);
+            OperationRequestDto = GenerateOperation(2, "Compra de Monitor", OperationType.Debito);
 
             Random random = new Random();
 

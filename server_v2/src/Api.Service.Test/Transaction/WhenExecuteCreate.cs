@@ -12,6 +12,8 @@ namespace Api.Service.Test.Transaction
         [Fact(DisplayName = "É possível executar o método Create.")]
         public async Task Eh_Possivel_Executar_Metodo_Create()
         {
+            await TesteOperacaoNaoExistente();
+            
             await TesteBasicoGeral();
 
             await TesteComParcelas();
@@ -22,13 +24,28 @@ namespace Api.Service.Test.Transaction
         private async Task TesteBasicoGeral()
         {
             var transactionEntityResult = Mapper.Map<TransactionEntity>(transactionModelResult);
-
+            
             OperationServiceMock.Setup(m => m.GetByNameAndType(It.IsAny<string>(), It.IsAny<OperationType>())).ReturnsAsync(It.IsAny<OperationModel>());
             OperationServiceMock.Setup(m => m.Post(It.IsAny<OperationModel>())).ReturnsAsync(operationModel);
 
             RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
             TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
 
+            var result = await service.Post(transactionModel);
+            ApplyTest(transactionModel, result);
+        }
+
+        private async Task TesteOperacaoNaoExistente()
+        {
+            var transactionEntityResult = Mapper.Map<TransactionEntity>(transactionModelResult);
+
+            OperationServiceMock.Setup(m => m.GetByNameAndType(It.IsAny<string>(), It.IsAny<OperationType>()));
+            OperationServiceMock.Setup(m => m.Post(It.IsAny<OperationModel>())).ReturnsAsync(operationModel);
+
+            RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransactionEntity>())).ReturnsAsync(transactionEntityResult);
+            TransactionService service = new TransactionService(UserServiceMock.Object, RepositoryMock.Object, OperationServiceMock.Object, TrashServiceMock.Object, Mapper);
+
+            transactionModel.Installment = null;
             var result = await service.Post(transactionModel);
             ApplyTest(transactionModel, result);
         }

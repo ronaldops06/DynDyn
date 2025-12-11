@@ -8,7 +8,7 @@ public class UserHelper
     {
         return new UserEntity()
         {
-            Login = "teste@gmail.com",
+            Login = Faker.Internet.Email(),
             Password = "123456",
             Name = "User Test",
             Role = "Admin"

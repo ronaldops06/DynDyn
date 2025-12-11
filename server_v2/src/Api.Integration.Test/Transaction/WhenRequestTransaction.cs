@@ -69,7 +69,24 @@ namespace Api.Integration.Test.Transaction
 
             PortfolioAccountRequestDto.Id = registroAccountPost.Id;
 
+            //Post - Operação não existente
+            TransactionRequestDto.Operation.Id = 0;
+            response = await PostJsonAsync(TransactionRequestDto, $"{HostApi}/Transaction", Client);
+            postResult = await response.Content.ReadAsStringAsync();
+            var registroPost = JsonConvert.DeserializeObject<TransactionResponseDto>(postResult);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(registroPost.Id == 0);
+            Assert.Equal(TransactionRequestDto.Value, registroPost.Value);
+            Assert.Equal(TransactionRequestDto.Observation, registroPost.Observation);
+            Assert.Equal(TransactionRequestDto.Consolidated, registroPost.Consolidated);
+            Assert.Equal(TransactionRequestDto.Installment, registroPost.Installment);
+            Assert.Equal(TransactionRequestDto.TotalInstallments, registroPost.TotalInstallments);
+            Assert.Equal(TransactionRequestDto.Portfolio.Id, registroPost.Portfolio.Id);
+            Assert.Equal(1, registroPost.Operation.Id);  
+            
             //Post - Operation
+            OperationRequestDto.Name = "Curso de gaita";
             response = await PostJsonAsync(OperationRequestDto, $"{HostApi}/Operation", Client);
             postResult = await response.Content.ReadAsStringAsync();
             var registroOperationPost = JsonConvert.DeserializeObject<OperationResponseDto>(postResult);
@@ -80,9 +97,10 @@ namespace Api.Integration.Test.Transaction
             OperationRequestDto.Id = registroOperationPost.Id;
 
             //Post
+            TransactionRequestDto.Id = 2;
             response = await PostJsonAsync(TransactionRequestDto, $"{HostApi}/Transaction", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            var registroPost = JsonConvert.DeserializeObject<TransactionResponseDto>(postResult);
+            registroPost = JsonConvert.DeserializeObject<TransactionResponseDto>(postResult);
 
             Assert.Equal(HttpStatusCode.Created, response.StatusCode);
             Assert.False(registroPost.Id == 0);
