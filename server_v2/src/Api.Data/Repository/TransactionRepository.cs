@@ -7,6 +7,7 @@ using Api.Domain.Enums;
 using Api.Domain.Repository;
 using Data.Context;
 using Data.Repository;
+using Domain.Entities;
 using Domain.Helpers;
 using Domain.Interfaces;
 using Domain.Models;
@@ -226,7 +227,15 @@ namespace Api.Data.Repository
                 }
                 
                 if (transactionEntity.User != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<UserEntity>()
+                        .FirstOrDefault(e => e.Entity.Id == transactionEntity.User.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
                     _context.Entry(transactionEntity.User).State = EntityState.Unchanged;
+                }
             }
             catch (Exception ex)
             {
