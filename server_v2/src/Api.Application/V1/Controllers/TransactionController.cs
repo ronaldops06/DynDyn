@@ -172,10 +172,12 @@ namespace Api.Application.V1.Controllers
             }
             catch (ArgumentException ex)
             {
+                Log.Info<TransactionController>($"Erro ao atualizar a transação. Erro: {ex.Message}");
                 return BadRequest(ex.Message);
             }
             catch (Exception ex)
             {
+                Log.Info<TransactionController>($"Erro ao atualizar a transação. Erro: {ex.Message}");
                 return BadRequest(ex.Message);
             }
 
