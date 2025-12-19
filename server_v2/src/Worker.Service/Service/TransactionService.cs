@@ -21,17 +21,11 @@ public class TransactionService : ITransactionService
 
         foreach (var transaction in transactions)
         {
-            var body = new
-            {
-                OperationName = transaction.OperationName,
-                Value = transaction.Value
-            };
-                
             var notificationEntity = new NotificationEntity
             {
                 DeviceToken = transaction.NotificationToken,
-                Title = "Payable Transactions",
-                Message = JsonConvert.ToString(JsonConvert.SerializeObject(body)),
+                Title = "Transação a Pagar",
+                Message = $"A transação {transaction.OperationName} no valor de R$ {transaction.Value} vence hoje",
                 Sent = false
             };
 
