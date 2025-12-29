@@ -13,6 +13,7 @@ export enum StatusHttp {
     OK = 200,
     Created = 201,
     Unauthorized = 401,
+    BadRequest = 400
 }
 
 export enum Action {

@@ -212,21 +212,49 @@ export const selectContAll = async (userLogin: string, dateInicio: Date, dateFim
     return count
 };
 
-export const selectTransactionsTotals = async (userLogin: string, dateInicio: Date, dateFim: Date): Promise<TransactionTotals> => {
+export const selectTransactionsTotals = async (userLogin: string, dateInicio: Date, dateFim: Date, consolidated: boolean | null = null): Promise<TransactionTotals> => {
     const db = await openDatabase();
 
-    const results = await db.executeSql(
-        'SELECT ope.type AS type'
+    let params = [];
+    
+    let query = 'SELECT ope.salary AS salary'
+        + '     , ope.type AS type'
         + '     , SUM(trn.value) AS value'
         + '  FROM transactions trn'
         + '       INNER JOIN operations ope ON ope.internal_id = trn.operation_id'
         + ' WHERE trn.reference = ?'
-        + '   AND trn.data_criacao BETWEEN ? AND ?'
-        + ' GROUP BY ope.type',
-        [userLogin, 
-            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
-            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
-        ]);
+        + '   AND ope.type     != ?'
+        + '   AND ope.salary    = ?'
+        + '   AND trn.data_criacao BETWEEN ? AND ?';
+    
+    if (consolidated !== null)
+        query += '   AND trn.consolidated = ?';
+            
+    query += ' GROUP BY ope.salary, ope.type';
+    
+    params.push(userLogin);
+    params.push(constants.operationType.transfer.Id);
+    params.push(0);
+    params.push(Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'));
+    params.push(Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'));
+    
+    if (consolidated !== null)
+        params.push(consolidated ? 1 : 0);
+    
+    params.push(userLogin);
+    params.push(constants.operationType.transfer.Id);
+    params.push(1);
+    params.push(Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'));
+    params.push(Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'));
+
+    if (consolidated !== null)
+        params.push(consolidated ? 1 : 0);
+    
+    const results = await db.executeSql(
+        query +
+        ' UNION ALL ' +
+        query, 
+        params);
 
     return formatResultTotals(results[0]?.rows)
 }
@@ -373,6 +401,7 @@ const formatResult = (item: any): Transaction => {
         TotalInstallments: item.total_installments,
         DataCriacao: item.data_criacao,
         DataAlteracao: item.data_alteracao,
+        IsSelectedItem: false,
         Portfolio: {
             InternalId: item.portfolio_internal_id,
             Id: item.portfolio_id,
@@ -481,18 +510,27 @@ const formatResultView = (item: any): TransactionView => {
 
 const formatResultTotals = (rows: any): TransactionTotals => {
     let transactionTotals: TransactionTotals = {
-        Tansfer: 0,
+        Transfer: 0,
         Credit: 0,
         Debit: 0,
+        CreditSalary: 0,
+        DebitSalary: 0
     };
 
     for (let i = 0; i < rows.length; i++) {
-        if (rows.item(i).type === TypesTransaction.Transference)
-            transactionTotals.Tansfer = rows.item(i).value;
-        else if (rows.item(i).type === TypesTransaction.Expense)
-            transactionTotals.Debit = rows.item(i).value;
-        else if (rows.item(i).type === TypesTransaction.Revenue)
-            transactionTotals.Credit = rows.item(i).value;
+        if (rows.item(i).type === TypesTransaction.Transference) {
+            transactionTotals.Transfer = rows.item(i).value;
+        } else if (rows.item(i).type === TypesTransaction.Expense) {
+            if (rows.item(i).salary === 1)
+                transactionTotals.DebitSalary = rows.item(i).value;
+            else
+                transactionTotals.Debit = rows.item(i).value;
+        } else if (rows.item(i).type === TypesTransaction.Revenue) {
+            if (rows.item(i).salary === 1)
+                transactionTotals.CreditSalary = rows.item(i).value;
+            else
+                transactionTotals.Credit = rows.item(i).value;
+        }
     }
 
     return transactionTotals;

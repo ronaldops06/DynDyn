@@ -7,7 +7,7 @@ const { assetExts, sourceExts } = defaultConfig.resolver;
  * Metro configuration
  * https://facebook.github.io/metro/docs/configuration
  *
- * @type {import('metro-config').MetroConfig}
+ * @type {import('metro-config').MetroConfig}sourceExts
  */
 const config = {
   transformer: {
@@ -15,7 +15,7 @@ const config = {
   },
   resolver: {
     assetExts: assetExts.filter((ext) => ext !== "svg"),
-    sourceExts: [...sourceExts, "svg"]
+    sourceExts: [...sourceExts, "svg", "md"]
   }
 };
 

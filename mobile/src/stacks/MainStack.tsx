@@ -24,8 +24,43 @@ import TransactionCreate from '../screens/Transaction/create';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
 import MainTab from './MainTab';
+import {constants} from "../constants";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
+
+export const HomeStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Home" component={Home} />
+    </Stack.Navigator>
+);
+
+export const AccountStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="AccountHome" component={Account} initialParams={{ actionNavigation: constants.actionNavigation.reload }}/>
+        <Stack.Screen name="AccountCreate" component={AccountCreate}/>
+    </Stack.Navigator>
+);
+
+export const TransactionStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="TransactionHome" component={Transaction}/>
+        <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
+    </Stack.Navigator>
+);
+
+export const CategoryStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="CategoryHome" component={Category} />
+        <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
+    </Stack.Navigator>
+);
+
+export const OperationStack = () => (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="OperationHome" component={Operation}  initialParams={{ actionNavigation: constants.actionNavigation.reload }}/>
+        <Stack.Screen name="OperationCreate" component={OperationCreate}/>
+    </Stack.Navigator>
+);
 
 const MainStack = () => {
     return (
@@ -46,16 +81,8 @@ const MainStack = () => {
             <Stack.Screen name="UserAccount" component={UserAccount}/>
             <Stack.Screen name="ChangePassword" component={ChangePassword}/>
             <Stack.Screen name="DeleteAccount" component={DeleteAccount}/>
-            <Stack.Screen name="MainTab" component={MainTab}/>
             <Stack.Screen name="Dashboard" component={Dashboard}/>
-            <Stack.Screen name="Account" component={Account}/>
-            <Stack.Screen name="AccountCreate" component={AccountCreate}/>
-            <Stack.Screen name="Transaction" component={Transaction}/>
-            <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
-            <Stack.Screen name="Category" component={Category}/>
-            <Stack.Screen name="CategoryCreate" component={CategoryCreate}/>
-            <Stack.Screen name="Operation" component={Operation}/>
-            <Stack.Screen name="OperationCreate" component={OperationCreate}/>
+            <Stack.Screen name="MainTab" component={MainTab}/>
         </Stack.Navigator>
     );
 }

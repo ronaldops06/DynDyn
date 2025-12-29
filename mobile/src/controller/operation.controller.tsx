@@ -40,12 +40,12 @@ export const loadInternalOperation = async (operation: I.Operation): Promise<I.O
     return internalOperation;
 }
 
-export const loadAllOperationInternal = async (type: Number, pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllOperationInternal = async (type: Number, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllOperations(login, type as number, pageNumber as number);
+    response.data = await selectAllOperations(login, type as number, pageNumber as number, activated);
     let totalRecords = await selectContAllOperations(login, type as number);
 
     response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
@@ -53,7 +53,7 @@ export const loadAllOperationInternal = async (type: Number, pageNumber: Number 
     return response;
 }
 
-export const loadAllOperation = async (type: Number, pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllOperation = async (type: Number, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.operation);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -79,7 +79,7 @@ export const loadAllOperation = async (type: Number, pageNumber: Number | null):
     }
     
     await setLastSynchronization(synchronization);
-    return await loadAllOperationInternal(type, pageNumber);
+    return await loadAllOperationInternal(type, pageNumber, activated);
 }
 
 export const createOperation = async (operation: I.Operation): Promise<I.Response> => {

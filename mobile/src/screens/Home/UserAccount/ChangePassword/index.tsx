@@ -14,6 +14,7 @@ import {getStyle} from "../../../../styles/styles.ts";
 import {getChangePasswordStyle} from "./styles";
 import VisibilityOffIcon from "../../../../assets/visibility_off.svg";
 import VisibilityIcon from "../../../../assets/visibility.svg";
+import Button from "../../../../components/Button";
 
 const ChangePassword = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -112,18 +113,13 @@ const ChangePassword = ({navigation, route}) => {
                         />
                     </View>
                     <View style={changePasswordStyle.areaButtonSave}>
-                        <TouchableOpacity
-                            style={styleCadastro.buttonSave}
+                        <Button
+                            label={"Alterar"}
                             onPress={handleSaveClick}
-                        >
-                            <Text style={styleCadastro.textButtonSave}>Alterar</Text>
-                        </TouchableOpacity>
+                            loading={loading}
+                            disabled={loading}
+                        />
                     </View>
-                    {loading && (
-                        <View style={style.overlay}>
-                            <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                        </View>
-                    )}
                 </View>
             </ScrollView>
         </SafeAreaView>

@@ -1,19 +1,15 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 
 import CustomTabBar from '../components/CustomTabBar';
-
-import Account from '../screens/Account';
-import Category from '../screens/Category';
-import Home from '../screens/Home';
-import Transaction from '../screens/Transaction';
-import Operation from '../screens/Operation';
+import {AccountStack, CategoryStack, HomeStack, OperationStack, TransactionStack} from './MainStack.tsx'
+import {hideTabOnScreens} from "./navigation.utils.ts";
 
 type TabNavigatorParamList = {
     Home: undefined,
     Account: undefined,
     Transaction: undefined,
-    Category: undefined,
+    Category: { actionNavigation: string } | undefined,
     Operation: undefined
 }
 
@@ -27,11 +23,11 @@ const MainTab = () => {
             }}
             tabBar={props => <CustomTabBar {...props} />}
         >
-            <Tab.Screen name="Home" component={Home} />
-            <Tab.Screen name="Account" component={Account} />
-            <Tab.Screen name="Transaction" component={Transaction} />
-            <Tab.Screen name="Category" component={Category} />
-            <Tab.Screen name="Operation" component={Operation} />
+            <Tab.Screen name="Home" component={HomeStack}/>
+            <Tab.Screen name="Account" component={AccountStack} options={hideTabOnScreens(['AccountCreate'])}/>
+            <Tab.Screen name="Transaction" component={TransactionStack} options={hideTabOnScreens(['TransactionCreate'])}/>
+            <Tab.Screen name="Category" component={CategoryStack} options={hideTabOnScreens(['CategoryCreate'])}/>
+            <Tab.Screen name="Operation" component={OperationStack} options={hideTabOnScreens(['OperationCreate'])}/>
         </Tab.Navigator>
     );
 }

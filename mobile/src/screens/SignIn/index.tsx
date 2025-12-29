@@ -5,7 +5,7 @@ import ReactNativeBiometrics from 'react-native-biometrics';
 
 import TextInput from '../../components/CustomTextInput';
 import * as I from '../../interfaces/interfaces';
-import {login} from './signin.api';
+import {login} from '../../services/user.api';
 
 import {encrypt, getUserByStorage} from "../../utils.ts";
 import VisibilityIcon from "../../assets/visibility.svg";
@@ -16,6 +16,9 @@ import {getStyle} from '../../styles/styles';
 import {getSignInStyle} from './styles';
 import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
 import Button from "../../components/Button";
+import {StatusHttp} from "../../enums/enums.tsx";
+
+import FingerPrintIcon from "../../assets/fingerprint.svg";
 
 const SignIn = ({navigation}) => {
     const { theme } = useTheme();
@@ -98,20 +101,22 @@ const SignIn = ({navigation}) => {
         loginDTO.Password = password;
         let userResponse = await login(loginDTO);
         setLoading(false);
-        
-        if (userResponse !== null) {
+
+        if (!userResponse.isConnected) {
+            Alert.alert("Atenção!", "Sem conexão com a internet, tente novamente mais tarde");
+        } else if (userResponse.data !== null) {
             if (biometricAvailable && isBiometricActivated !== "yes")
                 validateAccessBionmetric();
             
-            userResponse.Password = loginDTO.Password;
-            await setUserInStorage(userResponse);
+            userResponse.data.Password = loginDTO.Password;
+            await setUserInStorage(userResponse.data);
 
             await updateTokenCloudMessaging();
             
             navigation.reset({
                 routes: [{name: 'MainTab'}]
             });
-        } else {
+        } else if (userResponse.status === StatusHttp.BadRequest || userResponse.status === StatusHttp.Unauthorized) {
             await EncryptedStorage.removeItem("user_session");
             await EncryptedStorage.removeItem("biometrics");
         }
@@ -131,6 +136,10 @@ const SignIn = ({navigation}) => {
         });
     }
 
+    const getIsBiometricActivated = async () => {
+        return await EncryptedStorage.getItem("biometrics");
+    }
+    
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
             <Image
@@ -160,6 +169,16 @@ const SignIn = ({navigation}) => {
                             loading={loading}
                             disabled={loading}
                         />
+                    </View>
+                    <View
+                        style={signInStyle.areaButton}>
+                        {biometricAvailable && 
+                            <TouchableOpacity
+                                disabled={getIsBiometricActivated() !== "yes"}
+                                onPress={handleAuthenticateByBiometric}>
+                                <FingerPrintIcon width="32" height="32" fill={theme.colors.primaryIconDashboard}/>
+                            </TouchableOpacity>
+                        }
                     </View>
                     <Text style={signInStyle.registerText}>
                         Não possui uma conta?&nbsp;

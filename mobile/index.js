@@ -16,7 +16,7 @@ const handleNotification = async (data) => {
         id: 'default',
         name: 'Notificações padrão',
     });
-
+    
     await notifee.displayNotification({
         title: data.title,
         body: data.body,
@@ -35,7 +35,6 @@ messaging().setBackgroundMessageHandler(async remoteMessage => {
 });
 
 BackgroundFetch.registerHeadlessTask(async (event) => {
-    console.log('[HeadlessTask] Rodando sincronização em background...');
     await loadAllTrash();
     BackgroundFetch.finish(event.taskId);
 });

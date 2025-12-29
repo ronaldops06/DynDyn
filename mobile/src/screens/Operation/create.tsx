@@ -1,23 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import {alterOperation, createOperation, excludeOperation} from "../../controller/operation.controller.tsx";
 import {constants} from "../../constants";
 import * as I from "../../interfaces/interfaces.tsx";
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
-import PrevIcon from "../../assets/nav_prev.svg";
-import TrashIcon from "../../assets/trash.svg";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getOperationCreateStyle} from "./create.styles";
-import Button from "../../components/Button";
+import {PageRegister} from "../../components/Page";
 
 const OperationCreate = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -46,7 +44,7 @@ const OperationCreate = ({navigation, route}) => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Operation, null);
+        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, true);
         validateLogin(responseCategories, navigation);
         
         setCategories(responseCategories?.data ?? []);
@@ -81,7 +79,7 @@ const OperationCreate = ({navigation, route}) => {
                     onPress: async () => {
                         let response = await excludeOperation(operationId, operationInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation, route);
+                        validateSuccess(response, navigation, 'OperationHome');
                     }
                 }
             ],
@@ -124,7 +122,7 @@ const OperationCreate = ({navigation, route}) => {
         setLoading(false);
         
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, 'Operation');
+        validateSuccess(response, navigation, 'OperationHome');
     };
 
     const validateRequiredFields = () => {
@@ -148,82 +146,63 @@ const OperationCreate = ({navigation, route}) => {
     }
 
     return (
-        <SafeAreaView style={[style.container, style.containerCadastro]}>
-            <ScrollView style={style.scrollCadastro}>
-                <View style={styleCadastro.viewHeaderCadastro}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonBack}
-                        onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
-                    </TouchableOpacity>
-                    {isEditing &&
-                        <TouchableOpacity
-                            style={styleCadastro.buttonTrash}
-                            onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
-                        </TouchableOpacity>}
+        <PageRegister
+            onTrashClick={handleTrashClick}
+            onBackClick={handleBackClick}
+            onSaveClick={handleSaveClick}
+            helpType={"operation_register"}
+            isEditing={isEditing}
+            isLoading={loading}>
+            <ButtonSelectBar
+                buttons={getButtonsSelectedBar()}
+                valueSelected={type}
+                handleValueSelected={setType}
+                disabled={false}
+            />
+            <View style={operationCreateStyle.areaFields}>
+                <TextInput
+                    text={"Nome"}
+                    isMoveText={false}
+                    value={name}
+                    setValue={setName}
+                />
+                <Picker
+                    text={"Categoria"}
+                    value={category}
+                    setValue={setCategory}
+                    data={categories}
+                />
+                <View style={styleCadastro.areaGroupCheckbox}>
+                    <View style={operationCreateStyle.areaCheckbox}>
+                        <CheckBox
+                            value={isRecurrent}
+                            onValueChange={setIsRecurrent}
+                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                        />
+                        <Text
+                            style={styleCadastro.textCheckbox}>Recorrente</Text>
+                    </View>
+                    <View style={operationCreateStyle.areaCheckbox}>
+                        <CheckBox
+                            value={isSalary}
+                            onValueChange={setIsSalary}
+                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                        />
+                        <Text
+                            style={styleCadastro.textCheckbox}>Salário</Text>
+                    </View>
                 </View>
-                <View style={styleCadastro.viewBodyCadastro}>
-                    <ButtonSelectBar
-                        buttons={getButtonsSelectedBar()}
-                        valueSelected={type}
-                        handleValueSelected={setType}
-                        disabled={false}
+                <View style={operationCreateStyle.areaCheckbox}>
+                    <CheckBox
+                        value={status}
+                        onValueChange={setStatus}
+                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                     />
-                    <View style={operationCreateStyle.areaFields}>
-                        <TextInput
-                            text={"Nome"}
-                            isMoveText={false}
-                            value={name}
-                            setValue={setName}
-                        />
-                        <Picker
-                            text={"Categoria"}
-                            value={category}
-                            setValue={setCategory}
-                            data={categories}
-                        />
-                        <View style={styleCadastro.areaGroupCheckbox}>
-                            <View style={operationCreateStyle.areaCheckbox}>
-                                <CheckBox
-                                    value={isRecurrent}
-                                    onValueChange={setIsRecurrent}
-                                    tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                                />
-                                <Text
-                                    style={styleCadastro.textCheckbox}>Recorrente</Text>
-                            </View>
-                            <View style={operationCreateStyle.areaCheckbox}>
-                                <CheckBox
-                                    value={isSalary}
-                                    onValueChange={setIsSalary}
-                                    tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                                />
-                                <Text
-                                    style={styleCadastro.textCheckbox}>Salário</Text>
-                            </View>
-                        </View>
-                        <View style={operationCreateStyle.areaCheckbox}>
-                            <CheckBox
-                                value={status}
-                                onValueChange={setStatus}
-                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                            />
-                            <Text
-                                style={styleCadastro.textCheckbox}>Ativo</Text>
-                        </View>
-                    </View>
-                    <View style={operationCreateStyle.areaButtonSave}>
-                        <Button
-                            label={"Salvar"}
-                            onPress={handleSaveClick}
-                            loading={loading}
-                            disabled={loading}
-                        />
-                    </View>
+                    <Text
+                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </View>
+        </PageRegister>
     );
 }
 

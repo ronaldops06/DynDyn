@@ -5,6 +5,7 @@ export const getStyle = (theme) => StyleSheet.create({
         display: "flex",
         flex: 1,
         flexDirection: "column",
+        fontFamily: "Open Sans"
     },
     containerCadastro: {
         backgroundColor: theme.colors.secondaryBaseColor
@@ -91,8 +92,13 @@ export const getStyle = (theme) => StyleSheet.create({
         paddingLeft: 15,
         height: 35
     },
+    headerScreenActions: {
+      flexDirection: "row"  
+    },
     titleScreenMoreInfo: {
-        padding: 10 
+        flexDirection: "row",
+        alignItems: "center",
+        marginRight: 10
     },
     areaModal: {
         marginTop: "auto",
@@ -115,10 +121,24 @@ export const getStyle = (theme) => StyleSheet.create({
         marginBottom: 10,
         padding: 10,
         borderRadius: 20,
-        backgroundColor: theme.colors.secondaryBaseColor
+        backgroundColor: theme.colors.secondaryBaseColor,
+        color: "red"
     },
     overlay: {
         marginTop: 20,
         alignItems: 'center',
     },
+    buttonPlus: {
+        width: 50,
+        height: 50,
+        borderRadius: 100,
+        position: "absolute",
+        bottom: 15,
+        right: 15,
+        borderWidth: 2,
+        borderColor: theme.colors.primaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor + "21",
+        alignItems: "center",
+        justifyContent: "center",
+    }
 });

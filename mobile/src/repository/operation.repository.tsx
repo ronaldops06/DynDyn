@@ -142,14 +142,33 @@ export const deleteAllOperations= async (userLogin: string) => {
         ' WHERE reference = ?', [userLogin]);
 }
 
-export const selectAllOperations = async (userLogin: string, type: number, pageNumber: number | null): Promise<Operation[]> => {
+export const selectAllOperations = async (userLogin: string, type: number, pageNumber: number | null, activated: boolean | null): Promise<Operation[]> => {
     const db = await openDatabase();
 
+    let query = queryBase();
+
+    let params = [];
+    params.push(userLogin);
+
+    if (activated !== null) {
+        query += ' AND ope.status = ?';
+        params.push(activated);
+    }
+    
+    query += ' AND ope.type = ?';
+    params.push(type);
+    
     let results: ResultSet[];
-    if (pageNumber)
-        results = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.type = ? ORDER BY ope.name LIMIT ? OFFSET ?', [userLogin, type, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
-    else
-        results = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.type = ? ORDER BY ope.name', [userLogin, type]);
+    if (pageNumber) {
+        query += ' ORDER BY ope.name LIMIT ? OFFSET ? ';
+        params.push(constants.pageSize);
+        params.push((pageNumber - 1) * constants.pageSize);
+
+        results = await db.executeSql(query, params);
+    } else {
+        query += ' ORDER BY ope.name';
+        results = await db.executeSql(query, params);
+    }
 
     const operations: Operation[] = [];
     results.forEach(result => {
@@ -181,7 +200,7 @@ export const selectContAllOperations = async (userLogin: string, type: number): 
 export const selectOperationById = async (userLogin: string, id: number): Promise<Operation | undefined> => {
     const db = await openDatabase();
 
-    const result = await db.executeSql(queryBase() + ' WHERE ope.reference = ? AND ope.id = ?', [userLogin, id]);
+    const result = await db.executeSql(queryBase() + ' AND ope.id = ?', [userLogin, id]);
 
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
@@ -210,7 +229,8 @@ const queryBase = () => {
         + '     , cat.data_criacao AS category_data_criacao'
         + '     , cat.data_alteracao AS category_data_alteracao'
         + '  FROM operations ope'
-        + '       INNER JOIN categories cat ON ope.category_id = cat.internal_id';
+        + '       INNER JOIN categories cat ON ope.category_id = cat.internal_id'
+        + ' WHERE ope.reference = ?';
 }
 
 const formatResult = (item: any): Operation => {

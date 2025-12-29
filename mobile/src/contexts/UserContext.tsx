@@ -8,8 +8,11 @@ interface UserContextParams {
 export const UserContext = createContext({});
 
 export default (props: UserContextParams) => {
-
-    const[state, dispatch] = useReducer(UserReducer, initialState);
+    function init(initial) {
+        return initial;
+    }
+    
+    const[state, dispatch] = useReducer(UserReducer, initialState, init);
 
     return (
         <UserContext.Provider value={{state, dispatch}}>

@@ -108,9 +108,22 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
     return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
 }
 
-export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim: Date): Promise<I.TransactionTotals> => {
+export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim: Date, expandSalary: boolean, consolidated: boolean | null = null): Promise<I.TransactionTotals> => {
+    
     let login = await getUserLoginEncrypt();
-    return await selectTransactionsTotals(login, mountDateInicio, mountDateFim);
+    let totals = await selectTransactionsTotals(login, mountDateInicio, mountDateFim, consolidated);
+    
+    if (expandSalary){
+        totals.Credit += totals.CreditSalary;
+        totals.Debit += totals.DebitSalary;
+    } else {
+        totals.Credit += (totals.CreditSalary - totals.DebitSalary);
+    }
+    
+    totals.CreditTotal = totals.Credit;
+    totals.DebitTotal = totals.Debit;
+    
+    return totals;
 }
 
 export const createTransaction = async (transaction: I.Transaction): Promise<I.Response> => {

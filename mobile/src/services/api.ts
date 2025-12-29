@@ -22,6 +22,24 @@ const isInternetConnected = async (): Promise<boolean> => {
     return state.isConnected ?? false;
 };
 
+const formatErrors = (error: any): string => {
+    if (error?.response?.data?.errors?.Value) {
+        return error?.response?.data?.errors?.Value.join();
+    } else if (error?.response?.data?.errors) {
+        return Object.entries(error?.response?.data?.errors)
+            .map(([field, messages]) => `${field}: ${messages.join('; ')}`)
+            .join(". ");
+    } else if (error?.response?.data) {
+        return error?.response?.data;
+    } else if (error.response) {
+        return `Erro ao realizar a comunicação com o servidor. Status: ${error.response.status}`;
+    } else if (error.request) {
+        return 'O servidor está indisponível no momento, tente novamente mais tarde.'
+    }
+    
+    return "Erro não identificado ao realizar a comunicação com o servidor.";
+}
+
 export const fetchApiUrl = async (): Promise<string | null> => {
     try {
         //Se estiver executando em modo debug (localmente), usa o endereço local da API.
@@ -124,8 +142,7 @@ export const post = async (path: string, data?: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log('erro',error?.response);
-        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.error = formatErrors(error);
         responseRequest.status = error?.response?.status;
         responseRequest.success = false;
     });
@@ -154,8 +171,7 @@ export const postParamQuery = async (path: string): Promise<I.Response> => {
         dataResponse.success = true;
         dataResponse.status = response.data.status;
     }).catch((error) => {
-        console.log('erro', error);
-        dataResponse.error = error?.response?.data?.errors?.Value.join();
+        dataResponse.error = formatErrors(error);
         dataResponse.status = error.response.status;
         dataResponse.success = false;
     });
@@ -184,8 +200,7 @@ export const put = async (path: string, data: any) => {
         responseRequest.status = response.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log('erro', error?.response?.data);
-        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.error = formatErrors(error);        
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });
@@ -317,23 +332,28 @@ export const postValidateUser = async (path: string, data: any): Promise<I.Respo
     return dataResponse;
 };
 
-export const postLogin = async (path: string, data: I.Login): Promise<I.User | null> => {
-    let dataResponse: I.User | null = {} as I.User;
+export const postLogin = async (path: string, data: I.Login): Promise<I.Response> => {
+    let dataResponse: I.Response = {} as I.Response;
+
+    dataResponse.isConnected = true;
+
+    let isConnected = await isInternetConnected();
+    if (!isConnected) {
+        dataResponse.isConnected = false;
+        dataResponse.success = true;
+        return dataResponse;
+    }
 
     let api = await getApiInstance();
     await api.post(path, data
     ).then(response => {
-        dataResponse = response.data;
+        dataResponse.data = response?.data;
+        dataResponse.success = true;
+        dataResponse.status = response.data.status;
     }).catch((error) => {
-        dataResponse = null;
-        if (error.response?.data)
-            Alert.alert("Login Inválido", error.response.data);
-        else if (error.response)
-            Alert.alert("Erro no Servidor", `Status: ${error.response.status}`);
-        else if (error.request)
-            Alert.alert("Erro de Rede", "Serviço indisponível.");
-        else
-            Alert.alert("Erro", "Algo deu errado.");
+        dataResponse.error = formatErrors(error);
+        dataResponse.status = error?.response?.status;
+        dataResponse.success = false;
     });
 
     return dataResponse;

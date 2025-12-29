@@ -29,7 +29,7 @@ const OperationModal = (props: OperationModalParams) => {
     const loadOperations = async () => {
         setLoading(true);
 
-        let response = await loadAllOperation(props.tipoOperation, null);
+        let response = await loadAllOperation(props.tipoOperation, null, true);
         setOperations(response?.data ?? []);
         setLoading(false);
     };
@@ -67,6 +67,7 @@ const OperationModal = (props: OperationModalParams) => {
                             value={valueSearch}
                             setValue={setValueSearch}
                             width="100%"
+                            autoFocus={true}
                         />
                         <View >
                             {loading &&

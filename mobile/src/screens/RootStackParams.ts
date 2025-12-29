@@ -1,7 +1,5 @@
 import * as I from '../interfaces/interfaces';
-import Recovery from "./SignUp/Recovery";
-import RecoveryValidation from "./SignUp/Recovery/recovery.validation.tsx";
-import DeleteAccount from "./Home/UserAccount/DeleteAccount";
+import {constants} from "../constants";
 
 export type RootStackParamList = { 
     Preload: undefined; 
@@ -20,7 +18,7 @@ export type RootStackParamList = {
     AccountCreate: { isEditing: boolean, data: I.Portfolio | null } | undefined;
     Transaction: undefined;
     TransactionCreate: {isEditing: boolean, data: I.Transaction | null } | undefined;
-    Category: undefined;
+    Category: { actionNavigation: string } | undefined;
     CategoryCreate: {isEditing: boolean, data: I.Category | null } | undefined;
     Operation: undefined;
     OperationCreate: {isEditing: boolean, data: I.Operation | null } | undefined;

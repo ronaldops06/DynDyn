@@ -101,7 +101,7 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
     },
     areaTimes: {
         flexDirection: "column",
-        width: "30%",
+        width: "40%",
         marginLeft: 10
     },
 });

@@ -112,7 +112,8 @@ export interface Transaction {
     Operation: Operation,
     ParentTransaction: Transaction | null,
     DataCriacao: Date,
-    DataAlteracao: Date
+    DataAlteracao: Date,
+    IsSelectedItem: boolean | null
 }
 
 export interface TransactionView {
@@ -137,7 +138,11 @@ export interface TransactionsGroup {
 export interface TransactionTotals {
     Credit: number,
     Debit: number,
-    Tansfer: number
+    Transfer: number,
+    DebitSalary: number,
+    CreditSalary: number,
+    CreditTotal: number,
+    DebitTotal: number
 }
 
 export interface Balance {

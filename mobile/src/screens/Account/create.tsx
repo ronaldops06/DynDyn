@@ -3,33 +3,31 @@ import React, {useEffect, useState} from "react";
 import * as I from "../../interfaces/interfaces.tsx";
 import {loadAllCategory} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
-import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Text, View} from "react-native";
 import {
     alterPortfolio,
     createPortfolio,
     excludePortfolio,
     loadAllPortfolio
 } from "../../controller/portfolio.controller.tsx";
-import PrevIcon from "../../assets/nav_prev.svg";
-import TrashIcon from "../../assets/trash.svg";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import {validateLogin, validateSuccess} from "../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../components/ButtonSelectBar";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getAccountCreateStyle} from "./create.styles";
-import Button from "../../components/Button";
+import {PageRegister} from "../../components/Page";
 
 const PortfolioCreate = ({navigation, route}) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const accountCreateStyle = getAccountCreateStyle(theme);
-    
+
     const portfolioId = route.params?.data?.Id ?? 0;
     const portfolioInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
@@ -51,16 +49,16 @@ const PortfolioCreate = ({navigation, route}) => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Account, null);
+        let responseCategories = await loadAllCategory(TypesCategory.Account, null, true);
         validateLogin(responseCategories, navigation);
-        
-        let responsePortfolios = await loadAllPortfolio(null);
+
+        let responsePortfolios = await loadAllPortfolio(null, true);
         validateLogin(responsePortfolios, navigation);
 
         setCategories(responseCategories?.data ?? []);
         setPortfolios(responsePortfolios?.data ?? []);
     }
-    
+
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
@@ -99,7 +97,7 @@ const PortfolioCreate = ({navigation, route}) => {
                     onPress: async () => {
                         let response = await excludePortfolio(portfolioId, portfolioInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation, route);
+                        validateSuccess(response, navigation, "AccountHome");
                     }
                 }
             ],
@@ -125,9 +123,9 @@ const PortfolioCreate = ({navigation, route}) => {
     const handleSaveClick = async () => {
 
         if (!validateRequiredFields()) return;
-        
+
         setLoading(true);
-        
+
         let portfolioDTO = {} as I.Portfolio;
         portfolioDTO.Id = portfolioId;
         portfolioDTO.InternalId = portfolioInternalId;
@@ -145,74 +143,55 @@ const PortfolioCreate = ({navigation, route}) => {
             response = await createPortfolio(portfolioDTO);
 
         setLoading(false);
-        
+
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, 'Account');
+        validateSuccess(response, navigation, 'AccountHome');
     };
-    
-    return(
-        <SafeAreaView style={[style.container, style.containerCadastro]}>
-            <ScrollView style={style.scrollCadastro}>
-                <View style={styleCadastro.viewHeaderCadastro}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonBack}
-                        onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
-                    </TouchableOpacity>
-                    {isEditing &&
-                        <TouchableOpacity
-                            style={styleCadastro.buttonTrash}
-                            onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
-                        </TouchableOpacity>}
-                </View>
-                <View style={styleCadastro.viewBodyCadastro}>
-                    <ButtonSelectBar
-                        buttons={getButtonsSelectedBar()}
-                        valueSelected={type}
-                        handleValueSelected={setType}
-                        disabled={false}
+
+    return (
+        <PageRegister 
+            onTrashClick={handleTrashClick} 
+            onBackClick={handleBackClick} 
+            onSaveClick={handleSaveClick} 
+            helpType={"account_register"}
+            isEditing={isEditing} 
+            isLoading={loading}>
+            <ButtonSelectBar
+                buttons={getButtonsSelectedBar()}
+                valueSelected={type}
+                handleValueSelected={setType}
+                disabled={false}
+            />
+            <View style={accountCreateStyle.areaFields}>
+                <TextInput
+                    text={"Nome"}
+                    isMoveText={false}
+                    value={name}
+                    setValue={setName}
+                />
+                <Picker
+                    text={"Categoria"}
+                    value={category}
+                    setValue={setCategory}
+                    data={categories}
+                />
+                <Picker
+                    text={"Conta Pai"}
+                    value={parentPortfolio}
+                    setValue={setParentPortfolio}
+                    data={portfolios}
+                />
+                <View style={accountCreateStyle.areaCheckbox}>
+                    <CheckBox
+                        value={status}
+                        onValueChange={setStatus}
+                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
                     />
-                    <View style={accountCreateStyle.areaFields}>
-                        <TextInput
-                            text={"Nome"}
-                            isMoveText={false}
-                            value={name}
-                            setValue={setName}
-                        />
-                        <Picker
-                            text={"Categoria"}
-                            value={category}
-                            setValue={setCategory}
-                            data={categories}
-                        />
-                        <Picker
-                            text={"Conta Pai"}
-                            value={parentPortfolio}
-                            setValue={setParentPortfolio}
-                            data={portfolios}
-                        />
-                        <View style={accountCreateStyle.areaCheckbox}>
-                            <CheckBox
-                                value={status}
-                                onValueChange={setStatus}
-                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                            />
-                            <Text
-                                style={styleCadastro.textCheckbox}>Ativo</Text>
-                        </View>
-                    </View>
-                    <View style={accountCreateStyle.areaButtonSave}>
-                        <Button 
-                            label={"Salvar"}
-                            onPress={handleSaveClick}
-                            loading={loading}
-                            disabled={loading}
-                        />
-                    </View> 
+                    <Text
+                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
-            </ScrollView>
-        </SafeAreaView>
+            </View>
+        </PageRegister>
     );
 }
 
