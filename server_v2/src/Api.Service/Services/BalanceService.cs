@@ -69,7 +69,7 @@ namespace Service.Services
             var balanceEntityAux = await _repository.SelectByUkAsync(user.Id, model.PortfolioId, model.Month, model.Year);
 
             if (balanceEntityAux != null && model.Id != balanceEntityAux.Id)
-                throw new Exception($"Saldo para o mês {model.Month + 1} e ano {model.Year}, conta (ID) {model.PortfolioId} não disponível.");
+                throw new Exception($"Saldo (ID: {model.Id}) para o mês {model.Month + 1} e ano {model.Year}, conta (ID) {model.PortfolioId} não disponível.");
 
             balanceEntityAux = await _repository.SelectByIdAsync(user.Id, model.Id);
 
