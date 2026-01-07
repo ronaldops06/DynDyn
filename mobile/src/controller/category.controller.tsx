@@ -37,12 +37,12 @@ export const loadInternalCategory = async (category: I.Category): Promise<I.Cate
     return internalCategory;
 }
 
-export const loadAllCategoryInternal = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllCategoryInternal = async (type: Number | null, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
     
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllCategories(login, type as number, pageNumber as number);
+    response.data = await selectAllCategories(login, type as number, pageNumber as number, activated);
     let totalRecords = await selectContAllCategories(login, type as number);
     
     response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
@@ -50,7 +50,7 @@ export const loadAllCategoryInternal = async (type: Number | null, pageNumber: N
     return response;
 }
 
-export const loadAllCategory = async (type: Number | null, pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllCategory = async (type: Number | null, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.category);
     
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -75,7 +75,7 @@ export const loadAllCategory = async (type: Number | null, pageNumber: Number | 
     }
     
     await setLastSynchronization(synchronization);
-    return await loadAllCategoryInternal(type, pageNumber);
+    return await loadAllCategoryInternal(type, pageNumber, activated);
 }
 
 export const createCategory = async (category: I.Category): Promise<I.Response> => {

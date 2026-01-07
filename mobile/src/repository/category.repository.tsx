@@ -1,4 +1,4 @@
-import {Account, Category} from "../interfaces/interfaces";
+import {Category} from "../interfaces/interfaces";
 import { openDatabase } from "./database";
 import {constants} from "../constants";
 import {ResultSet} from "react-native-sqlite-storage";
@@ -116,7 +116,7 @@ export const deleteAllCategories = async (userLogin: string) => {
         ' WHERE reference = ?', [userLogin]);
 }
 
-export const selectAllCategories = async (userLogin: string, type: number | null, pageNumber: number | null): Promise<Category[]> => {
+export const selectAllCategories = async (userLogin: string, type: number | null, pageNumber: number | null, activated: boolean | null): Promise<Category[]> => {
     const db = await openDatabase();
     
     let results: ResultSet[];
@@ -130,6 +130,11 @@ export const selectAllCategories = async (userLogin: string, type: number | null
     if (type){
         query += ' AND type = ?';
         params.push(type);
+    }
+    
+    if (activated !== null){
+        query += ' AND status = ?';
+        params.push(activated);
     }
 
     query += ' ORDER BY name';

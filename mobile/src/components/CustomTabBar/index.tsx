@@ -28,6 +28,17 @@ const CustomTabBar = (props: CustomTabBarParms) => {
     const opacityItem = (index: number) => {
         return props.state.index === index ? 1 : 0.7;
     };
+    
+    const focusedRouteKey = props.state.routes[props.state.index].key;
+    const options = props.descriptors[focusedRouteKey].options || {};
+
+    // pegar estilo passado via options.tabBarStyle
+    const tabBarStyle = options.tabBarStyle || {};
+
+    // se a opção definiu display: 'none', não renderiza nada
+    if (tabBarStyle.display === 'none') {
+        return null;
+    }
 
     return (
         <View style={customTabBarStyle.tabArea}>

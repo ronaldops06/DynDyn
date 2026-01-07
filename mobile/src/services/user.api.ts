@@ -1,5 +1,5 @@
 import * as I from "../interfaces/interfaces.tsx";
-import {del, postPasswordRecovery, post, postParamQuery, postValidateUser} from "./api.ts";
+import {del, postPasswordRecovery, post, postParamQuery, postValidateUser, postLogin} from "./api.ts";
 import {validateLogin} from "./helper.api.ts";
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import {Alert} from "react-native";
@@ -21,6 +21,17 @@ export const validateResponse = (action: Action, response: I.Response) => {
     }
 
     return true;
+};
+
+export const login = async (data: I.Login): Promise<I.Response> => {
+    let response = {} as I.Response;
+    response = await postLogin('Login/Auth', data);
+
+    if (!validateResponse(Action.Post, response)){
+        response.data = null;
+    }
+    
+    return response;
 };
 
 export const postPasswordUser = async (data: I.ChangePasswordUser): Promise<I.Response> => {

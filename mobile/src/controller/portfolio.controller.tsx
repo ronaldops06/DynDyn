@@ -45,12 +45,12 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
     return internalPortfolio;
 }
 
-export const loadAllPortfolioInternal = async (pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllPortfolioInternal = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllPortfolios(login, pageNumber as number);
+    response.data = await selectAllPortfolios(login, pageNumber as number, activated);
     
     for (let portfolio of response.data) {
         portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
@@ -62,7 +62,7 @@ export const loadAllPortfolioInternal = async (pageNumber: Number | null): Promi
     return response;
 }
 
-export const loadAllPortfolio = async (pageNumber: Number | null): Promise<I.Response> => {
+export const loadAllPortfolio = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.portfolio);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -91,7 +91,7 @@ export const loadAllPortfolio = async (pageNumber: Number | null): Promise<I.Res
     }
 
     await setLastSynchronization(synchronization);
-    return await loadAllPortfolioInternal(pageNumber);
+    return await loadAllPortfolioInternal(pageNumber, activated);
 }
 
 export const createPortfolio = async (portfolio: I.Portfolio): Promise<I.Response> => {

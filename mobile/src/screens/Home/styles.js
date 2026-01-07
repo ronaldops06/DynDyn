@@ -12,8 +12,7 @@ export const getHomeStyle = (theme) => StyleSheet.create({
         color: theme.colors.secondaryTextDashboard,
         fontSize: 20,
         marginLeft: 8,
-        fontWeight: "bold",
-        fontFamily: "Open Sans"
+        fontWeight: "bold"
     },
     iconUser: {
         padding: 10,
@@ -22,7 +21,7 @@ export const getHomeStyle = (theme) => StyleSheet.create({
         marginRight: 10
     },
     areaBalance: {
-        height: 80,
+        height: 180,
         marginTop: 30,
         marginHorizontal: 30,
         borderWidth: 1,
@@ -34,21 +33,45 @@ export const getHomeStyle = (theme) => StyleSheet.create({
     balanceRow: {
         flexDirection: "row",
         justifyContent: "space-between",
+        marginBottom: 10,
+    },
+    balanceCard: {
+        height: 50,
+        width: 96,
+        padding: 5,
+        borderRadius: 10,
+        backgroundColor: theme.colors.primaryBaseColor + "21",
     },
     valueHidden: {
-        height: 20,
+        height: 30,
         width: 120,
+        backgroundColor: theme.colors.tertiaryAreaDashboard,
+    },
+    valueProjectionHidden: {
+        height: 15,
+        width: 70,
         backgroundColor: theme.colors.tertiaryAreaDashboard,
     },
     balanceLabelItem: {
         color: theme.colors.primaryTextDashboard,
-        fontSize: 16,
-        fontFamily: "Open Sans"
+        fontSize: 16
+    },
+    balanceLabelCardItem: {
+        color: theme.colors.primaryTextDashboard,
+        fontSize: 14
+    },
+    balanceTextInfo: {
+        color: theme.colors.primaryTextDashboard,
+        fontSize: 14,
+        marginBottom: 2
     },
     balanceTextItem: {
         marginLeft: 5,
         fontSize: 22,
-        fontFamily: "Open Sans"
+    },
+    balanceTextItemSecondary: {
+        marginLeft: 5,
+        fontSize: 12,
     },
     balanceTextPositive: {
         color: theme.colors.primaryMonetaryColor,
@@ -83,14 +106,12 @@ export const getHomeStyle = (theme) => StyleSheet.create({
     auxiliaryTextItem: {
         color: theme.colors.primaryTextDashboard,
         fontSize: 14,
-        fontFamily: "Open Sans"
     },
     textArea: {
         marginTop: 30,
         marginLeft: 35,
         color: theme.colors.primaryTextDashboard,
         fontSize: 20,
-        fontFamily: "Open Sans"
     },
     featureItem: {
         backgroundColor: theme.colors.primaryAreaDashboard,
@@ -102,12 +123,10 @@ export const getHomeStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextDashboard,
         fontSize: 18,
         fontWeight: "bold",
-        fontFamily: "Open Sans"
     },
     featureSubTextItem: {
         color: theme.colors.primaryTextDashboard,
         fontSize: 14,
-        fontFamily: "Open Sans"
     },
     areaChart: {
         marginHorizontal: 20

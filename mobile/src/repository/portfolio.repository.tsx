@@ -141,16 +141,33 @@ export const deleteAllPortfolios = async (userLogin: string) => {
         ' WHERE reference = ?', [userLogin]);
 }
 
-export const selectAllPortfolios = async (userLogin: string, pageNumber: number | null): Promise<Portfolio[]> => {
+export const selectAllPortfolios = async (userLogin: string, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
     const db = await openDatabase();
-
+    
+    let query = queryBase();
+    
+    let params = [];
+    params.push(userLogin);
+    
+    if (activated !== null) {
+        query += ' AND act.status = ?';
+        params.push(activated);
+    }
+    
     let results: ResultSet[];
-    if (pageNumber)
-        results = await db.executeSql(queryBase() + ' ORDER BY act.name LIMIT ? OFFSET ? ', [userLogin, constants.pageSize, (pageNumber - 1) * constants.pageSize]);
-    else
-        results = await db.executeSql(queryBase() + ' ORDER BY act.name', [userLogin,]);
+    if (pageNumber) {
+        query += ' ORDER BY act.name LIMIT ? OFFSET ? ';
+        params.push(constants.pageSize);
+        params.push((pageNumber - 1) * constants.pageSize);
+        
+        results = await db.executeSql(query, params);
+    } else {
+        query += ' ORDER BY act.name';
+        results = await db.executeSql(query, params);
+    }
 
     const portfolios: Portfolio[] = [];
+
     for (let j = 0; j < results.length; j++) {
         for (let i = 0; i < results[j].rows.length; i++) {
             portfolios.push(await formatResult(results[j].rows.item(i)));
@@ -266,7 +283,6 @@ const formatResult = async (item: any): Promise<Portfolio> => {
         ParentPortfolio: null,
         BalanceTotals: null
     }
-
     if (item.parent_portfolio_internal_id) {
         portfolio.ParentPortfolio = {
             InternalId: item.parent_portfolio_internal_id,

@@ -1,6 +1,5 @@
 import React, {useEffect, useRef, useState} from "react";
-import PlusIcon from "../../assets/plus.svg";
-import {Alert, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import {Alert} from "react-native";
 import {useFocusEffect} from "@react-navigation/native";
 import _ from 'lodash';
 import * as I from "../../interfaces/interfaces.tsx";
@@ -16,17 +15,15 @@ import CarouselSelection from "../../components/CarouselSelection";
 import OperationItem from "./OperationItem";
 import {validateLogin} from "../../utils.ts";
 
-import { useTheme } from '../../contexts/ThemeContext';
-import {getStyle} from "../../styles/styles.ts";
-import {getCategoryStyle} from "../Category/styles";
+import {useTheme} from '../../contexts/ThemeContext';
 
 import HistoryIcon from '../../assets/history.svg';
+import {constants as pageConstants} from "../../components/Page/constants";
+import {PageProcess} from "../../components/Page";
 
 const Operation = ({navigation, route}) => {
     const { theme } = useTheme();
-    const style = getStyle(theme);
-    const categoryStyle = getCategoryStyle(theme);
-    
+      
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [isScrolling, setIsScrolling] = useState(false);
@@ -55,14 +52,14 @@ const Operation = ({navigation, route}) => {
 
         if (operations.length === 0) {
             setPageNumber(1);
-            loadOperations();
+            loadOperations(1);
         }
     }, [operations]);
 
     useEffect(() => {
         if (operations.length !== 0) {
             setIsLoadInternal(true);
-            loadOperations();
+            loadOperations(pageNumber);
         }
     }, [pageNumber]);
 
@@ -90,15 +87,15 @@ const Operation = ({navigation, route}) => {
         }
     };
 
-    const loadOperations = async () => {
+    const loadOperations = async (page: number) => {
         setLoading(true);
 
         let responseOperations = null;
 
         if (isLoadInternal) {
-            responseOperations = await loadAllOperationInternal(operationType, pageNumber);
+            responseOperations = await loadAllOperationInternal(operationType, page, null);
         } else {
-            responseOperations = await loadAllOperation(operationType, pageNumber);
+            responseOperations = await loadAllOperation(operationType, page, null);
             validateLogin(responseOperations, navigation);
         }
 
@@ -110,21 +107,17 @@ const Operation = ({navigation, route}) => {
     };
 
     const handleNewClick = () => {
-        navigation.navigate("OperationCreate", {
-            isEditing: false, data: null,
-            onGoBack: (actionNavigation: string) => {
-                if (actionNavigation === constants.actionNavigation.reload) {
-                    setIsLoadInternal(true);
-                    setOperations([]);
-                }
-            }
+        navigation.navigate("Operation", {
+            screen: 'OperationCreate',
+            params: { isEditing: false, data: null }
         });
     }
 
     const handleItemClick = (data: I.Operation) => {
         if (!isScrolling)
-            navigation.navigate("OperationCreate", {
-                isEditing: true, data: data
+            navigation.navigate("Operation", {
+                screen: 'OperationCreate',
+                params: { isEditing: true, data: data }
             });
     }
 
@@ -181,39 +174,35 @@ const Operation = ({navigation, route}) => {
     }
 
     return (
-        <SafeAreaView style={[style.container, style.containerConsulta]}>
-            <View style={style.viewHeaderConsultaReduced}>
-                <View style={style.titleScreen}>
-                    <View style={style.titleScreenTitle}>
-                        <HistoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
-                        <Text style={style.titleScreemText}>Operações</Text>
-                    </View>
-                </View>
-                <CarouselSelection disabled={loading} data={constants.operationType} handleItemSelectedId={setOperationType}/>
-            </View>
-            <View style={style.viewBodyConsultaLarger}>
-                <CustomScroll
-                    data={operations}
-                    loading={loading}
-                    totalPages={totalPages}
-                    pageNumber={pageNumber}
-                    handlePageNumber={setPageNumber}
-                    handleScrolling={setIsScrolling}
-                    renderItem={({ item }) => (
-                        <OperationItem
-                            data={item}
-                            onPress={handleItemClick}
-                            onSwipeLeft={onSwipeLeft}
-                            onSwipeRight={onSwipeRight}/>
-                    )}
-                />
-                <TouchableOpacity
-                    style={categoryStyle.buttonPlus}
-                    onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+        <PageProcess
+            headerType={pageConstants.headerType.processReduced}
+            bodyType={pageConstants.bodyType.processLarger}
+            title={"Operações"}
+            helpType={"operation"}
+            iconTitle={<HistoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>}
+            onNewClick={handleNewClick}
+            headerContent={
+                <CarouselSelection
+                    disabled={loading}
+                    data={constants.operationType}
+                    handleItemSelectedId={setOperationType}/>
+            }>
+            <CustomScroll
+                data={operations}
+                loading={loading}
+                totalPages={totalPages}
+                pageNumber={pageNumber}
+                handlePageNumber={setPageNumber}
+                handleScrolling={setIsScrolling}
+                renderItem={({ item }) => (
+                    <OperationItem
+                        data={item}
+                        onPress={handleItemClick}
+                        onSwipeLeft={onSwipeLeft}
+                        onSwipeRight={onSwipeRight}/>
+                )}
+            />
+        </PageProcess>
     );
 }
 

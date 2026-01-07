@@ -34,7 +34,7 @@ export const getSignInStyle = (theme) => StyleSheet.create({
         fontFamily: "Open Sans"
     },
     registerText: {
-        marginTop: 120,
+        marginTop: 80,
         color: theme.colors.primaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"

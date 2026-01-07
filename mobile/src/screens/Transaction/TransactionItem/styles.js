@@ -14,6 +14,9 @@ export const getTransactionItemStyle = (theme) => StyleSheet.create({
         paddingBottom: 5,
         minHeight: 70
     },
+    cardSelected: {
+        backgroundColor: theme.colors.tertiaryBaseColor  
+    },
     cardType: {
         height: 70,
         width: "12%",

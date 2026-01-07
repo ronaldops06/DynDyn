@@ -15,6 +15,7 @@ interface CustomTextInputParams {
     onPressIcon?: any | undefined;
     width?: string | undefined;
     editable?: boolean;
+    autoFocus?: boolean
 }
 
 const CustomTextInput = (props: CustomTextInputParams) => {
@@ -25,6 +26,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
         isMoveText = true,
         width = "100%",
         editable = true,
+        autoFocus = false
     } = props;
     
     const moveText = useRef(new Animated.Value((isMoveText) ? 0 : 1)).current;
@@ -107,6 +109,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
                     editable={editable}
                     onFocus={onFocusHandler}
                     onBlur={onBlurHandler}
+                    autoFocus={autoFocus}
                     blurOnSubmit
                 />
                 {props.icon && 

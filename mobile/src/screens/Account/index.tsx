@@ -14,12 +14,14 @@ import CustomScroll from "../../components/CustomScroll";
 import PlusIcon from "../../assets/plus.svg";
 import AccountItem from "./AccountItem";
 import {constants} from "../../constants";
+import {constants as pageConstants} from "../../components/Page/constants";
 import {validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
 import { useTheme } from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getAccountStyle} from './styles';
+import PageProcess from "../../components/Page/Process";
 
 const Portfolio = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -53,13 +55,15 @@ const Portfolio = ({navigation, route}) => {
 
         if (portfolios.length === 0) {
             setPageNumber(1);
-            loadPortfolios();
+            loadPortfolios(1);
         }
     }, [portfolios]);
 
     useEffect(() => {
-        setIsLoadInternal(true);
-        loadPortfolios();
+        if (portfolios.length !== 0) {
+            setIsLoadInternal(true);
+            loadPortfolios(pageNumber);
+        }
     }, [pageNumber]);
 
     const appendPortfolios = (data: I.Portfolio[]) => {
@@ -72,20 +76,20 @@ const Portfolio = ({navigation, route}) => {
         }
     };
 
-    const loadPortfolios = async () => {
+    const loadPortfolios = async (page: number) => {
         setLoading(true);
 
         let responsePortfolios = null;
 
         if (isLoadInternal) {
-            responsePortfolios = await loadAllPortfolioInternal(pageNumber);
+            responsePortfolios = await loadAllPortfolioInternal(page, null);
         } else {
-            responsePortfolios = await loadAllPortfolio(pageNumber);
+            responsePortfolios = await loadAllPortfolio(page, null);
             validateLogin(responsePortfolios, navigation);
             
             let response = await loadAllBalance(null);
             //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
-            responsePortfolios = await loadAllPortfolioInternal(pageNumber);
+            responsePortfolios = await loadAllPortfolioInternal(page, null);
         }
 
         setTotalPages(responsePortfolios?.totalPages ?? 1);
@@ -97,13 +101,9 @@ const Portfolio = ({navigation, route}) => {
 
     const handleItemClick = (data: I.Portfolio) => {
         if (!isScrolling)
-            navigation.navigate("AccountCreate", {
-                isEditing: true, data: data, onGoBack: (actionNavigation: string) => {
-                    if (actionNavigation === constants.actionNavigation.reload) {
-                        setIsLoadInternal(true);
-                        setPortfolios([]);
-                    }
-                }
+            navigation.navigate("Account", {
+                screen: 'AccountCreate',
+                params: { isEditing: true, data: data }
             });
     }
 
@@ -161,45 +161,37 @@ const Portfolio = ({navigation, route}) => {
     }
 
     const handleNewClick = () => {
-        navigation.navigate("AccountCreate", {
-            isEditing: false, data: null
+        navigation.navigate("Account", {
+            screen: 'AccountCreate',
+            params: { isEditing: false, data: null }
         });
     }
 
     return (
-        <SafeAreaView style={[style.container, style.containerConsulta]}>
-            <View style={style.viewHeaderConsultaReduced}>
-                <View style={style.titleScreen}>
-                    <View style={style.titleScreenTitle}>
-                        <AccountIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
-                        <Text style={style.titleScreemText}>Contas</Text>
-                    </View>
-                </View>
-            </View>
-            <View style={style.viewBodyConsultaLarger}>
-                <CustomScroll
-                    data={portfolios}
-                    loading={loading}
-                    totalPages={totalPages}
-                    pageNumber={pageNumber}
-                    handlePageNumber={setPageNumber}
-                    handleScrolling={setIsScrolling}
-                    styles={accountStyle.scroll}
-                    renderItem={({item}) => (
-                        <AccountItem
-                            data={item}
-                            onPress={handleItemClick}
-                            onSwipeLeft={onSwipeLeft}
-                            onSwipeRight={onSwipeRight}/>
-                    )}
-                />
-                <TouchableOpacity
-                    style={accountStyle.buttonPlus}
-                    onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+        <PageProcess
+            headerType={pageConstants.headerType.processReduced}
+            bodyType={pageConstants.bodyType.processLarger}
+            title={"Contas"}
+            helpType={"account"}
+            iconTitle={<AccountIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>}
+            onNewClick={handleNewClick}>
+            <CustomScroll
+                data={portfolios}
+                loading={loading}
+                totalPages={totalPages}
+                pageNumber={pageNumber}
+                handlePageNumber={setPageNumber}
+                handleScrolling={setIsScrolling}
+                styles={accountStyle.scroll}
+                renderItem={({item}) => (
+                    <AccountItem
+                        data={item}
+                        onPress={handleItemClick}
+                        onSwipeLeft={onSwipeLeft}
+                        onSwipeRight={onSwipeRight}/>
+                )}
+            />
+        </PageProcess>
     );
 }
 

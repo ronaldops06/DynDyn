@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import TextInput from "../../components/CustomTextInput";
-
-import PrevIcon from "../../assets/nav_prev.svg";
-import TrashIcon from "../../assets/trash.svg";
 import Picker from "../../components/CustomPicker";
 import {constants} from "../../constants";
 import CheckBox from "@react-native-community/checkbox";
@@ -16,10 +13,10 @@ import {useTheme} from '../../contexts/ThemeContext';
 import {getStyleCadastro} from '../../styles/styles.cadastro';
 import {getStyle} from "../../styles/styles.ts";
 import {getCategoryCreateStyle} from "./create.styles";
-import Button from "../../components/Button";
+import {PageRegister} from "../../components/Page";
 
 const CategoryCreate = ({navigation, route}) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const categoryCreateStyle = getCategoryCreateStyle(theme);
@@ -27,18 +24,18 @@ const CategoryCreate = ({navigation, route}) => {
     const categoryId = route.params?.data?.Id ?? 0;
     const categoryInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
-    
+
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>();
     const [status, setStatus] = useState<boolean>(true);
-    
+
     useEffect(() => {
         if (isEditing) {
             loadDataSreen();
         }
     }, [])
-    
+
     const loadDataSreen = () => {
         const data = route.params?.data;
         if (data != undefined) {
@@ -47,7 +44,7 @@ const CategoryCreate = ({navigation, route}) => {
             setStatus(data.Status === constants.status.active.Id);
         }
     };
-    
+
     const handleBackClick = () => {
         navigation.goBack();
     };
@@ -61,11 +58,11 @@ const CategoryCreate = ({navigation, route}) => {
                     style: "cancel"
                 },
                 {
-                    text: "Sim", 
+                    text: "Sim",
                     onPress: async () => {
                         let response = await excludeCategory(categoryId, categoryInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation, route);
+                        validateSuccess(response, navigation, 'CategoryHome');
                     }
                 }
             ],
@@ -79,12 +76,12 @@ const CategoryCreate = ({navigation, route}) => {
             Alert.alert("Atenção!", "O nome deve ser informado.");
             return false;
         }
-        
-        if (type === 0 || type === null || type === undefined){
+
+        if (type === 0 || type === null || type === undefined) {
             Alert.alert("Atenção!", "O tipo deve ser selecionado.");
             return false;
         }
-        
+
         return true;
     }
 
@@ -93,7 +90,7 @@ const CategoryCreate = ({navigation, route}) => {
         if (!validateRequiredFields()) return;
 
         setLoading(true);
-        
+
         let categoryDTO = {} as I.Category;
         categoryDTO.Id = categoryId;
         categoryDTO.InternalId = categoryInternalId;
@@ -108,61 +105,43 @@ const CategoryCreate = ({navigation, route}) => {
             response = await createCategory(categoryDTO);
 
         setLoading(false);
-        
+
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, 'Category');
+        validateSuccess(response, navigation, 'CategoryHome');
     };
 
     return (
-        <SafeAreaView style={[style.container, style.containerCadastro]}>
-            <ScrollView style={style.scrollCadastro}>
-                <View style={styleCadastro.viewHeaderCadastro}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonBack}
-                        onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIcon}/>
-                    </TouchableOpacity>
-                    {isEditing &&
-                        <TouchableOpacity
-                            style={styleCadastro.buttonTrash}
-                            onPress={handleTrashClick}>
-                            <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
-                        </TouchableOpacity>}
+        <PageRegister
+            onTrashClick={handleTrashClick}
+            onBackClick={handleBackClick}
+            onSaveClick={handleSaveClick}
+            helpType={"category_register"}
+            isEditing={isEditing}
+            isLoading={loading}>
+            <View style={categoryCreateStyle.areaFields}>
+                <TextInput
+                    text={"Nome"}
+                    isMoveText={false}
+                    value={name}
+                    setValue={setName}
+                />
+                <Picker
+                    text={"Tipo"}
+                    value={type}
+                    setValue={setType}
+                    data={Object.values(constants.categoryType)}
+                />
+                <View style={categoryCreateStyle.areaCheckbox}>
+                    <CheckBox
+                        value={status}
+                        onValueChange={setStatus}
+                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                    />
+                    <Text
+                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
-                <View style={styleCadastro.viewBodyCadastro}>
-                    <View style={categoryCreateStyle.areaFields}>
-                        <TextInput
-                            text={"Nome"}
-                            isMoveText={false}
-                            value={name}
-                            setValue={setName}
-                        />
-                        <Picker
-                            text={"Tipo"}
-                            value={type}
-                            setValue={setType}
-                            data={Object.values(constants.categoryType)}
-                        />
-                        <View style={categoryCreateStyle.areaCheckbox}>
-                            <CheckBox
-                                value={status}
-                                onValueChange={setStatus}
-                                tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                            />
-                            <Text
-                                style={styleCadastro.textCheckbox}>Ativo</Text>
-                        </View>
-                    </View>
-                    <View style={categoryCreateStyle.areaButtonSave}>
-                        <Button 
-                            label={"Salvar"}
-                            onPress={handleSaveClick}
-                            loading={loading}
-                            disabled={loading}/>
-                    </View>
-                </View>
-            </ScrollView>
-        </SafeAreaView>
+            </View>
+        </PageRegister>
     );
 }
 

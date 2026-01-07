@@ -344,6 +344,7 @@ export const selectDashboardBalanceGroupByMonth = async (userLogin: string, year
         , [ userLogin
             , userLogin
             , year
+            , year
             , month]
     );
 

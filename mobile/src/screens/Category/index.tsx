@@ -1,9 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-
-import PlusIcon from "../../assets/plus.svg";
 import * as I from "../../interfaces/interfaces.tsx";
 import CategoryItem from "./CategoryItem";
 import {
@@ -19,15 +17,17 @@ import CarouselSelection from "../../components/CarouselSelection";
 import {validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getCategoryStyle} from './styles';
+import {constants as pageConstants} from "../../components/Page/constants";
+import {PageProcess} from "../../components/Page";
 
 const Category = ({navigation, route}) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const style = getStyle(theme);
     const categoryStyle = getCategoryStyle(theme);
-    
+
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
     const [categories, setCategories] = useState<I.Category[]>([]);
@@ -36,7 +36,7 @@ const Category = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
-    
+
     useFocusEffect(
         React.useCallback(() => {
             if (route.params?.actionNavigation === constants.actionNavigation.reload) {
@@ -53,7 +53,7 @@ const Category = ({navigation, route}) => {
             isFirstRender.current = false;
         } else {
             if (categories.length === 0) {
-                loadCategories();
+                loadCategories(1);
             }
         }
     }, [categories]);
@@ -61,14 +61,14 @@ const Category = ({navigation, route}) => {
     useEffect(() => {
         if (categories.length !== 0) {
             setIsLoadInternal(true);
-            loadCategories();
+            loadCategories(pageNumber);
         }
     }, [pageNumber]);
 
     useEffect(() => {
         setPageNumber(1);
         updateCategories();
-        
+
         return () => updateCategories.cancel();
     }, [categoryType]);
 
@@ -78,7 +78,7 @@ const Category = ({navigation, route}) => {
     const updateCategories = _.debounce(() => {
         setCategories([]);
     }, 500);
-    
+
     const appendCategories = (data: I.Category[]) => {
         let categoriesNew = categories;
         if (data.length > 0) {
@@ -89,30 +89,31 @@ const Category = ({navigation, route}) => {
         }
     };
 
-    const loadCategories = async () => {
+    const loadCategories = async (page: number) => {
         setLoading(true);
 
         let responseCategories = null;
 
         if (isLoadInternal) {
-            responseCategories = await loadAllCategoryInternal(categoryType, pageNumber);
+            responseCategories = await loadAllCategoryInternal(categoryType, page, null);
         } else {
-            responseCategories = await loadAllCategory(categoryType, pageNumber);
+            responseCategories = await loadAllCategory(categoryType, page, null);
             validateLogin(responseCategories, navigation);
         }
 
         setTotalPages(responseCategories?.totalPages ?? 1);
-        
+
         appendCategories(responseCategories?.data ?? []);
-        
+
         setLoading(false);
         setIsLoadInternal(false);
     };
 
     const handleItemClick = (data: I.Category) => {
         if (!isScrolling)
-            navigation.navigate("CategoryCreate", {
-                isEditing: true, data: data
+            navigation.navigate("Category", {
+                screen: 'CategoryCreate',
+                params: {isEditing: true, data: data}
             });
     }
 
@@ -169,51 +170,43 @@ const Category = ({navigation, route}) => {
     }
 
     const handleNewClick = () => {
-        navigation.navigate("CategoryCreate", {
-            isEditing: false, data: null, onGoBack: (actionNavigation: string) => {
-                if (actionNavigation === constants.actionNavigation.reload) {
-                    setIsLoadInternal(true);
-                    setCategories([]);
-                }
-            }
+        navigation.navigate("Category", {
+            screen: 'CategoryCreate',
+            params: {isEditing: false, data: null}
         });
     }
 
     return (
-        <SafeAreaView style={[style.container, style.containerConsulta]}>
-            <View style={style.viewHeaderConsultaReduced}>
-                <View style={style.titleScreen}>
-                    <View style={style.titleScreenTitle}>
-                        <CategoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>
-                        <Text style={style.titleScreemText}>Categorias</Text>
-                    </View>
-                </View>
-                <CarouselSelection disabled={loading} data={constants.categoryType} handleItemSelectedId={setCategoryType}/>
-            </View>
-            <View style={style.viewBodyConsultaLarger}>
-                <CustomScroll
-                    data={categories}
-                    loading={loading}
-                    totalPages={totalPages}
-                    pageNumber={pageNumber}
-                    handlePageNumber={setPageNumber}
-                    handleScrolling={setIsScrolling}
-                    renderItem={({ item }) => (
-                        <CategoryItem
-                            data={item}
-                            onPress={handleItemClick}
-                            onSwipeLeft={onSwipeLeft}
-                            onSwipeRight={onSwipeRight}/>
-                        )
-                    }
-                />
-                <TouchableOpacity
-                    style={categoryStyle.buttonPlus}
-                    onPress={handleNewClick}>
-                    <PlusIcon width="35" height="35" fill={theme.colors.primaryBaseColor}/>
-                </TouchableOpacity>
-            </View>
-        </SafeAreaView>
+        <PageProcess
+            headerType={pageConstants.headerType.processReduced}
+            bodyType={pageConstants.bodyType.processLarger}
+            title={"Categorias"}
+            helpType={"category"}
+            iconTitle={<CategoryIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>}
+            onNewClick={handleNewClick}
+            headerContent={
+                <CarouselSelection
+                    disabled={loading}
+                    data={constants.categoryType}
+                    handleItemSelectedId={setCategoryType}/>
+            }>
+            <CustomScroll
+                data={categories}
+                loading={loading}
+                totalPages={totalPages}
+                pageNumber={pageNumber}
+                handlePageNumber={setPageNumber}
+                handleScrolling={setIsScrolling}
+                renderItem={({item}) => (
+                    <CategoryItem
+                        data={item}
+                        onPress={handleItemClick}
+                        onSwipeLeft={onSwipeLeft}
+                        onSwipeRight={onSwipeRight}/>
+                )
+                }
+            />
+        </PageProcess>
     );
 }
 

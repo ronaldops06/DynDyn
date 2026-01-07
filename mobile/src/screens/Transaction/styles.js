@@ -19,7 +19,7 @@ export const getTransactionStyle = (theme) => StyleSheet.create({
         right: 15,
         borderWidth: 2,
         borderColor: theme.colors.primaryBaseColor,
-        backgroundColor: theme.colors.secondaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor + "21",
         alignItems: "center",
         justifyContent: "center",
     },
@@ -27,6 +27,15 @@ export const getTransactionStyle = (theme) => StyleSheet.create({
         width: 140,
         justifyContent: "center",
         alignItems: "center"
+    },
+    textHelp: {
+        textAlign: "justify",
+        marginTop: 5,
+        marginLeft: 20,
+        marginRight: 20,
+        color: theme.colors.secondaryTextColor,
+        fontSize: 20,
+        fontFamily: "Open Sans"
     },
     textDateTitle: {
         color: theme.colors.tertiaryTextColor,

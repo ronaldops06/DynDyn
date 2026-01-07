@@ -10,7 +10,7 @@ export const getAccountStyle = (theme) => StyleSheet.create({
         right: 15,
         borderWidth: 2,
         borderColor: theme.colors.primaryBaseColor,
-        backgroundColor: theme.colors.secondaryBaseColor,
+        backgroundColor: theme.colors.secondaryBaseColor + "21",
         alignItems: "center",
         justifyContent: "center",
     },
