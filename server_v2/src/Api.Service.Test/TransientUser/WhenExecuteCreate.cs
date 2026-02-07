@@ -1,3 +1,4 @@
+using Api.Domain.Models;
 using Domain.Entities;
 using Domain.Models;
 using Moq;
@@ -21,7 +22,7 @@ public class WhenExecuteCreate : TransientUserTest
         RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransientUserEntity>())).ReturnsAsync(userEntityResult);
         
         //Implementado criando mock da própria classe pois o método SendMailVerification também precisa ser mocado.
-        var service = new Mock<TransientUserService>(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        var service = new Mock<TransientUserService>(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
         service.CallBase = true;
         service.Protected()
             .Setup<Task>("SendMailVerification", ItExpr.IsAny<string>(), ItExpr.IsAny<int?>(), ItExpr.IsAny<string>()).Returns(Task.CompletedTask);
@@ -37,9 +38,12 @@ public class WhenExecuteCreate : TransientUserTest
         
         var userModel = Mapper.Map<UserModel>(transientUserModel);
         UserServiceMock.Setup(m => m.GetUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userModel);
-        
+
+        CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+            .ReturnsAsync(operationModel);
         RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransientUserEntity>())).ReturnsAsync(userEntityResult);
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => service.Post(transientUserModel));
         Assert.Equal("Usuário não disponível.", ex.Message);

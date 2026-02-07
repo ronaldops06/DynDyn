@@ -2,12 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
+using Api.Domain.Enums;
 using Api.Domain.Interfaces.Services;
 using Api.Domain.Models;
 using Api.Domain.Repository;
 using AutoMapper;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
+using Domain.Models;
 using Service.Services;
 using Domain.Types;
 
@@ -101,5 +103,27 @@ namespace Api.Service.Services
 
             return result;
         }
+
+        public async Task<CategoryModel> GenerateInitialByUser(UserModel user)
+        {
+            var categoryModel = new CategoryModel();
+            categoryModel.Name = "Transferência Contas";
+            categoryModel.Status = StatusType.Ativo;
+            categoryModel.Type = CategoryType.Operação;
+            categoryModel.UserId = user.Id;
+            
+            var categoryEntityAux = await _repository.SelectByUkAsync(user.Id, categoryModel.Type, categoryModel.Name);
+
+            if (categoryEntityAux != null)
+                throw new Exception("Categoria não disponível.");
+            
+            var categoryEntity = mapper.Map<CategoryEntity>(categoryModel);
+            _repository.UnchangedParentCategory(categoryEntity);
+            categoryEntity = await _repository.InsertAsync(categoryEntity);
+
+            categoryModel = mapper.Map<CategoryModel>(categoryEntity);
+
+            return categoryModel;
+        } 
     }
 }
