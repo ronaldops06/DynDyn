@@ -1,3 +1,4 @@
+using Api.Domain.Models;
 using Domain.Entities;
 using Domain.Models;
 using Moq;
@@ -15,10 +16,13 @@ public class WhenExecuteVerificationCode : TransientUserTest
         UserServiceMock.Setup(m => m.Post(It.IsAny<UserModel>())).ReturnsAsync(userModel);
         
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
+        CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+            .ReturnsAsync(operationModel);
         
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
         
         var result = await service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0);
         
@@ -39,22 +43,25 @@ public class WhenExecuteVerificationCode : TransientUserTest
         UserServiceMock.Setup(m => m.Post(It.IsAny<UserModel>())).ReturnsAsync(userModel);
         
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
+        CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+            .ReturnsAsync(operationModel);
         
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
         
         var ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0));
         Assert.Equal("Usuário não encontrado para validação, reinicie o cadastro.", ex.Message);
         
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
         
         ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, Faker.RandomNumber.Next(100000, 999999)));
         Assert.Equal("O código não corresponde ao código de verificação.", ex.Message);
         
         userEntityResult.ExpirationDate = DateTime.Now.AddMinutes(-1);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, Mapper);
+        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
         
         ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0));
         Assert.Equal("Código de validação expirado, reinicie o cadastro.", ex.Message);

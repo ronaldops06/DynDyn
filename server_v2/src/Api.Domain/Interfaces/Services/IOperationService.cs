@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Enums;
 using Api.Domain.Models;
+using Domain.Models;
 
 namespace Api.Domain.Interfaces.Services
 {
@@ -30,5 +31,13 @@ namespace Api.Domain.Interfaces.Services
         /// </summary>
         /// <returns>Lista com os modelos de operação <see cref="OperationModel"/>.</returns>
         Task<List<OperationModel>> GetByActiveAndRecurrent();
+
+        /// <summary>
+        /// Método responsável por gerar as operações iniciais para o usuário.
+        /// </summary>
+        /// <param name="user">Modelo do usuário.</param>
+        /// <param name="category">Modelo da categoria.</param>
+        /// <returns>Modelo da operação gerado <see cref="OperationModel"/>.</returns>
+        Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category);
     }
 }

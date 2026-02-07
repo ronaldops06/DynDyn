@@ -9,6 +9,7 @@ using Api.Domain.Repository;
 using AutoMapper;
 using Domain.Helpers;
 using Domain.Interfaces.Services.User;
+using Domain.Models;
 using Service.Services;
 using Domain.Types;
 
@@ -116,6 +117,31 @@ namespace Api.Service.Services
             var entities = await _repository.SelectByActiveAndRecurrent(user.Id);
 
             return mapper.Map<List<OperationModel>>(entities);
+        }
+
+        public async Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category)
+        {
+            var model = new OperationModel();
+            model.Name = "Transferência Entre Contas";
+            model.Status = StatusType.Ativo;
+            model.Type = OperationType.Transferencia;
+            model.CategoryId = category.Id;
+            model.UserId = user.Id;
+            model.Recurrent = false;
+            model.Salary = false;
+            
+            var categoryEntityAux = await _repository.SelectByUkAsync(user.Id, model.Name, model.Type);
+
+            if (categoryEntityAux != null)
+                throw new Exception("Operação não disponível.");
+            
+            var operationEntity = mapper.Map<OperationEntity>(model);
+            _repository.UnchangedParentOperation(operationEntity);
+            operationEntity = await _repository.InsertAsync(operationEntity);
+
+            model = mapper.Map<OperationModel>(operationEntity);
+
+            return model;
         }
     }
 }

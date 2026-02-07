@@ -4,6 +4,7 @@ using System.Net;
 using System.Net.Mail;
 using System.Reflection;
 using System.Threading.Tasks;
+using Api.Domain.Interfaces.Services;
 using AutoMapper;
 using Domain.Entities;
 using Domain.Interfaces.Services.User;
@@ -19,16 +20,22 @@ namespace Service.Services
         private ITransientUserRepository _repository;
         private IUserService _userService;
         private ILoginService _loginService;
+        private ICategoryService _categoryService;
+        private IOperationService _operationService;
         private readonly IMapper _mapper;
 
         public TransientUserService(ITransientUserRepository repository,
                                   IUserService userService,
                                   ILoginService loginService,
+                                  ICategoryService categoryService,
+                                  IOperationService operationService,
                                   IMapper mapper)
         {
             _repository = repository;
             _userService = userService;
             _loginService = loginService;
+            _categoryService = categoryService;
+            _operationService = operationService;
             _mapper = mapper;
         }
         
@@ -47,6 +54,9 @@ namespace Service.Services
             
             var userModel = _mapper.Map<UserModel>(userEntityAux);
             userModel = await _userService.Post(userModel);
+
+            var categoryModel = await _categoryService.GenerateInitialByUser(userModel);
+            var operationModel = await _operationService.GenerateInitialByUser(userModel, categoryModel);
             
             var transientUserModel = _mapper.Map<TransientUserModel>(userModel);
             transientUserModel.AccessToken = _loginService.GenerateToken(transientUserModel);
