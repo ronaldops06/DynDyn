@@ -122,7 +122,7 @@ namespace Api.Service.Services
 
             await GenerateRecurring(user, periodPreviousMonth, periodCurrentMonth);
 
-            await GenerateInstallmentPayments(user, periodPreviousMonth, periodCurrentMonth);
+            await GenerateInstallmentPayments(user, periodPreviousMonth);
         }
 
         private async Task GenerateRecurring(UserModel user, Period periodPreviousMonth, Period periodCurrentMonth)
@@ -148,15 +148,16 @@ namespace Api.Service.Services
             }
         }
 
-        private async Task GenerateInstallmentPayments(UserModel user, Period periodPreviousMonth,
-            Period periodCurrentMonth)
+        private async Task GenerateInstallmentPayments(UserModel user, Period periodPreviousMonth)
         {
             var transactionsEntities = await _repository.SelectByPendingInstallments(user.Id, periodPreviousMonth);
             foreach (var transaction in transactionsEntities)
             {
+                var creactionDate = transaction.DataCriacao;
+                
                 var transactionCurrentMonth =
                     await _repository.SelectByOperationAndDateAsync(user.Id, transaction.OperationId,
-                        transaction.DataCriacao ?? new DateTime());
+                        creactionDate?.AddMonths(1) ?? new DateTime());
 
                 if (transactionCurrentMonth != null)
                     continue;
