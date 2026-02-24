@@ -136,8 +136,8 @@ namespace Api.Service.Services
                 foreach (var transaction in previousMonthTransactions)
                 {
                     var transactionCurrentMonth =
-                        await _repository.SelectByOperationAndDateAsync(user.Id, operation.Id,
-                            transaction.DataCriacao ?? new DateTime());
+                        await _repository.SelectByOperationAndDateAndValueAsync(user.Id, operation.Id,
+                            transaction.DataCriacao ?? new DateTime(), transaction.Value);
 
                     //Se já existir a transação para a operação no mês atual ou se não existe no mês anterior para usar como base pula o registro 
                     if (transactionCurrentMonth != null)
@@ -156,8 +156,8 @@ namespace Api.Service.Services
                 var creactionDate = transaction.DataCriacao;
                 
                 var transactionCurrentMonth =
-                    await _repository.SelectByOperationAndDateAsync(user.Id, transaction.OperationId,
-                        creactionDate?.AddMonths(1) ?? new DateTime());
+                    await _repository.SelectByOperationAndDateAndValueAsync(user.Id, transaction.OperationId,
+                        creactionDate?.AddMonths(1) ?? new DateTime(), transaction.Value);
 
                 if (transactionCurrentMonth != null)
                     continue;
