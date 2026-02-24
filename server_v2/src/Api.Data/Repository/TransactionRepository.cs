@@ -154,7 +154,31 @@ namespace Api.Data.Repository
             return totals;
         }
 
-        public async Task<TransactionEntity> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period)
+        public async Task<IEnumerable<TransactionEntity>> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period)
+        {
+            var result = new List<TransactionEntity>();
+
+            try
+            {
+                IQueryable<TransactionEntity> query = _context.Transaction;
+
+                query = QueryableIncludeRelations(query);
+
+                query = query.AsNoTracking()
+                    .Where(x => x.UserId == userId && x.OperationId == operationId &&
+                                x.DataCriacao >= period.DateStartMonth && x.DataCriacao <= period.DateEndMonth);
+
+                result = await query.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Erro ao consultar a transação: Erro.: {ex.Message}");
+            }
+
+            return result;
+        }
+        
+        public async Task<TransactionEntity> SelectByOperationAndDateAsync(int userId, int operationId, DateTime creationDate)
         {
             var result = new TransactionEntity();
 
@@ -166,7 +190,7 @@ namespace Api.Data.Repository
 
                 query = query.AsNoTracking()
                     .Where(x => x.UserId == userId && x.OperationId == operationId &&
-                                x.DataCriacao >= period.DateStartMonth && x.DataCriacao <= period.DateEndMonth);
+                                x.DataCriacao == creationDate);
 
                 result = query.FirstOrDefault();
             }
