@@ -178,7 +178,7 @@ namespace Api.Data.Repository
             return result;
         }
         
-        public async Task<TransactionEntity> SelectByOperationAndDateAsync(int userId, int operationId, DateTime creationDate)
+        public async Task<TransactionEntity> SelectByOperationAndDateAndValueAsync(int userId, int operationId, DateTime creationDate, double value)
         {
             var result = new TransactionEntity();
 
@@ -190,7 +190,7 @@ namespace Api.Data.Repository
 
                 query = query.AsNoTracking()
                     .Where(x => x.UserId == userId && x.OperationId == operationId &&
-                                x.DataCriacao == creationDate);
+                                x.DataCriacao == creationDate && x.Value == value);
 
                 result = query.FirstOrDefault();
             }

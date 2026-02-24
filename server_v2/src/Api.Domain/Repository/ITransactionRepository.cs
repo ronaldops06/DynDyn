@@ -46,7 +46,7 @@ namespace Api.Domain.Repository
         /// <param name="operationId">Identificador da operação.</param>
         /// <param name="creationDate">Data de criação.</param>
         /// <returns>Entidade de transação <see cref="TransactionEntity"/>.</returns>
-        Task<TransactionEntity> SelectByOperationAndDateAsync(int userId, int operationId, DateTime creationDate);
+        Task<TransactionEntity> SelectByOperationAndDateAndValueAsync(int userId, int operationId, DateTime creationDate, double value);
         
         /// <summary>
         /// Método responsável por retornar as transações com parcelas pendentes em um periodo.
