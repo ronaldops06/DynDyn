@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
@@ -35,8 +36,17 @@ namespace Api.Domain.Repository
         /// <param name="userId">Identificador do usuário.</param>
         /// <param name="operationId">Identificador da operação.</param>
         /// <param name="period">Período considerado <see cref="Period"/>.</param>
+        /// <returns>Lista de transações encontradas.</returns>
+        Task<IEnumerable<TransactionEntity>> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period);
+        
+        /// <summary>
+        /// Método responsável por retornar as transações de acordo com a operação e o período.
+        /// </summary>
+        /// <param name="userId">Identificador do usuário.</param>
+        /// <param name="operationId">Identificador da operação.</param>
+        /// <param name="creationDate">Data de criação.</param>
         /// <returns>Entidade de transação <see cref="TransactionEntity"/>.</returns>
-        Task<TransactionEntity> SelectByOperationAndPeriodAsync(int userId, int operationId, Period period);
+        Task<TransactionEntity> SelectByOperationAndDateAsync(int userId, int operationId, DateTime creationDate);
         
         /// <summary>
         /// Método responsável por retornar as transações com parcelas pendentes em um periodo.
