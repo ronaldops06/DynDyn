@@ -23,6 +23,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Data", "Api.Data\Data.cspro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker.Service", "Worker.Service\Worker.Service.csproj", "{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApiScaffolder", "ApiScaffolder\ApiScaffolder.csproj", "{39CA91EA-883E-409D-A37A-8A6E1B12F6E5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,10 @@ Global
 		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{520BCC29-81F4-4504-9CCB-5AF708CF8A4B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39CA91EA-883E-409D-A37A-8A6E1B12F6E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39CA91EA-883E-409D-A37A-8A6E1B12F6E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39CA91EA-883E-409D-A37A-8A6E1B12F6E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39CA91EA-883E-409D-A37A-8A6E1B12F6E5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
