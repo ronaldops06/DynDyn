@@ -15,11 +15,15 @@ namespace Data.Context
         public DbSet<CategoryEntity> Category { get; set; }
         public DbSet<PortfolioEntity> Portfolio { get; set; }
         public DbSet<OperationEntity> Operation { get; set; }
+        public DbSet<OperationRoleEntity> OperationRole { get; set; }
         public DbSet<TransactionEntity> Transaction { get; set; }
+        public DbSet<OperationRoleLinkEntity> TransactionRoleLink { get; set; }
         public DbSet<BalanceEntity> Balance { get; set; }
         public DbSet<DeviceEntity> Device { get; set; }
         public DbSet<NotificationEntity> Notification { get; set; }
         public DbSet<TrashEntity> Trash { get; set; }
+        public DbSet<TotalizerRoleEntity> TotalizerRole { get; set; }
+        public DbSet<TotalizerRoleLinkEntity> TotalizerRoleLink { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -31,12 +35,16 @@ namespace Data.Context
             modelBuilder.Entity<CategoryEntity>(new CategoryMap().Configure);
             modelBuilder.Entity<OperationEntity>(new OperationMap().Configure);
             modelBuilder.Entity<TransactionEntity>(new TransactionMap().Configure);
+            modelBuilder.Entity<OperationRoleEntity>(new OperationRoleMap().Configure);
+            modelBuilder.Entity<OperationRoleLinkEntity>(new OperationRoleLinkMap().Configure);
             modelBuilder.Entity<BalanceEntity>(new BalanceMap().Configure);
             modelBuilder.Entity<PortfolioEntity>(new PortfolioMap().Configure);
             modelBuilder.Entity<DeviceEntity>(new DeviceMap().Configure);
             modelBuilder.Entity<NotificationEntity>(new NotificationMap().Configure);
             modelBuilder.Entity<TrashEntity>(new TrashMap().Configure);
-
+            modelBuilder.Entity<TotalizerRoleEntity>(new TotalizerRoleMap().Configure);
+            modelBuilder.Entity<TotalizerRoleLinkEntity>(new TotalizerRoleLinkMap().Configure);
+            
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity
                 {

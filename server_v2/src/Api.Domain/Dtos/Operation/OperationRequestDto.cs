@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Enums;
@@ -47,5 +48,10 @@ namespace Api.Domain.Dtos.Operation
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         public CategoryRequestDto Category { get; set; }
+        
+        /// <summary>
+        /// Lista de papeis de operação.
+        /// </summary>
+        public IEnumerable<OperationRoleRequestDto> OperationRoles { get; set; }
     }
 }

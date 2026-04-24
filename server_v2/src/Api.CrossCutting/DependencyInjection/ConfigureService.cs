@@ -17,6 +17,8 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddTransient<IPortfolioService, PortfolioService>();
             serviceCollection.AddTransient<IOperationService, OperationService>();
             serviceCollection.AddTransient<ITransactionService, TransactionService>();
+            serviceCollection.AddTransient<IOperationRoleService, OperationRoleService>();
+            serviceCollection.AddTransient<ITotalizerRoleService, TotalizerRoleService>();
             serviceCollection.AddTransient<IBalanceService, BalanceService>();
             serviceCollection.AddTransient<IDeviceService, DeviceService>();
             serviceCollection.AddTransient<ITrashService, TrashService>();

@@ -60,7 +60,7 @@ namespace Api.Domain.Dtos.Transaction
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         public OperationRequestDto Operation { get; set; }
-
+        
         /// <summary>
         /// Data de criação da transação.
         /// </summary>

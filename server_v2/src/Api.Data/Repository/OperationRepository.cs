@@ -22,9 +22,9 @@ namespace Api.Data.Repository
         public OperationRepository(SomniaContext context) : base(context)
         {
         }
-        
+
         public int CleanupOrder => 4;
-        
+
         public async Task<bool> DeleteAllByUserAsync(int userId)
         {
             try
@@ -40,7 +40,43 @@ namespace Api.Data.Repository
 
             return true;
         }
-        
+
+        public override async Task<OperationEntity> UpdateAsync(OperationEntity item)
+        {
+            try
+            {
+                var operation = await _context.Operation
+                    .Include(t => t.OperationRoles)
+                    .SingleOrDefaultAsync(t => t.Id == item.Id);
+    
+                if (operation == null)
+                    throw new Exception("No data found");
+                
+                item.DataCriacao = item.DataCriacao ?? operation.DataCriacao;
+                item.DataAlteracao = DateTime.Now;
+
+                // atualiza campos da operação
+                _context.Entry(operation).CurrentValues.SetValues(item);
+
+                var newIds = item.OperationRoles?.Select(i => i.OperationRoleId).ToHashSet();
+
+                operation.OperationRoles?.RemoveAll((i => !newIds.Contains(i.OperationRoleId)));
+
+                var existIds = operation.OperationRoles?.Select(i => i.OperationRoleId).ToHashSet();
+
+                operation.OperationRoles?.AddRange(
+                    item.OperationRoles?.FindAll(i => !existIds.Contains(i.OperationRoleId)));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return item;
+        }
+
         public override async Task<IEnumerable<OperationEntity>> SelectAsync(int userId)
         {
             var result = new List<OperationEntity>();
@@ -50,6 +86,8 @@ namespace Api.Data.Repository
                 IQueryable<OperationEntity> query = _context.Operation;
 
                 query = query.Include(cat => cat.Category);
+                query = query.Include(t => t.OperationRoles)
+                    .ThenInclude(r => r.OperationRole);
                 query = query.Include(usr => usr.User);
 
                 query = query.Where(x => x.UserId == userId);
@@ -74,6 +112,8 @@ namespace Api.Data.Repository
                 IQueryable<OperationEntity> query = _context.Operation;
 
                 query = query.Include(cat => cat.Category);
+                query = query.Include(t => t.OperationRoles)
+                    .ThenInclude(r => r.OperationRole);
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
@@ -94,6 +134,8 @@ namespace Api.Data.Repository
             IQueryable<OperationEntity> query = _context.Operation;
 
             query = query.Include(cat => cat.Category);
+            query = query.Include(t => t.OperationRoles)
+                .ThenInclude(r => r.OperationRole);
             query = query.Include(usr => usr.User);
 
             query = query.Where(x => x.UserId == userId);
@@ -117,6 +159,8 @@ namespace Api.Data.Repository
                 IQueryable<OperationEntity> query = _context.Operation;
 
                 query = query.Include(cat => cat.Category);
+                query = query.Include(t => t.OperationRoles)
+                    .ThenInclude(r => r.OperationRole);
                 query = query.Include(usr => usr.User);
 
                 query = query.Where(x => x.UserId == userId && x.Status == StatusType.Ativo && x.Recurrent);
@@ -142,6 +186,8 @@ namespace Api.Data.Repository
                 IQueryable<OperationEntity> query = _context.Operation;
 
                 query = query.Include(cat => cat.Category);
+                query = query.Include(t => t.OperationRoles)
+                    .ThenInclude(r => r.OperationRole);
                 query = query.Include(usr => usr.User);
 
                 query = query.AsNoTracking()
@@ -157,13 +203,18 @@ namespace Api.Data.Repository
             return result;
         }
 
-        public void UnchangedParentOperation(OperationEntity operationEntity)
+        public void UnchangedParentOperation(OperationEntity entity)
         {
-            if (operationEntity.Category != null)
-                _context.Entry(operationEntity.Category).State = EntityState.Unchanged;
+            if (entity.Category != null)
+                _context.Entry(entity.Category).State = EntityState.Unchanged;
 
-            if (operationEntity.User != null)
-                _context.Entry(operationEntity.User).State = EntityState.Unchanged;
+            if (entity.User != null)
+                _context.Entry(entity.User).State = EntityState.Unchanged;
+            
+            foreach (var operationRole in entity.OperationRoles)
+            {
+                _context.Entry(operationRole.OperationRole).State = EntityState.Unchanged;
+            }
         }
     }
 }

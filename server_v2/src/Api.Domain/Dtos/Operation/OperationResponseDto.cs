@@ -1,9 +1,11 @@
+using System.Collections.Generic;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Enums;
 
 namespace Api.Domain.Dtos.Operation
 {
     /// <summary>
-    /// Objeto de transferência de dados para o retorno de operação nas requisições.
+    /// Objeto de transferência de dados para o retorno dos pa nas requisições.
     /// </summary>
     public class OperationResponseDto : BaseDto
     {
@@ -36,5 +38,10 @@ namespace Api.Domain.Dtos.Operation
         /// Categoria da operação <see cref="CategoryResponseDto"/>.
         /// </summary>
         public CategoryResponseDto Category { get; set; }
+        
+        /// <summary>
+        /// Lista de papeis de operação.
+        /// </summary>
+        public IEnumerable<OperationRoleResponseDto> OperationRoles { get; set; }
     }
 }
