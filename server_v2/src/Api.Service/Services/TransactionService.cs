@@ -71,7 +71,6 @@ namespace Api.Service.Services
 
             _repository.UnchangedParentTransaction(transactionEntity);
             transactionEntity = await _repository.InsertAsync(transactionEntity);
-
             model = mapper.Map<TransactionModel>(transactionEntity);
 
             return model;
@@ -92,7 +91,9 @@ namespace Api.Service.Services
             await OperacaoNotExists(model);
 
             var transactionEntity = mapper.Map<TransactionEntity>(model);
+            
             _repository.UnchangedParentTransaction(transactionEntity);
+            Console.WriteLine(JsonSerializer.Serialize(transactionEntity));
             transactionEntity = await _repository.UpdateAsync(transactionEntity);
 
             return mapper.Map<TransactionModel>(transactionEntity);

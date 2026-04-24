@@ -47,7 +47,7 @@ namespace Data.Repository
             return item;
         }
 
-        public async Task<T> UpdateAsync(T item)
+        public virtual async Task<T> UpdateAsync(T item)
         {
             try
             {

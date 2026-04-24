@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Api.Domain.Enums;
 using Domain.Models;
 
@@ -42,6 +43,11 @@ namespace Api.Domain.Models
         /// Categoria da operação <see cref="CategoryModel"/>.
         /// </summary>
         public CategoryModel Category { get; set; }
+        
+        /// <summary>
+        /// Lista de regras na operação.
+        /// </summary>
+        public IEnumerable<OperationRoleModel> OperationRoles { get; set; }
         
         /// <summary>
         /// Identificador do usuário base.

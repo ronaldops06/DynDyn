@@ -29,6 +29,8 @@ namespace CrossCutting.DependencyInjection
                 serviceCollection.AddScoped<IPortfolioRepository, PortfolioRepository>();
                 serviceCollection.AddScoped<IOperationRepository, OperationRepository>();
                 serviceCollection.AddScoped<ITransactionRepository, TransactionRepository>();
+                serviceCollection.AddScoped<IOperationRoleRepository, OperationRoleRepository>();
+                serviceCollection.AddScoped<ITotalizerRoleRepository, TotalizerRoleRepository>();
                 serviceCollection.AddScoped<IBalanceRepository, BalanceRepository>();
                 serviceCollection.AddScoped<IDeviceRepository, DeviceRepository>();
                 serviceCollection.AddScoped<ITrashRepository, TrashRepository>();
@@ -37,6 +39,8 @@ namespace CrossCutting.DependencyInjection
                 serviceCollection.AddScoped<ICleanupRepository, PortfolioRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, OperationRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, TransactionRepository>();
+                serviceCollection.AddScoped<ICleanupRepository, OperationRoleRepository>();
+                serviceCollection.AddScoped<ICleanupRepository, TotalizerRoleRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, BalanceRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, UserRepository>();
                 serviceCollection.AddScoped<ICleanupRepository, BalanceRepository>();

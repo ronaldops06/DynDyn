@@ -3,7 +3,9 @@ using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Device;
 using Api.Domain.Dtos.Maintenance;
 using Api.Domain.Dtos.Operation;
+using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
+using Api.Domain.Dtos.TotalizerRole;
 using Api.Domain.Dtos.Transaction;
 using Api.Domain.Enums;
 using Api.Domain.Models;
@@ -50,17 +52,22 @@ namespace CrossCutting.Mappings
             CreateMap<OperationModel, OperationResponseDto>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (int)src.Type));
-
+            
+            CreateMap<OperationRoleRequestDto, OperationRoleModel>();
+            CreateMap<OperationRoleModel, OperationRoleResponseDto>();
+            
             CreateMap<TransactionRequestDto, TransactionModel>()
             .ForMember(dest => dest.ParentTransactionId, opt => opt.MapFrom(src => (src.ParentTransaction != null) ? src.ParentTransaction.Id : _intNullable))
             .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id))
             .ForMember(dest => dest.DestinationPortfolioId, opt => opt.MapFrom(src => (src.DestinationPortfolio != null) ? src.DestinationPortfolio.Id : _intNullable))
             .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
+            .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
+            .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => src.Consolidated ? 1 : 0));
             CreateMap<TransactionModel, TransactionResponseDto>()
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => (src.Consolidated == SituationType.Sim) ? true : false));
             CreateMap<TransactionTotalModel, TransactionTotalResponseDto>();
-
+            
             CreateMap<BalanceRequestDto, BalanceModel>()
                 .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id));
             CreateMap<BalanceModel, BalanceResponseDto>();
@@ -69,6 +76,11 @@ namespace CrossCutting.Mappings
             CreateMap<DeviceModel, DeviceResponseDto>();
 
             CreateMap<TrashModel, TrashResponseDto>();
+            
+            CreateMap<TotalizerRoleRequestDto, TotalizerRoleModel>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToEnum<TotalizerType>()));
+            CreateMap<TotalizerRoleModel, TotalizerRoleResponseDto>()
+                .ForMember(dest => dest.Type, opt => opt.MapFrom(src => (int)src.Type));;
         }
     }
 }

@@ -271,6 +271,8 @@ namespace Api.Data.Repository
         {
             query = query.Include(ope => ope.Operation);
             query = query.Include(cat => cat.Operation.Category);
+            query = query.Include(opeRol => opeRol.Operation.OperationRoles)
+                .ThenInclude(r => r.OperationRole);
             query = query.Include(cta => cta.Portfolio);
             query = query.Include(p => p.Portfolio.Category);
             query = query.Include(cta => cta.DestinationPortfolio);

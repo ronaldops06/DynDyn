@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Api.Domain.Enums;
 using Domain.Entities;
 
@@ -42,6 +43,11 @@ namespace Api.Domain.Entities
         /// Categoria da operação <see cref="CategoryEntity"/>.
         /// </summary>
         public CategoryEntity Category { get; set; }
+        
+        /// <summary>
+        /// Lista de regras na transação.
+        /// </summary>
+        public List<OperationRoleLinkEntity> OperationRoles { get; set; }
         
         /// <summary>
         /// Identificador do usuário base.

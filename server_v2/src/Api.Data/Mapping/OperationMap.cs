@@ -43,6 +43,10 @@ namespace Api.Data.Mapping
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
                 .IsRequired();
+            
+            builder.HasMany(a => a.OperationRoles)
+                .WithOne(l => l.Operation)
+                .HasForeignKey(l => l.OperationId);
         }
     }
 }
