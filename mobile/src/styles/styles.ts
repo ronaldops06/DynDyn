@@ -1,6 +1,10 @@
 import {StyleSheet} from 'react-native';
 
 export const getStyle = (theme) => StyleSheet.create({
+    row: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
     container: {
         display: "flex",
         flex: 1,
@@ -12,6 +16,9 @@ export const getStyle = (theme) => StyleSheet.create({
     },
     containerConsulta: {
         backgroundColor: theme.colors.primaryBaseColor
+    },
+    containerAuxiliary: {
+        backgroundColor: theme.colors.tertiaryBaseColor
     },
     viewHeaderCadastro: {
         width: "100%",
@@ -42,14 +49,26 @@ export const getStyle = (theme) => StyleSheet.create({
         width: "100%",
         height: "80%",
         backgroundColor: theme.colors.secondaryBaseColor,
-        //borderTopLeftRadius: 60
     },
     viewBodyConsultaLarger: {
-        display: "flex",
         width: "100%",
         backgroundColor: theme.colors.secondaryBaseColor,
         borderTopLeftRadius: 60,
         flex: 1
+    },
+    viewAreaMessage: {
+        minHeight: 60,
+        marginLeft: 20,
+        marginRight: 20,
+        marginTop: 15,
+        padding: 10,
+        backgroundColor: theme.colors.dangerBaseColor,
+        borderRadius: 10
+    },
+    textMessage: {
+        color: theme.colors.secondaryBaseColor,
+        fontSize: 15,
+        fontFamily: "Open Sans"
     },
     loadingIcon: {
         marginTop: 5,
@@ -78,6 +97,7 @@ export const getStyle = (theme) => StyleSheet.create({
     titleScreen: {
         flexDirection: "row",
         justifyContent: "space-between",
+        alignItems: "flex-end",
     },
     titleScreemText: {
         color: theme.colors.tertiaryTextColor,
@@ -92,8 +112,15 @@ export const getStyle = (theme) => StyleSheet.create({
         paddingLeft: 15,
         height: 35
     },
+    buttonBack: {
+        width: 40,
+        height: 40,
+        marginTop: 10,
+        marginLeft: 15
+    },
     headerScreenActions: {
-      flexDirection: "row"  
+        flexDirection: "row",
+        alignItems: "center"
     },
     titleScreenMoreInfo: {
         flexDirection: "row",
@@ -124,6 +151,9 @@ export const getStyle = (theme) => StyleSheet.create({
         backgroundColor: theme.colors.secondaryBaseColor,
         color: "red"
     },
+    areaFooterModal: {
+        padding: 10,
+    },
     overlay: {
         marginTop: 20,
         alignItems: 'center',
@@ -136,9 +166,41 @@ export const getStyle = (theme) => StyleSheet.create({
         bottom: 15,
         right: 15,
         borderWidth: 2,
-        borderColor: theme.colors.primaryBaseColor,
+        borderColor: theme.colors.tertiaryBorderColor,
         backgroundColor: theme.colors.secondaryBaseColor + "21",
         alignItems: "center",
         justifyContent: "center",
+    },
+    inputValue: {
+        fontSize: 18,
+        fontFamily: "Open Sans",
+        alignSelf: "flex-end"
+    },
+    textPrimary24Bold: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 24,
+        fontWeight: "bold",
+        fontFamily: "Open Sans"
+    },
+    textPrimary28Bold: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 28,
+        fontWeight: "bold",
+        fontFamily: "Open Sans"
+    },
+    textPrimary18: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 18,
+        fontFamily: "Open Sans"
+    },
+    textPrimary16: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 16,
+        fontFamily: "Open Sans"
+    },
+    textSecondary16: {
+        color: theme.colors.secondaryTextColor,
+        fontSize: 16,
+        fontFamily: "Open Sans"
     }
 });

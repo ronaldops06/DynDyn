@@ -5,26 +5,37 @@ import { Animated, Text, View } from 'react-native';
 import { useTheme } from '../../contexts/ThemeContext';
 import { getCustomPickerStyle } from './styles';
 
-interface PickerParams {
-    text: string,
-    value: number,
-    setValue: any,
+interface PickerProps {
+    text: string;
+    isMoveText?: boolean | undefined;
+    value: number | string;
+    setValue: any;
+    required?: boolean | undefined;
+    valueDefault?: number | undefined;
+    width?: string | undefined;
     data: {
-        Id: number,
-        Name: string
+        Id: number | string;
+        Name: string;
     }[]
 }
 
-const CustomPicker = (props: PickerParams) => {
+const CustomPicker = (props: PickerProps) => {
     const { theme } = useTheme();
     const customPickerStyle = getCustomPickerStyle(theme);
     
-    const moveText = useRef(new Animated.Value(0)).current;
+    const {
+        isMoveText = false,
+        required = false,
+        valueDefault = 0,
+        width = '100%',
+    } = props;
+    
+    const moveText = useRef(new Animated.Value((isMoveText) ? 0 : 1)).current;
 
     useEffect(() => {
-        if (props.value !== 0) {
+        if (props.value !== valueDefault) {
             moveTextTop();
-        } else if (props.value === 0) {
+        } else if (props.value === valueDefault) {
             moveTextBottom();
         }
     }, [props.value]);
@@ -54,11 +65,13 @@ const CustomPicker = (props: PickerParams) => {
     };
 
     const moveTextBottom = () => {
-        Animated.timing(moveText, {
-            toValue: 0,
-            duration: 200,
-            useNativeDriver: true,
-        }).start();
+        if (isMoveText) {
+            Animated.timing(moveText, {
+                toValue: 0,
+                duration: 200,
+                useNativeDriver: true,
+            }).start();
+        }
     };
 
     const yVal = moveText.interpolate({
@@ -83,7 +96,7 @@ const CustomPicker = (props: PickerParams) => {
     };
 
     return (
-        <View style={customPickerStyle.container}>
+        <View style={[customPickerStyle.container, {width:width}]}>
             <Animated.View style={[customPickerStyle.animatedStyle, animStyle]}>
                 <Text style={customPickerStyle.label}>{props.text}</Text>
             </Animated.View>
@@ -91,7 +104,9 @@ const CustomPicker = (props: PickerParams) => {
                 style={customPickerStyle.picker}
                 selectedValue={props.value}
                 onValueChange={(itemValue, itemIndex) => props.setValue(itemValue)}>
-                <Picker.Item key={0} label="" value={0} />
+                {!required &&
+                    <Picker.Item key={0} label="" value={valueDefault} />
+                }
                 {props.data.map((item, key) => (
                     <Picker.Item key={key} label={item.Name} value={item.Id} />
                 ))}

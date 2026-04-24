@@ -1,10 +1,10 @@
-import NetInfo from '@react-native-community/netinfo';
 import axios, {AxiosInstance} from 'axios';
 import { Alert } from 'react-native';
 
 import * as I from '../interfaces/interfaces';
 import EncryptedStorage from "react-native-encrypted-storage";
 import {constants} from "../constants";
+import {isInternetConnected} from "../utils.ts";
 
 const configUrl = 'https://sagemoney.com.br/config/config.json';
 
@@ -16,11 +16,6 @@ const getToken = async (): Promise<string> => {
     
     return '';
 }
-
-const isInternetConnected = async (): Promise<boolean> => {
-    const state = await NetInfo.fetch();
-    return state.isConnected ?? false;
-};
 
 const formatErrors = (error: any): string => {
     if (error?.response?.data?.errors?.Value) {
@@ -112,8 +107,8 @@ export const get = async (path: string): Promise<I.Response> => {
             responseRequest.totalPages = Number(totalPages);
         }
     }).catch((error) => {
-        console.log('erro', error?.response?.data);
-        responseRequest.error = error?.response?.data?.errors?.Value.join() ?? error?.response?.data;
+        console.log('erro get', formatErrors(error));
+        responseRequest.error = formatErrors(error);
         responseRequest.status = error?.response?.status;
         responseRequest.success = false;
     });
@@ -130,7 +125,8 @@ export const post = async (path: string, data?: any) => {
     let isConnected = await isInternetConnected();
     if (!isConnected) {
         responseRequest.isConnected = false;
-        responseRequest.success = true;
+        responseRequest.success = false;
+        responseRequest.error = "Sem conexão com a internet, tente novamente mais tarde.";
         return responseRequest;
     }
     
@@ -188,7 +184,8 @@ export const put = async (path: string, data: any) => {
     let isConnected = await isInternetConnected();
     if (!isConnected) {
         responseRequest.isConnected = false;
-        responseRequest.success = true;
+        responseRequest.success = false;
+        responseRequest.error = "Sem conexão com a internet, tente novamente mais tarde.";
         return responseRequest;
     }
 
@@ -217,7 +214,8 @@ export const del = async (path: string) => {
     let isConnected = await isInternetConnected();
     if (!isConnected) {
         responseRequest.isConnected = false;
-        responseRequest.success = true;
+        responseRequest.success = false;
+        responseRequest.error = "Sem conexão com a internet, tente novamente mais tarde.";
         return responseRequest;
     }
 

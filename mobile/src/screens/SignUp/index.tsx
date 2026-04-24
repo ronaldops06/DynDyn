@@ -79,7 +79,7 @@ const SignUp = ({navigation}) => {
                             value={valuePassword}
                             setValue={setValuePassword}
                             secureTextEntry={!showPassword}
-                            icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                            icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                             onPressIcon={() => setShowPassword(!showPassword)}
                         />
                         <TextInput
@@ -87,7 +87,7 @@ const SignUp = ({navigation}) => {
                             value={valuePasswordConfirm}
                             setValue={setValuePasswordConfirm}
                             secureTextEntry={!showPasswordConfirm}
-                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                             onPressIcon={() => setShowPasswordConfirm(!showPasswordConfirm)}
                         />
                     </View>

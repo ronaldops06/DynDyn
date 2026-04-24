@@ -5,14 +5,14 @@ import AccountCreate from "../screens/Account/create.tsx";
 import Category from '../screens/Category';
 import CategoryCreate from '../screens/Category/create';
 import Operation from '../screens/Operation';
-import OperationCreate from '../screens/Operation/create';
+import OperationCreate from '../screens/Operation/Register';
 import Home from '../screens/Home';
 import UserAccount from "../screens/Home/UserAccount";
 import ChangePassword from "../screens/Home/UserAccount/ChangePassword";
 import DeleteAccount from "../screens/Home/UserAccount/DeleteAccount";
 import Dashboard from '../screens/Dashboard';
 import Preload from '../screens/Preload';
-import {RootStackParamList} from '../screens/RootStackParams';
+
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
 import Validation from "../screens/SignUp/validation.tsx";
@@ -21,7 +21,10 @@ import RecoveryValidation from "../screens/SignUp/Recovery/recovery.validation.t
 import RecoveryPassword from "../screens/SignUp/Recovery/recovery.password.tsx"
 import Transaction from '../screens/Transaction';
 import TransactionCreate from '../screens/Transaction/create';
+import TotalizerRole from "../screens/Home/TotalizerRole";
+import TotalizerRoleCreate from "../screens/Home/TotalizerRole/Register";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {RootStackParamList} from '../screens/RootStackParams';
 
 import MainTab from './MainTab';
 import {constants} from "../constants";
@@ -30,7 +33,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const HomeStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Home" component={Home} />
+        <Stack.Screen name="HomeHome" component={Home} />
+        <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
     </Stack.Navigator>
 );
 
@@ -77,11 +81,13 @@ const MainStack = () => {
             <Stack.Screen name="RecoveryLogin" component={RecoveryLogin}/>
             <Stack.Screen name="RecoveryValidation" component={RecoveryValidation}/>
             <Stack.Screen name="RecoveryPassword" component={RecoveryPassword}/>
-            <Stack.Screen name="Home" component={Home}/>
+            
             <Stack.Screen name="UserAccount" component={UserAccount}/>
             <Stack.Screen name="ChangePassword" component={ChangePassword}/>
             <Stack.Screen name="DeleteAccount" component={DeleteAccount}/>
             <Stack.Screen name="Dashboard" component={Dashboard}/>
+            <Stack.Screen name="TotalizerRole" component={TotalizerRole}/>
+            <Stack.Screen name="TotalizerRoleCreate" component={TotalizerRoleCreate}/>
             <Stack.Screen name="MainTab" component={MainTab}/>
         </Stack.Navigator>
     );

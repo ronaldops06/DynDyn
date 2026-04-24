@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from "react";
-import { View, TextInput, Text, Animated, TouchableOpacity } from "react-native";
+import {View, TextInput, Text, Animated, TouchableOpacity, KeyboardTypeOptions} from "react-native";
 
 import { useTheme } from '../../contexts/ThemeContext';
 import { getCustomTextInputStyle } from './styles';
@@ -15,7 +15,8 @@ interface CustomTextInputParams {
     onPressIcon?: any | undefined;
     width?: string | undefined;
     editable?: boolean;
-    autoFocus?: boolean
+    autoFocus?: boolean;
+    keyboardType?: KeyboardTypeOptions | undefined;
 }
 
 const CustomTextInput = (props: CustomTextInputParams) => {
@@ -23,7 +24,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
     const customTextInputStyle = getCustomTextInputStyle(theme);
     
     const {
-        isMoveText = true,
+        isMoveText = false,
         width = "100%",
         editable = true,
         autoFocus = false
@@ -110,6 +111,7 @@ const CustomTextInput = (props: CustomTextInputParams) => {
                     onFocus={onFocusHandler}
                     onBlur={onBlurHandler}
                     autoFocus={autoFocus}
+                    keyboardType={props.keyboardType}
                     blurOnSubmit
                 />
                 {props.icon && 

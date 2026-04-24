@@ -1,22 +1,18 @@
-import {Image, TextInput, SafeAreaView, Text, View, TouchableOpacity, Alert, ActivityIndicator} from "react-native";
-import React, {useState, useRef, useEffect} from "react";
-import {postUser, userValidate} from "../signup.api.tsx";
+import {Alert, Image, SafeAreaView, Text, TextInput, View} from "react-native";
+import React, {useEffect, useRef, useState} from "react";
 import * as I from "../../../interfaces/interfaces.tsx";
-import EncryptedStorage from "react-native-encrypted-storage";
 
-import { useTheme } from '../../../contexts/ThemeContext';
+import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {getRecoveryStyle} from "./styles";
-import { getStyle } from "../../../styles/styles"
+import {getStyle} from "../../../styles/styles"
 import StepIndicator from "../../../components/StepIndicator";
 import {executePasswordRecoveryValidate} from "../../../controller/user.controller.tsx";
 import Button from "../../../components/Button";
 
 const RecoveryValidation = ({navigation, route}) => {
     const { theme } = useTheme();
-    const styleCadastro = getStyleCadastro(theme);
     const recoveryStyle = getRecoveryStyle(theme);
-    const style = getStyle(theme);
 
     const [step, setStep] = useState(2);
     const inputRefs = useRef([]);

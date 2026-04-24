@@ -7,7 +7,9 @@ export const constants = {
         operation: 'operation',
         transaction: 'transaction',
         balance: 'balance',
-        trash: 'trash'
+        trash: 'trash',
+        operationRole: 'operationRole',
+        totalizerRole: 'totalizerRole',
     },
     categoryType: {
         account: { Id: 1, Name: 'Conta' },
@@ -17,6 +19,18 @@ export const constants = {
         revenue: { Id: 1, Name: 'Receita' },
         expense: { Id: 2, Name: 'Despesa' },
         transfer: { Id: 3, Name: 'Transferência' }
+    },
+    totalizerType: {
+        ignore: { Id: 1, Name: 'Ignorar', Order: 1},
+        discriminated: { Id: 2, Name: 'Discriminar', Order: 4 },
+        groupedRevenue: { Id: 3, Name: 'Agrupar nas Receitas', Order: 2 },
+        groupedExpense: { Id: 4, Name: 'Agrupar nas Despesas', Order: 3 },
+    },
+    totalizerCode: {
+        transactionRevenue: { Id: "TRA_REV", Name: 'Transação - Receitas' },
+        transactionExpense: { Id: "TRA_EXP", Name: 'Transação - Despesas' },
+        homeRevenue: { Id: "HOM_REV", Name: 'Home - Receitas' },
+        homeExpense: { Id: "HOM_EXP", Name: 'Home - Despesas' },
     },
     calculateBalanceType: {
         inflow: 1,
@@ -50,6 +64,14 @@ export const constants = {
         investimentos: 8,
         veiculos: 9
     },
+    operators: [
+        {Id: 1, Name: 'Igual', Key: '='},
+        {Id: 2, Name: 'Maior', Key: '>'},
+        {Id: 3, Name: 'Menor', Key: '<'},
+        {Id: 4, Name: 'Maior ou Igual', Key: '>='},
+        {Id: 5, Name: 'Menor ou Igual', Key: '<='},
+        {Id: 6, Name: 'Diferente', Key: '!='}
+    ],
     colors: {
         primaryBaseColor: '#6E8BB8',
         secondaryBaseColor: '#F1F1F1',

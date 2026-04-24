@@ -42,7 +42,7 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
             setMoveX(move);
         } else if (moveX > 40 && !executeSipe) {
             setExecuteSwipe(true);
-            props.onSwipeLeft(props.data);
+            props.onSwipeRight(props.data);
         }
     };
 
@@ -51,7 +51,7 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
             setMoveX(move);
         } else if (moveX < -40 && !executeSipe) {
             setExecuteSwipe(true);
-            props.onSwipeRight(props.data);
+            props.onSwipeLeft(props.data);
         }
     };
 

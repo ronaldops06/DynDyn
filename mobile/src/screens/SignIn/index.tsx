@@ -26,6 +26,7 @@ const SignIn = ({navigation}) => {
     const signInStyle = getSignInStyle(theme);
     
     const [biometricAvailable, setBiometricAvailable] = useState(false);
+    const [isBiometricActivated, setIsBiometricActivated] = useState("no");
     const [valueEmail, setValueEmail] = useState("");
     const [valuePassword, setValuePassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
@@ -38,10 +39,12 @@ const SignIn = ({navigation}) => {
     const validateBiometricActivated = async () => {
         await getUserByStorage();
         
-        let isBiometricActivated = await EncryptedStorage.getItem("biometrics");
+        let isBiometricActivatedAux = await EncryptedStorage.getItem("biometrics");
+        setIsBiometricActivated(isBiometricActivatedAux ?? "no");
         
-        if (isBiometricActivated === "yes") {
+        if (isBiometricActivatedAux === "yes") {
             await handleAuthenticateByBiometric();
+            setBiometricAvailable(true);
         } else {
             await ReactNativeBiometrics.isSensorAvailable()
                 .then((result) => {
@@ -94,7 +97,6 @@ const SignIn = ({navigation}) => {
 
     const validateLogin = async (email: string, password: string) => {
         setLoading(true);
-        let isBiometricActivated = await EncryptedStorage.getItem("biometrics");
         
         let loginDTO = {} as I.Login;
         loginDTO.Login = email;
@@ -106,7 +108,7 @@ const SignIn = ({navigation}) => {
             Alert.alert("Atenção!", "Sem conexão com a internet, tente novamente mais tarde");
         } else if (userResponse.data !== null) {
             if (biometricAvailable && isBiometricActivated !== "yes")
-                validateAccessBionmetric();
+                await validateAccessBionmetric();
             
             userResponse.data.Password = loginDTO.Password;
             await setUserInStorage(userResponse.data);
@@ -135,10 +137,6 @@ const SignIn = ({navigation}) => {
             login: valueEmail
         });
     }
-
-    const getIsBiometricActivated = async () => {
-        return await EncryptedStorage.getItem("biometrics");
-    }
     
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
@@ -150,15 +148,17 @@ const SignIn = ({navigation}) => {
                 <View style={signInStyle.areaFields}>
                     <TextInput
                         text={"Email"}
+                        isMoveText
                         value={valueEmail}
                         setValue={setValueEmail}
                     />
                     <TextInput
                         text={"Senha"}
+                        isMoveText
                         value={valuePassword}
                         setValue={setValuePassword}
                         secureTextEntry={!showPassword}
-                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                         onPressIcon={() => setShowPassword(!showPassword)}
                     />
                     <View
@@ -174,7 +174,7 @@ const SignIn = ({navigation}) => {
                         style={signInStyle.areaButton}>
                         {biometricAvailable && 
                             <TouchableOpacity
-                                disabled={getIsBiometricActivated() !== "yes"}
+                                disabled={isBiometricActivated !== "yes"}
                                 onPress={handleAuthenticateByBiometric}>
                                 <FingerPrintIcon width="32" height="32" fill={theme.colors.primaryIconDashboard}/>
                             </TouchableOpacity>

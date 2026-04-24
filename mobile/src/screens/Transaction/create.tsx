@@ -2,14 +2,14 @@ import CheckBox from '@react-native-community/checkbox';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import Moment from 'moment';
 import React, {useEffect, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import CurrencyInput from 'react-native-currency-input';
-import RadioGroup, {RadioButtonProps} from 'react-native-radio-buttons-group';
 
 import {PageRegister} from "../../components/Page";
 import ClockIcon from '../../assets/clock.svg';
 import TodayIcon from '../../assets/today.svg';
 import HistoryIcon from '../../assets/history.svg';
+import CalculatorIcon from '../../assets/calculate.svg';
 import ButtonSelectBar, {ButtonsSelectedProps} from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
@@ -25,13 +25,12 @@ import {constants} from "../../constants";
 import {getDate, toLocalDate, validateLogin, validateSuccess} from "../../utils.ts";
 
 import {useTheme} from '../../contexts/ThemeContext';
-import {getStyle} from '../../styles/styles';
 import {getStyleCadastro} from '../../styles/styles.cadastro';
 import {getTransactionCreateStyle} from './create.styles';
+import Calculator from "../../components/Calculator";
 
 const TransactionCreate = ({navigation, route}) => {
     const {theme} = useTheme();
-    const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const transactionCreateStyle = getTransactionCreateStyle(theme);
 
@@ -43,7 +42,7 @@ const TransactionCreate = ({navigation, route}) => {
     const baseOperation = {} as I.Operation;
 
     const [loading, setLoading] = useState(false);
-    const [typeSelected, setTypeSelected] = useState(1);
+    const [typeSelected, setTypeSelected] = useState(2);
     const [showDate, setShowDate] = useState(false);
     const [mode, setMode] = useState('date');
     const [categories, setCategories] = useState<I.Category[]>([]);
@@ -61,9 +60,10 @@ const TransactionCreate = ({navigation, route}) => {
     const [isSalary, setIsSalary] = useState(false);
     const [isRecurrent, setIsRecurrent] = useState<boolean>(false);
     const [isPaindInstallments, setIsPaindInstallments] = useState<boolean>(false);
-    const [installment, setInstallment] = useState(1); 
+    const [installment, setInstallment] = useState(1);
     const [valueTimes, setValueTimes] = useState(1);
     const [showModal, setShowModal] = useState(false);
+    const [showCalculator, setShowCalculator] = useState(false);
 
     const getLists = async () => {
         let responseCategories = await loadAllCategory(TypesCategory.Operation, null, true);
@@ -140,6 +140,7 @@ const TransactionCreate = ({navigation, route}) => {
             setValueCategory(null);
             setValueDestPortfolio(0);
         }
+        stepInput.current.focus();
     }, [typeSelected]);
 
     const validateRequiredFields = () => {
@@ -253,12 +254,13 @@ const TransactionCreate = ({navigation, route}) => {
         setValueDescription(item.Name);
         setValueCategory(item.Category.Id);
         setIsSalary(item.Salary);
+        setIsRecurrent(item.Recurrent);
     };
-    
+
     const handlePaindInstallmentSelect = (value: boolean) => {
         if (!value)
             setValueTimes(1);
-        
+
         setIsPaindInstallments(value);
     }
 
@@ -307,7 +309,10 @@ const TransactionCreate = ({navigation, route}) => {
         setLoading(false);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, 'TransactionHome');
+        if (route.params?.sourceScreen === "Home")
+            validateSuccess(response, navigation, 'HomeHome');
+        else
+            validateSuccess(response, navigation, 'TransactionHome');
     };
 
     return (
@@ -335,7 +340,16 @@ const TransactionCreate = ({navigation, route}) => {
                         delimiter="."
                         separator=","
                         precision={2}
+                        autoFocus={!isEditing}
+                        keyboardType="numeric"
                     />
+                </View>
+                <View>
+                    <TouchableOpacity
+                        style={transactionCreateStyle.areaCalculator}
+                        onPress={() => setShowCalculator(true)}>
+                        <CalculatorIcon width="35" height="35" fill={theme.colors.quintenaryIcon}/>
+                    </TouchableOpacity>
                 </View>
                 {!typeSelectedIsTransference() &&
                     <TextInput
@@ -405,32 +419,31 @@ const TransactionCreate = ({navigation, route}) => {
                 />
                 {!typeSelectedIsTransference() &&
                     <>
-                        <View style={styleCadastro.areaCheckbox}>
-                            <CheckBox
-                                value={valueConsolidated}
-                                onValueChange={setValueConsolidated}
-                                tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
-                            />
-                            <Text
-                                style={styleCadastro.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
-                        </View>
-                        <View style={styleCadastro.areaCheckbox}>
-                            <CheckBox
-                                disabled={operation.Id !== undefined}
-                                value={isSalary}
-                                onValueChange={setIsSalary}
-                                tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
-                            />
-                            <Text style={styleCadastro.textCheckbox}>Salário</Text>
-                        </View>
-                        <View style={styleCadastro.areaCheckbox}>
-                            <CheckBox
-                                value={isRecurrent}
-                                onValueChange={setIsRecurrent}
-                                tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
-                                disabled={isEditing || isPaindInstallments}
-                            />
-                            <Text style={styleCadastro.textCheckbox}>Recorrente</Text>
+                        <View style={transactionCreateStyle.areaChecks}>
+                            <View style={styleCadastro.areaCheckbox}>
+                                <CheckBox
+                                    value={isRecurrent}
+                                    onValueChange={setIsRecurrent}
+                                    tintColors={{
+                                        true: theme.colors.primaryBaseColor,
+                                        false: theme.colors.primaryBaseColor
+                                    }}
+                                    disabled={operation.Id !== undefined}
+                                />
+                                <Text style={styleCadastro.textCheckbox}>Recorrente</Text>
+                            </View>
+                            <View style={[styleCadastro.areaCheckbox, {marginLeft: 50}]}>
+                                <CheckBox
+                                    disabled={operation.Id !== undefined}
+                                    value={isSalary}
+                                    onValueChange={setIsSalary}
+                                    tintColors={{
+                                        true: theme.colors.primaryBaseColor,
+                                        false: theme.colors.primaryBaseColor
+                                    }}
+                                />
+                                <Text style={styleCadastro.textCheckbox}>Salário</Text>
+                            </View>
                         </View>
                         <View style={transactionCreateStyle.areaRepeat}>
                             <View style={styleCadastro.areaCheckbox}>
@@ -454,10 +467,19 @@ const TransactionCreate = ({navigation, route}) => {
                                         setValue={setValueTimes}
                                         width={"100%"}
                                         editable={!isEditing}
-                                        messageText={(valueTimes != 0 ) ? `Total: R$ ${(valueValue * valueTimes).toString()}` : ""}                                    
+                                        messageText={(valueTimes != 0) ? `Total: R$ ${(valueValue * valueTimes).toFixed(2)}` : ""}
                                     />
                                 </View>
                             }
+                        </View>
+                        <View style={styleCadastro.areaCheckbox}>
+                            <CheckBox
+                                value={valueConsolidated}
+                                onValueChange={setValueConsolidated}
+                                tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
+                            />
+                            <Text
+                                style={styleCadastro.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
                         </View>
                     </>
                 }
@@ -467,8 +489,13 @@ const TransactionCreate = ({navigation, route}) => {
                 show={showModal}
                 setShow={setShowModal}
                 setOperation={handleItemOperationClick}
-                tipoOperation={typeSelected}
+                typeOperation={typeSelected}
             />
+            <Calculator
+                value={valueValue}
+                setValue={setValueValue}
+                show={showCalculator}
+                setShow={setShowCalculator}/>
         </PageRegister>
     )
 }

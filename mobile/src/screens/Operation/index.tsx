@@ -3,6 +3,7 @@ import {Alert} from "react-native";
 import {useFocusEffect} from "@react-navigation/native";
 import _ from 'lodash';
 import * as I from "../../interfaces/interfaces.tsx";
+import HistoryIcon from '../../assets/history.svg';
 import {
     alterOperation,
     excludeOperation,
@@ -12,26 +13,28 @@ import {
 import CustomScroll from "../../components/CustomScroll";
 import {constants} from "../../constants";
 import CarouselSelection from "../../components/CarouselSelection";
-import OperationItem from "./OperationItem";
-import {validateLogin} from "../../utils.ts";
+import {hasAnyFilter, validateLogin} from "../../utils.ts";
 
-import {useTheme} from '../../contexts/ThemeContext';
-
-import HistoryIcon from '../../assets/history.svg';
-import {constants as pageConstants} from "../../components/Page/constants";
 import {PageProcess} from "../../components/Page";
+import {Situation} from "../../enums/enums.tsx";
+import {constants as pageConstants} from "../../components/Page/constants";
+
+import Filter from "../Operation/Filter";
+import OperationItem from "./OperationItem";
+import {useTheme} from '../../contexts/ThemeContext';
 
 const Operation = ({navigation, route}) => {
     const { theme } = useTheme();
       
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
-    const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    const [filter, setFilter] = useState<I.OperationFilter>({} as I.OperationFilter);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [operations, setOperations] = useState<I.Operation[]>([]);
     const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
+    const [isScrolling, setIsScrolling] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(false);
     
     useFocusEffect(
         React.useCallback(() => {
@@ -47,24 +50,23 @@ const Operation = ({navigation, route}) => {
         //Faz com que não execute na abertura da tela (renderização)
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            return;
-        }
-
-        if (operations.length === 0) {
-            setPageNumber(1);
-            loadOperations(1);
+        } else {
+            if (operations.length === 0) {
+                setPageNumber(1);
+                loadOperations(1);
+            }
         }
     }, [operations]);
 
     useEffect(() => {
-        if (operations.length !== 0) {
+        if (operations?.length !== 0) {
             setIsLoadInternal(true);
             loadOperations(pageNumber);
         }
     }, [pageNumber]);
 
     useEffect(() => {
-
+        setPageNumber(1);
         updateOperations();
 
         return () => updateOperations.cancel();
@@ -106,6 +108,13 @@ const Operation = ({navigation, route}) => {
         setIsLoadInternal(false);
     };
 
+    const getOperationType = () => {
+        let operationType = {...constants.operationType};
+        delete operationType.transfer;
+        
+        return operationType;
+    }
+    
     const handleNewClick = () => {
         navigation.navigate("Operation", {
             screen: 'OperationCreate',
@@ -173,6 +182,42 @@ const Operation = ({navigation, route}) => {
         );
     }
 
+    const filterData = (operations: I.Operation[]): I.Operation[] => {
+        let result = operations;
+
+        if (filter.Situation != undefined && filter.Situation !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Situation !== Situation.All ? item.Status === filter.Situation: item;
+            });
+        }
+
+        if (filter.CategoryId) {
+            result = result.filter(item => {
+                return filter.CategoryId !== 0 ? item.Category.Id === filter.CategoryId : item;
+            })
+        }
+
+        if (filter.Salary != undefined && filter.Salary !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Salary !== Situation.All ? item.Salary === (filter.Salary === Situation.Consolidated) : item;
+            });
+        }
+
+        if (filter.Recurrent != undefined && filter.Recurrent !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Recurrent !== Situation.All ? item.Recurrent === (filter.Recurrent === Situation.Consolidated) : item;
+            });
+        }
+
+        if (filter.Search && filter.Search !== "") {
+            result = result.filter(item => {
+                return item.Name.toLowerCase().includes(filter.Search);
+            })
+        }
+        
+        return result;
+    };
+
     return (
         <PageProcess
             headerType={pageConstants.headerType.processReduced}
@@ -184,11 +229,16 @@ const Operation = ({navigation, route}) => {
             headerContent={
                 <CarouselSelection
                     disabled={loading}
-                    data={constants.operationType}
+                    data={getOperationType()}
                     handleItemSelectedId={setOperationType}/>
-            }>
+            }
+            renderFilters={(closeModal) => (
+                <Filter filter={filter} setFilter={setFilter} onClose={closeModal}/>
+            )}
+            filterActivated={hasAnyFilter(filter)}
+        >
             <CustomScroll
-                data={operations}
+                data={filterData(operations)}
                 loading={loading}
                 totalPages={totalPages}
                 pageNumber={pageNumber}

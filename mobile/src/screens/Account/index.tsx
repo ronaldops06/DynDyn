@@ -1,5 +1,5 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {Alert} from 'react-native';
 import {useFocusEffect} from "@react-navigation/native";
 
 import * as I from "../../interfaces/interfaces.tsx";
@@ -11,17 +11,18 @@ import {
 } from "../../controller/portfolio.controller.tsx";
 import {loadAllBalance} from "../../controller/balance.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
-import PlusIcon from "../../assets/plus.svg";
 import AccountItem from "./AccountItem";
 import {constants} from "../../constants";
 import {constants as pageConstants} from "../../components/Page/constants";
-import {validateLogin} from '../../utils.ts';
+import {filterDynamic, hasAnyFilter, validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
 
-import { useTheme } from '../../contexts/ThemeContext';
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from "../../styles/styles.ts";
 import {getAccountStyle} from './styles';
 import PageProcess from "../../components/Page/Process";
+import {Situation} from "../../enums/enums.tsx";
+import Filter from "./Filter";
 
 const Portfolio = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -30,6 +31,7 @@ const Portfolio = ({navigation, route}) => {
     
     const [loading, setLoading] = useState(true);
     const isFirstRender = useRef(true);
+    const [filter, setFilter] = useState<I.PortfolioFilter>({} as I.PortfolioFilter);
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [pageNumber, setPageNumber] = useState(1);
@@ -97,6 +99,40 @@ const Portfolio = ({navigation, route}) => {
 
         setLoading(false);
         setIsLoadInternal(false);
+    };
+
+    const filterData = (portfolios: I.Portfolio[]): I.Portfolio[] => {
+        let result = portfolios;
+
+        if (filter.Situation !== undefined && filter.Situation !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Situation !== Situation.All ? item.Status === filter.Situation: item;
+            });
+        }
+
+        if (filter.CategoryId) {
+            result = result.filter(item => {
+                return filter.CategoryId !== 0 ? item.Category.Id === filter.CategoryId : item;
+            })
+        }
+
+        if (filter.ParentPortfolioId) {
+            result = result.filter(item => {
+                return filter.ParentPortfolioId !== 0 ? item.ParentPortfolio?.Id === filter.ParentPortfolioId : item;
+            })
+        }
+        
+        if (filter.ValueFilter) {
+            result = filterDynamic(result, i => i.BalanceTotals?.Value, filter.ValueFilter.Operator, filter.ValueFilter.Value);
+        }
+        
+        if (filter.Search && filter.Search !== "") {
+            result = result.filter(item => {
+                return item.Name.toLowerCase().includes(filter.Search);
+            })
+        }
+
+        return result;
     };
 
     const handleItemClick = (data: I.Portfolio) => {
@@ -174,9 +210,14 @@ const Portfolio = ({navigation, route}) => {
             title={"Contas"}
             helpType={"account"}
             iconTitle={<AccountIcon style={{opacity: 1}} width="24" height="24" fill={theme.colors.primaryIcon}/>}
-            onNewClick={handleNewClick}>
+            onNewClick={handleNewClick}
+            renderFilters={(closeModal) => (
+                <Filter filter={filter} setFilter={setFilter} onClose={closeModal}/>
+            )}
+            filterActivated={hasAnyFilter(filter)}
+        >
             <CustomScroll
-                data={portfolios}
+                data={filterData(portfolios)}
                 loading={loading}
                 totalPages={totalPages}
                 pageNumber={pageNumber}

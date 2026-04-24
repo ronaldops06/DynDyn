@@ -1,3 +1,5 @@
+import {Operator} from "../utils.ts";
+
 export interface Response {
     data: any,
     status: number,
@@ -72,6 +74,11 @@ export interface Category {
     DataAlteracao: Date | null
 }
 
+export interface CategoryFilter {
+    Search: string,
+    Situation: number
+}
+
 export interface Portfolio {
     InternalId: number,
     Id: number,
@@ -86,6 +93,14 @@ export interface Portfolio {
     BalanceTotals: BalanceTotals | null
 }
 
+export interface PortfolioFilter {
+    Search: string,
+    Situation: number,
+    CategoryId: number,
+    ParentPortfolioId: number,
+    ValueFilter: ValueFilter
+}
+
 export interface Operation {
     InternalId: number,
     Id: number,
@@ -95,6 +110,38 @@ export interface Operation {
     Salary: boolean,
     Status: number,
     Category: Category,
+    OperationRoles: OperationRole[] | null,
+    Roles: string | null,
+    DataCriacao: Date,
+    DataAlteracao: Date
+}
+
+export interface OperationFilter {
+    Search: string,
+    Situation: number,
+    CategoryId: number,
+    Recurrent: number,
+    Salary: number,
+}
+
+export interface OperationRole {
+    InternalId: number,
+    Id: number,
+    Name: string,
+    DataCriacao: Date,
+    DataAlteracao: Date,
+}
+
+export interface OperationRoleFilter {
+    Search: string
+}
+
+export interface TotalizerRole {
+    InternalId: number,
+    Id: number,
+    Code: string,
+    Type: number,
+    OperationRoles: OperationRole[] | null,
     DataCriacao: Date,
     DataAlteracao: Date
 }
@@ -145,6 +192,15 @@ export interface TransactionTotals {
     DebitTotal: number
 }
 
+export interface TransactionFilter {
+    Search: string,
+    Situation: number,
+    CategoryId: number,
+    OperationId: number,
+    PortfolioId: number,
+    ValueFilter: ValueFilter
+}
+
 export interface Balance {
     InternalId: number,
     Id: number,
@@ -184,4 +240,19 @@ export interface CalculateBalance {
 export interface DashboardItem {
     Label: string;
     Value: number;
+}
+
+export interface ValueFilter {
+    Operator: Operator;
+    Value: number;
+}
+
+export interface SymbolString {
+    Id: string,
+    Name: string,
+}
+
+export interface SymbolNumber {
+    Id: number,
+    Name: string,
 }

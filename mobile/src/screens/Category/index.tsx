@@ -14,22 +14,21 @@ import {
 import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
 import CarouselSelection from "../../components/CarouselSelection";
-import {validateLogin} from "../../utils.ts";
+import {hasAnyFilter, validateLogin} from "../../utils.ts";
 import CategoryIcon from '../../assets/category.svg';
 
 import {useTheme} from '../../contexts/ThemeContext';
-import {getStyle} from '../../styles/styles';
-import {getCategoryStyle} from './styles';
 import {constants as pageConstants} from "../../components/Page/constants";
 import {PageProcess} from "../../components/Page";
+import {Situation} from "../../enums/enums.tsx";
+import Filter from "../Category/Filter";
 
 const Category = ({navigation, route}) => {
     const {theme} = useTheme();
-    const style = getStyle(theme);
-    const categoryStyle = getCategoryStyle(theme);
 
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
+    const [filter, setFilter] = useState<I.CategoryFilter>({} as I.CategoryFilter);
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [categoryType, setCategoryType] = useState<number>(constants.categoryType.operation.Id);
     const [pageNumber, setPageNumber] = useState(1);
@@ -102,11 +101,28 @@ const Category = ({navigation, route}) => {
         }
 
         setTotalPages(responseCategories?.totalPages ?? 1);
-
         appendCategories(responseCategories?.data ?? []);
 
         setLoading(false);
         setIsLoadInternal(false);
+    };
+
+    const filterData = (categories: I.Category[]): I.Category[] => {
+        let result = categories;
+
+        if (filter.Situation !== undefined && filter.Situation !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Situation !== Situation.All ? item.Status === filter.Situation : item;
+            });
+        }
+
+        if (filter.Search && filter.Search !== "") {
+            result = result.filter(item => {
+                return item.Name.toLowerCase().includes(filter.Search);
+            })
+        }
+
+        return result;
     };
 
     const handleItemClick = (data: I.Category) => {
@@ -189,9 +205,14 @@ const Category = ({navigation, route}) => {
                     disabled={loading}
                     data={constants.categoryType}
                     handleItemSelectedId={setCategoryType}/>
-            }>
+            }
+            renderFilters={(closeModal) => (
+                <Filter filter={filter} setFilter={setFilter} onClose={closeModal}/>
+            )}
+            filterActivated={hasAnyFilter(filter)}
+        >
             <CustomScroll
-                data={categories}
+                data={filterData(categories)}
                 loading={loading}
                 totalPages={totalPages}
                 pageNumber={pageNumber}

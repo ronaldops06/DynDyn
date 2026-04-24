@@ -7,11 +7,11 @@ import {
     updateSynchronization
 } from "../repository/synchronization.repository";
 import {getUserLoginEncrypt} from "../utils.ts";
-import {processActionCategory} from "./category.controller.tsx";
-import {processActionPortfolio} from "./portfolio.controller.tsx";
-import {processActionOperation} from "./operation.controller.tsx";
-import {processActionBalance} from "./balance.controller.tsx";
-import {processActionTransaction} from "./transaction.controller.tsx";
+import {processActionCategory, synchronizationAllCategory} from "./category.controller.tsx";
+import {processActionPortfolio, synchronizationAllPortfolio} from "./portfolio.controller.tsx";
+import {processActionOperation, synchronizationAllOperation} from "./operation.controller.tsx";
+import {processActionBalance, synchronizationAllBalance} from "./balance.controller.tsx";
+import {processActionTransaction, synchronizationAllOTransaction} from "./transaction.controller.tsx";
 import {constants} from "../constants";
 import Moment from "moment/moment";
 import {getTrashs} from "../services/trash.api.ts";
@@ -20,7 +20,9 @@ import {deleteAllBalances} from "../repository/balance.repository.tsx";
 import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
 import {deleteAllPortfolios} from "../repository/portfolio.repository.tsx";
 import {deleteAllOperations} from "../repository/operation.repository.tsx";
-import {deleteAllCategories} from "../repository/category.repository.tsx";
+import {deleteAllCategories} from "../repository/category.repository";
+import {processActionOperationRole, synchronizationAllOperationRole} from "./operation.role.controller.ts";
+import {processActionTotalizerRole, synchronizationAllTotalizerRole} from "./totalizer.role.controller.ts";
 
 export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization> => {
     let login = await getUserLoginEncrypt();
@@ -77,6 +79,29 @@ export const loadAllTrash = async () => {
     await setLastSynchronization(synchronization);
 }
 
+export const executeFullSynchronization = async (): Promise<I.Response> => {
+    console.log('Inicio Sincronização');
+    //Implementar tratamento de retorn em todos eles
+    let response = await synchronizationAllCategory();
+    if (response && !response.isLogged)
+        return response;
+
+    response = await synchronizationAllOperationRole();
+    response = await synchronizationAllOperation();
+    response = await synchronizationAllPortfolio();
+    response = await synchronizationAllTotalizerRole();
+    response = await synchronizationAllBalance();
+    
+    //É definido um período de três meses (1 anterior e 1 depois do atual) para busca
+    let date = new Date();
+    let mountDateInicio = new Date(date.getFullYear(), date.getMonth() - 1, 5, 0, 0, 0);
+    let mountDateFim = new Date(date.getFullYear(), date.getMonth() + 2, 4, 23, 59, 59);
+    response = await synchronizationAllOTransaction(mountDateInicio, mountDateFim);
+
+    console.log('Final Sincronização');
+    return response ?? {} as I.Response;
+}
+
 export const executeCleanupDataAccount = async () => {
         
     let login = await getUserLoginEncrypt();
@@ -99,5 +124,9 @@ export const executeExcludeEntity = async (trash: Trash) => {
         await processActionBalance(constants.acao.delete, trash.ReferenceId);
     } else if (trash && trash.Reference === constants.operations.transaction) {
         await processActionTransaction(constants.acao.delete, trash.ReferenceId);
+    } else if (trash && trash.Reference === constants.operations.operationRole) {
+        await processActionOperationRole(constants.acao.delete, trash.ReferenceId);
+    } else if (trash && trash.Reference === constants.operations.totalizerRole) {
+        await processActionTotalizerRole(constants.acao.delete, trash.ReferenceId);
     }
 };

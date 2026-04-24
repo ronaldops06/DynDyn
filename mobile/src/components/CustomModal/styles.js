@@ -3,7 +3,7 @@ import { StyleSheet } from 'react-native';
 export const getCustomModalStyle = (theme) => StyleSheet.create({
     areaModal: {
         marginTop: "auto",
-        height: "65%",
+        height: "70%",
         backgroundColor: theme.colors.primaryBaseColor,
         justifyContent: "flex-end",
         borderTopLeftRadius: 35,
@@ -13,7 +13,8 @@ export const getCustomModalStyle = (theme) => StyleSheet.create({
         width: 40,
         height: 40,
         marginTop: 10,
-        marginLeft: 15,
+        marginRight: 15,
+        alignSelf: 'flex-end',
     },
     areaContent: {
         flex: 1,

@@ -7,11 +7,8 @@ import {Device} from "../interfaces/interfaces.tsx";
 
 async function validateUserPermission() {
     const authStatus = await messaging().requestPermission();
-    const enabled =
-        authStatus === AuthorizationStatus.AUTHORIZED ||
+    return authStatus === AuthorizationStatus.AUTHORIZED ||
         authStatus === AuthorizationStatus.PROVISIONAL;
-
-    return enabled;
 }
 
 export const updateTokenCloudMessaging = async () => {
@@ -20,7 +17,7 @@ export const updateTokenCloudMessaging = async () => {
             const token = await messaging().getToken();
             const uniqueId = await DeviceInfo.getUniqueId();
             
-            var deviceDto = {} as Device;
+            let deviceDto = {} as Device;
             deviceDto.NotificationToken = token;
             deviceDto.PhisicalDeviceId = uniqueId;
 

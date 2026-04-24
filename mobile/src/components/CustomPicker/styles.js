@@ -9,7 +9,6 @@ export const getCustomPickerStyle = (theme) => StyleSheet.create({
         borderBottomWidth: 1,
         borderColor: theme.colors.primaryBorderColor,
         borderRadius: 3,
-        width: "100%",
         alignSelf: "center",
     },
     icon: {
@@ -20,7 +19,6 @@ export const getCustomPickerStyle = (theme) => StyleSheet.create({
     picker: {
         border: 0,
         borderColor: "red",
-        width: "100%",
         fontSize: 16,
         height: 40,
         color: theme.colors.primaryTextColor,

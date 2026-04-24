@@ -8,7 +8,7 @@ import {
     deleteInternalTransactionByExternalId,
     insertTransaction,
     selectAllTransactions,
-    selectContAll,
+    selectContAll, selectDashboardTransactionGroupByMonthAndCategory,
     selectTransactionById,
     selectTransactionsTotals,
     updateTransaction
@@ -25,6 +25,10 @@ import {loadInternalOperation} from './operation.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
 import {calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
 import {getUserLoginEncrypt} from "../utils.ts";
+import {DashboardItem} from "../interfaces/interfaces";
+import {selectTotalizerRoleByCode} from "../repository/totalizer.role.repository.ts";
+import {calculateTotals} from "./calculate.totalizer.ts";
+import {synchronizationAllTotalizerRole} from "./totalizer.role.controller.ts";
 
 /**
  * Método responsável por retornar a transação persistida internamente para ser utilizada como referência.
@@ -40,8 +44,8 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
     let login = await getUserLoginEncrypt();
     transaction = await selectTransactionById(login, transaction.Id) ?? transaction;
         
-    transaction.Operation = await loadInternalOperation(transaction.Operation ?? {} as I.Operation);
-    transaction.Portfolio = await loadInternalPortfolio(transaction.Portfolio ?? {} as I.Portfolio);
+    transaction.Operation = await loadInternalOperation(transaction.Operation);
+    transaction.Portfolio = await loadInternalPortfolio(transaction.Portfolio);
 
     if (transaction.DestinationPortfolio !== null)
         transaction.DestinationPortfolio = await loadInternalPortfolio(transaction.DestinationPortfolio);
@@ -58,6 +62,11 @@ export const loadInternalTransaction = async (transaction: I.Transaction): Promi
     return internalTransaction;
 }
 
+export const loadDashboardTransactionFromCategory = async (dateInicio: Date, dateFim: Date, operationType: number): Promise<DashboardItem[]> => {
+    let login = await getUserLoginEncrypt();
+    return await selectDashboardTransactionGroupByMonthAndCategory(login, dateInicio, dateFim, operationType);
+}
+
 export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
     let responseTransactions = {} as I.Response;
 
@@ -71,8 +80,8 @@ export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDa
     return responseTransactions;
 }
 
-export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
-    
+export const synchronizationAllOTransaction = async (mountDateInicio: Date, mountDateFim: Date): Promise<I.Response | null> => {
+    console.log("inicio sync transaction");
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(mountDateInicio, mountDateFim, constants.operations.transaction);
 
     let params = `DataCriacaoInicio=${Moment(mountDateInicio).format('YYYY-MM-DD HH:mm:ss')}&DataCriacaoFim=${Moment(mountDateFim).format('YYYY-MM-DD HH:mm:ss')}&LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -81,30 +90,41 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
     if (response && !response.isLogged)
         return response;
 
-    var transactions = response?.data ?? [];
+    let transactions = response?.data ?? [];
 
     let login = await getUserLoginEncrypt();
     for (const item of transactions) {
-        var transaction = await selectTransactionById(login, item.Id);
-        
-        item.Operation = await loadInternalOperation(item.Operation?? {} as I.Operation);
-        item.Portfolio = await loadInternalPortfolio(item.Portfolio ?? {} as I.Portfolio);
-        
+
+        item.Operation = await loadInternalOperation(item.Operation);
+        item.Portfolio = await loadInternalPortfolio(item.Portfolio);
+
         if (item.DestinationPortfolio !== undefined && item.DestinationPortfolio !== null)
             item.DestinationPortfolio = await loadInternalPortfolio(item.DestinationPortfolio);
-        
+
         if (item.ParentTransaction !== undefined && item.ParentTransaction !== null)
             item.ParentTransaction = await loadInternalTransaction(item.ParentTransaction ?? {} as I.Transaction);
-        
+
+        let transaction = await selectTransactionById(login, item.Id);
         if (transaction === undefined) {
-            let transaction: I.Transaction = await insertTransaction(login, item);
+            transaction = await insertTransaction(login, item);
         } else {
             item.InternalId = transaction.InternalId;
-            await updateTransaction(item);
+            transaction = await updateTransaction(item);
         }
     }
 
-    await setLastSynchronization(synchronization);
+    if (response?.isConnected)
+        await setLastSynchronization(synchronization);
+    console.log("fim sync transaction");
+    return response;
+}
+
+export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Date, pageNumber: Number): Promise<I.Response> => {
+
+    let response = await synchronizationAllOTransaction(mountDateInicio, mountDateFim);
+    if (response && !response.isLogged)
+        return response;
+    
     return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
 }
 
@@ -126,6 +146,14 @@ export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim
     return totals;
 }
 
+export const generateTotalsTransactions = async (transactions: I.Transaction[], totalizerCode: string): Promise<I.TransactionTotals> => {
+    //Busca as operation roles do totalizer
+    let login = await getUserLoginEncrypt();
+    let totalizerRoles = await selectTotalizerRoleByCode(login, totalizerCode);
+    
+    return calculateTotals(transactions, totalizerRoles);
+}
+
 export const createTransaction = async (transaction: I.Transaction): Promise<I.Response> => {
     let response = await postTransaction(transaction);
 
@@ -137,12 +165,7 @@ export const createTransaction = async (transaction: I.Transaction): Promise<I.R
     if (transaction.Operation.InternalId === undefined)
         transaction.Operation = await loadInternalOperation(response.data.Operation);
 
-    if (!response.isConnected) {
-        let login = await getUserLoginEncrypt();
-        transaction = await insertTransaction(login, transaction);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
+    if (response.data !== null){
         let login = await getUserLoginEncrypt();
         transaction = await insertTransaction(login, response.data);
     }
@@ -163,13 +186,7 @@ export const alterTransaction = async (sourceTransaction: I.Transaction, transac
     if (transaction.Operation.InternalId === undefined)
         transaction.Operation = await loadInternalOperation(transaction.Operation);
 
-    if (!response.isConnected) {
-        transaction = await updateTransaction(transaction);
-        await calculateBalanceByTransactionFromUpdate(sourceTransaction, transaction);
-        
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
+    if (response.data !== null){
         transaction = await updateTransaction(response.data);
         await calculateBalanceByTransactionFromUpdate(sourceTransaction, transaction);
     }
@@ -197,13 +214,7 @@ export const excludeTransaction = async (transaction: I.Transaction): Promise<I.
     if (response && !response.isLogged)
         return response;
 
-    if (!response.isConnected) {
-        await deleteInternalTransaction(transaction.InternalId);
-        await calculateBalanceByTransactionFromUpdate(transaction, null);
-        
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data){
+   if (response.data){
         await deleteInternalTransaction(transaction.InternalId);
         await calculateBalanceByTransactionFromUpdate(transaction, null);
     }

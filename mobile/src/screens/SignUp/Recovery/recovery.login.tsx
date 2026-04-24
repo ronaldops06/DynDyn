@@ -1,12 +1,10 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import React, {useEffect, useState} from 'react';
+import {Alert, Image, SafeAreaView, Text, View} from "react-native";
 
 import StepIndicator from "../../../components/StepIndicator";
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getRecoveryStyle} from "./styles";
-import {getStyle} from "../../../styles/styles";
-import {getStyleCadastro} from "../../../styles/styles.cadastro";
 import TextInput from "../../../components/CustomTextInput";
 import {executeLoginPasswordRecovery} from "../../../controller/user.controller.tsx";
 import Button from "../../../components/Button";
@@ -14,8 +12,6 @@ import Button from "../../../components/Button";
 const RecoveryLogin = ({navigation, route}) => {
     const {theme} = useTheme();
     const recoveryStyle = getRecoveryStyle(theme);
-    const styleCadastro = getStyleCadastro(theme);
-    const style = getStyle(theme);
 
     const [step, setStep] = useState(1);
     const [email, setEmail] = useState("");
@@ -63,6 +59,7 @@ const RecoveryLogin = ({navigation, route}) => {
                         text={"Email"}
                         value={email}
                         setValue={setEmail}
+                        isMoveText
                     />
                 </View>
                 <View style={recoveryStyle.areaButtonValidate}>

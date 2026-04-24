@@ -9,6 +9,15 @@ export const getCardStyle = (theme) => StyleSheet.create({
         padding: 15,
         minHeight: 70
     },
+    cardNarrow: {
+        flexDirection: "column",
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderColor: theme.colors.primaryBorderColor,
+        borderWidth: 1,
+        borderRadius: 8,
+        padding: 15,
+        minHeight: 40
+    },
     cardBackground: {
         marginBottom: 5,
         borderRadius: 8,
@@ -41,6 +50,10 @@ export const getCardStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextColor,
         fontSize: 15,
         fontFamily: "Open Sans"
+    },
+    textNameDanger: {
+        ...this.textName,
+        color: theme.colors.dangerTextColor,
     },
     boxEnd: {
         flexDirection: "row",
