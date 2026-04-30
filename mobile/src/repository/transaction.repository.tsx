@@ -1,9 +1,19 @@
 import Moment from 'moment';
+import SQLite from "react-native-sqlite-storage";
 
 import {constants} from "../constants";
 import {TypesTransaction} from '../enums/enums';
-import {Portfolio, Category, Operation, Transaction, TransactionTotals, TransactionView} from "../interfaces/interfaces";
+import {
+    Portfolio,
+    Category,
+    Operation,
+    Transaction,
+    TransactionTotals,
+    TransactionView,
+    DashboardItem, OperationRole
+} from "../interfaces/interfaces";
 import {openDatabase} from "./database";
+import operation from "../screens/Operation";
 
 export const createTableTransaction = async () => {
     const db = await openDatabase();
@@ -83,7 +93,7 @@ export const insertTransaction = async (userLogin: string, transaction: Transact
     );
 
     transaction.InternalId = result[0].insertId;
-
+    
     return transaction;
 };
 
@@ -273,6 +283,40 @@ export const selectTransactionByInternalId = async (userLogin: string, internalI
     return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
+export const selectDashboardTransactionGroupByMonthAndCategory = async (userLogin: string, dateInicio: Date, dateFim: Date, operationType: number): Promise<DashboardItem[]> => {
+    const db = await openDatabase();
+    
+    const results = await db.executeSql(
+        'SELECT cat.name label' +
+        '     , ROUND(SUM(trn.value), 2) value' +
+        '  FROM transactions trn' +
+        '     , operations   ope' +
+        '     , categories   cat' +
+        ' WHERE trn.operation_id = ope.internal_id' +
+        '   AND ope.category_id  = cat.internal_id' +
+        '   AND ope.salary       = 0' +
+        '   AND trn.reference    = ?' +
+        '   AND trn.data_criacao BETWEEN ? AND ?' +
+        '   AND ope.type         = ?'+
+        ' GROUP BY cat.name',
+        [userLogin,
+            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'), 
+            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
+            operationType
+        ]
+    );
+
+    const dashboardItens: DashboardItem[] = [];
+        
+    results.forEach(result => {
+        for (let i = 0; i < result.rows.length; i++) {
+            dashboardItens.push(formatResultDashboard(result.rows.item(i)));
+        }
+    });
+    
+    return dashboardItens;
+}
+
 export const existsTransactionRelationshipOperation = async (userLogin: string, operationInternalId: number): Promise<boolean> => {
     const db = await openDatabase();
 
@@ -322,6 +366,11 @@ const queryBase = () => {
         + '     , ope_cat.status AS ope_cat_status'
         + '     , ope_cat.data_criacao AS ope_cat_data_criacao'
         + '     , ope_cat.data_alteracao AS ope_cat_data_alteracao'
+        + '     , (SELECT group_concat(ope_rol.name, \';\')'
+        + '          FROM operation_roles       ope_rol,'
+        + '               operations_roles_link link'
+        + '         WHERE ope_rol.internal_id = link.operation_role_id'
+        + '           AND link.operation_id   = ope.internal_id) AS ope_roles'
         + '     , act.internal_id AS portfolio_internal_id'
         + '     , act.id AS portfolio_id'
         + '     , act.name AS portfolio_name'
@@ -442,7 +491,8 @@ const formatResult = (item: any): Transaction => {
                 DataAlteracao: item.ope_cat_data_alteracao
             },
             DataCriacao: item.operation_data_criacao,
-            DataAlteracao: item.operation_data_alteracao
+            DataAlteracao: item.operation_data_alteracao,
+            Roles: item.ope_roles
         }
     };
 
@@ -534,4 +584,13 @@ const formatResultTotals = (rows: any): TransactionTotals => {
     }
 
     return transactionTotals;
+}
+
+const formatResultDashboard = (row: any): DashboardItem => {
+    const dashboardItem: DashboardItem = {
+        Label: row.label,
+        Value: row.value,
+    }
+
+    return dashboardItem;
 }

@@ -5,7 +5,10 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         justifyContent: "center",
-        marginBottom: 20,
+    },
+    areaCalculator: {
+        flexDirection: "row",
+        justifyContent: "center",
     },
     buttonMinus: {
         width: 35,
@@ -21,6 +24,7 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryBaseColor
     },
     inputValue: {
+        marginTop: -20,
         fontSize: 24,
         fontFamily: "Open Sans",
         alignSelf: "center"
@@ -102,6 +106,9 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
     areaTimes: {
         flexDirection: "column",
         width: "40%",
-        marginLeft: 10
+        marginLeft: 60
     },
+    areaChecks: {
+        flexDirection: "row"
+    }
 });

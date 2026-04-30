@@ -7,23 +7,28 @@ interface ButtonProps {
     label: string,
     onPress: any,
     disabled?: boolean | false,
-    loading?: boolean | false
+    loading?: boolean | false,
+    type?: string | 'primary'
 }
 
 const Button = (props: ButtonProps) => {
     const { theme } = useTheme();
     const styleCadastro = getStyleCadastro(theme);
     
+    const {
+        type = 'primary'
+    } = props;
+    
     return (
         <TouchableOpacity
-            style={styleCadastro.buttonSave}
+            style={type === 'primary' ? styleCadastro.buttonSave : styleCadastro.secondaryButton}
             onPress={props.onPress}
             disabled={props.disabled}
         >
             {props.loading && 
                 <ActivityIndicator size="small" color={theme.colors.tertiaryTextColor} />
             }
-            <Text style={styleCadastro.textButtonSave}>{props.label}</Text>
+            <Text style={type === 'primary' ? styleCadastro.textButtonSave : styleCadastro.textSecondaryButton }>{props.label}</Text>
         </TouchableOpacity>
     );
 }

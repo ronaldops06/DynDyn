@@ -92,7 +92,7 @@ const ChangePassword = ({navigation, route}) => {
                             value={oldPassword}
                             setValue={setOldPassword}
                             secureTextEntry={!showOldPassword}
-                            icon={showOldPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                            icon={showOldPassword ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                             onPressIcon={() => setShowOldPassword(!showOldPassword)}
                         />
                         <TextInput
@@ -100,7 +100,7 @@ const ChangePassword = ({navigation, route}) => {
                             value={newPassword}
                             setValue={setNewPassword}
                             secureTextEntry={!showPassword}
-                            icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                            icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                             onPressIcon={() => setShowPassword(!showPassword)}
                         />
                         <TextInput
@@ -108,7 +108,7 @@ const ChangePassword = ({navigation, route}) => {
                             value={newPasswordConfirm}
                             setValue={setNewPasswordConfirm}
                             secureTextEntry={!showPasswordConfirm}
-                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                            icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                             onPressIcon={() => setShowPasswordConfirm(!showPasswordConfirm)}
                         />
                     </View>

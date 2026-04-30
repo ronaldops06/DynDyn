@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="24"
+     height="24"
+     viewBox="0 0 24 24"
+     fill="#000">
+
+  <!-- Ícone filter_list-->
+  <path d="M0 0h24v24H0z" fill="none"/>
+  <path
+    d="M10 18h4v-2h-4v2zM3 6v2h18V6H3zm3 7h12v-2H6v2z"
+  />
+
+  <!-- Badge amarelo -->
+  <circle cx="19" cy="5" r="5" fill="#FACC15"/>
+
+  <!-- Exclamação -->
+  <rect x="18.5" y="3.2" width="1" height="3" fill="#000"/>
+  <circle cx="19" cy="7.1" r="0.7" fill="#000"/>
+
+</svg>

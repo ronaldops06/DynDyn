@@ -25,7 +25,7 @@ export const getCustomTextInputStyle = (theme) => StyleSheet.create({
     },
     input: {
         fontSize: 16,
-        height: 40,
+        height: 55,
         color: theme.colors.primaryTextColor,
         flex: 1,
     },

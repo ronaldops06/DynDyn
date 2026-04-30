@@ -2,7 +2,13 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 
 import CustomTabBar from '../components/CustomTabBar';
-import {AccountStack, CategoryStack, HomeStack, OperationStack, TransactionStack} from './MainStack.tsx'
+import {
+    AccountStack,
+    CategoryStack,
+    HomeStack,
+    OperationStack,
+    TransactionStack
+} from './MainStack.tsx'
 import {hideTabOnScreens} from "./navigation.utils.ts";
 
 type TabNavigatorParamList = {
@@ -23,9 +29,13 @@ const MainTab = () => {
             }}
             tabBar={props => <CustomTabBar {...props} />}
         >
-            <Tab.Screen name="Home" component={HomeStack}/>
+            <Tab.Screen name="Home" component={HomeStack} options={hideTabOnScreens(['TransactionCreate'])}/>
             <Tab.Screen name="Account" component={AccountStack} options={hideTabOnScreens(['AccountCreate'])}/>
-            <Tab.Screen name="Transaction" component={TransactionStack} options={hideTabOnScreens(['TransactionCreate'])}/>
+            <Tab.Screen 
+                name="Transaction" 
+                component={TransactionStack} 
+                options={hideTabOnScreens(['TransactionCreate'])}
+            />
             <Tab.Screen name="Category" component={CategoryStack} options={hideTabOnScreens(['CategoryCreate'])}/>
             <Tab.Screen name="Operation" component={OperationStack} options={hideTabOnScreens(['OperationCreate'])}/>
         </Tab.Navigator>

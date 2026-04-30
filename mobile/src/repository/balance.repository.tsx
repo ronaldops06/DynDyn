@@ -1,6 +1,5 @@
 import {openDatabase} from "./database.ts";
 import {Balance, BalanceTotals, DashboardItem} from "../interfaces/interfaces.tsx";
-import Moment from "moment/moment";
 import {constants} from "../constants";
 import {ResultSet, Transaction} from "react-native-sqlite-storage";
 
@@ -244,11 +243,11 @@ export const selectAllBalances = async (userLogin: string, pageNumber: number | 
         results = await db.executeSql(queryBase() + ' ORDER BY bal.month, bal.year', [userLogin,]);
 
     const balances: Balance[] = [];
-    results.forEach(result => {
+    for (const result of results) {
         for (let i = 0; i < result.rows.length; i++) {
-            balances.push(formatResult(result.rows.item(i)));
+            balances.push(await formatResult(result.rows.item(i)));
         }
-    });
+    }
 
     return balances;
 };
@@ -279,17 +278,17 @@ export const selectTotalsByTreePortfolio = async (userLogin: string, internalPor
         '     FROM portfolios' +
         '    WHERE internal_id = ?' +
         '    UNION ALL' +
-        '   SELECT act.internal_id, act.parent_portfolio_id' +
-        '     FROM portfolios act' +
-        '    INNER JOIN portfolio_hierarchy act_hrc ON act.parent_portfolio_id = act_hrc.internal_id' +
+        '   SELECT act_int.internal_id, act_int.parent_portfolio_id' +
+        '     FROM portfolios act_int' +
+        '    INNER JOIN portfolio_hierarchy act_hrc ON act_int.parent_portfolio_id = act_hrc.internal_id' +
         ')' +
-        '   SELECT SUM(blc.value) AS value' +
+        '   SELECT ROUND(SUM(blc.value), 2) AS value' +
         '     FROM portfolio_hierarchy act' +
         '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id' +
         '    WHERE blc.reference = ?'
         , [internalPortfolioId, userLogin]
     );
-
+    
     return result[0]?.rows.length > 0 ? formatResultTotals(result[0]?.rows?.item(0)) : undefined;
 };
 
@@ -297,7 +296,7 @@ export const selectBalanceById = async (userLogin: string, id: number): Promise<
     const db = await openDatabase();
 
     const result = await db.executeSql(queryBase() + ' AND bal.id = ?', [userLogin, id]);
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    return result[0]?.rows.length > 0 ? await formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
 export const selectBalanceByBalanceMonthAndYear = async (userLogin: string, internalPortfolioId: number, month: number, year: number): Promise<Balance | undefined> => {
@@ -311,8 +310,8 @@ export const selectBalanceByBalanceMonthAndYear = async (userLogin: string, inte
             month,
             year,
             internalPortfolioId]);
-
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    
+    return result[0]?.rows.length > 0 ? await formatResult(result[0]?.rows?.item(0)) : undefined;
 }
 
 export const selectDashboardBalanceGroupByMonth = async (userLogin: string, year: number, month: number): Promise<DashboardItem[]> => {
@@ -331,7 +330,7 @@ export const selectDashboardBalanceGroupByMonth = async (userLogin: string, year
         ')' +
         '   SELECT blc.year' +
         '        , blc.month' +
-        '        , SUM(blc.value) AS value' +
+        '        , ROUND(SUM(blc.value), 2) AS value' +
         '     FROM portfolio_hierarchy act' +
         '    INNER JOIN balances blc ON act.internal_id = blc.portfolio_id' +
         '    WHERE blc.reference  = ?' +
@@ -381,8 +380,8 @@ const queryBase = () => {
         + ' WHERE bal.reference = ?';
 };
 
-const formatResult = (item: any): Balance => {
-    const balance: Balance = {
+const formatResult = async (item: any): Promise<Balance> => {
+    return {
         InternalId: item.internal_id,
         Id: item.id,
         Value: item.value,
@@ -423,8 +422,6 @@ const formatResult = (item: any): Balance => {
         DataCriacao: item.data_criacao,
         DataAlteracao: item.data_alteracao
     };
-
-    return balance;
 };
 
 const formatResultTotals = (row: any): BalanceTotals => {

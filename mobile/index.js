@@ -3,40 +3,16 @@
  */
 
 import messaging from '@react-native-firebase/messaging';
-import { AppRegistry } from 'react-native';
+import {AppRegistry} from 'react-native';
 import App from './App';
-import { name as appName } from './app.json';
-import notifee from "@notifee/react-native";
+import {name as appName} from './app.json';
 import BackgroundFetch from 'react-native-background-fetch';
-import {loadAllTrash} from "./src/controller/synchronization.controller";
 
-const handleNotification = async (data) => {
-    
-    await notifee.createChannel({
-        id: 'default',
-        name: 'Notificações padrão',
-    });
-    
-    await notifee.displayNotification({
-        title: data.title,
-        body: data.body,
-        android: {
-            channelId: 'default',
-        },
-    });
-}
+import {backgroundFetchHandler, backgroundMessageHandler, onMessageHandler,} from './src/background/handlers';
 
-messaging().onMessage(async remoteMessage => {
-    await handleNotification(remoteMessage?.data);
-});
+messaging().onMessage(onMessageHandler);
+messaging().setBackgroundMessageHandler(backgroundMessageHandler);
 
-messaging().setBackgroundMessageHandler(async remoteMessage => {
-    await handleNotification(remoteMessage?.data);
-});
-
-BackgroundFetch.registerHeadlessTask(async (event) => {
-    await loadAllTrash();
-    BackgroundFetch.finish(event.taskId);
-});
+BackgroundFetch.registerHeadlessTask(backgroundFetchHandler);
 
 AppRegistry.registerComponent(appName, () => App);

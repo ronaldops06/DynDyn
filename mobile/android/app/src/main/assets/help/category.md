@@ -24,4 +24,4 @@ Clique e **arraste a categoria para a esquerda** para alterar o status atual (at
 Clique e **arraste a categoria para a direita** para excluir.
 
 > Caso a categoria a ser excluída esteja associada a alguma conta ou operação, não será possível excluir.
-> Mas será exibida uma mensagem de alerta informando a situação.~~
+> Mas será exibida uma mensagem de alerta informando a situação.

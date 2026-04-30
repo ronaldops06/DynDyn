@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import {TypesTransaction} from '../../enums/enums';
+import {Situation, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
 
 import NavNextIcon from '../../assets/nav_next.svg';
@@ -12,12 +12,12 @@ import {
     alterTransaction,
     excludeTransaction,
     executeRecurringTransaction,
+    generateTotalsTransactions,
     loadAllTransactionsInternal,
-    loadAndPersistAll,
-    loadTotalsTransactions
+    loadAndPersistAll
 } from '../../controller/transaction.controller';
 import CustomScroll from "../../components/CustomScroll";
-import {validateLogin} from "../../utils.ts";
+import {filterDynamic, hasAnyFilter, validateLogin} from "../../utils.ts";
 import {constants} from "../../constants";
 import {constants as pageConstants} from "../../components/Page/constants";
 import TransactionItem from "./TransactionItem";
@@ -27,6 +27,7 @@ import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getTransactionStyle} from './styles';
 import {PageProcess} from "../../components/Page";
+import Filter from './Filter';
 
 const months = [
     'Janeiro',
@@ -50,6 +51,7 @@ const Transaction = ({navigation, route}) => {
 
     const [loading, setLoading] = useState(false);
     const isFirstRender = useRef(true);
+    const [filter, setFilter] = useState<I.TransactionFilter>({} as I.TransactionFilter);
     const [transactions, setTransactions] = useState<I.Transaction[]>([]);
     const [transactionsGroup, setTransactionsGroup] = useState<I.TransactionsGroup[]>([]);
     const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>({} as I.TransactionTotals);
@@ -61,7 +63,6 @@ const Transaction = ({navigation, route}) => {
     const [isScrolling, setIsScrolling] = useState(false);
     const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
-    const [showModalHelp, setShowModalHelp] = useState(false);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -103,13 +104,11 @@ const Transaction = ({navigation, route}) => {
             setTotalPages(responseTransactions?.totalPages ?? 1);
             appendTransactions(responseTransactions?.data ?? []);
 
-            if (loadTotals) {
-                let responseTotals = await loadTotalsTransactions(mountDateInicio, mountDateFim, false);
-                setTransactionTotals(responseTotals);
-            }
+            /*if (loadTotals) {
+                calculeTotals(transactions);
+            }*/
         }
         setLoading(false);
-        setIsLoadInternal(false);
     };
 
     useEffect(() => {
@@ -168,13 +167,70 @@ const Transaction = ({navigation, route}) => {
         setTransactionsGroup(transactionsGroup);
     }
 
-    const sorting = (transactions: I.Transaction[]): I.Transaction[] => {
+    const sortingData = (transactions: I.Transaction[]): I.Transaction[] => {
 
         let unconsolidated = [...transactions.filter(x => !x.Consolidated ?? false).sort((a, b) => new Date(a.DataCriacao) - new Date(b.DataCriacao))] ?? [];
 
         let consolidated = [...transactions.filter(x => x.Consolidated).sort((a, b) => new Date(b.DataCriacao) - new Date(b.DataCriacao))] ?? [];
 
         return [...unconsolidated, ...consolidated];
+    }
+
+    const filterData = (transactions: I.Transaction[]): I.Transaction[] => {
+        let result = transactions.filter((item) => {
+            return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
+        });
+
+        if (filter.Situation !== undefined && filter.Situation !== Situation.All) {
+            result = result.filter(item => {
+                return filter.Situation !== Situation.All ? item.Consolidated === (filter.Situation === Situation.Consolidated) : item;
+            });
+        }
+
+        if (filter.CategoryId) {
+            result = result.filter(item => {
+                return filter.CategoryId !== 0 ? item.Operation.Category.Id === filter.CategoryId : item;
+            })
+        }
+
+        if (filter.OperationId) {
+            result = result.filter(item => {
+                return filter.OperationId !== 0 ? item.Operation.Id === filter.OperationId : item;
+            })
+        }
+
+        if (filter.PortfolioId) {
+            result = result.filter(item => {
+                return filter.PortfolioId !== 0 ?
+                    item.Portfolio.Id === filter.PortfolioId || item.DestinationPortfolio?.Id === filter.PortfolioId :
+                    item;
+            })
+        }
+
+        if (filter.ValueFilter) {
+            result = filterDynamic(result, i => i.Value, filter.ValueFilter.Operator, filter.ValueFilter.Value);
+        }
+
+        if (filter.Search && filter.Search !== "") {
+            result = result.filter(item => {
+                return item.Operation.Name.toLowerCase().includes(filter.Search) ||
+                    item.Observation.toLowerCase().includes(filter.Search);
+            })
+        }
+
+        calculeTotals(result);
+        
+        return result;
+    }
+    
+    const calculeTotals = async (values: I.Transaction[]): Promise<void> => {
+        let responseTotalsRev = await generateTotalsTransactions(values, constants.totalizerCode.transactionRevenue.Id);
+        let responseTotalsExp = await generateTotalsTransactions(values, constants.totalizerCode.transactionExpense.Id);
+
+        let responseTotals = responseTotalsRev;
+        responseTotals.CreditTotal += responseTotalsExp.CreditTotal;
+        responseTotals.DebitTotal += responseTotalsExp.DebitTotal;
+        setTransactionTotals(responseTotals);
     }
 
     const handleLeftDateClick = () => {
@@ -221,7 +277,7 @@ const Transaction = ({navigation, route}) => {
             else
                 navigation.navigate("Transaction", {
                     screen: 'TransactionCreate',
-                    params: {isEditing: true, data: data}
+                    params: {isEditing: true, data: data, sourceScreen: 'Transaction'}
                 });
         }
     }
@@ -271,10 +327,10 @@ const Transaction = ({navigation, route}) => {
                     text: "Sim",
                     onPress: async () => {
 
-                        var prevtransactions = {...data};
+                        var prevTransaction = {...data};
 
                         data.Consolidated = !data.Consolidated;
-                        let response = await alterTransaction(prevtransactions, data);
+                        let response = await alterTransaction(prevTransaction, data);
                         validateLogin(response, navigation);
 
                         //Atualiza a transação alterada para que fique certa na tela e não seja necessário recarregar
@@ -318,7 +374,7 @@ const Transaction = ({navigation, route}) => {
     const handleNewClick = () => {
         navigation.navigate("Transaction", {
             screen: 'TransactionCreate',
-            params: {isEditing: false, data: null}
+            params: {isEditing: false, data: null, sourceScreen: 'Transaction'}
         });
     }
 
@@ -357,7 +413,7 @@ const Transaction = ({navigation, route}) => {
             titleActions={
                 <TouchableOpacity style={style.titleScreenMoreInfo}
                                   onPress={handleRecurringAndInstallmentPaymentsClick}>
-                    <CurrencyExchangeIcon width="24" height="24" fill={theme.colors.primaryIcon}/>
+                    <CurrencyExchangeIcon width="22" height="22" fill={theme.colors.primaryIcon}/>
                 </TouchableOpacity>
             }
             headerContent={
@@ -374,8 +430,8 @@ const Transaction = ({navigation, route}) => {
                         <NavNextIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
                     </TouchableOpacity>
                 </View>
-            }>
-            <>
+            }
+            topBodyArea={
                 <View style={transactionStyle.viewTotais}>
                     <View style={transactionStyle.cardTotais}
                           onTouchEndCapture={() => setTypeSelected(TypesTransaction.Revenue)}>
@@ -400,10 +456,19 @@ const Transaction = ({navigation, route}) => {
                             style={[transactionStyle.textPersentTotais, transactionStyle.textSaldo]}>{(transactionTotals?.Credit ? ((transactionTotals?.Credit ?? 0) - (transactionTotals?.Debit ?? 0)) * 100 / (transactionTotals?.Credit ?? 0) : 0).toFixed(2)}%</Text>
                     </View>
                 </View>
+            }
+            renderFilters={(closeModal) => (
+                <Filter
+                    filter={filter}
+                    setFilter={setFilter}
+                    onClose={closeModal}
+                />
+            )}
+            filterActivated={hasAnyFilter(filter)}
+        >
+            <>
                 <CustomScroll
-                    data={sorting(transactions).filter((item) => {
-                        return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
-                    })}
+                    data={sortingData(filterData(transactions))}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}

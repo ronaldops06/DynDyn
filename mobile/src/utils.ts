@@ -3,14 +3,14 @@ import sha256 from 'crypto-js/sha256';
 import {constants} from "./constants";
 import Moment from "moment/moment";
 import EncryptedStorage from "react-native-encrypted-storage";
+import NetInfo from '@react-native-community/netinfo';
 
 export function isEndScroll(event: any) {
     let mHeight = event.nativeEvent.layoutMeasurement.height;
     let cSize = event.nativeEvent.contentSize.height;
     let Y = event.nativeEvent.contentOffset.y;
 
-    if (Math.ceil(mHeight + Y) >= cSize) return true;
-    return false;
+    return (Math.ceil(mHeight + Y) >= cSize);
 }
 
 export const validateLogin = (response: I.Response, navigation: any) => {
@@ -21,7 +21,7 @@ export const validateLogin = (response: I.Response, navigation: any) => {
 export const validateSuccess = (response: I.Response, navigation: any, screem: string) => {
     if (response.success) {
         if (screem)
-            navigation.popTo(screem, { actionNavigation: constants.actionNavigation.reload });
+            navigation.popTo(screem, {actionNavigation: constants.actionNavigation.reload});
         else
             navigation.goBack();
     }
@@ -49,7 +49,7 @@ export const getUserByStorage = async (): Promise<I.User | null> => {
 
 export const getUserLoginEncrypt = async (): Promise<string> => {
     let user = await getUserByStorage();
-    
+
     if (user)
         return encrypt(user.Login);
 }
@@ -61,3 +61,48 @@ export const encrypt = async (value: string): Promise<string> => {
 export const getDate = (): Date => new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'));
 
 export const toLocalDate = (date): Date => Moment.parseZone(date, 'DD/MM/YYYY HH:mm:ss').toDate();
+
+export const isInternetConnected = async (): Promise<boolean> => {
+    const state = await NetInfo.fetch();
+    return state.isConnected ?? false;
+};
+
+export type Operator = '>' | '>=' | '<' | '<=' | '=' | '!=';
+
+const operators: Record<Operator, (a: number, b: number) => boolean> = {
+    '>': (a, b) => a > b,
+    '>=': (a, b) => a >= b,
+    '<': (a, b) => a < b,
+    '<=': (a, b) => a <= b,
+    '=': (a, b) => a === b,
+    '!=': (a, b) => a !== b,
+};
+
+export const filterDynamic = <T>(
+    data: T[],
+    getter: (item: T) => number | undefined,
+    operator: Operator,
+    value: number
+): T[] => {
+    if (!operator || (value == undefined)) return data;
+
+    return data.filter(item =>
+        operators[operator](getter(item), value)
+    );
+};
+
+export const hasAnyFilter = (filter: Record<string, any>) =>
+    Object.entries(filter).some(item => {
+        if (typeof item[1] === 'string') {
+            return item[1].trim().length > 0;
+        } else if (typeof item[1] === 'number') {
+            if (item[0].slice(-2) === 'Id')
+                return item[1] > 0;
+            else
+                return item[1] > -1;
+        } else if (typeof item[1] === 'boolean') {
+            return Boolean(item[1]);
+        } else if (item[0] === 'ValueFilter') {
+            return (item[1]?.Operator && (item[1]?.Value != undefined))
+        }
+    });

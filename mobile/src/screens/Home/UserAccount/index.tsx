@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {SafeAreaView, Text, TouchableOpacity, View, Switch, Alert} from "react-native";
+import {Alert, SafeAreaView, Switch, Text, TouchableOpacity, View} from "react-native";
 import DeviceInfo from 'react-native-device-info';
 
 import {getAccountUserStyles} from "./styles";

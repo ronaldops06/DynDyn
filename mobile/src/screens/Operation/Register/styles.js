@@ -1,0 +1,42 @@
+import {StyleSheet} from "react-native";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+
+export const getOperationCreateStyle = (theme) => StyleSheet.create({
+    areaFields: {
+      ...getStyleCadastro(theme).areaFields,
+      marginTop: 40,  
+    },
+    areaButtonSave: {
+        ...getStyleCadastro(theme).areaButtonSave,
+        marginTop: 40,
+    },
+    areaCheckbox: {
+        ...getStyleCadastro(theme).areaCheckbox,
+        marginTop: 30,
+    },
+    buttonAddRole: {
+        backgroundColor: theme.colors.primaryBaseColor,
+        height: 40,
+        marginTop: 20,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center"
+    },
+    scrollRoles: {
+        minHeight: 50,
+        maxHeight: 150
+    },
+    areaRoles: {
+        minHeight: 50,
+        marginTop: 10,
+        flexDirection: "row",
+        flexWrap: "wrap",
+        paddingHorizontal: 10,
+        borderTopWidth: 1,
+        borderTopColor: theme.colors.tertiaryBorderColor + "21",
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.tertiaryBorderColor + "21",
+    }
+});

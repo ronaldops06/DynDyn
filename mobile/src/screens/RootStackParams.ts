@@ -1,5 +1,4 @@
 import * as I from '../interfaces/interfaces';
-import {constants} from "../constants";
 
 export type RootStackParamList = { 
     Preload: undefined; 
@@ -19,8 +18,12 @@ export type RootStackParamList = {
     Transaction: undefined;
     TransactionCreate: {isEditing: boolean, data: I.Transaction | null } | undefined;
     Category: { actionNavigation: string } | undefined;
-    CategoryCreate: {isEditing: boolean, data: I.Category | null } | undefined;
+    CategoryCreate: {isEditing: boolean, data: I.Category | null, sourceScreen: string | null } | undefined;
     Operation: undefined;
     OperationCreate: {isEditing: boolean, data: I.Operation | null } | undefined;
+    OperationRole: undefined;
+    OperationRoleCreate: {isEditing: boolean, data: I.OperationRole | null } | undefined;
+    TotalizerRole: undefined;
+    TotalizerRoleCreate: {isEditing: boolean, data: I.TotalizerRole | null } | undefined;
     MainTab: undefined;
 };

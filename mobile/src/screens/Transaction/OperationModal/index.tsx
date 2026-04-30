@@ -15,7 +15,7 @@ interface OperationModalParams {
     show: boolean,
     setShow: any,
     setOperation: any,
-    tipoOperation: number
+    typeOperation: number
 }
 
 const OperationModal = (props: OperationModalParams) => {
@@ -29,14 +29,14 @@ const OperationModal = (props: OperationModalParams) => {
     const loadOperations = async () => {
         setLoading(true);
 
-        let response = await loadAllOperation(props.tipoOperation, null, true);
+        let response = await loadAllOperation(props.typeOperation, null, true);
         setOperations(response?.data ?? []);
         setLoading(false);
     };
 
     useEffect(() => {
         loadOperations();
-    }, [props.show == true]);
+    }, [props.show]);
 
     const handleCloseClick = () => {
         setOperations([]);

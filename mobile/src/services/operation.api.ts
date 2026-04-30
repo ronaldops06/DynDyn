@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import * as I from "../interfaces/interfaces.tsx";
-import {del, get, post, put} from "./api.ts";
+import {del, getPaginated, post, put} from "./api.ts";
 import {validateLogin} from "./helper.api.ts";
 
 export const validateResponse = (action: Action, response: I.Response) => {
@@ -24,7 +24,7 @@ export const validateResponse = (action: Action, response: I.Response) => {
 
 export const getOperations = async (params: string) => {
     let response = {} as I.Response;
-    response = await get(`Operation?${params}`);
+    response = await getPaginated(`Operation?${params}`);
 
     response = validateLogin(response);
     if (!response.isLogged)
@@ -58,7 +58,7 @@ export const putOperation = async (data: I.Operation): Promise<I.Response> => {
     response = validateLogin(response);
     if (!response.isLogged)
         return response;
-    
+
     if (!validateResponse(Action.Put, response)){
         response.data = null;
     }

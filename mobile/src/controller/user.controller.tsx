@@ -12,7 +12,7 @@ import EncryptedStorage from "react-native-encrypted-storage";
 import {deleteAllBalances} from "../repository/balance.repository.tsx";
 import {deleteAllPortfolios} from "../repository/portfolio.repository.tsx";
 import {deleteAllOperations} from "../repository/operation.repository.tsx";
-import {deleteAllCategories} from "../repository/category.repository.tsx";
+import {deleteAllCategories} from "../repository/category.repository";
 import {deleteAllSynchronizations} from "../repository/synchronization.repository.tsx";
 import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
 import {updateTokenCloudMessaging} from "./firebase.controller.tsx";

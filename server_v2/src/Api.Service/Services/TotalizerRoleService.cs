@@ -63,11 +63,7 @@ namespace Api.Service.Services
             totalizerRoleEntity = await _repository.InsertAsync(totalizerRoleEntity);
             
             model = mapper.Map<TotalizerRoleModel>(totalizerRoleEntity);
-            Console.WriteLine("model: ");
-            Console.WriteLine(JsonConvert.SerializeObject(model, new JsonSerializerSettings
-            {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            }));
+
             return model;
         }
 
@@ -108,9 +104,51 @@ namespace Api.Service.Services
             return result;
         }
         
-        public Task<TotalizerRoleModel> GenerateInitialByUser(UserModel user)
+        public async Task<List<TotalizerRoleModel>> GenerateInitialByUser(UserModel user, OperationRoleModel operationRoleModel)
         {
-            throw new NotImplementedException();
+            var totalizersModels = new List<TotalizerRoleModel>();
+            
+            var operationRoles = new List<OperationRoleModel>();
+            operationRoles.Add(operationRoleModel);
+            
+            var totalizerModel = new TotalizerRoleModel
+            {
+                Code = OperationRoleCodes.TransactionRevenue,
+                Type = TotalizerType.Discriminated,
+                OperationRoles = operationRoles,
+                UserId = user.Id
+            };
+
+            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModel);
+
+            totalizerModel.Code = OperationRoleCodes.TransactionExpense;
+            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModel);
+            
+            totalizerModel.Code = OperationRoleCodes.HomeRevenue;
+            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModel);
+            
+            totalizerModel.Code = OperationRoleCodes.HomeExpense;
+            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModel);
+                
+            return totalizersModels;
+        }
+
+        protected async Task<TotalizerRoleModel> GenerateInitialTotalizer(TotalizerRoleModel totalizerModel)
+        {
+            var totalizerEntityAux = await _repository.SelectByUkAsync(totalizerModel.UserId, totalizerModel.Code, totalizerModel.Type);
+
+            if (totalizerEntityAux != null)
+                throw new Exception("Totalizador não disponível.");
+            
+            var totalizerEntity = mapper.Map<TotalizerRoleEntity>(totalizerModel);
+            _repository.UnchangedParentTotalizerRole(totalizerEntity);
+            totalizerEntity = await _repository.InsertAsync(totalizerEntity);
+
+            return mapper.Map<TotalizerRoleModel>(totalizerEntity);
         }
     }
 }

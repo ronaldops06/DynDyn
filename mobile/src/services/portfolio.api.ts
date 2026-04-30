@@ -1,7 +1,7 @@
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import * as I from "../interfaces/interfaces.tsx";
 import {Alert} from "react-native";
-import {del, get, post, put} from "./api.ts";
+import {del, getPaginated, post, put} from "./api.ts";
 import {validateLogin} from "./helper.api.ts";
 
 export const validateResponse = (action: Action, response: I.Response) => {
@@ -24,7 +24,7 @@ export const validateResponse = (action: Action, response: I.Response) => {
 
 export const getPortfolios = async (params: string) => {
     let response = {} as I.Response;
-    response = await get(`Portfolio?${params}`);
+    response = await getPaginated(`Portfolio?${params}`);
     
     response = validateLogin(response);
     if (!response.isLogged)

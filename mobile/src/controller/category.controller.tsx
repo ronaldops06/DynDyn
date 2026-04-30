@@ -50,31 +50,43 @@ export const loadAllCategoryInternal = async (type: Number | null, pageNumber: N
     return response;
 }
 
-export const loadAllCategory = async (type: Number | null, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const synchronizationAllCategory = async (): Promise<I.Response | null> => {
+    console.log("inicio sync category");
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.category);
-    
+
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
-    
+
     let response = await getCategories(params);
 
     if (response && !response.isLogged)
         return response;
-    
-    var categories = response?.data ?? [];
+
+    let categories = response?.data ?? [];
 
     let login = await getUserLoginEncrypt();
     for (const item of categories) {
-        var category = await selectCategoryById(login, item.Id);
+        let category = await selectCategoryById(login, item.Id);
 
         if (category === undefined) {
             category = await insertCategory(login, item);
         } else {
             item.InternalId = category.InternalId;
-            await updateCategory(item);
+            category = await updateCategory(item);
         }
     }
+
+    if (response?.isConnected)
+        await setLastSynchronization(synchronization);
+    console.log("fim sync category");
+    return response;
+}
+
+export const loadAllCategory = async (type: Number | null, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+    let response = await synchronizationAllCategory();
+
+    if (response && !response.isLogged)
+        return response;
     
-    await setLastSynchronization(synchronization);
     return await loadAllCategoryInternal(type, pageNumber, activated);
 }
 
@@ -86,12 +98,7 @@ export const createCategory = async (category: I.Category): Promise<I.Response> 
     
     populateInternalFields(category, response);
 
-    if (!response.isConnected) {
-        let login = await getUserLoginEncrypt();
-        category = await insertCategory(login, category);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
+    if (response.data !== null){
         let login = await getUserLoginEncrypt();
         category = await insertCategory(login, response.data);
     }
@@ -107,11 +114,7 @@ export const alterCategory = async (category: I.Category): Promise<I.Response> =
 
     populateInternalFields(category, response);
 
-    if (!response.isConnected) {
-        category = await updateCategory(category);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
+    if (response.data !== null){
         category = await updateCategory(response.data);
     }
 
@@ -144,11 +147,7 @@ export const excludeCategory = async (categoryId: number, categoryInternalId: nu
     if (response && !response.isLogged)
         return response;
     
-    if (!response.isConnected) {
-        await deleteInternalCategory(categoryInternalId);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data){
+    if (response.data){
         await deleteInternalCategory(categoryInternalId);
     }
     

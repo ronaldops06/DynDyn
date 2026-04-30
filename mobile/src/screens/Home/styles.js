@@ -1,6 +1,10 @@
 import {StyleSheet} from "react-native";
 
 export const getHomeStyle = (theme) => StyleSheet.create({
+    row: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
     textUserArea: {
         flexDirection: "row",
         alignItems: "flex-end",
@@ -21,7 +25,6 @@ export const getHomeStyle = (theme) => StyleSheet.create({
         marginRight: 10
     },
     areaBalance: {
-        height: 180,
         marginTop: 30,
         marginHorizontal: 30,
         borderWidth: 1,
@@ -106,6 +109,7 @@ export const getHomeStyle = (theme) => StyleSheet.create({
     auxiliaryTextItem: {
         color: theme.colors.primaryTextDashboard,
         fontSize: 14,
+        maxWidth: 100
     },
     textArea: {
         marginTop: 30,
@@ -128,7 +132,18 @@ export const getHomeStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextDashboard,
         fontSize: 14,
     },
+    featureButtonPlus: {
+        width: 30,
+        height: 30,
+        borderRadius: 100,
+        borderWidth: 2,
+        borderColor: theme.colors.tertiaryBorderColor,
+        backgroundColor: theme.colors.secondaryBaseColor + "21",
+        alignItems: "center",
+        justifyContent: "center",
+    },
     areaChart: {
-        marginHorizontal: 20
+        marginHorizontal: 20,
+        minHeight: 157
     }
 });

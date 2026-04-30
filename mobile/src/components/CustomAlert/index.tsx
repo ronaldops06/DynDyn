@@ -1,6 +1,5 @@
 import { Alert } from 'react-native';
 
-
 export const CustomAlert = async (title: string, message: string, onPress: any) => {
     return (
         Alert.alert(title,
@@ -12,9 +11,7 @@ export const CustomAlert = async (title: string, message: string, onPress: any) 
                 },
                 {
                     text: "Sim",
-                    onPress: async () => {
-                        await onPress
-                    }
+                    onPress: onPress
                 }
             ],
             { cancelable: false }

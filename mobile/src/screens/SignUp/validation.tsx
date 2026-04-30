@@ -12,6 +12,7 @@ import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import {getValidationStyle} from "./validation.styles";
 import { getStyle } from "../../styles/styles"
 import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
+import Button from "../../components/Button";
 
 const Validation = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -145,12 +146,12 @@ const Validation = ({navigation, route}) => {
                     ))}
                 </View>
                 <View style={validationStyle.areaButtonValidate}>
-                    <TouchableOpacity
-                        style={styleCadastro.buttonSave}
+                    <Button
+                        label={"Validar"}
                         onPress={handleValidateClick}
-                    >
-                        <Text style={styleCadastro.textButtonSave}>Validar</Text>
-                    </TouchableOpacity>
+                        loading={loading}
+                        disabled={loading}
+                    />
                 </View>
                 <View style={validationStyle.areaResend}>
                     <Text style={validationStyle.resendText}>
@@ -161,11 +162,6 @@ const Validation = ({navigation, route}) => {
                         </Text>
                     </Text>
                 </View>
-                {loading && (
-                    <View style={style.overlay}>
-                        <ActivityIndicator size="large" color={theme.colors.primaryTextColor} />
-                    </View>
-                )}
             </View>
         </SafeAreaView>
     );

@@ -62,18 +62,19 @@ export const loadAllPortfolioInternal = async (pageNumber: Number | null, activa
     return response;
 }
 
-export const loadAllPortfolio = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const synchronizationAllPortfolio= async (): Promise<I.Response | null> => {
+    console.log("inicio sync portfolio");
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.portfolio);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
-    
+
     let response = await getPortfolios(params);
-    
+
     if (response && !response.isLogged)
         return response;
 
-    var portfolios = response?.data ?? [];
-    
+    let portfolios = response?.data ?? [];
+
     let login = await getUserLoginEncrypt();
     for (const item of portfolios) {
         item.Category = await loadInternalCategory(item.Category);
@@ -81,16 +82,26 @@ export const loadAllPortfolio = async (pageNumber: Number | null, activated: boo
         if (item.ParentPortfolio)
             item.ParentPortfolio = await loadInternalPortfolio(item.ParentPortfolio);
 
-        var portfolio = await selectPortfolioById(login, item.Id);
+        let portfolio = await selectPortfolioById(login, item.Id);
         if (portfolio === undefined) {
             portfolio = await insertPortfolio(login, item);
         } else {
             item.InternalId = portfolio.InternalId;
-            await updatePortfolio(item);
+            portfolio = await updatePortfolio(item);
         }
     }
 
-    await setLastSynchronization(synchronization);
+    if (response?.isConnected)
+        await setLastSynchronization(synchronization);
+    console.log("fim sync portfolio");
+    return response;
+}
+
+export const loadAllPortfolio = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+    let response = await synchronizationAllPortfolio();
+    if (response && !response.isLogged)
+        return response;
+    
     return await loadAllPortfolioInternal(pageNumber, activated);
 }
 
@@ -102,12 +113,7 @@ export const createPortfolio = async (portfolio: I.Portfolio): Promise<I.Respons
 
     populateInternalFields(portfolio, response);
 
-    if (!response.isConnected) {
-        let login = await getUserLoginEncrypt();
-        portfolio = await insertPortfolio(login, portfolio);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null) {
+    if (response.data !== null) {
         let login = await getUserLoginEncrypt();
         portfolio = await insertPortfolio(login, response.data);
     }
@@ -123,11 +129,7 @@ export const alterPortfolio = async (portfolio: I.Portfolio): Promise<I.Response
 
     populateInternalFields(portfolio, response);
 
-    if (!response.isConnected) {
-        portfolio = await updatePortfolio(portfolio);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null) {
+    if (response.data !== null) {
         portfolio = await updatePortfolio(response.data);
     }
 
@@ -166,11 +168,7 @@ export const excludePortfolio = async (portfolioId: number, portfolioInternalId:
     if (response && !response.isLogged)
         return response;
 
-    if (!response.isConnected) {
-        await deleteInternalPortfolio(portfolioInternalId);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data) {
+    if (response.data) {
         await deleteInternalPortfolio(portfolioInternalId);
     }
 

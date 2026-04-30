@@ -1,7 +1,8 @@
-import {Account, Operation} from "../interfaces/interfaces";
+import { Operation, OperationRole, Transaction} from "../interfaces/interfaces";
 import {openDatabase} from "./database";
-import {ResultSet} from "react-native-sqlite-storage";
+import SQLite, {ResultSet} from "react-native-sqlite-storage";
 import {constants} from "../constants";
+import {selectOperationRoleByOperationInternalId} from "./operation.role.repository.ts";
 
 export const createTableOperation = async () => {
     const db = await openDatabase();
@@ -23,9 +24,25 @@ export const createTableOperation = async () => {
         );
     `);
 
-    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_id ON operations (id);`);
-    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_type ON operations (type);`);
-    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operations_category_id ON operations (category_id);`);
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_id ' +
+        'ON operations (id);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_type ON ' +
+        'operations (type);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_category_id ' +
+        'ON operations (category_id);');
+
+    await db.executeSql(`
+        CREATE TABLE IF NOT EXISTS operations_roles_link
+        (
+            operation_id      NUMBER,
+            operation_role_id NUMBER,
+            reference           TEXT,
+            FOREIGN KEY (operation_id) 
+                REFERENCES operations(internal_id) ON DELETE CASCADE,
+            FOREIGN KEY (operation_role_id)
+                REFERENCES operation_roles(internal_id) ON DELETE CASCADE
+        )
+    `);
 };
 
 export const insertOperation = async (userLogin: string, operation: Operation): Promise<Operation> => {
@@ -39,7 +56,8 @@ export const insertOperation = async (userLogin: string, operation: Operation): 
         Status,
         Category,
         DataCriacao,
-        DataAlteracao
+        DataAlteracao,
+        OperationRoles
     } = operation;
 
     const result = await db.executeSql(
@@ -69,10 +87,14 @@ export const insertOperation = async (userLogin: string, operation: Operation): 
 
     operation.InternalId = result[0].insertId;
 
+    for (const item of OperationRoles) {
+        await insertOperationRoleLink(userLogin, operation.InternalId, item, db);
+    }
+    
     return operation;
 };
 
-export const updateOperation = async (operation: Operation) => {
+export const updateOperation = async (userLogin: string, operation: Operation) => {
     const db = await openDatabase();
     const {
         Id,
@@ -84,7 +106,8 @@ export const updateOperation = async (operation: Operation) => {
         Category,
         DataCriacao,
         DataAlteracao,
-        InternalId
+        InternalId,
+        OperationRoles
     } = operation;
 
     await db.executeSql(
@@ -112,8 +135,48 @@ export const updateOperation = async (operation: Operation) => {
         ]
     );
     
+    let itens = await selectOperationRoleByOperationInternalId(InternalId);
+
+    let remove = itens.filter(x => !OperationRoles?.includes(x));
+
+    let add: OperationRole[] = [];
+    if (OperationRoles !== null)
+        add = OperationRoles.filter(x => !itens.includes(x));
+
+    for (const item of remove) {
+        await deleteOperationRoleLink(item.InternalId, InternalId, db);
+    }
+    
+    for (const item of add) {
+        await insertOperationRoleLink(userLogin, InternalId, item, db);
+    }
+    
     return operation;
 };
+
+export const insertOperationRoleLink = async (userLogin: string, operationInternalId: number, operationRole: OperationRole, db: SQLite.SQLiteDatabase) => {
+    const {
+        InternalId
+    } = operationRole;
+
+    const result = await db.executeSql(
+        'INSERT INTO operations_roles_link ' +
+        '( operation_id,' +
+        '  operation_role_id,' +
+        '  reference ' +
+        ') VALUES (?, ?, ?)',
+        [   operationInternalId,
+            InternalId,
+            userLogin
+        ]);
+}
+
+export const deleteOperationRoleLink = async (operationRoleInternalId: number, operationInternalId: number, db: SQLite.SQLiteDatabase) => {
+    await db.executeSql('DELETE FROM operations_roles_link' +
+        ' WHERE operation_id = ?' +
+        '   AND operation_role_id = ?',
+        [operationInternalId, operationRoleInternalId]);
+}
 
 export const deleteInternalOperationByExternalId = async (userLogin: string, id: number) => {
     const db = await openDatabase();
@@ -131,7 +194,7 @@ export const deleteInternalOperation = async (internalId: number) => {
         'DELETE' +
         '  FROM operations' +
         ' WHERE internal_id = ?'
-        , [internalId]);
+        , [internalId,]);
 };
 
 export const deleteAllOperations= async (userLogin: string) => {
@@ -139,10 +202,10 @@ export const deleteAllOperations= async (userLogin: string) => {
     await db.executeSql(
         'DELETE' +
         '  FROM operations' +
-        ' WHERE reference = ?', [userLogin]);
+        ' WHERE reference = ?', [userLogin,]);
 }
 
-export const selectAllOperations = async (userLogin: string, type: number, pageNumber: number | null, activated: boolean | null): Promise<Operation[]> => {
+export const selectAllOperations = async (userLogin: string, type: number | null, pageNumber: number | null, activated: boolean | null): Promise<Operation[]> => {
     const db = await openDatabase();
 
     let query = queryBase();
@@ -155,8 +218,10 @@ export const selectAllOperations = async (userLogin: string, type: number, pageN
         params.push(activated);
     }
     
-    query += ' AND ope.type = ?';
-    params.push(type);
+    if (type !== null) {
+        query += ' AND ope.type = ?';
+        params.push(type);
+    }
     
     let results: ResultSet[];
     if (pageNumber) {
@@ -171,11 +236,14 @@ export const selectAllOperations = async (userLogin: string, type: number, pageN
     }
 
     const operations: Operation[] = [];
-    results.forEach(result => {
+    for (const result of results){
         for (let i = 0; i < result.rows.length; i++) {
-            operations.push(formatResult(result.rows.item(i)));
+            let operation = formatResult(result.rows.item(i));
+                        
+            operation.OperationRoles = await selectOperationRoleByOperationInternalId(operation.InternalId);
+            operations.push(operation);
         }
-    });
+    }
 
     return operations;
 };
@@ -201,8 +269,14 @@ export const selectOperationById = async (userLogin: string, id: number): Promis
     const db = await openDatabase();
 
     const result = await db.executeSql(queryBase() + ' AND ope.id = ?', [userLogin, id]);
-
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    
+    let operation = undefined;
+    if (result[0]?.rows.length > 0) {
+        operation = formatResult(result[0]?.rows?.item(0));
+        operation.OperationRoles = await selectOperationRoleByOperationInternalId(operation.InternalId);
+    }
+    
+    return operation;
 }
 
 export const existsOperationRelationshipCategory = async (userLogin: string, categoryInternalId: number): Promise<boolean> => {
@@ -215,6 +289,21 @@ export const existsOperationRelationshipCategory = async (userLogin: string, cat
         '   AND category_id = ?' +
         ' LIMIT 1'
         , [userLogin, categoryInternalId]);
+
+    return result[0]?.rows.length > 0;
+}
+
+export const existsOperationRelationshipOperationRole = async (userLogin: string, operationRoleInternalId: number): Promise<boolean> => {
+    const db = await openDatabase();
+    
+    const result = await db.executeSql(
+        'SELECT ope.id' +
+        ' FROM operations ope' +
+        '      INNER JOIN operations_roles_link link ON ope.internal_id = link.operation_id' +
+        ' WHERE ope.reference = ?' +
+        '   AND link.operation_role_id = ?' +
+        ' LIMIT 1'
+        , [userLogin, operationRoleInternalId]);
 
     return result[0]?.rows.length > 0;
 }
@@ -252,7 +341,9 @@ const formatResult = (item: any): Operation => {
             Status: item.category_status,
             DataCriacao: item.category_data_criacao,
             DataAlteracao: item.category_data_alteracao,
-        }
+        },
+        OperationRoles: null,
+        Roles: null
     }
 
     return operation;

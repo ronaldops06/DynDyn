@@ -22,12 +22,8 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         height: 40,
         marginTop: 20,
         marginLeft: 15
-
     },
     buttonTrash: {
-        width: 40,
-        height: 40,
-        marginTop: 20,
         marginRight: 15
     },
     areaFields: {
@@ -62,9 +58,9 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
     areaButtonSave: {
         flex: 1,
         marginBottom: 15,
-        flexDirection: "column",
+        flexDirection: "row",
         alignItems: "center",
-        justifyContent: "flex-end"
+        justifyContent: "space-around"
     },
     buttonSave: {
         width: 130,
@@ -80,4 +76,21 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         fontSize: 16,
         fontFamily: "Open Sans"
     },
+    secondaryButton: {
+        width: 130,
+        height: 40,
+        borderRadius: 30,
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderColor: theme.colors.tertiaryBorderColor,
+        borderWidth: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    textSecondaryButton: {
+        color: theme.colors.quaternaryTextColor,
+        fontSize: 16,
+        fontFamily: "Open Sans"
+    }
+    
 });

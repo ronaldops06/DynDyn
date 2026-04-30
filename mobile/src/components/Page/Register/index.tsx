@@ -1,6 +1,6 @@
-import React, {ReactNode, useState} from "react";
+import React, {ReactNode, useCallback, useState} from "react";
 import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {SafeAreaView, ScrollView, TouchableOpacity, View} from "react-native";
+import {SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import PrevIcon from "../../../assets/nav_prev.svg";
 import TrashIcon from "../../../assets/trash.svg";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
@@ -9,6 +9,8 @@ import Button from "../../Button";
 import HelpIcon from "../../../assets/help_outline.svg";
 import Help from "../../Help";
 import CustomModal from "../../CustomModal";
+import {isInternetConnected} from "../../../utils.ts";
+import {useFocusEffect} from "@react-navigation/native";
 
 interface PageRegisterProps {
     onTrashClick: any;
@@ -34,6 +36,21 @@ const PageRegister = ({
     const styleCadastro = getStyleCadastro(theme);
 
     const [showModalHelp, setShowModalHelp] = useState(false);
+    const [localMessage, setLocalMessage] = useState("");
+
+    const loadData = async () => {
+        let isConnected = await isInternetConnected();
+        if (!isConnected)
+            setLocalMessage("Sem conexão com a internet, seus dados podem estar desatualizados. Também não será possível salvar alterações.");
+        else
+            setLocalMessage("");
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            loadData();
+        }, [])
+    );
 
     return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
@@ -47,17 +64,20 @@ const PageRegister = ({
                     <View style={style.headerScreenActions}>
                         <TouchableOpacity style={style.titleScreenMoreInfo}
                                           onPress={() => setShowModalHelp(true)}>
-                            <HelpIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
+                            <HelpIcon width="25" height="25" fill={theme.colors.primaryIcon}/>
                         </TouchableOpacity>
                         {isEditing &&
                             <TouchableOpacity
                                 style={styleCadastro.buttonTrash}
                                 onPress={onTrashClick}>
-                                <TrashIcon width="35" height="35" fill={theme.colors.primaryIcon}/>
+                                <TrashIcon width="25" height="25" fill={theme.colors.primaryIcon}/>
                             </TouchableOpacity>}
                     </View>
                 </View>
                 <View style={styleCadastro.viewBodyCadastro}>
+                    {localMessage &&
+                        <View style={style.viewAreaMessage}><Text style={style.textMessage}>{localMessage}</Text></View>
+                    }
                     {children}
                     <View style={styleCadastro.areaButtonSave}>
                         <Button

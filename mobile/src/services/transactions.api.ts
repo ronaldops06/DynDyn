@@ -1,7 +1,7 @@
 import { Alert } from 'react-native';
 import { Action, StatusHttp } from '../enums/enums';
 import * as I from '../interfaces/interfaces';
-import { del, get, post, put } from './api';
+import {del, get, getPaginated, post, put} from './api';
 import {validateLogin} from "./helper.api.ts";
 
 export const validateResponse = (action: Action, response: I.Response) => {
@@ -24,7 +24,7 @@ export const validateResponse = (action: Action, response: I.Response) => {
 
 export const getTransactions = async (params: string) => {
     let response = {} as I.Response;
-    response = await get(`Transaction?${params}`);
+    response = await getPaginated(`Transaction?${params}`);
 
     response = validateLogin(response);
     if (!response.isLogged)

@@ -16,6 +16,7 @@ import {Alert} from "react-native";
 import {existsTransactionRelationshipOperation} from "../repository/transaction.repository.tsx";
 import {getUserLoginEncrypt} from "../utils.ts";
 import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
+import {loadInternalOperationRole} from "./operation.role.controller.ts";
 
 /**
  * Método responsável por retornar a operação persistida internamente para ser utilizada como referência.
@@ -27,20 +28,24 @@ import {deleteInternalBalanceByExternalId} from "../repository/balance.repositor
  * @returns {Promise<I.Operation>} - Promisse com o objeto da operação interno
  */
 export const loadInternalOperation = async (operation: I.Operation): Promise<I.Operation> => {
-
+    
     operation.Category = await loadInternalCategory(operation.Category);
 
+    for (let operationRole of operation.OperationRoles) {
+        operationRole = await loadInternalOperationRole(operationRole);
+    }
+    
     let login = await getUserLoginEncrypt();
     let internalOperation = await selectOperationById(login, operation.Id);
 
     if (internalOperation === undefined){
         internalOperation = await insertOperation(login, operation);
-    }   
+    }
 
     return internalOperation;
 }
 
-export const loadAllOperationInternal = async (type: Number, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllOperationInternal = async (type: Number | null, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
@@ -53,7 +58,8 @@ export const loadAllOperationInternal = async (type: Number, pageNumber: Number 
     return response;
 }
 
-export const loadAllOperation = async (type: Number, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const synchronizationAllOperation = async (): Promise<I.Response | null> => {
+    console.log("inicio sync operation");
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(null, null, constants.operations.operation);
 
     let params = `LastSyncDate=${Moment(synchronization.ExecutionDate).format('YYYY-MM-DD HH:mm:ss')}`;
@@ -68,17 +74,31 @@ export const loadAllOperation = async (type: Number, pageNumber: Number | null, 
     for (const item of operations) {
         item.Category = await loadInternalCategory(item.Category);
 
+        for (let operationRole of item.OperationRoles) {
+            operationRole = await loadInternalOperationRole(operationRole);
+        }
+
         let operation = await selectOperationById(login, item.Id);
-        
         if (operation === undefined) {
-            await insertOperation(login, item);
+            operation = await insertOperation(login, item);
         } else {
             item.InternalId = operation.InternalId;
-            await updateOperation(item);
+            operation = await updateOperation(login, item);
         }
     }
+
+    if (response?.isConnected)
+        await setLastSynchronization(synchronization);
+    console.log("fim sync operation");
+    return response;
+}
+
+export const loadAllOperation = async (type: Number, pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
     
-    await setLastSynchronization(synchronization);
+    let response = await synchronizationAllOperation();
+    if (response && !response.isLogged)
+        return response;
+    
     return await loadAllOperationInternal(type, pageNumber, activated);
 }
 
@@ -90,20 +110,16 @@ export const createOperation = async (operation: I.Operation): Promise<I.Respons
     
     populateInternalFields(operation, response);
 
-    if (!response.isConnected) {
+    if (response.data !== null){
         let login = await getUserLoginEncrypt();
-        operation = await insertOperation(login, operation);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
-        let login = await getUserLoginEncrypt();
-        operation = await insertOperation(login, response.data);
+        await insertOperation(login, response.data);
     }
 
     return response;
 }
 
 export const alterOperation = async (operation: I.Operation): Promise<I.Response> => {
+
     let response = await putOperation(operation);
 
     if (response && !response.isLogged)
@@ -111,12 +127,9 @@ export const alterOperation = async (operation: I.Operation): Promise<I.Response
     
     populateInternalFields(operation, response);
 
-    if (!response.isConnected) {
-        operation = await updateOperation(operation);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data !== null){
-        operation = await updateOperation(response.data);
+    if (response.data !== null){
+        let login = await getUserLoginEncrypt();
+        await updateOperation(login, response.data);
     }
 
     return response;
@@ -126,11 +139,16 @@ const populateInternalFields = (operation: I.Operation, response: I.Response) =>
     if (operation.InternalId)
         response.data.InternalId = operation.InternalId;
 
+    for (const operationRole: I.OperationRole of response.data.OperationRoles) {
+        let operationRoleSrc = operation.OperationRoles?.find(x => x.Id === operationRole.Id);
+        operationRole.InternalId = operationRoleSrc.InternalId;
+    }
 }
 
 export const excludeOperation = async (operationId: number, operationInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+    response.success = true;
 
     let login = await getUserLoginEncrypt();
     
@@ -144,11 +162,7 @@ export const excludeOperation = async (operationId: number, operationInternalId:
     if (response && !response.isLogged)
         return response;
 
-    if (!response.isConnected) {
-        await deleteInternalOperation(operationInternalId);
-        Alert.alert("Atenção!", "Sem conexão com a internet, os dados foram salvos e será feita uma nova tentativa de envio assim que a conexão for restabelecida.");
-        //TO-DO: Guardar o registro em uma fila de envio
-    } else if (response.data){
+    if (response.data){
         await deleteInternalOperation(operationInternalId);
     }
 

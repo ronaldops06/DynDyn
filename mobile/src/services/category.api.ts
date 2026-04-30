@@ -1,5 +1,5 @@
 import * as I from "../interfaces/interfaces.tsx";
-import {del, get, post, put} from "./api.ts";
+import {del, getPaginated, post, put} from "./api.ts";
 import {Action, StatusHttp} from "../enums/enums.tsx";
 import {Alert} from "react-native";
 import {validateLogin} from "./helper.api.ts";
@@ -24,7 +24,7 @@ export const validateResponse = (action: Action, response: I.Response) => {
 
 export const getCategories = async (params: string) => {
     let response = {} as I.Response;
-    response = await get(`Category?${params}`);
+    response = await getPaginated(`Category?${params}`);
 
     response = validateLogin(response);
     if (!response.isLogged)

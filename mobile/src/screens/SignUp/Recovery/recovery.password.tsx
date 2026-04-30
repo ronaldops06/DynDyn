@@ -131,7 +131,7 @@ const RecoveryPassword = ({navigation, route}) => {
                         value={password}
                         setValue={setPassword}
                         secureTextEntry={!showPassword}
-                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                        icon={showPassword ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                         onPressIcon={() => setShowPassword(!showPassword)}
                     />
                     <TextInput
@@ -139,7 +139,7 @@ const RecoveryPassword = ({navigation, route}) => {
                         value={passwordConfirm}
                         setValue={setPasswordConfirm}
                         secureTextEntry={!showPasswordConfirm}
-                        icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.primaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.primaryIcon}/>}
+                        icon={showPasswordConfirm ? <VisibilityOffIcon width={30} fill={theme.colors.quaternaryIcon}/> : <VisibilityIcon width={30} fill={theme.colors.quaternaryIcon}/>}
                         onPressIcon={() => setShowPasswordConfirm(!showPasswordConfirm)}
                     />
                 </View>

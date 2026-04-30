@@ -9,6 +9,13 @@ export enum TypesCategory {
     Operation = 2
 }
 
+export enum TypeTotalizar {
+    Ignore = 1,
+    Discriminated = 2,
+    GroupedRevenue = 3,
+    GroupedExpense = 4
+}
+
 export enum StatusHttp {
     OK = 200,
     Created = 201,
@@ -21,4 +28,10 @@ export enum Action {
     Post = 1,
     Put = 2,
     Delete = 3
+}
+
+export enum Situation {
+    NotConsolidated = 0,
+    Consolidated = 1,
+    All = -1
 }
