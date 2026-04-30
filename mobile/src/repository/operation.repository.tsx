@@ -26,10 +26,14 @@ export const createTableOperation = async () => {
 
     await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_id ' +
         'ON operations (id);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_internal_id ' +
+        'ON operations (internal_id);');
     await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_type ON ' +
         'operations (type);');
     await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_category_id ' +
         'ON operations (category_id);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_reference ' +
+        'ON operations (reference);');
 
     await db.executeSql(`
         CREATE TABLE IF NOT EXISTS operations_roles_link
@@ -43,6 +47,13 @@ export const createTableOperation = async () => {
                 REFERENCES operation_roles(internal_id) ON DELETE CASCADE
         )
     `);
+
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_roles_link_reference ' +
+        'ON operations_roles_link (reference);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_roles_link_operation_id ' +
+        'ON operations_roles_link (operation_id);');
+    await db.executeSql('CREATE INDEX IF NOT EXISTS idx_operations_roles_link_operation_role_id ' +
+        'ON operations_roles_link (operation_role_id);');
 };
 
 export const insertOperation = async (userLogin: string, operation: Operation): Promise<Operation> => {

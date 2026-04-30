@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useRef, useState, useMemo} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
@@ -61,7 +61,7 @@ const Transaction = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [typeSelected, setTypeSelected] = useState(-1);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(true);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     useFocusEffect(
@@ -92,7 +92,7 @@ const Transaction = ({navigation, route}) => {
             let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
             let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
 
-            let responseTransactions = null;
+            let responseTransactions = await loadAllTransactionsInternal(mountDateInicio, mountDateFim, page);
 
             if (isLoadInternal) {
                 responseTransactions = await loadAllTransactionsInternal(mountDateInicio, mountDateFim, page);
@@ -108,6 +108,8 @@ const Transaction = ({navigation, route}) => {
                 calculeTotals(transactions);
             }*/
         }
+
+        setIsLoadInternal(true);
         setLoading(false);
     };
 
@@ -176,7 +178,7 @@ const Transaction = ({navigation, route}) => {
         return [...unconsolidated, ...consolidated];
     }
 
-    const filterData = (transactions: I.Transaction[]): I.Transaction[] => {
+    const filterData = (): I.Transaction[] => {
         let result = transactions.filter((item) => {
             return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
         });
@@ -217,21 +219,31 @@ const Transaction = ({navigation, route}) => {
                     item.Observation.toLowerCase().includes(filter.Search);
             })
         }
-
-        calculeTotals(result);
-        
+       
         return result;
     }
     
-    const calculeTotals = async (values: I.Transaction[]): Promise<void> => {
-        let responseTotalsRev = await generateTotalsTransactions(values, constants.totalizerCode.transactionRevenue.Id);
-        let responseTotalsExp = await generateTotalsTransactions(values, constants.totalizerCode.transactionExpense.Id);
+    const calculeTotals = async (): Promise<void> => {
+        
+        if (isSelectionMode)
+            return;
+        
+        let responseTotalsRev = await generateTotalsTransactions(filteredTransactions, constants.totalizerCode.transactionRevenue.Id);
+        let responseTotalsExp = await generateTotalsTransactions(filteredTransactions, constants.totalizerCode.transactionExpense.Id);
 
         let responseTotals = responseTotalsRev;
         responseTotals.CreditTotal += responseTotalsExp.CreditTotal;
         responseTotals.DebitTotal += responseTotalsExp.DebitTotal;
         setTransactionTotals(responseTotals);
     }
+
+    const filteredTransactions = useMemo(():I.Transaction[]  => {
+        return filterData();
+    }, [transactions, transactions.length > 0, filter, typeSelected]);
+
+    useEffect(() => {
+        calculeTotals();
+    }, [filteredTransactions, !isSelectionMode]);
 
     const handleLeftDateClick = () => {
         let mountDate = new Date(selectedYear, selectedMonth, 1);
@@ -257,6 +269,7 @@ const Transaction = ({navigation, route}) => {
                 {
                     text: "Sim",
                     onPress: async () => {
+                        setIsLoadInternal(false);
                         let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
                         var response = await executeRecurringTransaction(mountDateInicio);
 
@@ -386,15 +399,15 @@ const Transaction = ({navigation, route}) => {
             )
         );
 
-        setTransactionTotals(prev => ({
+        /*setTransactionTotals(prev => ({
             ...prev,
             Credit: prev?.CreditTotal ?? 0,
             Debit: prev?.DebitTotal ?? 0
-        }));
+        }));*/
 
         setIsSelectionMode(false);
     }
-
+    
     const setDate = (date: Date) => {
         setSelectedYear(date.getFullYear());
         setSelectedMonth(date.getMonth());
@@ -468,7 +481,7 @@ const Transaction = ({navigation, route}) => {
         >
             <>
                 <CustomScroll
-                    data={sortingData(filterData(transactions))}
+                    data={filteredTransactions}
                     loading={loading}
                     totalPages={totalPages}
                     pageNumber={pageNumber}

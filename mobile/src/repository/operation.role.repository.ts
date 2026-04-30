@@ -18,6 +18,7 @@ export const createTableOperationRole = async () => {
     `);
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operation_roles_id ON operation_roles (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_operation_reference ON operation_roles (reference);`);
 };
 
 export const insertOperationRole = async (userLogin: string, operationRole: OperationRole): Promise<OperationRole> => {

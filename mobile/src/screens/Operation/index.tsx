@@ -92,14 +92,14 @@ const Operation = ({navigation, route}) => {
     const loadOperations = async (page: number) => {
         setLoading(true);
 
-        let responseOperations = null;
+        let responseOperations = await loadAllOperationInternal(operationType, page, null);
 
-        if (isLoadInternal) {
+        /*if (isLoadInternal) {
             responseOperations = await loadAllOperationInternal(operationType, page, null);
         } else {
             responseOperations = await loadAllOperation(operationType, page, null);
             validateLogin(responseOperations, navigation);
-        }
+        }*/
 
         setTotalPages(responseOperations?.totalPages ?? 1);
         appendOperations(responseOperations?.data ?? []);

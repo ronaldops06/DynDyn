@@ -24,6 +24,9 @@ export const createTablePortfolios = async () => {
     `);
     
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_portfolios_id ON portfolios (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_portfolios_reference ON portfolios (reference);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_portfolios_parent_portfolio_id ON portfolios (parent_portfolio_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_portfolios_category_id ON portfolios (category_id);`);
 };
 
 export const insertPortfolio = async (userLogin: string, portfolio: Portfolio): Promise<Portfolio> => {

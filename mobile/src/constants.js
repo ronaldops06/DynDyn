@@ -1,6 +1,6 @@
 export const constants = {
     pageSizeRequest: 20,
-    pageSize: 100,
+    pageSize: 150,
     operations: {
         category: 'category',
         portfolio: 'portfolio',

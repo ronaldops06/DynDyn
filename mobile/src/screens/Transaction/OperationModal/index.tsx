@@ -6,7 +6,7 @@ import * as I from '../../../interfaces/interfaces';
 import TextItem from '../../../components/CustomTextInput';
 import OperationItem from './OperationItem';
 
-import {loadAllOperation} from "../../../controller/operation.controller";
+import {loadAllOperation, loadAllOperationInternal} from "../../../controller/operation.controller";
 
 import { useTheme } from '../../../contexts/ThemeContext';
 import { getStyle } from '../../../styles/styles';
@@ -29,7 +29,7 @@ const OperationModal = (props: OperationModalParams) => {
     const loadOperations = async () => {
         setLoading(true);
 
-        let response = await loadAllOperation(props.typeOperation, null, true);
+        let response = await loadAllOperationInternal(props.typeOperation, null, true);
         setOperations(response?.data ?? []);
         setLoading(false);
     };

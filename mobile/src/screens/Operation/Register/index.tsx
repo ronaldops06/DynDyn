@@ -4,7 +4,7 @@ import {Chip} from 'react-native-paper';
 import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller.tsx";
 import {constants} from "../../../constants";
 import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategory} from "../../../controller/category.controller.tsx";
+import {loadAllCategory, loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
 import {TypesCategory} from "../../../enums/enums.tsx";
 import TextInput from "../../../components/CustomTextInput";
 import Picker from "../../../components/CustomPicker";
@@ -52,7 +52,7 @@ const OperationCreate = ({navigation, route}) => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, true);
+        let responseCategories = await loadAllCategoryInternal(TypesCategory.Operation, null, true);
         validateLogin(responseCategories, navigation);
 
         setCategories(responseCategories?.data ?? []);
