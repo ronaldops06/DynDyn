@@ -14,23 +14,32 @@ public class WhenExecuteVerificationCode : TransientUserTest
     {
         var userModel = Mapper.Map<UserModel>(transientUserModelResult);
         UserServiceMock.Setup(m => m.Post(It.IsAny<UserModel>())).ReturnsAsync(userModel);
-        
+
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
         CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
         OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
             .ReturnsAsync(operationModel);
-        
+
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
-        
-        var result = await service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0);
-        
+        TransientUserService service = new TransientUserService(
+            RepositoryMock.Object, 
+            UserServiceMock.Object,
+            LoginServiceMock.Object, 
+            CategoryServiceMock.Object, 
+            OperationServiceMock.Object,
+            OperationRoleServiceMock.Object,
+            TotalizerRoleServiceMock.Object,
+            Mapper);
+
+        var result = await service.ExecuteVerificationCode(transientUserModelResult.Login,
+            transientUserModelResult.VerificationCode ?? 0);
+
         Assert.NotNull(result);
         Assert.Equal(transientUserModelResult.Id, result.Id);
         Assert.Equal(transientUserModelResult.Name, result.Name);
         Assert.Equal(transientUserModelResult.Login, result.Login);
-        
+
         Assert.Null(result.VerificationCode);
         Assert.Null(result.ExpirationDate);
         Assert.Equal(result.AccessToken, AccessToken);
@@ -41,29 +50,58 @@ public class WhenExecuteVerificationCode : TransientUserTest
     {
         var userModel = Mapper.Map<UserModel>(transientUserModelResult);
         UserServiceMock.Setup(m => m.Post(It.IsAny<UserModel>())).ReturnsAsync(userModel);
-        
+
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
         CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
         OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
             .ReturnsAsync(operationModel);
-        
-        TransientUserService service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
-        
-        var ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0));
+
+        TransientUserService service = new TransientUserService(
+            RepositoryMock.Object, 
+            UserServiceMock.Object,
+            LoginServiceMock.Object,
+            CategoryServiceMock.Object,
+            OperationServiceMock.Object,
+            OperationRoleServiceMock.Object,
+            TotalizerRoleServiceMock.Object,
+            Mapper);
+
+        var ex = await Assert.ThrowsAsync<Exception>(() =>
+            service.ExecuteVerificationCode(transientUserModelResult.Login,
+                transientUserModelResult.VerificationCode ?? 0));
         Assert.Equal("Usuário não encontrado para validação, reinicie o cadastro.", ex.Message);
-        
+
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
-        
-        ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, Faker.RandomNumber.Next(100000, 999999)));
+        service = new TransientUserService(
+            RepositoryMock.Object,
+            UserServiceMock.Object,
+            LoginServiceMock.Object,
+            CategoryServiceMock.Object,
+            OperationServiceMock.Object,
+            OperationRoleServiceMock.Object,
+            TotalizerRoleServiceMock.Object,
+            Mapper);
+
+        ex = await Assert.ThrowsAsync<Exception>(() =>
+            service.ExecuteVerificationCode(transientUserModelResult.Login, Faker.RandomNumber.Next(100000, 999999)));
         Assert.Equal("O código não corresponde ao código de verificação.", ex.Message);
-        
+
         userEntityResult.ExpirationDate = DateTime.Now.AddMinutes(-1);
         RepositoryMock.Setup(m => m.SelectUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userEntityResult);
-        service = new TransientUserService(RepositoryMock.Object, UserServiceMock.Object, LoginServiceMock.Object, CategoryServiceMock.Object, OperationServiceMock.Object, Mapper);
-        
-        ex = await Assert.ThrowsAsync<Exception>(() => service.ExecuteVerificationCode(transientUserModelResult.Login, transientUserModelResult.VerificationCode ?? 0));
+        service = new TransientUserService(
+            RepositoryMock.Object,
+            UserServiceMock.Object,
+            LoginServiceMock.Object,
+            CategoryServiceMock.Object,
+            OperationServiceMock.Object,
+            OperationRoleServiceMock.Object,
+            TotalizerRoleServiceMock.Object,
+            Mapper);
+
+        ex = await Assert.ThrowsAsync<Exception>(() =>
+            service.ExecuteVerificationCode(transientUserModelResult.Login,
+                transientUserModelResult.VerificationCode ?? 0));
         Assert.Equal("Código de validação expirado, reinicie o cadastro.", ex.Message);
     }
 }

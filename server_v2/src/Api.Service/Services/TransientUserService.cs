@@ -22,6 +22,8 @@ namespace Service.Services
         private ILoginService _loginService;
         private ICategoryService _categoryService;
         private IOperationService _operationService;
+        private IOperationRoleService _operationRoleService;
+        private ITotalizerRoleService _totalizerRoleService;
         private readonly IMapper _mapper;
 
         public TransientUserService(ITransientUserRepository repository,
@@ -29,6 +31,8 @@ namespace Service.Services
                                   ILoginService loginService,
                                   ICategoryService categoryService,
                                   IOperationService operationService,
+                                  IOperationRoleService operationRoleService,
+                                  ITotalizerRoleService totalizerRoleService,
                                   IMapper mapper)
         {
             _repository = repository;
@@ -36,6 +40,8 @@ namespace Service.Services
             _loginService = loginService;
             _categoryService = categoryService;
             _operationService = operationService;
+            _operationRoleService = operationRoleService;
+            _totalizerRoleService = totalizerRoleService;
             _mapper = mapper;
         }
         
@@ -55,6 +61,8 @@ namespace Service.Services
             var userModel = _mapper.Map<UserModel>(userEntityAux);
             userModel = await _userService.Post(userModel);
 
+            var operationRoleModel = await _operationRoleService.GenerateInitialByUser(userModel);
+            var totalizersModels = await _totalizerRoleService.GenerateInitialByUser(userModel, operationRoleModel);
             var categoryModel = await _categoryService.GenerateInitialByUser(userModel);
             var operationModel = await _operationService.GenerateInitialByUser(userModel, categoryModel);
             

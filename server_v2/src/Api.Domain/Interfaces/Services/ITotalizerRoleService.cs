@@ -22,7 +22,8 @@ namespace Api.Domain.Interfaces.Services
         /// Método responsável por gerar as papel de totalizador iniciais para o usuário.
         /// </summary>
         /// <param name="user">Modelo do usuário.</param>
+        /// <param name="operationRoleModel">Modelo de papeis de operação.</param>
         /// <returns>Modelo da papel de totalizador gerado <see cref="TotalizerRoleModel"/>.</returns>
-        Task<TotalizerRoleModel> GenerateInitialByUser(UserModel user);
+        Task<List<TotalizerRoleModel>> GenerateInitialByUser(UserModel user, OperationRoleModel operationRoleModel);
     }
 }

@@ -104,9 +104,26 @@ namespace Api.Service.Services
             return result;
         }
         
-        public Task<OperationRoleModel> GenerateInitialByUser(UserModel user)
+        public async Task<OperationRoleModel> GenerateInitialByUser(UserModel user)
         {
-            throw new NotImplementedException();
+            var operationRoleModel = new OperationRoleModel
+            {
+                Name = "Geral",
+                UserId = user.Id
+            };
+            
+            var operationRoleEntityAux = await _repository.SelectByUkAsync(user.Id, operationRoleModel.Name);
+
+            if (operationRoleEntityAux != null)
+                throw new Exception("Papel de operação não disponível.");
+            
+            var operationRoleEntity = mapper.Map<OperationRoleEntity>(operationRoleModel);
+            _repository.UnchangedParentOperationRole(operationRoleEntity);
+            operationRoleEntity = await _repository.InsertAsync(operationRoleEntity);
+
+            operationRoleModel = mapper.Map<OperationRoleModel>(operationRoleEntity);
+
+            return operationRoleModel;
         }
     }
 }
