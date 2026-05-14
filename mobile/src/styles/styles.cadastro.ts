@@ -56,7 +56,7 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextColor,
     },
     areaButtonSave: {
-        flex: 1,
+        marginTop: 5,
         marginBottom: 15,
         flexDirection: "row",
         alignItems: "center",
@@ -91,6 +91,29 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         color: theme.colors.quaternaryTextColor,
         fontSize: 16,
         fontFamily: "Open Sans"
+    },
+    primaryAuxiliaryButton: {
+        backgroundColor: theme.colors.primaryBaseColor,
+        height: 40,
+        marginHorizontal: 30,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center"
+    },
+    secondaryAuxiliaryButton: {
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderWidth: 1,
+        borderColor: theme.colors.tertiaryBorderColor,
+        height: 40,
+        marginHorizontal: 30,
+        paddingHorizontal: 20,
+        borderRadius: 5,
+        flexDirection: "row",
+        justifyContent: "flex-start",
+        alignItems: "center",
+        elevation: 2,
+        shadowColor: '#000',
     }
-    
 });

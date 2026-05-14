@@ -61,7 +61,7 @@ const Transaction = ({navigation, route}) => {
     const [totalPages, setTotalPages] = useState(1);
     const [typeSelected, setTypeSelected] = useState(-1);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(true);
+    const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [isSelectionMode, setIsSelectionMode] = useState(false);
 
     useFocusEffect(
@@ -109,7 +109,7 @@ const Transaction = ({navigation, route}) => {
             }*/
         }
 
-        setIsLoadInternal(true);
+        setIsLoadInternal(false);
         setLoading(false);
     };
 
@@ -224,21 +224,22 @@ const Transaction = ({navigation, route}) => {
     }
     
     const calculeTotals = async (): Promise<void> => {
-        
+
         if (isSelectionMode)
             return;
-        
+
         let responseTotalsRev = await generateTotalsTransactions(filteredTransactions, constants.totalizerCode.transactionRevenue.Id);
         let responseTotalsExp = await generateTotalsTransactions(filteredTransactions, constants.totalizerCode.transactionExpense.Id);
 
         let responseTotals = responseTotalsRev;
         responseTotals.CreditTotal += responseTotalsExp.CreditTotal;
         responseTotals.DebitTotal += responseTotalsExp.DebitTotal;
+   
         setTransactionTotals(responseTotals);
     }
 
     const filteredTransactions = useMemo(():I.Transaction[]  => {
-        return filterData();
+        return sortingData(filterData());
     }, [transactions, transactions.length > 0, filter, typeSelected]);
 
     useEffect(() => {

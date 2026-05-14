@@ -11,11 +11,12 @@ export const getCardStyle = (theme) => StyleSheet.create({
     },
     cardNarrow: {
         flexDirection: "column",
+        justifyContent: "center",
         backgroundColor: theme.colors.secondaryBaseColor,
         borderColor: theme.colors.primaryBorderColor,
         borderWidth: 1,
         borderRadius: 8,
-        padding: 15,
+        paddingHorizontal: 15,
         minHeight: 40
     },
     cardBackground: {

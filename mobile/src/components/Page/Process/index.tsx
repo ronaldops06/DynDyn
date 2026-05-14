@@ -2,7 +2,7 @@ import {SafeAreaView, Text, TouchableOpacity, View} from "react-native";
 import {useTheme} from "../../../contexts/ThemeContext.tsx";
 import {getStyle} from "../../../styles/styles.ts";
 import {constants} from "../constants";
-import React, {ReactElement, ReactNode, useCallback, useEffect, useState} from "react";
+import React, {ReactNode, useCallback, useState} from "react";
 import PlusIcon from "../../../assets/plus.svg";
 import HelpIcon from "../../../assets/help_outline.svg";
 import FilterIcon from "../../../assets/filter_list.svg";
@@ -12,7 +12,6 @@ import CustomModal from "../../CustomModal";
 import DeselectIcon from "../../../assets/deselect.svg";
 import {isInternetConnected} from "../../../utils.ts";
 import {useFocusEffect} from "@react-navigation/native";
-import PrevIcon from "../../../assets/nav_prev.svg";
 
 interface FilterBaseProps {
     onClose?: () => void;

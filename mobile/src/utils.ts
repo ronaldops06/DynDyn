@@ -20,10 +20,15 @@ export const validateLogin = (response: I.Response, navigation: any) => {
 
 export const validateSuccess = (response: I.Response, navigation: any, screem: string) => {
     if (response.success) {
-        if (screem)
-            navigation.popTo(screem, {actionNavigation: constants.actionNavigation.reload});
-        else
+        if (screem) {
+            navigation.popTo(screem, {
+                actionNavigation: constants.actionNavigation.reload,
+                referenceId: response.data?.Id,
+                reference: navigation.getState().routes[navigation.getState().index].name
+            });
+        } else {
             navigation.goBack();
+        }
     }
 }
 

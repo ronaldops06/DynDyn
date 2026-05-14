@@ -79,19 +79,20 @@ const PageRegister = ({
                         <View style={style.viewAreaMessage}><Text style={style.textMessage}>{localMessage}</Text></View>
                     }
                     {children}
-                    <View style={styleCadastro.areaButtonSave}>
-                        <Button
-                            label={"Salvar"}
-                            onPress={onSaveClick}
-                            loading={isLoading}
-                            disabled={isLoading}
-                        />
-                    </View>
+                    
                 </View>
-                <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
-                    <Help helpType={helpType}/>
-                </CustomModal>
             </ScrollView>
+            <View style={styleCadastro.areaButtonSave}>
+                <Button
+                    label={"Salvar"}
+                    onPress={onSaveClick}
+                    loading={isLoading}
+                    disabled={isLoading}
+                />
+            </View>
+            <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
+                <Help helpType={helpType}/>
+            </CustomModal>
         </SafeAreaView>
     );
 }

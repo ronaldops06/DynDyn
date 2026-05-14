@@ -110,5 +110,8 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
     },
     areaChecks: {
         flexDirection: "row"
+    },
+    areaMoreActions: {
+        marginBottom: 20
     }
 });

@@ -63,6 +63,7 @@ export const OperationStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="OperationHome" component={Operation}  initialParams={{ actionNavigation: constants.actionNavigation.reload }}/>
         <Stack.Screen name="OperationCreate" component={OperationCreate}/>
+        <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
     </Stack.Navigator>
 );
 

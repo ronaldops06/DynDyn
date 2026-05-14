@@ -147,10 +147,12 @@ export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim
 }
 
 export const generateTotalsTransactions = async (transactions: I.Transaction[], totalizerCode: string): Promise<I.TransactionTotals> => {
-    //Busca as operation roles do totalizer
+    if (transactions.length === 0)
+        return I.TransactionTotals = {} as I.TransactionTotals;
+
     let login = await getUserLoginEncrypt();
     let totalizerRoles = await selectTotalizerRoleByCode(login, totalizerCode);
-    
+
     return calculateTotals(transactions, totalizerRoles);
 }
 

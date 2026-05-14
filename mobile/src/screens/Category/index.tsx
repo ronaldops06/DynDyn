@@ -34,7 +34,7 @@ const Category = ({navigation, route}) => {
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(true);
 
     useFocusEffect(
         React.useCallback(() => {
@@ -104,7 +104,7 @@ const Category = ({navigation, route}) => {
         appendCategories(responseCategories?.data ?? []);
 
         setLoading(false);
-        setIsLoadInternal(false);
+        setIsLoadInternal(true);
     };
 
     const filterData = (categories: I.Category[]): I.Category[] => {

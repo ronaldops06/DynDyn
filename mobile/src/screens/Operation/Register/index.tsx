@@ -1,18 +1,17 @@
-import React, {useEffect, useState} from "react";
-import {Alert, Text, TouchableOpacity, View, ScrollView} from 'react-native';
+import React, {useCallback, useEffect, useState} from "react";
+import {useFocusEffect} from "@react-navigation/native";
+import {Alert, ScrollView, Text, View} from 'react-native';
 import {Chip} from 'react-native-paper';
 import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller.tsx";
 import {constants} from "../../../constants";
 import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategory, loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
+import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
 import {TypesCategory} from "../../../enums/enums.tsx";
 import TextInput from "../../../components/CustomTextInput";
-import Picker from "../../../components/CustomPicker";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
 import {validateLogin, validateSuccess} from "../../../utils.ts";
 import RuleIcon from "../../../assets/rule.svg";
-import CloseIcon from "../../../assets/close.svg";
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyle} from "../../../styles/styles.ts";
@@ -21,6 +20,8 @@ import {getOperationCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
 import OperationRoleModal from "../OperationRoleModal";
 import {CustomAlert} from "../../../components/CustomAlert";
+import Select from "../../../components/Select";
+import AuxiliaryButton from "../../../components/AuxiliaryButton";
 
 
 const OperationCreate = ({navigation, route}) => {
@@ -33,6 +34,7 @@ const OperationCreate = ({navigation, route}) => {
     const operationInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
 
+    const [stack, setStack] = useState<string>("")
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
     const [type, setType] = useState<number>(constants.operationType.revenue.Id);
@@ -44,17 +46,39 @@ const OperationCreate = ({navigation, route}) => {
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [showModalRole, setShowModalRole] = useState<boolean>(false);
 
+    useFocusEffect(
+        useCallback(() => {
+            if (route.params?.referenceId !== undefined) {
+                let reference = route.params?.reference;
+                reference = reference.toUpperCase().replace("CREATE", "");
+
+                if (reference === constants.operations.category.toUpperCase())
+                {
+                    getCategories();
+                    
+                    setCategory(route.params?.referenceId);
+                }
+            }
+        }, [route.params?.actionNavigation])
+    );
+
     useEffect(() => {
         getLists();
         if (isEditing) {
             loadDataSreen();
         }
+        const parent = navigation.getParent();
+        const tab = parent?.getState().routes[parent.getState().index].name;
+        setStack(tab);
     }, [])
-
+    
     const getLists = async () => {
+        await getCategories();
+    }
+    
+    const getCategories = async () => {
         let responseCategories = await loadAllCategoryInternal(TypesCategory.Operation, null, true);
         validateLogin(responseCategories, navigation);
-
         setCategories(responseCategories?.data ?? []);
     }
 
@@ -188,11 +212,15 @@ const OperationCreate = ({navigation, route}) => {
                     value={name}
                     setValue={setName}
                 />
-                <Picker
-                    text={"Categoria"}
+                <Select
+                    label={"Categoria"}
                     value={category}
                     setValue={setCategory}
                     data={categories}
+                    parentScreen={stack}
+                    registerScreen={"CategoryCreate"}
+                    navigation={navigation}
+                    sourceScreen={route.name}
                 />
                 <View style={styleCadastro.areaGroupCheckbox}>
                     <View style={operationCreateStyle.areaCheckbox}>
@@ -223,14 +251,11 @@ const OperationCreate = ({navigation, route}) => {
                     <Text
                         style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
-                <TouchableOpacity
-                    style={operationCreateStyle.buttonAddRole}
-                    onPress={() => {
-                        setShowModalRole(true)
-                    }}>
-                    <RuleIcon width="30" height="30" fill={theme.colors.primaryIcon}/>
-                    <Text style={styleCadastro.textButtonSave}>Papéis de Operações</Text>
-                </TouchableOpacity>
+                <AuxiliaryButton
+                    text="Papéis de Operações"
+                    onPress={setShowModalRole(true)}
+                    icon={<RuleIcon width="30" height="30" fill={theme.colors.primaryIcon}/>}
+                />
                 <ScrollView style={operationCreateStyle.scrollRoles} nestedScrollEnabled>
                     <View style={operationCreateStyle.areaRoles}>
                         {operationRoles.map(item => (

@@ -34,7 +34,7 @@ const Operation = ({navigation, route}) => {
     const [operations, setOperations] = useState<I.Operation[]>([]);
     const [operationType, setOperationType] = useState<number>(constants.operationType.revenue.Id);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(true);
     
     useFocusEffect(
         React.useCallback(() => {
@@ -94,18 +94,18 @@ const Operation = ({navigation, route}) => {
 
         let responseOperations = await loadAllOperationInternal(operationType, page, null);
 
-        /*if (isLoadInternal) {
+        if (isLoadInternal) {
             responseOperations = await loadAllOperationInternal(operationType, page, null);
         } else {
             responseOperations = await loadAllOperation(operationType, page, null);
             validateLogin(responseOperations, navigation);
-        }*/
+        }
 
         setTotalPages(responseOperations?.totalPages ?? 1);
         appendOperations(responseOperations?.data ?? []);
 
         setLoading(false);
-        setIsLoadInternal(false);
+        setIsLoadInternal(true);
     };
 
     const getOperationType = () => {
