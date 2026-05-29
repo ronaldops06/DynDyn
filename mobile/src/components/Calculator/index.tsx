@@ -1,7 +1,7 @@
 import React, {useCallback, useState} from "react";
-import {ActivityIndicator, Alert, Text, TouchableOpacity, View} from "react-native";
+import {Text, TouchableOpacity, View} from "react-native";
 
-import CustomModal from "../CustomModal";
+import BottomModal from "../BottomModal";
 import Button from "../Button";
 
 import {useTheme} from "../../contexts/ThemeContext.tsx";
@@ -214,7 +214,7 @@ const Calculator = (props: CalculatorProps) => {
     }
 
     return (
-        <CustomModal
+        <BottomModal
             show={props.show}
             setShow={props.setShow}>
             <View style={calculatorStyle.areaValueDefault}><Text style={style.textPrimary18}>Valor
@@ -263,7 +263,7 @@ const Calculator = (props: CalculatorProps) => {
                     onPress={handleApply}
                 />
             </View>
-        </CustomModal>
+        </BottomModal>
     );
 }
 

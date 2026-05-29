@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Alert, TextInput, TouchableOpacity, View} from "react-native";
-import CustomModal from "../../../components/CustomModal";
+import BottomModal from "../../../components/BottomModal";
 import OperationRoleItem from "./OperationRoleItem";
 import CustomScroll from "../../../components/CustomScroll";
 import * as I from "../../../interfaces/interfaces.tsx";
@@ -145,7 +145,7 @@ const OperationRoleModal = (props: OperationRoleProps) => {
     }
 
     return (
-        <CustomModal show={props.show} setShow={props.setShow}>
+        <BottomModal show={props.show} setShow={props.setShow}>
             <View style={operationRoleModal.areaContent}>
                 <CustomScroll
                     data={operationsRoles}
@@ -182,7 +182,7 @@ const OperationRoleModal = (props: OperationRoleProps) => {
                     }
                 </TouchableOpacity>
             </View>
-        </CustomModal>
+        </BottomModal>
     );
 }
 

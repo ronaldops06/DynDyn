@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {Text, TouchableOpacity, View, TextInput} from "react-native";
 import ExpandIcon from "../../assets/expand.svg";
-import CustomModal from "../CustomModal";
+import BottomModal from "../BottomModal";
 import CustomScroll from "../CustomScroll";
 import SelectItem, {SelectItemRow} from "./SelectItem";
 import TextItem from "../CustomTextInput";
@@ -73,7 +73,7 @@ const Select = (props: SelectProps) => {
                     <ExpandIcon width="25" height="25" fill={theme.colors.quaternaryIcon}/>
                 </TouchableOpacity>
             </View>
-            <CustomModal show={show} setShow={setShow}>
+            <BottomModal show={show} setShow={setShow}>
                 <TextItem
                     text="Search"
                     value={search}
@@ -105,7 +105,7 @@ const Select = (props: SelectProps) => {
                         <Text style={styleCadastro.textButtonSave}>Adicionar</Text>
                     </TouchableOpacity>
                 }
-            </CustomModal>
+            </BottomModal>
         </>
     );
 }

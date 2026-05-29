@@ -4,17 +4,17 @@ import {CustomAlert} from "../../../../components/CustomAlert";
 import {
     alterTotalizerRole,
     createTotalizerRole,
-    excludeTotalizerRole, loadTotalizerRoleByCodeAndType
+    excludeTotalizerRole,
+    loadTotalizerRoleByCodeAndType
 } from "../../../../controller/totalizer.role.controller.ts";
 import * as I from "../../../../interfaces/interfaces.tsx";
-import {alterOperation, createOperation} from "../../../../controller/operation.controller.tsx";
+import {SymbolNumber, SymbolString} from "../../../../interfaces/interfaces.tsx";
 import {PageRegister} from "../../../../components/Page";
 import {useTheme} from "../../../../contexts/ThemeContext.tsx";
 import {getStyle} from "../../../../styles/styles.ts";
 import {getStyleCadastro} from "../../../../styles/styles.cadastro.ts";
 import {Alert, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import Picker from "../../../../components/CustomPicker";
-import {SymbolNumber, SymbolString} from "../../../../interfaces/interfaces.tsx";
 import {constants} from "../../../../constants";
 import RuleIcon from "../../../../assets/rule.svg";
 import {getTotalizerRoleRegisterStyles} from "./styles";

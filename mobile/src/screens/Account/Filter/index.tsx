@@ -11,7 +11,6 @@ import {ActivityIndicator, View} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
 import FieldFilterValue from "../../../components/FieldFilterValue";
-import {constants} from "../../../constants";
 import Select from "../../../components/Select";
 
 interface FiltersProps {

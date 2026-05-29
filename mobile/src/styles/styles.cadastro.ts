@@ -60,7 +60,7 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         marginBottom: 15,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-around"
+        justifyContent: "space-around",
     },
     buttonSave: {
         width: 130,
@@ -82,6 +82,26 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         borderRadius: 30,
         backgroundColor: theme.colors.secondaryBaseColor,
         borderColor: theme.colors.tertiaryBorderColor,
+        borderWidth: 1,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    tertiaryButton: {
+        width: 130,
+        height: 40,
+        borderRadius: 30,
+        backgroundColor: theme.colors.secondaryBaseColor,
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "center"
+    },
+    quaternaryButton: {
+        width: 130,
+        height: 40,
+        borderRadius: 30,
+        backgroundColor: theme.colors.primaryBaseColor,
+        borderColor: theme.colors.primaryBorderColor,
         borderWidth: 1,
         flexDirection: "row",
         justifyContent: "center",

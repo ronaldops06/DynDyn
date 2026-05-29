@@ -8,7 +8,7 @@ import {getStyle} from "../../../styles/styles.ts";
 import Button from "../../Button";
 import HelpIcon from "../../../assets/help_outline.svg";
 import Help from "../../Help";
-import CustomModal from "../../CustomModal";
+import BottomModal from "../../BottomModal";
 import {isInternetConnected} from "../../../utils.ts";
 import {useFocusEffect} from "@react-navigation/native";
 
@@ -90,9 +90,9 @@ const PageRegister = ({
                     disabled={isLoading}
                 />
             </View>
-            <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
+            <BottomModal show={showModalHelp} setShow={setShowModalHelp}>
                 <Help helpType={helpType}/>
-            </CustomModal>
+            </BottomModal>
         </SafeAreaView>
     );
 }

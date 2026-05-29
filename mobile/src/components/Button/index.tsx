@@ -12,23 +12,37 @@ interface ButtonProps {
 }
 
 const Button = (props: ButtonProps) => {
-    const { theme } = useTheme();
+    const {theme} = useTheme();
     const styleCadastro = getStyleCadastro(theme);
-    
+
     const {
         type = 'primary'
     } = props;
-    
+
+    const getButtonStyle = (type: string) => {
+        switch (type) {
+            case 'primary':
+                return styleCadastro.buttonSave;
+            case 'secondary':
+                return styleCadastro.secondaryButton;
+            case 'tertiary':
+                return styleCadastro.tertiaryButton;
+            case 'quaternary':
+                return styleCadastro.quaternaryButton;
+        }
+    }
+
     return (
         <TouchableOpacity
-            style={type === 'primary' ? styleCadastro.buttonSave : styleCadastro.secondaryButton}
+            style={getButtonStyle(type)}
             onPress={props.onPress}
             disabled={props.disabled}
         >
-            {props.loading && 
-                <ActivityIndicator size="small" color={theme.colors.tertiaryTextColor} />
+            {props.loading &&
+                <ActivityIndicator size="small" color={theme.colors.tertiaryTextColor}/>
             }
-            <Text style={type === 'primary' ? styleCadastro.textButtonSave : styleCadastro.textSecondaryButton }>{props.label}</Text>
+            <Text
+                style={type === 'primary' ? styleCadastro.textButtonSave : styleCadastro.textSecondaryButton}>{props.label}</Text>
         </TouchableOpacity>
     );
 }

@@ -8,7 +8,7 @@ import HelpIcon from "../../../assets/help_outline.svg";
 import FilterIcon from "../../../assets/filter_list.svg";
 import FilterActivatedIcon from "../../../assets/filter_activated.svg";
 import Help from "../../Help";
-import CustomModal from "../../CustomModal";
+import BottomModal from "../../BottomModal";
 import DeselectIcon from "../../../assets/deselect.svg";
 import {isInternetConnected} from "../../../utils.ts";
 import {useFocusEffect} from "@react-navigation/native";
@@ -135,12 +135,12 @@ const PageProcess = ({
                         <PlusIcon width="35" height="35" fill={theme.colors.quaternaryIcon}/>
                     </TouchableOpacity>
                 }
-                <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
+                <BottomModal show={showModalHelp} setShow={setShowModalHelp}>
                     <Help helpType={helpType}/>
-                </CustomModal>
-                <CustomModal show={showModalFilter} setShow={setShowModalFilter}>
+                </BottomModal>
+                <BottomModal show={showModalFilter} setShow={setShowModalFilter}>
                     {renderFilters?.(closeModal)}
-                </CustomModal>
+                </BottomModal>
             </View>
         </SafeAreaView>
     )
