@@ -10,7 +10,7 @@ import {TypesCategory} from "../../../enums/enums.tsx";
 import TextInput from "../../../components/CustomTextInput";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
-import {validateLogin, validateSuccess} from "../../../utils.ts";
+import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
 import RuleIcon from "../../../assets/rule.svg";
 
 import {useTheme} from '../../../contexts/ThemeContext';
@@ -50,9 +50,8 @@ const OperationCreate = ({navigation, route}) => {
         useCallback(() => {
             if (route.params?.referenceId !== undefined) {
                 let reference = route.params?.reference;
-                reference = reference.toUpperCase().replace("CREATE", "");
-
-                if (reference === constants.operations.category.toUpperCase())
+                
+                if (reference === constants.operations.category)
                 {
                     getCategories();
                     
@@ -67,8 +66,8 @@ const OperationCreate = ({navigation, route}) => {
         if (isEditing) {
             loadDataSreen();
         }
-        const parent = navigation.getParent();
-        const tab = parent?.getState().routes[parent.getState().index].name;
+        
+        const tab = getCurrentStack(navigation);
         setStack(tab);
     }, [])
     
@@ -221,6 +220,7 @@ const OperationCreate = ({navigation, route}) => {
                     registerScreen={"CategoryCreate"}
                     navigation={navigation}
                     sourceScreen={route.name}
+                    reference={constants.operations.category}
                 />
                 <View style={styleCadastro.areaGroupCheckbox}>
                     <View style={operationCreateStyle.areaCheckbox}>
@@ -253,7 +253,7 @@ const OperationCreate = ({navigation, route}) => {
                 </View>
                 <AuxiliaryButton
                     text="Papéis de Operações"
-                    onPress={setShowModalRole(true)}
+                    onPress={() => setShowModalRole(true)}
                     icon={<RuleIcon width="30" height="30" fill={theme.colors.primaryIcon}/>}
                 />
                 <ScrollView style={operationCreateStyle.scrollRoles} nestedScrollEnabled>

@@ -148,7 +148,7 @@ const populateInternalFields = (operation: I.Operation, response: I.Response) =>
 export const excludeOperation = async (operationId: number, operationInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
-    response.success = true;
+    response.isLogged = true;
 
     let login = await getUserLoginEncrypt();
     

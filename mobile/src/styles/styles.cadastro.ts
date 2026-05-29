@@ -95,7 +95,6 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
     primaryAuxiliaryButton: {
         backgroundColor: theme.colors.primaryBaseColor,
         height: 40,
-        marginHorizontal: 30,
         paddingHorizontal: 20,
         borderRadius: 5,
         flexDirection: "row",
@@ -107,7 +106,6 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         borderWidth: 1,
         borderColor: theme.colors.tertiaryBorderColor,
         height: 40,
-        marginHorizontal: 30,
         paddingHorizontal: 20,
         borderRadius: 5,
         flexDirection: "row",

@@ -10,6 +10,7 @@ export const constants = {
         trash: 'trash',
         operationRole: 'operationRole',
         totalizerRole: 'totalizerRole',
+        destinationPortfolio: 'destinationPortfolio', 
     },
     categoryType: {
         account: { Id: 1, Name: 'Conta' },

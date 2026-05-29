@@ -151,6 +151,7 @@ const populateInternalFields = (portfolio: I.Portfolio, response: I.Response) =>
 export const excludePortfolio = async (portfolioId: number, portfolioInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+    response.isLogged = true;
 
     let login = await getUserLoginEncrypt();
     if (await existsTransactionRelationshipPortfolio(login, portfolioInternalId)) {

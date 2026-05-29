@@ -18,13 +18,13 @@ export const validateLogin = (response: I.Response, navigation: any) => {
         navigation.navigate("SignIn");
 }
 
-export const validateSuccess = (response: I.Response, navigation: any, screem: string) => {
+export const validateSuccess = (response: I.Response, navigation: any, screem: string, reference: string | null = null) => {
     if (response.success) {
         if (screem) {
             navigation.popTo(screem, {
                 actionNavigation: constants.actionNavigation.reload,
                 referenceId: response.data?.Id,
-                reference: navigation.getState().routes[navigation.getState().index].name
+                reference: reference
             });
         } else {
             navigation.goBack();
@@ -57,6 +57,11 @@ export const getUserLoginEncrypt = async (): Promise<string> => {
 
     if (user)
         return encrypt(user.Login);
+}
+
+export const getCurrentStack = (navigation: any): string => {
+    const parent = navigation.getParent();
+    return parent?.getState().routes[parent.getState().index].name;
 }
 
 export const encrypt = async (value: string): Promise<string> => {

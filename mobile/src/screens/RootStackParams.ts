@@ -14,11 +14,11 @@ export type RootStackParamList = {
     DeleteAccount: { login: string } | undefined;
     Dashboard: undefined;
     Account: undefined;
-    AccountCreate: { isEditing: boolean, data: I.Portfolio | null } | undefined;
+    AccountCreate: { isEditing: boolean, data: I.Portfolio | null, sourceScreen: string | null, reference: string } | undefined;
     Transaction: undefined;
     TransactionCreate: {isEditing: boolean, data: I.Transaction | null } | undefined;
     Category: { actionNavigation: string } | undefined;
-    CategoryCreate: {isEditing: boolean, data: I.Category | null, sourceScreen: string | null } | undefined;
+    CategoryCreate: {isEditing: boolean, data: I.Category | null, sourceScreen: string | null, reference: string } | undefined;
     Operation: undefined;
     OperationCreate: {isEditing: boolean, data: I.Operation | null } | undefined;
     OperationRole: undefined;

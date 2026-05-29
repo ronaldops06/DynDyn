@@ -23,6 +23,7 @@ interface SelectProps {
     registerScreen?: string | undefined;
     sourceScreen?: string | undefined;
     navigation?: any | undefined;
+    reference?: string | undefined;
     data: SelectItemRow[];
 }
 
@@ -46,7 +47,7 @@ const Select = (props: SelectProps) => {
     }
 
     const goTo = () => {
-        let param = {isEditing: false, data: null, sourceScreen: props.sourceScreen };
+        let param = {isEditing: false, data: null, sourceScreen: props.sourceScreen, reference: props.reference };
         props.navigation.navigate(props.parentScreen, {
             screen: props.registerScreen,
             params: param

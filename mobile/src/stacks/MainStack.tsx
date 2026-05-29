@@ -1,9 +1,9 @@
 import React from 'react';
 
 import Account from '../screens/Account';
-import AccountCreate from "../screens/Account/create.tsx";
+import AccountCreate from "../screens/Account/Register";
 import Category from '../screens/Category';
-import CategoryCreate from '../screens/Category/create';
+import CategoryCreate from '../screens/Category/Register';
 import Operation from '../screens/Operation';
 import OperationCreate from '../screens/Operation/Register';
 import Home from '../screens/Home';
@@ -20,7 +20,7 @@ import RecoveryLogin from "../screens/SignUp/Recovery/recovery.login.tsx"
 import RecoveryValidation from "../screens/SignUp/Recovery/recovery.validation.tsx"
 import RecoveryPassword from "../screens/SignUp/Recovery/recovery.password.tsx"
 import Transaction from '../screens/Transaction';
-import TransactionCreate from '../screens/Transaction/create';
+import TransactionCreate from '../screens/Transaction/Register';
 import TotalizerRole from "../screens/Home/TotalizerRole";
 import TotalizerRoleCreate from "../screens/Home/TotalizerRole/Register";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -42,6 +42,7 @@ export const AccountStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="AccountHome" component={Account} initialParams={{ actionNavigation: constants.actionNavigation.reload }}/>
         <Stack.Screen name="AccountCreate" component={AccountCreate}/>
+        <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
     </Stack.Navigator>
 );
 
@@ -49,6 +50,8 @@ export const TransactionStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="TransactionHome" component={Transaction}/>
         <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
+        <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
+        <Stack.Screen name="AccountCreate" component={AccountCreate}/>
     </Stack.Navigator>
 );
 

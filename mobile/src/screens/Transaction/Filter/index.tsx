@@ -14,6 +14,7 @@ import Button from "../../../components/Button";
 import {ActivityIndicator, ScrollView, View} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import FieldFilterValue from "../../../components/FieldFilterValue";
+import Select from "../../../components/Select";
 
 interface FiltersProps {
     filter: TransactionFilter
@@ -113,23 +114,23 @@ const Filter = (props: FiltersProps) => {
                             setValue={setSituation}
                             valueDefault={Situation.All}
                         />
-                        <Picker
-                            data={categories}
-                            text={"Categoria"}
+                        <Select
+                            label={"Categoria"}
                             value={category}
                             setValue={setCategory}
+                            data={categories}
                         />
-                        <Picker
-                            data={operations}
-                            text={"Operação"}
+                        <Select
+                            label={"Operação"}
                             value={operation}
                             setValue={setOperation}
+                            data={operations}
                         />
-                        <Picker
-                            data={portfolios}
-                            text={"Conta"}
+                        <Select
+                            label={"Conta"}
                             value={portfolio}
                             setValue={setPortfolio}
+                            data={portfolios}
                         />
                         <FieldFilterValue value={value} setValue={setValue}/>
                     </ScrollView>
