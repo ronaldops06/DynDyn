@@ -1,19 +1,16 @@
 import Moment from 'moment';
-import SQLite from "react-native-sqlite-storage";
 
 import {constants} from "../constants";
 import {TypesTransaction} from '../enums/enums';
 import {
-    Portfolio,
-    Category,
+    DashboardItem,
     Operation,
+    Portfolio,
     Transaction,
     TransactionTotals,
-    TransactionView,
-    DashboardItem, OperationRole
+    TransactionView
 } from "../interfaces/interfaces";
 import {openDatabase} from "./database";
-import operation from "../screens/Operation";
 
 export const createTableTransaction = async () => {
     const db = await openDatabase();
@@ -39,6 +36,7 @@ export const createTableTransaction = async () => {
     `);
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_id ON transactions (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_reference ON transactions (reference);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_portfolio_id ON transactions (portfolio_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_operation_id ON transactions (operation_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_data_criacao ON transactions (data_criacao);`);

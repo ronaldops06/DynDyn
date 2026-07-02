@@ -9,6 +9,7 @@ import {getFilterStyles} from "./styles";
 import Button from "../../../components/Button";
 import {ActivityIndicator, View} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
+import Select from "../../../components/Select";
 
 interface FiltersProps {
     filter: I.OperationFilter
@@ -96,11 +97,11 @@ const Filter = (props: FiltersProps) => {
                         setValue={setSituation}
                         valueDefault={Situation.All}
                     />
-                    <Picker
-                        data={categories}
-                        text={"Categoria"}
+                    <Select
+                        label={"Categoria"}
                         value={category}
                         setValue={setCategory}
+                        data={categories}
                     />
                     <Picker
                         data={situations}

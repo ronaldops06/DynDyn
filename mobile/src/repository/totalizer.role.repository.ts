@@ -24,6 +24,7 @@ export const createTableTotalizerRole = async () => {
     `);
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_totalizer_roles_id ON totalizer_roles (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_totalizer_reference ON totalizer_roles (reference);`);
 
     await db.executeSql(`
         CREATE TABLE IF NOT EXISTS totalizers_roles_link
@@ -37,6 +38,10 @@ export const createTableTotalizerRole = async () => {
                 REFERENCES operation_roles(internal_id) ON DELETE CASCADE
         )
     `);
+
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_totalizers_link_totalizer_role_id ON totalizers_roles_link (totalizer_role_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_totalizer_link_operation_role_id ON totalizers_roles_link (operation_role_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_totalizer_link_reference ON totalizers_roles_link (reference);`);
 };
 
 export const insertTotalizerRole = async (userLogin: string, totalizerRole: TotalizerRole): Promise<TotalizerRole> => {

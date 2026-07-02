@@ -8,7 +8,7 @@ import {getStyle} from "../../../styles/styles.ts";
 import Button from "../../Button";
 import HelpIcon from "../../../assets/help_outline.svg";
 import Help from "../../Help";
-import CustomModal from "../../CustomModal";
+import BottomModal from "../../BottomModal";
 import {isInternetConnected} from "../../../utils.ts";
 import {useFocusEffect} from "@react-navigation/native";
 
@@ -79,19 +79,20 @@ const PageRegister = ({
                         <View style={style.viewAreaMessage}><Text style={style.textMessage}>{localMessage}</Text></View>
                     }
                     {children}
-                    <View style={styleCadastro.areaButtonSave}>
-                        <Button
-                            label={"Salvar"}
-                            onPress={onSaveClick}
-                            loading={isLoading}
-                            disabled={isLoading}
-                        />
-                    </View>
+                    
                 </View>
-                <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
-                    <Help helpType={helpType}/>
-                </CustomModal>
             </ScrollView>
+            <View style={styleCadastro.areaButtonSave}>
+                <Button
+                    label={"Salvar"}
+                    onPress={onSaveClick}
+                    loading={isLoading}
+                    disabled={isLoading}
+                />
+            </View>
+            <BottomModal show={showModalHelp} setShow={setShowModalHelp}>
+                <Help helpType={helpType}/>
+            </BottomModal>
         </SafeAreaView>
     );
 }

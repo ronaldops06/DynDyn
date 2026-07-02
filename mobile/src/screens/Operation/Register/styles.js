@@ -14,16 +14,6 @@ export const getOperationCreateStyle = (theme) => StyleSheet.create({
         ...getStyleCadastro(theme).areaCheckbox,
         marginTop: 30,
     },
-    buttonAddRole: {
-        backgroundColor: theme.colors.primaryBaseColor,
-        height: 40,
-        marginTop: 20,
-        paddingHorizontal: 20,
-        borderRadius: 5,
-        flexDirection: "row",
-        justifyContent: "flex-start",
-        alignItems: "center"
-    },
     scrollRoles: {
         minHeight: 50,
         maxHeight: 150

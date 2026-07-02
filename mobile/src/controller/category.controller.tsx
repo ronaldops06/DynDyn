@@ -130,6 +130,8 @@ const populateInternalFields = (category: I.Category, response: I.Response) => {
 export const excludeCategory = async (categoryId: number, categoryInternalId: number): Promise<I.Response> => {
     let response: I.Response = {} as I.Response;
     response.success = false;
+    response.isLogged = true;
+    
     let login = await getUserLoginEncrypt();
     
     if (await existsPortfolioRelationshipCategory(login, categoryInternalId)) {

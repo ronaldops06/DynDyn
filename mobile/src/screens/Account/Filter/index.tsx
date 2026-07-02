@@ -11,6 +11,7 @@ import {ActivityIndicator, View} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
 import FieldFilterValue from "../../../components/FieldFilterValue";
+import Select from "../../../components/Select";
 
 interface FiltersProps {
     filter: I.PortfolioFilter
@@ -103,17 +104,17 @@ const Filter = (props: FiltersProps) => {
                         setValue={setSituation}
                         valueDefault={Situation.All}
                     />
-                    <Picker
-                        data={categories}
-                        text={"Categoria"}
+                    <Select
+                        label={"Categoria"}
                         value={category}
                         setValue={setCategory}
+                        data={categories}
                     />
-                    <Picker
-                        data={portfolios}
-                        text={"Conta Pai"}
+                    <Select
+                        label={"Conta Pai"}
                         value={parentPortfolio}
                         setValue={setParentPortfolio}
+                        data={portfolios}
                     />
                     <FieldFilterValue value={value} setValue={setValue} />
                 </View>

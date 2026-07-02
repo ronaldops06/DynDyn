@@ -33,7 +33,7 @@ const Portfolio = ({navigation, route}) => {
     const isFirstRender = useRef(true);
     const [filter, setFilter] = useState<I.PortfolioFilter>({} as I.PortfolioFilter);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
+    const [isLoadInternal, setIsLoadInternal] = useState(true);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
@@ -98,7 +98,7 @@ const Portfolio = ({navigation, route}) => {
         appendPortfolios(responsePortfolios?.data ?? []);
 
         setLoading(false);
-        setIsLoadInternal(false);
+        setIsLoadInternal(true);
     };
 
     const filterData = (portfolios: I.Portfolio[]): I.Portfolio[] => {

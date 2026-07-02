@@ -10,6 +10,7 @@ import ClockIcon from '../../assets/clock.svg';
 import TodayIcon from '../../assets/today.svg';
 import HistoryIcon from '../../assets/history.svg';
 import CalculatorIcon from '../../assets/calculate.svg';
+import CopyIcon from '../../assets/copy.svg';
 import ButtonSelectBar, {ButtonsSelectedProps} from '../../components/ButtonSelectBar';
 import Picker from '../../components/CustomPicker';
 import TextInput from '../../components/CustomTextInput';
@@ -18,8 +19,8 @@ import {TypesCategory, TypesTransaction} from '../../enums/enums';
 import * as I from '../../interfaces/interfaces';
 
 import {alterTransaction, createTransaction, excludeTransaction} from '../../controller/transaction.controller';
-import {loadAllCategory} from "../../controller/category.controller.tsx";
-import {loadAllPortfolio} from "../../controller/portfolio.controller.tsx";
+import {loadAllCategoryInternal} from "../../controller/category.controller.tsx";
+import {loadAllPortfolioInternal} from "../../controller/portfolio.controller.tsx";
 
 import {constants} from "../../constants";
 import {getDate, toLocalDate, validateLogin, validateSuccess} from "../../utils.ts";
@@ -28,6 +29,8 @@ import {useTheme} from '../../contexts/ThemeContext';
 import {getStyleCadastro} from '../../styles/styles.cadastro';
 import {getTransactionCreateStyle} from './create.styles';
 import Calculator from "../../components/Calculator";
+import RuleIcon from "../../assets/rule.svg";
+import AuxiliaryButton from "../../components/AuxiliaryButton";
 
 const TransactionCreate = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -36,9 +39,9 @@ const TransactionCreate = ({navigation, route}) => {
 
     const stepInput: React.RefObject<any> = React.createRef();
 
-    const transactionId = route.params?.data?.Id ?? 0;
-    const transactionInternalId = route.params?.data?.InternalId ?? 0;
-    const isEditing = route.params?.isEditing ?? false;
+    const paramTransactionId = route.params?.data?.Id ?? 0;
+    const paramTransactionInternalId = route.params?.data?.InternalId ?? 0;
+    const paramIsEditing = route.params?.isEditing ?? false;
     const baseOperation = {} as I.Operation;
 
     const [loading, setLoading] = useState(false);
@@ -47,6 +50,9 @@ const TransactionCreate = ({navigation, route}) => {
     const [mode, setMode] = useState('date');
     const [categories, setCategories] = useState<I.Category[]>([]);
     const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
+    const [transactionId, setTransactionId]  = useState(0);
+    const [transactionInternalId, setTransactionInternalId]  = useState(0);
+    const [isEditing, setIsEditing]  = useState(false);
     const [valueValue, setValueValue] = useState(0);
     const [operation, setOperation] = useState<I.Operation>(baseOperation);
     const [valueDescription, setValueDescription] = useState("");
@@ -66,10 +72,10 @@ const TransactionCreate = ({navigation, route}) => {
     const [showCalculator, setShowCalculator] = useState(false);
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Operation, null, true);
+        let responseCategories = await loadAllCategoryInternal(TypesCategory.Operation, null, true);
         validateLogin(responseCategories, navigation);
 
-        let responsePortfolios = await loadAllPortfolio(null, true);
+        let responsePortfolios = await loadAllPortfolioInternal(null, true);
         validateLogin(responsePortfolios, navigation);
 
         setCategories(responseCategories?.data ?? []);
@@ -115,21 +121,26 @@ const TransactionCreate = ({navigation, route}) => {
 
     useEffect(() => {
         stepInput.current.focus();
-        if (isEditing) {
+        
+        setIsEditing(paramIsEditing);
+        setTransactionId(paramTransactionId);
+        setTransactionInternalId(paramTransactionInternalId);
+        
+        if (paramIsEditing) {
             loadDataSreen();
         }
     }, [])
 
     useEffect(() => {
         setMode('date');
-        if (!isEditing) {
+        if (!paramIsEditing) {
             setValueDate(Moment(new Date()).format('DD/MM/YYYY'))
             setValueTime(Moment(new Date()).format('HH:mm:ss'));
             clearOperation();
         }
         getLists();
 
-        if (isEditing)
+        if (paramIsEditing)
             return;
 
         if (typeSelected == TypesTransaction.Transference) {
@@ -262,6 +273,13 @@ const TransactionCreate = ({navigation, route}) => {
             setValueTimes(1);
 
         setIsPaindInstallments(value);
+    }
+    
+    const handleCopyClick = () => {
+        setIsEditing(false);
+        setTransactionId(0);
+        setTransactionInternalId(0);
+        Alert.alert("Atenção!", "Você gerou uma cópia da transação.");
     }
 
     const handleSaveClick = async () => {
@@ -484,7 +502,16 @@ const TransactionCreate = ({navigation, route}) => {
                     </>
                 }
             </View>
-
+            {isEditing &&
+                <View style={transactionCreateStyle.areaMoreActions}>
+                    <AuxiliaryButton
+                        text="Copiar Transação"
+                        onPress={handleCopyClick}
+                        icon={<CopyIcon width="30" height="30" fill={theme.colors.quaternaryIcon}/>}
+                        type="secondary"
+                    />
+                </View>
+            }
             <OperationModal
                 show={showModal}
                 setShow={setShowModal}

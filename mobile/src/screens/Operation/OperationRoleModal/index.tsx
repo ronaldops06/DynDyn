@@ -1,21 +1,21 @@
 import React, {useEffect, useState} from "react";
-import {Alert, TouchableOpacity, View, TextInput} from "react-native";
-import CustomModal from "../../../components/CustomModal";
+import {Alert, TextInput, TouchableOpacity, View} from "react-native";
+import BottomModal from "../../../components/BottomModal";
 import OperationRoleItem from "./OperationRoleItem";
 import CustomScroll from "../../../components/CustomScroll";
 import * as I from "../../../interfaces/interfaces.tsx";
 import {
-    alterOperationRole, createOperationRole,
+    alterOperationRole,
+    createOperationRole,
     excludeOperationRole,
-    loadAllOperationRole
+    loadAllOperationRoleInternal
 } from "../../../controller/operation.role.controller.ts";
-import {validateLogin, validateSuccess} from "../../../utils.ts";
+import {validateLogin} from "../../../utils.ts";
 import {useTheme} from "../../../contexts/ThemeContext.tsx";
 import {getOperationRoleModalStyle} from "./styles";
 import PlusIcon from "../../../assets/plus.svg"
 import DoneIcon from "../../../assets/done.svg";
 import {CustomAlert} from "../../../components/CustomAlert";
-import {excludeOperation} from "../../../controller/operation.controller.tsx";
 
 interface OperationRoleProps {
     show: boolean;
@@ -55,7 +55,7 @@ const OperationRoleModal = (props: OperationRoleProps) => {
     const loadOperationsRoles = async () => {
         setLoading(true);
 
-        let response = await loadAllOperationRole(pageNumber);
+        let response = await loadAllOperationRoleInternal(pageNumber);
         setOperationsRoles(response?.data ?? []);
         setLoading(false);
     };
@@ -145,7 +145,7 @@ const OperationRoleModal = (props: OperationRoleProps) => {
     }
 
     return (
-        <CustomModal show={props.show} setShow={props.setShow}>
+        <BottomModal show={props.show} setShow={props.setShow}>
             <View style={operationRoleModal.areaContent}>
                 <CustomScroll
                     data={operationsRoles}
@@ -182,7 +182,7 @@ const OperationRoleModal = (props: OperationRoleProps) => {
                     }
                 </TouchableOpacity>
             </View>
-        </CustomModal>
+        </BottomModal>
     );
 }
 

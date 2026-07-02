@@ -30,14 +30,14 @@ const MainTab = () => {
             tabBar={props => <CustomTabBar {...props} />}
         >
             <Tab.Screen name="Home" component={HomeStack} options={hideTabOnScreens(['TransactionCreate'])}/>
-            <Tab.Screen name="Account" component={AccountStack} options={hideTabOnScreens(['AccountCreate'])}/>
+            <Tab.Screen name="Account" component={AccountStack} options={hideTabOnScreens(['AccountCreate', 'CategoryCreate'])}/>
             <Tab.Screen 
                 name="Transaction" 
                 component={TransactionStack} 
-                options={hideTabOnScreens(['TransactionCreate'])}
+                options={hideTabOnScreens(['TransactionCreate','CategoryCreate','AccountCreate'])}
             />
             <Tab.Screen name="Category" component={CategoryStack} options={hideTabOnScreens(['CategoryCreate'])}/>
-            <Tab.Screen name="Operation" component={OperationStack} options={hideTabOnScreens(['OperationCreate'])}/>
+            <Tab.Screen name="Operation" component={OperationStack} options={hideTabOnScreens(['OperationCreate', 'CategoryCreate'])}/>
         </Tab.Navigator>
     );
 }

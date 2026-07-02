@@ -1,14 +1,14 @@
 import {constants} from "../../constants";
 import React, {useEffect, useState} from "react";
 import * as I from "../../interfaces/interfaces.tsx";
-import {loadAllCategory} from "../../controller/category.controller.tsx";
+import {loadAllCategoryInternal} from "../../controller/category.controller.tsx";
 import {TypesCategory} from "../../enums/enums.tsx";
 import {Alert, Text, View} from "react-native";
 import {
     alterPortfolio,
     createPortfolio,
     excludePortfolio,
-    loadAllPortfolio
+    loadAllPortfolioInternal
 } from "../../controller/portfolio.controller.tsx";
 import TextInput from "../../components/CustomTextInput";
 import Picker from "../../components/CustomPicker";
@@ -49,10 +49,10 @@ const PortfolioCreate = ({navigation, route}) => {
     }, [])
 
     const getLists = async () => {
-        let responseCategories = await loadAllCategory(TypesCategory.Account, null, true);
+        let responseCategories = await loadAllCategoryInternal(TypesCategory.Account, null, true);
         validateLogin(responseCategories, navigation);
 
-        let responsePortfolios = await loadAllPortfolio(null, true);
+        let responsePortfolios = await loadAllPortfolioInternal(null, true);
         validateLogin(responsePortfolios, navigation);
 
         setCategories(responseCategories?.data ?? []);

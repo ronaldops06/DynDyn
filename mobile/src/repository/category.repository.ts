@@ -21,6 +21,7 @@ export const createTableCategory = async () => {
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_categories_id ON categories (id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_categories_type ON categories (type);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_categories_reference ON categories (reference);`);
 };
 
 export const insertCategory = async (userLogin: string, category: Category): Promise<Category> => {

@@ -6,117 +6,101 @@ import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import PrevIcon from "../../assets/nav_prev.svg";
 import HelpIcon from "../../assets/help_outline.svg";
 import Help from "../../components/Help";
-import CustomModal from "../../components/CustomModal";
-import {VictoryAxis, VictoryBar, VictoryChart, VictoryLine, VictoryTheme, VictoryTooltip} from 'victory-native';
-import { loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller.tsx'
+import BottomModal from "../../components/BottomModal";
+import {VictoryAxis, VictoryBar, VictoryChart, VictoryTheme, VictoryTooltip} from 'victory-native';
+import {loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller.tsx'
 import * as I from "../../interfaces/interfaces.tsx"
 import {useFocusEffect} from "@react-navigation/native";
 import {loadDashboardTransactionFromCategory} from "../../controller/transaction.controller.tsx";
-import {dashboardStyle} from "./styles";
+import {getDashboardStyle} from "./styles";
 import {constants} from "../../constants";
+import MonthYearSelector from "../../components/MonthYearPicker";
+import WidgetLine from "./WidgetLine";
+import WidgetBar from "./WidgetBar";
 
 const Dashboard = ({navigation, route}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
+    const dashboardStyle = getDashboardStyle(theme);
 
     const [showModalHelp, setShowModalHelp] = useState(false);
     const [balancesPeriod, setBalancesPeriod] = useState<I.DashboardItem[]>([]);
     const [valueCategoryExpense, setValueCategoryExpense] = useState<I.DashboardItem[]>([]);
-    const [valueCategoryRevenue, setValueCategoryRevenue] = useState<I.DashboardItem[]>([]);
+    const [dateCategoryExpense, setDateCategoryExpense] = useState<Date>(null);
+    const [initialDateBalance, setInitialDateBalance] = useState<Date>(null);
+    const [endDateSaldo, setEndDateSaldo] = useState<Date>(null);
 
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
                 await loadData();
             }
-
+            
             fetchData();
         }, [])
     );
-    
+
     const handleBackClick = () => {
         navigation.goBack();
     };
-    
-    const _renderWidgetBar = (description: string, data: I.DashboardItem[]) => {
-        
-        if (!data) return;
-        
-        return(
-            <View>
-                <Text style={style.textPrimary18}>{description}</Text>
-                <VictoryChart
-                    style={{
-                        background: { fill: theme.colors.secondaryBaseColor },
-                    }}
-                    padding={{ top: 40, bottom: 180, left: 50, right: 50 }}
-                    theme={VictoryTheme.material}
-                    domainPadding={{ x: 30 }}>
-                    <VictoryAxis
-                        tickValues={data?.sort((a, b) => b?.Value - a?.Value).map(d => d?.Label)}
-                        style={{
-                            tickLabels: {
-                                fontSize: 14,
-                                padding: 5,
-                                angle: -90,
-                                fill: theme.colors.primaryTextColor,
-                                textAnchor: 'end',
-                                verticalAnchor: 'start',
-                                dy: -10,
-                            }
-                        }}
 
-                    />
-                    <VictoryAxis dependentAxis/>
+    const loadData = async () => {
+        if (initialDateBalance === null) {
+            const dataAnterior = new Date();
+            dataAnterior.setMonth(dataAnterior.getMonth() - 6);
+            setInitialDateBalance(dataAnterior);
 
-                    <VictoryBar
-                        data={data?.sort((a, b) => b?.Value - a?.Value)}
-                        x="Label"
-                        y="Value"
-                        labels={({ datum }) =>
-                            typeof datum?.Value === 'number'
-                                ? `R$ ${datum?.Value?.toFixed(2)?.toString()}`
-                                : ''
-                        }
-                        barWidth={10}
-                        alignment="middle"
-                        style={{
-                            data: {fill: theme.colors.secondaryMonetaryColor},
-                            labels: {
-                                fill: theme.colors.primaryMonetaryColor,
-                                fontSize: 14,
-                            },
-                        }}
-                        animate={{
-                            duration: 600,
-                            easing: 'quadInOut',
-                        }}
-                        labelComponent={<VictoryTooltip/>}
-                    />
-                </VictoryChart>
-            </View>
-        );
+            let responseBalances = await loadDashboardBalanceGroupByMonth(dataAnterior.getFullYear(), dataAnterior.getMonth());
+            setBalancesPeriod(responseBalances);
+        }
+        
+        if (dateCategoryExpense === null) {
+            let date = new Date();
+            setDateCategoryExpense(date);
+            
+            let mountDateInicio = new Date(date.getFullYear(), date.getMonth(), 5, 0, 0, 0);
+            let mountDateFim = new Date(date.getFullYear(), date.getMonth() + 1, 4, 23, 59, 59);
+                        
+            let responseTransactions = await loadDashboardTransactionFromCategory(mountDateInicio, mountDateFim, constants.operationType.expense.Id);
+            setValueCategoryExpense(responseTransactions);
+        }
+    }
+
+    const setMonthAndYearInDate = (date: Date, month: number, year: number) => {
+        return new Date(year, month, date.getDate(), date.getHours(), date.getMinutes(), date.getSeconds());
+    }
+        
+    const onMonthInitialDateBalance = (month: number) => {
+        setInitialDateBalance(setMonthAndYearInDate(initialDateBalance, month, initialDateBalance.getFullYear()));
     }
     
-    const loadData = async () => {
-        const dataAnterior = new Date();
-        dataAnterior.setMonth(dataAnterior.getMonth() - 6);
+    const onYearInitialDateBalance = (year: number) => {
+        setInitialDateBalance(setMonthAndYearInDate(initialDateBalance, initialDateBalance.getMonth(), year));
+    }
 
-        let responseBalances = await loadDashboardBalanceGroupByMonth(dataAnterior.getFullYear(), dataAnterior.getMonth());
+    const handleApplyFilterBalance = async () => {
+        let responseBalances = await loadDashboardBalanceGroupByMonth(initialDateBalance.getFullYear(), initialDateBalance.getMonth());
         setBalancesPeriod(responseBalances);
+    }
 
-        let date = new Date();
-        let mountDateInicio = new Date(date.getFullYear(), date.getMonth(), 5, 0, 0, 0);
-        let mountDateFim = new Date(date.getFullYear(), date.getMonth() + 1, 4, 23, 59, 59);
+    const onMonthDateCategoryExpense = (month: number) => {
+        setDateCategoryExpense(setMonthAndYearInDate(dateCategoryExpense, month, dateCategoryExpense.getFullYear()));
+    }
+
+    const onYearDateCategoryExpense = (year: number) => {
+        setDateCategoryExpense(setMonthAndYearInDate(dateCategoryExpense, dateCategoryExpense.getMonth(), year));
+    }
+
+    const handleApplyFilterCategoryExpense = async () => {
+        let mountDateInicio = new Date(dateCategoryExpense.getFullYear(), dateCategoryExpense.getMonth(), 5, 0, 0, 0);
+        let mountDateFim = new Date(dateCategoryExpense.getFullYear(), dateCategoryExpense.getMonth() + 1, 4, 23, 59, 59);
+
         let responseTransactions = await loadDashboardTransactionFromCategory(mountDateInicio, mountDateFim, constants.operationType.expense.Id);
         setValueCategoryExpense(responseTransactions);
-        
-        responseTransactions = await loadDashboardTransactionFromCategory(mountDateInicio, mountDateFim, constants.operationType.revenue.Id);
-        setValueCategoryRevenue(responseTransactions);
     }
-    
-    return(
+            
+    return (
         <SafeAreaView style={[style.container, style.containerCadastro]}>
             <ScrollView style={style.scrollCadastro}>
                 <View style={styleCadastro.viewHeaderCadastro}>
@@ -133,47 +117,40 @@ const Dashboard = ({navigation, route}) => {
                     </View>
                 </View>
                 <View style={[styleCadastro.viewBodyCadastro, dashboardStyle.areaBody]}>
-                    <Text style={style.textPrimary18}>Saldo dos últimos 6 meses</Text>
-                    <VictoryChart theme={VictoryTheme.material}
-                                  domainPadding={{x: 30, y: [20, 20]}}>
-                        <VictoryAxis
-                            style={{
-                                tickLabels: {
-                                    fontSize: 14,
-                                    padding: 5,
-                                    angle: -90,
-                                    fill: theme.colors.primaryTextColor,
-                                    textAnchor: 'end',
-                                    verticalAnchor: 'start',
-                                    dy: -10,
-                                }
-                            }}
-                        />
-                        <VictoryAxis
-                            dependentAxis
-                            tickFormat={(x) => `${x}`}
-                            style={{
-                                tickLabels: {fontSize: 12, padding: 5},
-                            }}
-                        />
+                    <Text style={[style.textPrimary18, dashboardStyle.textInfoBlock]}>Acompanhamento de saldos</Text>
+                    <WidgetLine
+                        description="Saldos"
+                        data={balancesPeriod}
+                        renderFilters={
+                            <MonthYearSelector
+                                text="Período Inicial"
+                                month={initialDateBalance?.getMonth() ?? 0}
+                                year={initialDateBalance?.getFullYear() ?? 2000}
+                                onMonthChange={onMonthInitialDateBalance}
+                                onYearChange={onYearInitialDateBalance}
+                            />
+                        }
+                        onCloseFilters={handleApplyFilterBalance}
+                    />
+                    <WidgetBar 
+                        description="Despesas por categoria" 
+                        data={valueCategoryExpense}
+                        renderFilters={
+                            <MonthYearSelector
+                                text="Mês de Referência"
+                                month={dateCategoryExpense?.getMonth() ?? 0}
+                                year={dateCategoryExpense?.getFullYear() ?? 2000}
+                                onMonthChange={onMonthDateCategoryExpense}
+                                onYearChange={onYearDateCategoryExpense}
+                            />
+                        }
+                        onCloseFilters={handleApplyFilterCategoryExpense}
+                    />
 
-                        <VictoryLine
-                            data={balancesPeriod}
-                            x="Label"
-                            y="Value"
-                            style={{
-                                data: {stroke: theme.colors.secondaryMonetaryColor, strokeWidth: 3},
-                            }}
-                            interpolation="monotoneX"
-                        />
-                        
-                    </VictoryChart>
-                    {_renderWidgetBar("Despesas por categoria no mês atual", valueCategoryExpense)}
-                    
                 </View>
-                <CustomModal show={showModalHelp} setShow={setShowModalHelp}>
+                <BottomModal show={showModalHelp} setShow={setShowModalHelp}>
                     <Help helpType="dashboard"/>
-                </CustomModal>
+                </BottomModal>
             </ScrollView>
         </SafeAreaView>
     );

@@ -39,19 +39,19 @@ jobs:
       - name: Enviar para EC2
         uses: appleboy/scp-action@v0.1.4
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          host: ${{ secrets.ORACLE_EC2_HOST }}
+          username: ${{ secrets.ORACLE_EC2_USER }}
+          key: ${{ secrets.ORACLE_EC2_SSH_KEY }}
           source: "./server_v2/src/Api.Application/publish/"
-          target: "/home/ubuntu/sagemoney"
+          target: "/home/deploy/sagemoney"
           strip_components: 5
           
       - name: Executar comandos no EC2 (opcional, tipo restart)
         uses: appleboy/ssh-action@v0.1.6
         with:
-          host: ${{ secrets.AWS_EC2_HOST }}
-          username: ${{ secrets.AWS_EC2_USER }}
-          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          host: ${{ secrets.ORACLE_EC2_HOST }}
+          username: ${{ secrets.ORACLE_EC2_USER }}
+          key: ${{ secrets.ORACLE_EC2_SSH_KEY }}
           script: |
             sudo systemctl daemon-reload && 
             sudo systemctl restart sagemoney.service && 

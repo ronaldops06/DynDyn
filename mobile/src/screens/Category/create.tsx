@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Text, View} from 'react-native';
 import TextInput from "../../components/CustomTextInput";
-import Picker from "../../components/CustomPicker";
 import {constants} from "../../constants";
 import CheckBox from "@react-native-community/checkbox";
 
@@ -14,6 +13,7 @@ import {getStyleCadastro} from '../../styles/styles.cadastro';
 import {getStyle} from "../../styles/styles.ts";
 import {getCategoryCreateStyle} from "./create.styles";
 import {PageRegister} from "../../components/Page";
+import Select from "../../components/Select";
 
 const CategoryCreate = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -24,6 +24,7 @@ const CategoryCreate = ({navigation, route}) => {
     const categoryId = route.params?.data?.Id ?? 0;
     const categoryInternalId = route.params?.data?.InternalId ?? 0;
     const isEditing = route.params?.isEditing ?? false;
+    const sourceScreen = route.params?.sourceScreen ?? "CategoryHome";
 
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
@@ -62,7 +63,7 @@ const CategoryCreate = ({navigation, route}) => {
                     onPress: async () => {
                         let response = await excludeCategory(categoryId, categoryInternalId);
                         validateLogin(response, navigation);
-                        validateSuccess(response, navigation, 'CategoryHome');
+                        validateSuccess(response, navigation, sourceScreen);
                     }
                 }
             ],
@@ -107,7 +108,7 @@ const CategoryCreate = ({navigation, route}) => {
         setLoading(false);
 
         validateLogin(response, navigation);
-        validateSuccess(response, navigation, 'CategoryHome');
+        validateSuccess(response, navigation, sourceScreen);
     };
 
     return (
@@ -125,8 +126,8 @@ const CategoryCreate = ({navigation, route}) => {
                     value={name}
                     setValue={setName}
                 />
-                <Picker
-                    text={"Tipo"}
+                <Select 
+                    label={"Tipo"}
                     value={type}
                     setValue={setType}
                     data={Object.values(constants.categoryType)}

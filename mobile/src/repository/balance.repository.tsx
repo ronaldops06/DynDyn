@@ -34,6 +34,7 @@ export const createTableBalance = async () => {
 
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_portfolio_id ON balances (portfolio_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_id ON balances (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_balances_reference ON balances (reference);`);
 };
 
 /**

@@ -1,6 +1,6 @@
 export const constants = {
     pageSizeRequest: 20,
-    pageSize: 100,
+    pageSize: 150,
     operations: {
         category: 'category',
         portfolio: 'portfolio',
@@ -10,6 +10,7 @@ export const constants = {
         trash: 'trash',
         operationRole: 'operationRole',
         totalizerRole: 'totalizerRole',
+        destinationPortfolio: 'destinationPortfolio', 
     },
     categoryType: {
         account: { Id: 1, Name: 'Conta' },
