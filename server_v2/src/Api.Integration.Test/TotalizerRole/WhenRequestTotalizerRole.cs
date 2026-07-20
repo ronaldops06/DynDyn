@@ -11,7 +11,7 @@ namespace Api.Integration.Test.TotalizerRole
     public class WhenRequestTotalizerRole : BaseTestTotalizerRole
     {
         [Fact(DisplayName = "CRUD de papel de totalizador")]
-        public async Task Eh_Possivel_Realizar_Crud_Operacao()
+        public async Task Eh_Possivel_Realizar_Crud_Totalizar()
         {
             await AdicionarToken();
 
@@ -20,13 +20,10 @@ namespace Api.Integration.Test.TotalizerRole
             var postResult = await response.Content.ReadAsStringAsync();
 
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            //Tratar campos obrigatórios
+            Assert.Contains("Code é um campo obrigatório", postResult);
 
             GenerateRequestDto();
-
-            //Post - Category
-            //Referências
-
+            
             //Post
             response = await PostJsonAsync(TotalizerRoleRequestDto, $"{HostApi}/TotalizerRole", Client);
             postResult = await response.Content.ReadAsStringAsync();

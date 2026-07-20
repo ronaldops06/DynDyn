@@ -10,7 +10,7 @@ namespace Api.Integration.Test.Operation
     public class WhenRequestOperationRole : BaseTestOperationRole
     {
         [Fact(DisplayName = "CRUD de regras transação")]
-        public async Task Eh_Possivel_Realizar_Crud_Operacao()
+        public async Task Eh_Possivel_Realizar_Crud_Papel_Operacao()
         {
             await AdicionarToken();
 

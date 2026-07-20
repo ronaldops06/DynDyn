@@ -4,11 +4,13 @@ using AutoMapper;
 using CrossCutting.DependencyInjection;
 using CrossCutting.Mappings;
 using Domain.Helpers;
+using Domain.Models.Brevo;
 using Domain.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi.Models;
+using Service.Services.Brevo;
 
 [assembly: InternalsVisibleTo("Api.Integration.Test")]
 var builder = WebApplication.CreateBuilder(args);
@@ -107,6 +109,12 @@ builder.Services.AddAutoMapper(typeof(DtoToModelProfile), typeof(EntityToModelPr
 
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
+
+// Configura as opções de envio de email utilizando o serviço Brevo
+builder.Services.Configure<BrevoOptions>(
+    builder.Configuration.GetSection("Brevo"));
+
+builder.Services.AddHttpClient<BrevoEmailService>();
 //</Custon
 
 var app = builder.Build();

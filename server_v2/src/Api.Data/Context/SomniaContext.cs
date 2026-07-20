@@ -24,6 +24,9 @@ namespace Data.Context
         public DbSet<TrashEntity> Trash { get; set; }
         public DbSet<TotalizerRoleEntity> TotalizerRole { get; set; }
         public DbSet<TotalizerRoleLinkEntity> TotalizerRoleLink { get; set; }
+        public DbSet<AttributeEntity> Attribute { get; set; }
+        public DbSet<AttributeOptionEntity> AttributeOption { get; set; }
+        public DbSet<PortfolioAttributeEntity> PortfolioAttribute { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -44,6 +47,9 @@ namespace Data.Context
             modelBuilder.Entity<TrashEntity>(new TrashMap().Configure);
             modelBuilder.Entity<TotalizerRoleEntity>(new TotalizerRoleMap().Configure);
             modelBuilder.Entity<TotalizerRoleLinkEntity>(new TotalizerRoleLinkMap().Configure);
+            modelBuilder.Entity<AttributeEntity>(new AttributeMap().Configure);
+            modelBuilder.Entity<AttributeOptionEntity>(new AttributeOptionMap().Configure);
+            modelBuilder.Entity<PortfolioAttributeEntity>(new PortfolioAttributeMap().Configure);
             
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity

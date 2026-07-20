@@ -43,7 +43,7 @@ public class WhenExecuteCreate : TransientUserTest
         UserServiceMock.Setup(m => m.GetUsuarioByLogin(It.IsAny<string>())).ReturnsAsync(userModel);
 
         CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
-        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>(), It.IsAny<OperationRoleModel>()))
             .ReturnsAsync(operationModel);
         RepositoryMock.Setup(m => m.InsertAsync(It.IsAny<TransientUserEntity>())).ReturnsAsync(userEntityResult);
         TransientUserService service = new TransientUserService(RepositoryMock.Object, 
@@ -53,6 +53,7 @@ public class WhenExecuteCreate : TransientUserTest
             OperationServiceMock.Object, 
             OperationRoleServiceMock.Object, 
             TotalizerRoleServiceMock.Object, 
+            EmailServiceMock.Object,
             Mapper);
 
         var ex = await Assert.ThrowsAsync<Exception>(() => service.Post(transientUserModel));

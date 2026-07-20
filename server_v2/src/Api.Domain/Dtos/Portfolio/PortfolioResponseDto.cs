@@ -1,4 +1,6 @@
+using System.Collections.Generic;
 using Api.Domain.Dtos.Category;
+using Api.Domain.Entities;
 using Api.Domain.Enums;
 
 namespace Api.Domain.Dtos.Portfolio
@@ -33,5 +35,10 @@ namespace Api.Domain.Dtos.Portfolio
         /// Conta pai da conta em questão <see cref="PortfolioResponseDto"/>.
         /// </summary>
         public PortfolioResponseDto ParentPortfolio { get; set; }
+        
+        /// <summary>
+        /// Lista de atributos <see cref="PortfolioAttributeEntity"/>
+        /// </summary>
+        public IEnumerable<PortfolioAttributeResponseDto> Attributes { get; set; }
     }
 }

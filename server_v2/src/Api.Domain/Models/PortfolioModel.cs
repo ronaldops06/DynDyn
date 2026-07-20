@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Api.Domain.Enums;
 using Api.Domain.Models;
 
@@ -44,6 +45,11 @@ namespace Domain.Models
         /// Registro pai do grupo de portfólio em questão.
         /// </summary>
         public PortfolioModel ParentPortfolio { get; set; }
+        
+        /// <summary>
+        /// Lista de atributos <see cref="PortfolioAttributeModel"/>
+        /// </summary>
+        public List<PortfolioAttributeModel> Attributes { get; set; }
         
         /// <summary>
         /// Identificador do usuário base.

@@ -12,5 +12,8 @@ namespace Domain.Types
         public static readonly string Transaction = "transaction"; 
         public static readonly string OperationRole = "operationRole"; 
         public static readonly string TotalizerRole = "totalizerRole"; 
+        public static readonly string Attribute = "attribute";
+        public static readonly string AttributeOption = "attributeOption";
+        public static readonly string PortfolioAttribute = "portfolioAttribute";
     }
 }

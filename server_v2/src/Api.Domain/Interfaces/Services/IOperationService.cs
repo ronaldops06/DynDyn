@@ -37,7 +37,8 @@ namespace Api.Domain.Interfaces.Services
         /// </summary>
         /// <param name="user">Modelo do usuário.</param>
         /// <param name="category">Modelo da categoria.</param>
+        /// <param name="operationRole">Modelo do papel de operação.</param>
         /// <returns>Modelo da operação gerado <see cref="OperationModel"/>.</returns>
-        Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category);
+        Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category, OperationRoleModel operationRole);
     }
 }

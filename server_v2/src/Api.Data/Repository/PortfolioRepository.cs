@@ -43,6 +43,42 @@ namespace Api.Data.Repository
             return true;
         }
         
+        public override async Task<PortfolioEntity> UpdateAsync(PortfolioEntity item)
+        {
+            try
+            {
+                var portfolio = await _context.Portfolio
+                    .Include(t => t.Attributes)
+                    .SingleOrDefaultAsync(t => t.Id == item.Id);
+    
+                if (portfolio == null)
+                    throw new Exception("No data found");
+                
+                item.DataCriacao = item.DataCriacao ?? portfolio.DataCriacao;
+                item.DataAlteracao = DateTime.Now;
+
+                // atualiza campos do portfolio
+                _context.Entry(portfolio).CurrentValues.SetValues(item);
+
+                var newIds = item.Attributes?.Select(i => i.AttributeId).ToHashSet();
+
+                portfolio.Attributes?.RemoveAll((i => !newIds.Contains(i.AttributeId)));
+
+                var existIds = portfolio.Attributes?.Select(i => i.AttributeId).ToHashSet();
+
+                portfolio.Attributes?.AddRange(
+                    item.Attributes?.FindAll(i => !existIds.Contains(i.AttributeId)));
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return item;
+        }
+        
         public override async Task<IEnumerable<PortfolioEntity>> SelectAsync(int userId)
         {
             var result = new List<PortfolioEntity>();
@@ -155,6 +191,55 @@ namespace Api.Data.Repository
                     _context.Entry(existingEntry.Entity).State = EntityState.Detached;
 
                 _context.Entry(portfolioEntity.User).State = EntityState.Unchanged;
+            }
+            
+            foreach (var portfolioAttribute in portfolioEntity.Attributes)
+            {
+                if (portfolioAttribute.User != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<UserEntity>()
+                        .FirstOrDefault(e => e.Entity.Id == portfolioAttribute.User.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
+                    _context.Entry(portfolioAttribute.User).State = EntityState.Unchanged;
+                }
+                
+                if (portfolioAttribute?.Attribute != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<AttributeEntity>()
+                        .FirstOrDefault(e => e.Entity.Id == portfolioAttribute.Attribute.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
+                    _context.Entry(portfolioAttribute.Attribute).State = EntityState.Unchanged;
+                    
+                    //Resposta do atributo
+                    if (portfolioAttribute.AttributeOption != null)
+                    {
+                        var existingEntryOption = _context.ChangeTracker.Entries<AttributeOptionEntity>()
+                            .FirstOrDefault(e => e.Entity.Id == portfolioAttribute.AttributeOption.Id);
+
+                        if (existingEntryOption != null)
+                            _context.Entry(existingEntryOption.Entity).State = EntityState.Detached;
+
+                        _context.Entry(portfolioAttribute.AttributeOption).State = EntityState.Unchanged;
+                    }
+                    
+                    //Lista de opções (respostas possíveis) do atributo
+                    foreach (var attributeOption in portfolioAttribute.Attribute.Options)
+                    {
+                        var existingEntryOption = _context.ChangeTracker.Entries<AttributeOptionEntity>()
+                            .FirstOrDefault(e => e.Entity.Id == attributeOption.Id);
+
+                        if (existingEntryOption != null)
+                            _context.Entry(existingEntryOption.Entity).State = EntityState.Detached;
+
+                        _context.Entry(attributeOption).State = EntityState.Unchanged;
+                    }
+                }
             }
         }
         

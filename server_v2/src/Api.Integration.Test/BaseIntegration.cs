@@ -26,6 +26,11 @@ namespace Api.Integration.Test
 
             var builder = new WebHostBuilder()
                 .UseEnvironment("Testing")
+                .ConfigureAppConfiguration((context, config) =>
+                {
+                    config.AddJsonFile("appsettings.json", optional: true)
+                        .AddEnvironmentVariables();
+                })
                 .UseStartup<FakeStartup>();
             var server = new TestServer(builder);
 

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
 using Api.Domain.Enums;
@@ -12,7 +13,6 @@ using Domain.Interfaces.Services.User;
 using Domain.Models;
 using Service.Services;
 using Domain.Types;
-using Newtonsoft.Json;
 
 namespace Api.Service.Services
 {
@@ -116,23 +116,24 @@ namespace Api.Service.Services
                 Code = OperationRoleCodes.TransactionRevenue,
                 Type = TotalizerType.Discriminated,
                 OperationRoles = operationRoles,
+                User = null,
                 UserId = user.Id
             };
 
-            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
-            totalizersModels.Add(totalizerModel);
+            var totalizerModelAux = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModelAux);
 
             totalizerModel.Code = OperationRoleCodes.TransactionExpense;
-            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
-            totalizersModels.Add(totalizerModel);
+            totalizerModelAux = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModelAux);
             
             totalizerModel.Code = OperationRoleCodes.HomeRevenue;
-            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
-            totalizersModels.Add(totalizerModel);
+            totalizerModelAux = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModelAux);
             
             totalizerModel.Code = OperationRoleCodes.HomeExpense;
-            totalizerModel = await GenerateInitialTotalizer(totalizerModel);
-            totalizersModels.Add(totalizerModel);
+            totalizerModelAux = await GenerateInitialTotalizer(totalizerModel);
+            totalizersModels.Add(totalizerModelAux);
                 
             return totalizersModels;
         }

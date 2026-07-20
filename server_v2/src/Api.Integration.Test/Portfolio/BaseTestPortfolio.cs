@@ -1,3 +1,4 @@
+using Api.Domain.Dtos.Attribute;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Enums;
@@ -110,6 +111,51 @@ namespace Api.Integration.Test.Portfolio
                 ParentPortfolio = ParentPortfolioRequestDto,
                 Category = CategoryRequestDto
             };
+        }
+        
+        protected AttributeRequestDto GenerateAttributeListOption()
+        {
+            List<AttributeOptionRequestDto> options = new List<AttributeOptionRequestDto>();
+            var option = new AttributeOptionRequestDto
+            {
+                Label = Faker.Lorem.Words(2).Last(),
+                IsDefault = 0,
+                Status = (int)StatusType.Ativo
+            };
+            options.Add(option);
+            
+            option = new AttributeOptionRequestDto
+            {
+                Label = Faker.Lorem.Words(3).Last(),
+                IsDefault = 1,
+                Status = (int)StatusType.Ativo
+            };
+            
+            options.Add(option);
+            
+            return new AttributeRequestDto
+            {
+                Name = Faker.Lorem.Words(1).First(),
+                Description = Faker.Lorem.Sentence(),
+                Status = (int)StatusType.Ativo,
+                DataType = (int)AttributeDataType.ListOptions,
+                Options = options
+            };
+        }
+
+        protected void AddAttributeInPortfolio(AttributeRequestDto attributeRequestDto, AttributeOptionRequestDto attributeOptionRequestDto)
+        {
+            List<PortfolioAttributeRequestDto> portfolioAttributes = new List<PortfolioAttributeRequestDto>();
+            var portfolioAttribute = new PortfolioAttributeRequestDto
+            {
+                ActionType = (int)AttributeActionType.Informed,
+                Status = (int)StatusType.Ativo,
+                Attribute = attributeRequestDto,
+                AttributeOption = attributeOptionRequestDto
+            };
+            
+            portfolioAttributes.Add(portfolioAttribute);
+            PortfolioRequestDto.Attributes = portfolioAttributes;
         }
     }
 }

@@ -17,7 +17,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
 
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
         CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
-        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>(), It.IsAny<OperationRoleModel>()))
             .ReturnsAsync(operationModel);
 
         var userEntityResult = Mapper.Map<TransientUserEntity>(transientUserModelResult);
@@ -30,6 +30,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
             OperationServiceMock.Object,
             OperationRoleServiceMock.Object,
             TotalizerRoleServiceMock.Object,
+            EmailServiceMock.Object,
             Mapper);
 
         var result = await service.ExecuteVerificationCode(transientUserModelResult.Login,
@@ -53,7 +54,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
 
         LoginServiceMock.Setup(m => m.GenerateToken(It.IsAny<TransientUserModel>())).Returns(AccessToken);
         CategoryServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>())).ReturnsAsync(categoryModel);
-        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>()))
+        OperationServiceMock.Setup(m => m.GenerateInitialByUser(It.IsAny<UserModel>(), It.IsAny<CategoryModel>(), It.IsAny<OperationRoleModel>()))
             .ReturnsAsync(operationModel);
 
         TransientUserService service = new TransientUserService(
@@ -64,6 +65,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
             OperationServiceMock.Object,
             OperationRoleServiceMock.Object,
             TotalizerRoleServiceMock.Object,
+            EmailServiceMock.Object,
             Mapper);
 
         var ex = await Assert.ThrowsAsync<Exception>(() =>
@@ -81,6 +83,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
             OperationServiceMock.Object,
             OperationRoleServiceMock.Object,
             TotalizerRoleServiceMock.Object,
+            EmailServiceMock.Object,
             Mapper);
 
         ex = await Assert.ThrowsAsync<Exception>(() =>
@@ -97,6 +100,7 @@ public class WhenExecuteVerificationCode : TransientUserTest
             OperationServiceMock.Object,
             OperationRoleServiceMock.Object,
             TotalizerRoleServiceMock.Object,
+            EmailServiceMock.Object,
             Mapper);
 
         ex = await Assert.ThrowsAsync<Exception>(() =>
