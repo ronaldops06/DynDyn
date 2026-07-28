@@ -144,7 +144,7 @@ export const deleteAllPortfolios = async (userLogin: string) => {
         ' WHERE reference = ?', [userLogin]);
 }
 
-export const selectAllPortfolios = async (userLogin: string, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
+export const selectAllPortfolios = async (userLogin: string, groupsPortfolios:[] | null, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
     const db = await openDatabase();
     
     let query = queryBase();
@@ -155,6 +155,12 @@ export const selectAllPortfolios = async (userLogin: string, pageNumber: number 
     if (activated !== null) {
         query += ' AND act.status = ?';
         params.push(activated);
+    }
+
+    if (groupsPortfolios !== null && groupsPortfolios.length > 0) {
+        const placeholders = groupsPortfolios.map(() => '?').join(',');
+        query += ` AND act.group_portfolio IN (${placeholders})`;
+        params.push(...groupsPortfolios);
     }
     
     let results: ResultSet[];
@@ -176,19 +182,27 @@ export const selectAllPortfolios = async (userLogin: string, pageNumber: number 
             portfolios.push(await formatResult(results[j].rows.item(i)));
         }
     };
-
+    
     return portfolios;
 };
 
-export const selectContAllPortfolios = async (userLogin: string): Promise<number> => {
+export const selectContAllPortfolios = async (userLogin: string, groupsPortfolios:[] | null): Promise<number> => {
     const db = await openDatabase();
-
-    const results = await db.executeSql(
-        'SELECT * ' +
+    
+    let query = 'SELECT * ' +
         '  FROM portfolios' +
-        ' WHERE reference = ?',
-        [userLogin,]
-    );
+        ' WHERE reference = ?';
+    
+    let params = [];
+    params.push(userLogin);
+
+    if (groupsPortfolios !== null && groupsPortfolios.length > 0) {
+        const placeholders = groupsPortfolios.map(() => '?').join(',');
+        query += ` AND group_portfolio IN (${placeholders})`;
+        params.push(...groupsPortfolios);
+    }
+
+    const results = await db.executeSql(query, params);
 
     let count: number = 0;
     results.forEach(result => {

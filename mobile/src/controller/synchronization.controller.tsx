@@ -23,6 +23,10 @@ import {deleteAllOperations} from "../repository/operation.repository.tsx";
 import {deleteAllCategories} from "../repository/category.repository";
 import {processActionOperationRole, synchronizationAllOperationRole} from "./operation.role.controller.ts";
 import {processActionTotalizerRole, synchronizationAllTotalizerRole} from "./totalizer.role.controller.ts";
+import {processActionAttribute, synchronizationAllAttribute} from "./attribute.controller.tsx";
+import {deleteAllAttributes} from "../repository/attribute.repository.ts";
+import {deleteAllTotalizerRoles} from "../repository/totalizer.role.repository.ts";
+import {deleteAllOperationRoles} from "../repository/operation.role.repository.ts";
 
 export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization> => {
     let login = await getUserLoginEncrypt();
@@ -87,6 +91,7 @@ export const executeFullSynchronization = async (): Promise<I.Response> => {
         return response;
 
     response = await synchronizationAllOperationRole();
+    response = await synchronizationAllAttribute();
     response = await synchronizationAllOperation();
     response = await synchronizationAllPortfolio();
     response = await synchronizationAllTotalizerRole();
@@ -110,12 +115,17 @@ export const executeCleanupDataAccount = async () => {
     await deleteAllPortfolios(login);
     await deleteAllOperations(login);
     await deleteAllCategories(login);
+    await deleteAllAttributes(login);
+    await deleteAllTotalizerRoles(login);
+    await deleteAllOperationRoles(login);
     await deleteAllSynchronizations(login);
 }
 
 export const executeExcludeEntity = async (trash: Trash) => {
     if (trash && trash.Reference === constants.operations.category) {
         await processActionCategory(constants.acao.delete, trash.ReferenceId);
+    } else if (trash && trash.Reference === constants.operations.attribute) {
+        await processActionAttribute(constants.acao.delete, trash.ReferenceId)
     } else if (trash && trash.Reference === constants.operations.operation) {
         await processActionOperation(constants.acao.delete, trash.ReferenceId);
     } else if (trash && trash.Reference === constants.operations.portfolio) {

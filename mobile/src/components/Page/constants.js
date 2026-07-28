@@ -1,7 +1,8 @@
 export const constants = {
     pageType: {
         process: 1,
-        register: 2
+        register: 2,
+        special: 3
     },
     headerType: {
         process: 1,

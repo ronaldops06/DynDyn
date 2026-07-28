@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Web;
+using Api.Domain.Dtos.Attribute;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Portfolio;
 using Newtonsoft.Json;
@@ -45,7 +46,7 @@ namespace Api.Integration.Test.Portfolio
 
             ParentPortfolioRequestDto.Id = registroParentPost.Id;
 
-            //Post
+            //Post portfolio sem atributo
             response = await PostJsonAsync(PortfolioRequestDto, $"{HostApi}/Portfolio", Client);
             postResult = await response.Content.ReadAsStringAsync();
             var registroPost = JsonConvert.DeserializeObject<PortfolioResponseDto>(postResult);
@@ -60,6 +61,38 @@ namespace Api.Integration.Test.Portfolio
             Assert.Equal(DateTime.Now.Month, registroPost.DataCriacao?.Month);
             Assert.Equal(DateTime.Now.Day, registroPost.DataCriacao?.Day);
             Assert.Equal(DateTime.Now.Hour, registroPost.DataCriacao?.Hour);
+            
+            //Post portfolio com atributo lista de opções
+            var attribute = GenerateAttributeListOption();
+            
+            response = await PostJsonAsync(attribute, $"{HostApi}/Attribute", Client);
+            postResult = await response.Content.ReadAsStringAsync();
+            var attributeResponseDto = JsonConvert.DeserializeObject<AttributeResponseDto>(postResult);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(attributeResponseDto.Id == 0);
+            
+            //Atributo lista de opção com resposta resposta (opção) para o atributo
+            attribute.Id = attributeResponseDto.Id;
+            var attributeOptionResponseDto = attributeResponseDto.Options.First();
+            var attributeOptionRequestDto = new AttributeOptionRequestDto()
+            {
+              Id  = attributeOptionResponseDto.Id,
+              Label = attributeOptionResponseDto.Label,
+              IsDefault = attributeOptionResponseDto.IsDefault,
+              Status = attributeOptionResponseDto.Status
+            };
+            AddAttributeInPortfolio(attribute, attributeOptionRequestDto);
+
+            PortfolioRequestDto.Name = "Nubank";
+            PortfolioRequestDto.Id = 0;
+            response = await PostJsonAsync(PortfolioRequestDto, $"{HostApi}/Portfolio", Client);
+            postResult = await response.Content.ReadAsStringAsync();
+            registroPost = JsonConvert.DeserializeObject<PortfolioResponseDto>(postResult);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(registroPost.Id == 0);
+            Assert.Equal(PortfolioRequestDto.Attributes.Count(), registroPost.Attributes.Count());
 
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Portfolio");

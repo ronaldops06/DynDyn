@@ -1,4 +1,5 @@
-﻿using Api.Domain.Dtos.Balance;
+﻿using Api.Domain.Dtos.Attribute;
+using Api.Domain.Dtos.Balance;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Device;
 using Api.Domain.Dtos.Maintenance;
@@ -30,6 +31,18 @@ namespace CrossCutting.Mappings
             CreateMap<UserModel, UserResponseDto>();
             CreateMap<TransientUserModel, ValidationUserResponseDto>();
 
+            CreateMap<AttributeRequestDto, AttributeModel>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
+                .ForMember(dest => dest.DataType, opt => opt.MapFrom(src => src.DataType.ToEnum<AttributeDataType>()));
+            CreateMap<AttributeModel, AttributeResponseDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
+                .ForMember(dest => dest.DataType, opt => opt.MapFrom(src => (int)src.DataType));
+
+            CreateMap<AttributeOptionRequestDto, AttributeOptionModel>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()));
+            CreateMap<AttributeOptionModel, AttributeOptionResponseDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
+            
             CreateMap<CategoryRequestDto, CategoryModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
             .ForMember(dest => dest.Type, opt => opt.MapFrom(src => src.Type.ToEnum<CategoryType>()));
@@ -44,6 +57,15 @@ namespace CrossCutting.Mappings
 
             CreateMap<PortfolioModel, PortfolioResponseDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status));
+            
+            CreateMap<PortfolioAttributeRequestDto, PortfolioAttributeModel>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
+                .ForMember(dest => dest.ActionType, opt => opt.MapFrom(src => src.ActionType.ToEnum<AttributeActionType>()))
+                .ForMember(dest => dest.AttributeId, opt => opt.MapFrom(src => src.Attribute.Id))
+                .ForMember(dest => dest.AttributeOptionId, opt => opt.MapFrom(src => src.AttributeOption.Id)) ;
+            CreateMap<PortfolioAttributeModel, PortfolioAttributeResponseDto>()
+                .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
+                .ForMember(dest => dest.ActionType, opt => opt.MapFrom(src => (int)src.ActionType));
             
             CreateMap<OperationRequestDto, OperationModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))

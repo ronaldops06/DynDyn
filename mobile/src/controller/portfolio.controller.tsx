@@ -45,18 +45,18 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
     return internalPortfolio;
 }
 
-export const loadAllPortfolioInternal = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolioInternal = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
     response.isLogged = true;
-    response.data = await selectAllPortfolios(login, pageNumber as number, activated);
+    response.data = await selectAllPortfolios(login, groupsPortfolios, pageNumber as number, activated);
     
     for (let portfolio of response.data) {
         portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
     }
 
-    let totalRecords = await selectContAllPortfolios(login);
+    let totalRecords = await selectContAllPortfolios(login, groupsPortfolios);
     response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
 
     return response;
@@ -97,12 +97,12 @@ export const synchronizationAllPortfolio= async (): Promise<I.Response | null> =
     return response;
 }
 
-export const loadAllPortfolio = async (pageNumber: Number | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolio = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = await synchronizationAllPortfolio();
     if (response && !response.isLogged)
         return response;
     
-    return await loadAllPortfolioInternal(pageNumber, activated);
+    return await loadAllPortfolioInternal(pageNumber, groupsPortfolios, activated);
 }
 
 export const createPortfolio = async (portfolio: I.Portfolio): Promise<I.Response> => {

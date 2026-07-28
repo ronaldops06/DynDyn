@@ -1,33 +1,6 @@
 import {StyleSheet} from "react-native";
 
 export const getTotalizerRoleStyles = (theme) => StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: theme.colors.tertiaryBaseColor
-    },
-    viewBody: {
-        width: "100%",
-        flex: 1,
-        backgroundColor: theme.colors.tertiaryBaseColor,
-        marginTop: 30,
-        paddingHorizontal: 5
-    },
-    titleScreen: {
-        flexDirection: "row"
-    },
-    buttonBack: {
-        width: 40,
-        height: 40
-    },
-    card: {
-        marginVertical: 2,
-        padding: 5,
-        backgroundColor: theme.colors.secondaryBaseColor,
-        borderRadius: 5,
-    },
-    areaTypes: {
-        paddingHorizontal: 10
-    },
     areaAdd: {
         borderTopWidth: 1,
         borderBottomWidth: 1,
@@ -35,7 +8,7 @@ export const getTotalizerRoleStyles = (theme) => StyleSheet.create({
         paddingTop: 10,
         paddingBottom: 10,
         marginTop: 10,
-        marginBottom: 10
+        marginBottom: 10,
     },
     buttonAdd: {
         backgroundColor: theme.colors.secondaryBaseColor,
@@ -48,9 +21,19 @@ export const getTotalizerRoleStyles = (theme) => StyleSheet.create({
         justifyContent: "flex-start",
         alignItems: "center"
     },
+    card: {
+        marginVertical: 5,
+        padding: 5,
+        borderColor: theme.colors.tertiaryBorderColor + "21",
+        borderWidth: 1,
+        borderRadius: 5,
+    },
+    areaTypes: {
+        paddingHorizontal: 10
+    },
     scrollRoles: {
         minHeight: 50,
-        maxHeight: 150
+        maxHeight: 150,
     },
     areaRoles: {
         minHeight: 50,

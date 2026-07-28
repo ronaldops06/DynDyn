@@ -16,7 +16,10 @@ namespace CrossCutting.Mappings
             CreateMap<UserEntity, TransientUserModel>().ReverseMap();
             CreateMap<UserEntity, UserModel>().ReverseMap();
             CreateMap<CategoryEntity, CategoryModel>().ReverseMap();
+            CreateMap<AttributeEntity, AttributeModel>().ReverseMap();
+            CreateMap<AttributeOptionEntity, AttributeOptionModel>().ReverseMap();
             CreateMap<PortfolioModel, PortfolioEntity>().ReverseMap();
+            CreateMap<PortfolioAttributeModel, PortfolioAttributeEntity>().ReverseMap();
             CreateMap<OperationEntity, OperationModel>()
                 .ForMember(
                     dest => dest.OperationRoles,

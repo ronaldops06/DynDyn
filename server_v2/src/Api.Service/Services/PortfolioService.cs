@@ -55,6 +55,12 @@ namespace Api.Service.Services
 
             model.User = user;
             model.UserId = user.Id;
+            foreach (var attribute in model.Attributes)
+            {
+                attribute.User = null;
+                attribute.UserId = user.Id;
+            }
+            
             var accountEntity = mapper.Map<PortfolioEntity>(model);
             _repository.UnchangedParentAccount(accountEntity);
             accountEntity = await _repository.InsertAsync(accountEntity);
@@ -79,6 +85,12 @@ namespace Api.Service.Services
             
             model.User = user;
             model.UserId = user.Id;
+            foreach (var attribute in model.Attributes)
+            {
+                attribute.User = user;
+                attribute.UserId = user.Id;
+            }
+            
             var accountEntity = mapper.Map<PortfolioEntity>(model);
             _repository.UnchangedParentAccount(accountEntity);
             accountEntity = await _repository.UpdateAsync(accountEntity);

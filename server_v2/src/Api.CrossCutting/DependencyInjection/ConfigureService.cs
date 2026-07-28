@@ -3,6 +3,7 @@ using Api.Service.Services;
 using Domain.Interfaces.Services.User;
 using Microsoft.Extensions.DependencyInjection;
 using Service.Services;
+using Service.Services.Brevo;
 
 namespace CrossCutting.DependencyInjection
 {
@@ -22,8 +23,10 @@ namespace CrossCutting.DependencyInjection
             serviceCollection.AddTransient<IBalanceService, BalanceService>();
             serviceCollection.AddTransient<IDeviceService, DeviceService>();
             serviceCollection.AddTransient<ITrashService, TrashService>();
+            serviceCollection.AddTransient<IAttributeService, AttributeService>();
             
             serviceCollection.AddTransient<ICleanupService, CleanupService>();
+            serviceCollection.AddTransient<IEmailService, BrevoEmailService>();
         }
     }
 }

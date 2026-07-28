@@ -18,6 +18,7 @@ public class TransientUserTest : BaseTestService
     protected Mock<IOperationService> OperationServiceMock = new Mock<IOperationService>();
     protected Mock<IOperationRoleService> OperationRoleServiceMock = new Mock<IOperationRoleService>();
     protected Mock<ITotalizerRoleService> TotalizerRoleServiceMock = new Mock<ITotalizerRoleService>();
+    protected Mock<IEmailService> EmailServiceMock = new Mock<IEmailService>();
     protected Mock<ITransientUserRepository> RepositoryMock = new Mock<ITransientUserRepository>();
     protected TransientUserModel transientUserModel;
     protected TransientUserModel transientUserModelResult;

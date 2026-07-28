@@ -27,6 +27,7 @@ export const LightTheme = {
         quintenaryIcon: '#4b688c',
         sextenaryIcon: '#a19627',
         septenaryIcon: '#F06868',
+        octaveIcon: '#3C66F0',
         primaryAreaDashboard: '#D4DBE6',
         tertiaryAreaDashboard: '#F1F1F1',
         primaryBorderDashboard: '#6E8BB8',

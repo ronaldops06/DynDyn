@@ -74,6 +74,34 @@ export interface Category {
     DataAlteracao: Date | null
 }
 
+export interface AttributeOption {
+    InternalId: number,
+    Id: number,
+    Label: string,
+    IsDefault: number,
+    Status: number,
+    tempId?: string,
+    DataCriacao: Date | null,
+    DataAlteracao: Date | null
+}
+
+export interface Attribute {
+    InternalId: number,
+    Id: number,
+    Name: string,
+    Description?: string,
+    DataType: number,
+    Status: number,
+    Options?: AttributeOption[],
+    DataCriacao: Date | null,
+    DataAlteracao: Date | null
+}
+
+export interface AttributeFilter {
+    Search: string,
+    Situation: number
+}
+
 export interface CategoryFilter {
     Search: string,
     Situation: number
@@ -250,6 +278,12 @@ export interface ValueFilter {
 export interface SymbolString {
     Id: string,
     Name: string,
+}
+
+export interface SymbolStringView {
+    Id: string,
+    Name: string,
+    IsVisible: boolean
 }
 
 export interface SymbolNumber {

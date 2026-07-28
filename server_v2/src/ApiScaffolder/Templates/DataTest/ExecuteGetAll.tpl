@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using static Api.Data.Test.Helpers.BaseHelper;
 
-namespace Api.Data.Test.{{folder}}
+namespace Api.Data.Test.{{model}}
 {
     public class ExecuteGetAll : BaseTestGet<{{model}}Entity>, IClassFixture<DbTest>
     {

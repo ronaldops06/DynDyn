@@ -6,14 +6,7 @@ namespace Api.Integration.Test.TotalizerRole
 {
     public class BaseTestTotalizerRole : BaseIntegration
     {
-        protected class TotalizerRoleBase
-        {
-            public int TotalizerRoleId { get; set; }
-            //
-        }
-
         protected TotalizerRoleRequestDto TotalizerRoleRequestDto;
-        protected TotalizerRoleBase TotalizerRoleBaseDto;
         protected PageParams PageParams;
 
         protected BaseTestTotalizerRole()
@@ -24,16 +17,11 @@ namespace Api.Integration.Test.TotalizerRole
                 PageNumber = 1,
                 PageSize = 3
             };
-
-            TotalizerRoleBaseDto = new TotalizerRoleBase
-            {
-                TotalizerRoleId = 2,
-                //
-            };
-
+            
             TotalizerRoleRequestDto = new TotalizerRoleRequestDto
             {
-                //                
+                Code = "",
+                Type = (int)TotalizerType.Discriminated
             };
         }
 
@@ -41,8 +29,8 @@ namespace Api.Integration.Test.TotalizerRole
         {
             TotalizerRoleRequestDto = new TotalizerRoleRequestDto
             {
-                Id = TotalizerRoleBaseDto.TotalizerRoleId,
-                //
+                Code = "HOM_REV",
+                Type = (int)TotalizerType.Discriminated
             };
         }
     }

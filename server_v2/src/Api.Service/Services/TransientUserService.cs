@@ -24,6 +24,7 @@ namespace Service.Services
         private IOperationService _operationService;
         private IOperationRoleService _operationRoleService;
         private ITotalizerRoleService _totalizerRoleService;
+        private IEmailService _emailService;
         private readonly IMapper _mapper;
 
         public TransientUserService(ITransientUserRepository repository,
@@ -33,6 +34,7 @@ namespace Service.Services
                                   IOperationService operationService,
                                   IOperationRoleService operationRoleService,
                                   ITotalizerRoleService totalizerRoleService,
+                                  IEmailService emailService,
                                   IMapper mapper)
         {
             _repository = repository;
@@ -42,6 +44,7 @@ namespace Service.Services
             _operationService = operationService;
             _operationRoleService = operationRoleService;
             _totalizerRoleService = totalizerRoleService;
+            _emailService = emailService;
             _mapper = mapper;
         }
         
@@ -64,7 +67,7 @@ namespace Service.Services
             var operationRoleModel = await _operationRoleService.GenerateInitialByUser(userModel);
             var totalizersModels = await _totalizerRoleService.GenerateInitialByUser(userModel, operationRoleModel);
             var categoryModel = await _categoryService.GenerateInitialByUser(userModel);
-            var operationModel = await _operationService.GenerateInitialByUser(userModel, categoryModel);
+            var operationModel = await _operationService.GenerateInitialByUser(userModel, categoryModel, operationRoleModel);
             
             var transientUserModel = _mapper.Map<TransientUserModel>(userModel);
             transientUserModel.AccessToken = _loginService.GenerateToken(transientUserModel);
@@ -205,14 +208,15 @@ namespace Service.Services
                 string htmlTemplate = reader.ReadToEnd();
                 string htmlContent = htmlTemplate.Replace("{{CODE}}", verificationCode.ToString());
                 
-                var message = new MailMessage();
+                /*var message = new MailMessage();
                 message.IsBodyHtml = true;
                 message.From = new MailAddress(EMAIL_FROM);
                 message.To.Add(emailTo);
                 message.Subject = "Código de verificação - SageMoney";
-                message.Body = htmlContent;
+                message.Body = htmlContent;*/
                 
-                client.Send(message);
+                //client.Send(message);
+                await _emailService.SendAsync(emailTo, emailTo, "Código de verificação - SageMoney", htmlContent);
             }
             catch (Exception ex)
             {

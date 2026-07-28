@@ -17,10 +17,10 @@ namespace Domain.Helpers
         public static void Info<T>(string message)
         {
             GetLogger<T>().LogInformation(message);
-            /*string caminhoArquivo = "/var/log/sagemoney";
+            /*string caminhoArquivo = "/home/ronaldo/Logs";
             string nomeArquivo = "sagemoney.log";
             
-            Directory.CreateDirectory(Path.GetDirectoryName(caminhoArquivo));
+            Directory.CreateDirectory(caminhoArquivo);
             
             using (StreamWriter writer = new StreamWriter($"{caminhoArquivo}/{nomeArquivo}", append: true))
             {

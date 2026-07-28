@@ -6,6 +6,7 @@ using Api.Domain.Entities;
 using Api.Domain.Enums;
 using Api.Domain.Repository;
 using Data.Context;
+using Domain.Entities;
 using Domain.Helpers;
 using Domain.Interfaces;
 using Domain.Models;
@@ -170,12 +171,32 @@ namespace Data.Repository
 
         public void UnchangedParentTotalizerRole(TotalizerRoleEntity entity)
         {
+            /*if (entity.User != null)
+                _context.Entry(entity.User).State = EntityState.Unchanged;*/
+            
             if (entity.User != null)
+            {
+                var existingEntry = _context.ChangeTracker.Entries<UserEntity>()
+                    .FirstOrDefault(e => e.Entity.Id == entity.User.Id);
+
+                if (existingEntry != null)
+                    _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
                 _context.Entry(entity.User).State = EntityState.Unchanged;
+            }
 
             foreach (var operationRole in entity.OperationRoles)
             {
-                _context.Entry(operationRole.OperationRole).State = EntityState.Unchanged;
+                if (operationRole?.OperationRole != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<OperationRoleEntity>()
+                        .FirstOrDefault(e => e.Entity.Id == operationRole.OperationRole.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
+                    _context.Entry(operationRole.OperationRole).State = EntityState.Unchanged;
+                }
             }
         }
     }

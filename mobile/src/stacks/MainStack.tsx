@@ -4,6 +4,8 @@ import Account from '../screens/Account';
 import AccountCreate from "../screens/Account/Register";
 import Category from '../screens/Category';
 import CategoryCreate from '../screens/Category/Register';
+import Attribute from '../screens/Attribute';
+import AttributeCreate from '../screens/Attribute/Register';
 import Operation from '../screens/Operation';
 import OperationCreate from '../screens/Operation/Register';
 import Home from '../screens/Home';
@@ -11,6 +13,9 @@ import UserAccount from "../screens/Home/UserAccount";
 import ChangePassword from "../screens/Home/UserAccount/ChangePassword";
 import DeleteAccount from "../screens/Home/UserAccount/DeleteAccount";
 import Dashboard from '../screens/Dashboard';
+import Portfolio from '../screens/Portfolio';
+import PortfolioRegister from "../screens/Portfolio/Register";
+import PortfolioView from "../screens/Portfolio/View";
 import Preload from '../screens/Preload';
 
 import SignIn from '../screens/SignIn';
@@ -90,8 +95,13 @@ const MainStack = () => {
             <Stack.Screen name="ChangePassword" component={ChangePassword}/>
             <Stack.Screen name="DeleteAccount" component={DeleteAccount}/>
             <Stack.Screen name="Dashboard" component={Dashboard}/>
+            <Stack.Screen name="Portfolio" component={Portfolio}/>
+            <Stack.Screen name="PortfolioRegister" component={PortfolioRegister}/>
+            <Stack.Screen name="PortfolioView" component={PortfolioView}/>
             <Stack.Screen name="TotalizerRole" component={TotalizerRole}/>
             <Stack.Screen name="TotalizerRoleCreate" component={TotalizerRoleCreate}/>
+            <Stack.Screen name="Attribute" component={Attribute}/>
+            <Stack.Screen name="AttributeCreate" component={AttributeCreate}/>
             <Stack.Screen name="MainTab" component={MainTab}/>
         </Stack.Navigator>
     );

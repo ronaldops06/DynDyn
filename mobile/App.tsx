@@ -1,51 +1,92 @@
-import { NavigationContainer } from '@react-navigation/native';
 import React, { useEffect } from 'react';
 
+import {ErrorBoundary} from "./src/components/ErrorBoundary";
 import UserContextProvider from './src/contexts/UserContext';
+import { NavigationContainer } from '@react-navigation/native';
 import {ThemeContextProvider} from './src/contexts/ThemeContext';
+import MainStack from './src/stacks/MainStack';
 import { createTablePortfolios } from './src/repository/portfolio.repository';
 import { createTableCategory } from './src/repository/category.repository';
+import { createTableAttribute } from './src/repository/attribute.repository';
 import { createTableOperation } from './src/repository/operation.repository';
 import { createTableSynchronization } from './src/repository/synchronization.repository';
 import { createTableTransaction } from './src/repository/transaction.repository';
-import MainStack from './src/stacks/MainStack';
 import { createTableBalance } from "./src/repository/balance.repository.tsx";
 import {createAndroidChannel, setupFirebaseListeners} from "./src/controller/firebase.controller.tsx";
-import {initBackgroundFetch} from "./src/background.fetch";
-import { getLogs } from './src/logger';
+import {initBackgroundFetch} from "./src/background/background.fetch";
+import crashlytics from '@react-native-firebase/crashlytics';
+import {createTableOperationRole} from "./src/repository/operation.role.repository.ts";
+import {createTableTotalizerRole} from "./src/repository/totalizer.role.repository.ts";
 
 const App = () => {
   
   useEffect(() => {
-    const cleanup = setupFirebaseListeners();
-    createAndroidChannel();
-    createTableCategory();
-    createTablePortfolios();
-    createTableOperation();
-    createTableTransaction();
-    createTableBalance();
-    createTableSynchronization();
-    initBackgroundFetch();
 
-      getLogs().then(logs => {
-          logs.map(log => {
-              console.log('Log', log);
-          })
-      });
+    let isMounted = true;
+    
+    const initializeApp = async () => {
+      try {
+        await crashlytics().setCrashlyticsCollectionEnabled(!__DEV__);
+
+        const defaultHandler = ErrorUtils.getGlobalHandler?.();
+        ErrorUtils.setGlobalHandler((error, isFatal) => {
+          crashlytics().recordError(error);
+          defaultHandler?.(error, isFatal);
+        });
+
+        const cleanup = await setupFirebaseListeners();
+
+        // 🔥 Banco em sequência
+        await createTableCategory();
+        await createTableAttribute();
+        await createTablePortfolios();
+        await createTableOperationRole();
+        await createTableOperation();
+        await createTableTransaction();
+        await createTableBalance();
+        await createTableTotalizerRole();
+        await createTableSynchronization();
+
+        // 🔥 Paralelo
+        await Promise.all([
+          createAndroidChannel(),
+          initBackgroundFetch(),
+        ]);
+
+        return cleanup;
+
+      } catch (error) {
+        crashlytics().recordError(error);
+      }
+    };
+
+    let cleanupFn: any;
+
+    initializeApp().then((cleanup) => {
+      if (isMounted && typeof cleanup === 'function') {
+        cleanupFn = cleanup;
+      }
+    });
 
     return () => {
-      if (typeof cleanup === 'function') cleanup();
+      isMounted = false;
+      if (typeof cleanupFn === 'function') {
+        cleanupFn();
+      }
     };
+
   }, []);
   
   return (
-    <UserContextProvider>
-      <NavigationContainer>
-        <ThemeContextProvider>
-          <MainStack />
-        </ThemeContextProvider>
-      </NavigationContainer>
-    </UserContextProvider>
+      <ErrorBoundary>
+        <UserContextProvider>
+          <NavigationContainer>
+            <ThemeContextProvider>
+              <MainStack />
+            </ThemeContextProvider>
+          </NavigationContainer>
+        </UserContextProvider>
+      </ErrorBoundary>
   )
 }
 

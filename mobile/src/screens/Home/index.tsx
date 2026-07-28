@@ -12,6 +12,8 @@ import CashRegisterIcon from '../../assets/cash-register.svg';
 import CategoryIcon from '../../assets/category.svg';
 import HistoryIcon from '../../assets/history.svg';
 import DashboardIcon from '../../assets/dashboard.svg';
+import PortfolioIcon from '../../assets/portfolio.svg';
+import AttributeIcon from '../../assets/attribute.svg';
 
 import {getUserByStorage, validateLogin} from "../../utils.ts";
 import {loadAllBalance} from '../../controller/balance.controller.tsx'
@@ -25,6 +27,7 @@ import {loadTotalsTransactions} from "../../controller/transaction.controller.ts
 import PlusIcon from "../../assets/plus.svg";
 import {useFocusEffect} from "@react-navigation/native";
 import {executeFullSynchronization} from "../../controller/synchronization.controller.tsx";
+import NextIcon from "../../assets/nav_next.svg";
 
 const Home = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -69,8 +72,12 @@ const Home = ({navigation, route}) => {
             validateLogin(response, navigation);
         }
 
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
         //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
-        responsePortfolios = await loadAllPortfolioInternal(null, null);
+        responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, null);
 
         const total = sumBalanceTotal(responsePortfolios);
         setBalanceTotal(total);
@@ -234,7 +241,7 @@ const Home = ({navigation, route}) => {
                             </TouchableOpacity>
                         </View>
                         <View style={homeStyle.featureRow}>
-                            <TouchableOpacity
+                             <TouchableOpacity
                                 style={homeStyle.auxiliaryItem}
                                 onPress={() => goTo('TotalizerRole')}>
                                 <View style={homeStyle.auxiliaryIconItem}>
@@ -242,7 +249,23 @@ const Home = ({navigation, route}) => {
                                 </View>
                                 <Text style={homeStyle.auxiliaryTextItem}>Regras de Totalizadores</Text>
                             </TouchableOpacity>
+                            <TouchableOpacity
+                                style={homeStyle.auxiliaryItem}
+                                onPress={() => goTo('Attribute')}>
+                                <View style={homeStyle.auxiliaryIconItem}>
+                                    <AttributeIcon width="32" height="32" color={theme.colors.quintenaryIcon}/>
+                                </View>
+                                <Text style={homeStyle.auxiliaryTextItem}>Atributos</Text>
+                            </TouchableOpacity>
                         </View>
+                    </View>
+                    <View style={homeStyle.areaDashboard} onTouchEndCapture={() => goTo('Portfolio')}>
+                        <View style={homeStyle.row}>
+                            <PortfolioIcon width="32" height="32" fill={theme.colors.primaryIconDashboard}/>
+                            <Text style={homeStyle.textDashboard}>R$ 2.000.000,00</Text>
+                        </View>
+                        <NextIcon style={homeStyle.iconNext} width="40" height="40"
+                                  fill={theme.colors.primaryIconDashboard}/>
                     </View>
                     <View style={homeStyle.areaChart}>
                     </View>

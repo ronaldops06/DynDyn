@@ -7,7 +7,6 @@ import PrevIcon from "../../assets/nav_prev.svg";
 import HelpIcon from "../../assets/help_outline.svg";
 import Help from "../../components/Help";
 import BottomModal from "../../components/BottomModal";
-import {VictoryAxis, VictoryBar, VictoryChart, VictoryTheme, VictoryTooltip} from 'victory-native';
 import {loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller.tsx'
 import * as I from "../../interfaces/interfaces.tsx"
 import {useFocusEffect} from "@react-navigation/native";

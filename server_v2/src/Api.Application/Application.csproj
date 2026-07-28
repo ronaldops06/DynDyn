@@ -37,4 +37,8 @@
     <InternalsVisibleTo Include="Api.Integration.Test" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="V1\Controllers\PortfolioAttributeController.cs" />
+  </ItemGroup>
+
 </Project>

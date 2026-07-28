@@ -119,8 +119,11 @@ namespace Api.Service.Services
             return mapper.Map<List<OperationModel>>(entities);
         }
 
-        public async Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category)
+        public async Task<OperationModel> GenerateInitialByUser(UserModel user, CategoryModel category, OperationRoleModel operationRole)
         {
+            var operationRoles = new List<OperationRoleModel>();
+            operationRoles.Add(operationRole);
+            
             var model = new OperationModel();
             model.Name = "Transferência Entre Contas";
             model.Status = StatusType.Ativo;
@@ -129,6 +132,7 @@ namespace Api.Service.Services
             model.UserId = user.Id;
             model.Recurrent = false;
             model.Salary = false;
+            model.OperationRoles = operationRoles;
             
             var categoryEntityAux = await _repository.SelectByUkAsync(user.Id, model.Name, model.Type);
 

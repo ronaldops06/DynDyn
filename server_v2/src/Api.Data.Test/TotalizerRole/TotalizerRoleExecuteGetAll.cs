@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 using static Api.Data.Test.Helpers.BaseHelper;
 
-namespace Api.Data.Test
+namespace Api.Data.Test.TotalizerRole
 {
     public class ExecuteGetAll : BaseTestGet<TotalizerRoleEntity>, IClassFixture<DbTest>
     {
@@ -18,7 +18,7 @@ namespace Api.Data.Test
 
         [Fact(DisplayName = "Get de papel de totalizador")]
         [Trait("GET", "TotalizerRoleEntity")]
-        public async Task Eh_Possivel_Realizar_Get_Operacao()
+        public async Task Eh_Possivel_Realizar_Get_Totalizer_Role()
         {
             using (var context = serviceProvider.GetService<SomniaContext>())
             {

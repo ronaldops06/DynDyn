@@ -2,6 +2,11 @@ import {StyleSheet} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro";
 
 export const getOperationCreateStyle = (theme) => StyleSheet.create({
+    areaButtonType: {
+        marginTop: 10,
+        marginLeft: 25,
+        marginRight: 25,  
+    },
     areaFields: {
       ...getStyleCadastro(theme).areaFields,
       marginTop: 40,  
@@ -10,8 +15,8 @@ export const getOperationCreateStyle = (theme) => StyleSheet.create({
         ...getStyleCadastro(theme).areaButtonSave,
         marginTop: 40,
     },
-    areaCheckbox: {
-        ...getStyleCadastro(theme).areaCheckbox,
+    areaCard: {
+        ...getStyleCadastro(theme).areaCard,
         marginTop: 30,
     },
     scrollRoles: {

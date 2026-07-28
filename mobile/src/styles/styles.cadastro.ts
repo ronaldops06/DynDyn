@@ -41,7 +41,7 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
         justifyContent: "space-between",
         width: "90%",
     },
-    areaCheckbox: {
+    areaCard: {
         flexDirection: "row",
         alignContent: "center",
         alignItems: "center",

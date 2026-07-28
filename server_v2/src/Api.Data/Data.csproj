@@ -17,6 +17,10 @@
     <ProjectReference Include="..\Api.Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Compile Remove="Repository\PortfolioAttributeRepository.cs" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
 	  <!--<AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

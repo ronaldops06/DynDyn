@@ -3,6 +3,7 @@ using AutoMapper;
 using CrossCutting.DependencyInjection;
 using CrossCutting.Mappings;
 using Data.Context;
+using Domain.Models.Brevo;
 using Domain.Security;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -10,6 +11,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Service.Services.Brevo;
 
 namespace Api.Integration.Test
 {
@@ -118,6 +120,11 @@ namespace Api.Integration.Test
             });
 
             services.AddAutoMapper(typeof(DtoToModelProfile), typeof(DictionaryToModelProfile), typeof(ModelToModelProfile)/*, typeof(ModelToEntityProfile)*/);
+            
+            // Configura as opções de envio de email utilizando o serviço Brevo
+            services.Configure<BrevoOptions>(Configuration.GetSection("Brevo"));
+
+            services.AddHttpClient<BrevoEmailService>();
         }
 
         public static void Configure(IApplicationBuilder app, IWebHostEnvironment env, SomniaContext context)

@@ -11,6 +11,7 @@ import {constants} from "../../../constants";
 import {loadAllTotalizerRole} from "../../../controller/totalizer.role.controller.ts";
 import AddIcon from "../../../assets/plus.svg";
 import {Chip} from "react-native-paper";
+import {PageSpecial} from "../../../components/Page";
 
 const TotalizerRole = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -70,7 +71,7 @@ const TotalizerRole = ({navigation, route}) => {
     }
 
     const _renderTypes = (totalizerKey: string, totalizerType: I.TotalizerRole) => {
-        
+
         return (
             <View key={`v3.${totalizerKey}`} onTouchEndCapture={() => handleItemClick(totalizerType)}>
                 <Text key={`t2.${totalizerKey}`}
@@ -96,9 +97,9 @@ const TotalizerRole = ({navigation, route}) => {
 
     const _renderTotalizer = (totalizerKey: number, totalizer: I.SymbolString) => {
         if (!totalizerRole) return;
-        
+
         return (
-            <View key={`v1.${totalizerKey}`} style={totalizerRoleStyle.card} >
+            <View key={`v1.${totalizerKey}`} style={totalizerRoleStyle.card}>
                 <Text key={`t1.${totalizerKey}`} style={style.textPrimary18}>{totalizer.Name}</Text>
 
                 <View key={`v2.${totalizerKey}`} style={totalizerRoleStyle.areaTypes}>
@@ -115,28 +116,22 @@ const TotalizerRole = ({navigation, route}) => {
     }
 
     return (
-        <SafeAreaView style={totalizerRoleStyle.container}>
-            <View style={totalizerRoleStyle.viewBody}>
-                <View style={totalizerRoleStyle.titleScreen}>
-                    <TouchableOpacity
-                        style={totalizerRoleStyle.buttonBack}
-                        onPress={handleBackClick}>
-                        <PrevIcon width="40" height="40" fill={theme.colors.primaryIconDashboard}/>
-                    </TouchableOpacity>
-                    <View style={style.titleScreenTitle}>
-                        <Text style={style.textPrimary24Bold}>Regras de Totalizadores</Text>
-                    </View>
-                </View>
+        <PageSpecial
+            title={"Regras de Totalizadores"}
+            helpType={"totalizar_roles"}
+            onBackClick={handleBackClick}
+        >
+            <View>
                 <View style={totalizerRoleStyle.areaAdd}>
                     <TouchableOpacity
                         style={totalizerRoleStyle.buttonAdd}
                         onPress={() => handleNewClick()}>
-                        <AddIcon width="30" height="30" fill={theme.colors.quaternaryIcon}/>
+                        <AddIcon width="30" height="30" stroke={theme.colors.quaternaryIcon}/>
                         <Text style={style.textPrimary16}>Adicionar Regra</Text>
                     </TouchableOpacity>
                 </View>
                 <ScrollView style={style.scrollCadastro}>
-                    {loading ? 
+                    {loading ?
                         (<ActivityIndicator style={style.loadingIcon} size="large" color="#6E8BB8"/>) :
                         getTotalizerCodes().map((item, key) => (
                             _renderTotalizer(key, item)
@@ -144,7 +139,7 @@ const TotalizerRole = ({navigation, route}) => {
                     }
                 </ScrollView>
             </View>
-        </SafeAreaView>
+        </PageSpecial>
     );
 }
 

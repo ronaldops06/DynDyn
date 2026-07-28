@@ -39,6 +39,10 @@ namespace Data.Mapping
                 .HasForeignKey(e => e.ParentPortfolioId)
                 .OnDelete(DeleteBehavior.Restrict);
             
+            builder.HasMany(u => u.Attributes)
+                .WithOne(l => l.Portfolio)
+                .HasForeignKey(l => l.PortfolioId);
+            
             builder.HasOne(u => u.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)
