@@ -82,16 +82,19 @@ const Portfolio = ({navigation, route}) => {
         setLoading(true);
 
         let responsePortfolios = null;
-
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
         if (isLoadInternal) {
-            responsePortfolios = await loadAllPortfolioInternal(page, null);
+            responsePortfolios = await loadAllPortfolioInternal(page, groupsPortfolios, null);
         } else {
-            responsePortfolios = await loadAllPortfolio(page, null);
+            responsePortfolios = await loadAllPortfolio(page, groupsPortfolios, null);
             validateLogin(responsePortfolios, navigation);
             
             let response = await loadAllBalance(null);
             //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
-            responsePortfolios = await loadAllPortfolioInternal(page, null);
+            responsePortfolios = await loadAllPortfolioInternal(page, groupsPortfolios, null);
         }
 
         setTotalPages(responsePortfolios?.totalPages ?? 1);

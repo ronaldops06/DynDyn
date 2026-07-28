@@ -10,8 +10,8 @@ export const getCategoryCreateStyle = (theme) => StyleSheet.create({
         ...getStyleCadastro(theme).areaButtonSave,
         marginTop: 40,
     },
-    areaCheckbox: {
-        ...getStyleCadastro(theme).areaCheckbox,
+    areaCard: {
+        ...getStyleCadastro(theme).areaCard,
         marginTop: 30,
     }
 });

@@ -198,12 +198,14 @@ const OperationCreate = ({navigation, route}) => {
             helpType={"operation_register"}
             isEditing={isEditing}
             isLoading={loading}>
-            <ButtonSelectBar
-                buttons={getButtonsSelectedBar()}
-                valueSelected={type}
-                handleValueSelected={setType}
-                disabled={false}
-            />
+            <View style={operationCreateStyle.areaButtonType}>
+                <ButtonSelectBar
+                    buttons={getButtonsSelectedBar()}
+                    valueSelected={type}
+                    handleValueSelected={setType}
+                    disabled={false}
+                />
+            </View>
             <View style={operationCreateStyle.areaFields}>
                 <TextInput
                     text={"Nome"}
@@ -223,7 +225,7 @@ const OperationCreate = ({navigation, route}) => {
                     reference={constants.operations.category}
                 />
                 <View style={styleCadastro.areaGroupCheckbox}>
-                    <View style={operationCreateStyle.areaCheckbox}>
+                    <View style={operationCreateStyle.areaCard}>
                         <CheckBox
                             value={isRecurrent}
                             onValueChange={setIsRecurrent}
@@ -232,7 +234,7 @@ const OperationCreate = ({navigation, route}) => {
                         <Text
                             style={styleCadastro.textCheckbox}>Recorrente</Text>
                     </View>
-                    <View style={operationCreateStyle.areaCheckbox}>
+                    <View style={operationCreateStyle.areaCard}>
                         <CheckBox
                             value={isSalary}
                             onValueChange={setIsSalary}
@@ -242,7 +244,7 @@ const OperationCreate = ({navigation, route}) => {
                             style={styleCadastro.textCheckbox}>Salário</Text>
                     </View>
                 </View>
-                <View style={operationCreateStyle.areaCheckbox}>
+                <View style={operationCreateStyle.areaCard}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}
@@ -254,7 +256,8 @@ const OperationCreate = ({navigation, route}) => {
                 <AuxiliaryButton
                     text="Papéis de Operações"
                     onPress={() => setShowModalRole(true)}
-                    icon={<RuleIcon width="30" height="30" fill={theme.colors.primaryIcon}/>}
+                    icon="rule"
+                    iconColor={theme.colors.primaryIcon}
                 />
                 <ScrollView style={operationCreateStyle.scrollRoles} nestedScrollEnabled>
                     <View style={operationCreateStyle.areaRoles}>

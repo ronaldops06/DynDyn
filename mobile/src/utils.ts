@@ -77,6 +77,10 @@ export const isInternetConnected = async (): Promise<boolean> => {
     return state.isConnected ?? false;
 };
 
+export const getDescriptionStatus = (statusId: number) => {
+    return Object.values(constants.status).find(x => x.Id === statusId).Name;
+}
+
 export type Operator = '>' | '>=' | '<' | '<=' | '=' | '!=';
 
 const operators: Record<Operator, (a: number, b: number) => boolean> = {

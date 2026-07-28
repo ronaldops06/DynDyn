@@ -133,7 +133,7 @@ const CategoryCreate = ({navigation, route}) => {
                     setValue={setType}
                     data={Object.values(constants.categoryType)}
                 />
-                <View style={categoryCreateStyle.areaCheckbox}>
+                <View style={categoryCreateStyle.areaCard}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}

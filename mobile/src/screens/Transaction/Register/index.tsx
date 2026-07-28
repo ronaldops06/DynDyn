@@ -65,7 +65,6 @@ const TransactionCreate = ({navigation, route}) => {
     const [valueDestPortfolio, setValueDestPortfolio] = useState(0);
     const [valueNote, setValueNote] = useState("");
     const [valueConsolidated, setValueConsolidated] = useState(false);
-    const [isSalary, setIsSalary] = useState(false);
     const [isRecurrent, setIsRecurrent] = useState<boolean>(false);
     const [isPaindInstallments, setIsPaindInstallments] = useState<boolean>(false);
     const [installment, setInstallment] = useState(1);
@@ -104,7 +103,11 @@ const TransactionCreate = ({navigation, route}) => {
     }
 
     const getPortifolios = async () => {
-        let responsePortfolios = await loadAllPortfolioInternal(null, true);
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
+        let responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, true);
         validateLogin(responsePortfolios, navigation);
         setPortfolios(responsePortfolios?.data ?? []);
     }
@@ -120,7 +123,6 @@ const TransactionCreate = ({navigation, route}) => {
             setValueTime(Moment(data.DataCriacao).local().format('HH:mm:ss'));
             setValueNote(data.Observation);
             setValueConsolidated(data.Consolidated);
-            setIsSalary(data.Operation.Salary);
             setValueTimes(data.TotalInstallments);
             setIsRecurrent(data.Operation.Recurrent);
             setIsPaindInstallments((data.TotalInstallments > 1))
@@ -135,7 +137,6 @@ const TransactionCreate = ({navigation, route}) => {
     const clearOperation = () => {
         setOperation(baseOperation);
         setValueDescription("");
-        setIsSalary(false);
     };
 
     const setOperationDefault = () => {
@@ -294,7 +295,6 @@ const TransactionCreate = ({navigation, route}) => {
         setOperation(item);
         setValueDescription(item.Name);
         setValueCategory(item.Category.Id);
-        setIsSalary(item.Salary);
         setIsRecurrent(item.Recurrent);
     };
 
@@ -330,7 +330,7 @@ const TransactionCreate = ({navigation, route}) => {
         operationDTO.Type = typeSelected;
         operationDTO.Category = categories.find(x => x.Id === valueCategory) ?? {} as I.Category;
         operationDTO.Recurrent = isRecurrent ?? false;
-        operationDTO.Salary = isSalary ?? false;
+        operationDTO.Salary = false;
         operationDTO.Status = 1;
 
         let transactionDTO = {} as I.Transaction;
@@ -371,12 +371,14 @@ const TransactionCreate = ({navigation, route}) => {
             helpType={"transaction_register"}
             isEditing={isEditing}
             isLoading={loading}>
-            <ButtonSelectBar
-                buttons={getButtonsSelectedBar()}
-                valueSelected={typeSelected}
-                handleValueSelected={setTypeSelected}
-                disabled={isEditing}
-            />
+            <View style={transactionCreateStyle.areaButtonType}>
+                <ButtonSelectBar
+                    buttons={getButtonsSelectedBar()}
+                    valueSelected={typeSelected}
+                    handleValueSelected={setTypeSelected}
+                    disabled={isEditing}
+                />
+            </View>
             <View style={styleCadastro.areaFields}>
                 <View style={transactionCreateStyle.areaValue}>
                     <CurrencyInput
@@ -483,7 +485,7 @@ const TransactionCreate = ({navigation, route}) => {
                 {!typeSelectedIsTransference() &&
                     <>
                         <View style={transactionCreateStyle.areaChecks}>
-                            <View style={styleCadastro.areaCheckbox}>
+                            <View style={styleCadastro.areaCard}>
                                 <CheckBox
                                     value={isRecurrent}
                                     onValueChange={setIsRecurrent}
@@ -495,21 +497,9 @@ const TransactionCreate = ({navigation, route}) => {
                                 />
                                 <Text style={styleCadastro.textCheckbox}>Recorrente</Text>
                             </View>
-                            <View style={[styleCadastro.areaCheckbox, {marginLeft: 50}]}>
-                                <CheckBox
-                                    disabled={operation.Id !== undefined}
-                                    value={isSalary}
-                                    onValueChange={setIsSalary}
-                                    tintColors={{
-                                        true: theme.colors.primaryBaseColor,
-                                        false: theme.colors.primaryBaseColor
-                                    }}
-                                />
-                                <Text style={styleCadastro.textCheckbox}>Salário</Text>
-                            </View>
                         </View>
                         <View style={transactionCreateStyle.areaRepeat}>
-                            <View style={styleCadastro.areaCheckbox}>
+                            <View style={styleCadastro.areaCard}>
                                 <CheckBox
                                     value={isPaindInstallments}
                                     onValueChange={handlePaindInstallmentSelect}
@@ -535,7 +525,7 @@ const TransactionCreate = ({navigation, route}) => {
                                 </View>
                             }
                         </View>
-                        <View style={styleCadastro.areaCheckbox}>
+                        <View style={styleCadastro.areaCard}>
                             <CheckBox
                                 value={valueConsolidated}
                                 onValueChange={setValueConsolidated}
@@ -552,7 +542,8 @@ const TransactionCreate = ({navigation, route}) => {
                     <AuxiliaryButton
                         text="Copiar Transação"
                         onPress={handleCopyClick}
-                        icon={<CopyIcon width="30" height="30" fill={theme.colors.quaternaryIcon}/>}
+                        icon="copy"
+                        iconColor={theme.colors.quaternaryIcon}
                         type="secondary"
                     />
                 </View>

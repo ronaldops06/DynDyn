@@ -12,6 +12,7 @@ import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
 import FieldFilterValue from "../../../components/FieldFilterValue";
 import Select from "../../../components/Select";
+import {constants} from "../../../constants";
 
 interface FiltersProps {
     filter: I.PortfolioFilter
@@ -45,7 +46,11 @@ const Filter = (props: FiltersProps) => {
         setLoading(true);
         let responseCategories = await loadAllCategoryInternal(TypesCategory.Account, null, null);
 
-        let responsePortfolios = await loadAllPortfolioInternal(null, null);
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
+        let responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, null);
         
         setCategories(responseCategories?.data ?? []);
 

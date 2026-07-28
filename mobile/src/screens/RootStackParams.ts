@@ -13,12 +13,17 @@ export type RootStackParamList = {
     ChangePassword: undefined;
     DeleteAccount: { login: string } | undefined;
     Dashboard: undefined;
+    Portfolio: undefined;
+    PortfolioRegister: { isEditing: boolean, data: I.Portfolio | null, sourceScreen: string | null, reference: string } | undefined;
+    PortfolioView: { data: I.Portfolio | null, sourceScreen: string | null, reference: string } | undefined;
     Account: undefined;
     AccountCreate: { isEditing: boolean, data: I.Portfolio | null, sourceScreen: string | null, reference: string } | undefined;
     Transaction: undefined;
     TransactionCreate: {isEditing: boolean, data: I.Transaction | null } | undefined;
     Category: { actionNavigation: string } | undefined;
     CategoryCreate: {isEditing: boolean, data: I.Category | null, sourceScreen: string | null, reference: string } | undefined;
+    Attribute: { actionNavigation: string } | undefined;
+    AttributeCreate: {isEditing: boolean, data: I.Attribute | null, sourceScreen: string | null, reference: string } | undefined;
     Operation: undefined;
     OperationCreate: {isEditing: boolean, data: I.Operation | null } | undefined;
     OperationRole: undefined;

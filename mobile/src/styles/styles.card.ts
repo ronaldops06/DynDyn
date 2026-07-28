@@ -1,5 +1,14 @@
 import { StyleSheet } from "react-native";
 export const getCardStyle = (theme) => StyleSheet.create({
+    cardBackground: {
+        marginBottom: 5,
+        borderRadius: 8,
+        backgroundColor: theme.colors.primaryBorderColor,
+    },
+    areaContent: {
+        flexDirection: "column",
+        width: "94%"
+    },
     card: {
         flexDirection: "column",
         backgroundColor: theme.colors.secondaryBaseColor,
@@ -19,10 +28,16 @@ export const getCardStyle = (theme) => StyleSheet.create({
         paddingHorizontal: 15,
         minHeight: 40
     },
-    cardBackground: {
-        marginBottom: 5,
+    cardHorizontal: {
+        flexDirection: "row",
+        backgroundColor: theme.colors.secondaryBaseColor,
+        borderColor: theme.colors.primaryBorderColor,
+        borderWidth: 1,
         borderRadius: 8,
-        backgroundColor: theme.colors.primaryBorderColor,
+        padding: 15,
+        minHeight: 70,
+        gap: 2,
+        alignItems: "center",
     },
     rowHeader: {
         flexDirection: "row",

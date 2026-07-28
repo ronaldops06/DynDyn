@@ -79,8 +79,7 @@ export const getStyle = (theme) => StyleSheet.create({
     },
     scroll: {
         flex: 1,
-        paddingLeft: 20,
-        paddingRight: 20,
+        paddingHorizontal: 20,
         marginTop: 15
     },
     viewTitle: {

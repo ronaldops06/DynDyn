@@ -50,7 +50,11 @@ const Filter = (props: FiltersProps) => {
         setLoading(true);
         let responseCategories = await loadAllCategoryInternal(TypesCategory.Operation, null, null);
 
-        let responsePortfolios = await loadAllPortfolioInternal(null, null);
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
+        let responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, null);
 
         let responseOperations = await loadAllOperationInternal(null, null, null);
 

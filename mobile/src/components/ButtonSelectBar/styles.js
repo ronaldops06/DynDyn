@@ -7,9 +7,6 @@ export const getButtonSelectStyle = (theme) => StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         padding: 5,
-        marginTop: 10,
-        marginLeft: 25,
-        marginRight: 25,
         height: 40,
         backgroundColor: theme.colors.primaryBaseColor,
         borderRadius: 30

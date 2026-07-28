@@ -72,10 +72,13 @@ const PortfolioCreate = ({navigation, route}) => {
 
     const getLists = async () => {
         await getCategories();
-        
-        let responsePortfolios = await loadAllPortfolioInternal(null, true);
-        validateLogin(responsePortfolios, navigation);
 
+        let groupsPortfolios = [];
+        groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
+        groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
+        
+        let responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, true);
+        validateLogin(responsePortfolios, navigation);
         
         setPortfolios(responsePortfolios?.data ?? []);
     }
@@ -158,7 +161,7 @@ const PortfolioCreate = ({navigation, route}) => {
         portfolioDTO.InternalId = portfolioInternalId;
         portfolioDTO.Name = name;
         portfolioDTO.Type = type;
-        portfolioDTO.Group = constants.portfolioGroupType.contasBancarias;
+        portfolioDTO.Group = constants.portfolioGroupType.contasBancarias.Id;
         portfolioDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
         portfolioDTO.ParentPortfolio = (parentPortfolio > 0) ? portfolios.find(x => x.Id === parentPortfolio) ?? null : null;
         portfolioDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
@@ -183,12 +186,14 @@ const PortfolioCreate = ({navigation, route}) => {
             helpType={"account_register"}
             isEditing={isEditing} 
             isLoading={loading}>
-            <ButtonSelectBar
-                buttons={getButtonsSelectedBar()}
-                valueSelected={type}
-                handleValueSelected={setType}
-                disabled={false}
-            />
+            <View style={accountCreateStyle.areaButtonType}>
+                <ButtonSelectBar
+                    buttons={getButtonsSelectedBar()}
+                    valueSelected={type}
+                    handleValueSelected={setType}
+                    disabled={false}
+                />
+            </View>
             <View style={accountCreateStyle.areaFields}>
                 <TextInput
                     text={"Nome"}
@@ -214,7 +219,7 @@ const PortfolioCreate = ({navigation, route}) => {
                     data={portfolios}
                     parentScreen={stack}
                 />
-                <View style={accountCreateStyle.areaCheckbox}>
+                <View style={accountCreateStyle.areaCard}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}

@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
 
 export const getTransactionCreateStyle = (theme) => StyleSheet.create({
+    areaButtonType: {
+        marginTop: 10,
+        marginLeft: 25,
+        marginRight: 25,  
+    },
     areaValue: {
         flexDirection: "row",
         width: "100%",
@@ -112,6 +117,7 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         flexDirection: "row"
     },
     areaMoreActions: {
+        marginHorizontal: 30,
         marginBottom: 20
     }
 });

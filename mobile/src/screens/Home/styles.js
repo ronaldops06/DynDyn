@@ -145,5 +145,22 @@ export const getHomeStyle = (theme) => StyleSheet.create({
     areaChart: {
         marginHorizontal: 20,
         minHeight: 157
+    },
+    areaDashboard: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
+        height: 80,
+        backgroundColor: theme.colors.tertiaryBaseColor,
+        marginTop: 20,
+        marginHorizontal: 20,
+        borderRadius: 8,
+        padding: 15
+    },
+    textDashboard: {
+        color: theme.colors.primaryTextDashboard,
+        fontSize: 20,
+        fontWeight: "bold",
+        marginLeft: 20
     }
 });

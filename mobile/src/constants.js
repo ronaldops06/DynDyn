@@ -2,6 +2,7 @@ export const constants = {
     pageSizeRequest: 20,
     pageSize: 150,
     operations: {
+        attribute: 'attribute',
         category: 'category',
         portfolio: 'portfolio',
         operation: 'operation',
@@ -15,6 +16,13 @@ export const constants = {
     categoryType: {
         account: { Id: 1, Name: 'Conta' },
         operation: { Id: 2, Name: 'Operação' }
+    },
+    attributeDataType: {
+        text: { Id: 1, Name: 'Text' },
+        number: { Id: 2, Name: 'Number' },
+        date: { Id: 3, Name: 'Date' },
+        boolean: { Id: 4, Name: 'Boolean' },
+        listOptions: { Id: 5, Name: 'ListOptions' }
     },
     operationType: {
         revenue: { Id: 1, Name: 'Receita' },
@@ -55,15 +63,23 @@ export const constants = {
         passivo: { Id: 2, Name: 'Passivo' },
     },
     portfolioGroupType: {
-        bens: 1,
-        cartoesCredito: 2,
-        contasBancarias: 3,
-        empresas: 4,
-        emprestimos: 5,
-        financiamentos: 6,
-        imoveis: 7,
-        investimentos: 8,
-        veiculos: 9
+        ativo: {
+            bens: {Id: 1, Name: 'Bens', IsVisible: false, Icon: 'home', Type: 1},
+            contasBancarias: {Id: 2, Name: 'Contas Bancárias', IsVisible: false, Icon: 'account', Type: 1},
+            empresas: {Id: 3, Name: 'Empresas', IsVisible: false, Icon: 'home', Type: 1},
+            emprestimos: {Id: 4, Name: 'Empréstimos', IsVisible: false, Icon: 'home', Type: 1},
+            imoveis: {Id: 5, Name: 'Imóveis', IsVisible: false, Icon: 'home', Type: 1},
+            investimentos: {Id: 6, Name: 'Investimentos', IsVisible: false, Icon: 'home', Type: 1},
+            veiculos: {Id: 7, Name: 'Veículos', IsVisible: false, Icon: 'home', Type: 1},
+        },
+        passivo: {
+            cartoesCredito: {Id: 51, Name: 'Cartões de Crédito', IsVisible: false, Icon: 'home', Type: 2},
+            contasBancarias: {Id: 52, Name: 'Contas Bancárias', IsVisible: false, Icon: 'account', Type: 2},
+            emprestimos: {Id: 53, Name: 'Empréstimos', IsVisible: false, Icon: 'home', Type: 2},
+            financiamentos: {Id: 54, Name: 'Financiamentos', IsVisible: false, Icon: 'home', Type: 2},
+            imoveis: {Id: 55, Name: 'Imóveis', IsVisible: false, Icon: 'home', Type: 2},
+            veiculos: {Id: 56, Name: 'Veículos', IsVisible: false, Icon: 'home', Type: 2},
+        }
     },
     operators: [
         {Id: 1, Name: 'Igual', Key: '='},
