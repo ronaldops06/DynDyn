@@ -121,8 +121,23 @@ namespace Api.Integration.Test.Attribute
 
             AttributeRequestDto.Options = options;
             
+            //GetById
+            var builder = new UriBuilder($"{HostApi}/Attribute/{registroPost.Id}");
+            response = await Client.GetAsync(builder.Uri);
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var registroGet = JsonConvert.DeserializeObject<AttributeResponseDto>(jsonResult);
+            
+            Assert.False(registroGet.Id == 0);
+            Assert.Equal(AttributeRequestDto.Name, registroGet.Name);
+            Assert.Equal(AttributeRequestDto.Status, registroGet.Status);
+            Assert.Equal(AttributeRequestDto.DataType, registroGet.DataType);
+            Assert.Equal(AttributeRequestDto.Description, registroGet.Description);
+            Assert.True(registroGet.Options.Count() > 0);
+            
             //GetAll
-            var builder = new UriBuilder($"{HostApi}/Attribute");
+            builder = new UriBuilder($"{HostApi}/Attribute");
 
             var query = HttpUtility.ParseQueryString(builder.Query);
             //Parâmetros específicos
@@ -134,7 +149,7 @@ namespace Api.Integration.Test.Attribute
             response = await Client.GetAsync(builder.Uri);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
 
-            var jsonResult = await response.Content.ReadAsStringAsync();
+            jsonResult = await response.Content.ReadAsStringAsync();
             var listFromJson = JsonConvert.DeserializeObject<IEnumerable<AttributeResponseDto>>(jsonResult);
 
             Assert.NotNull(listFromJson);

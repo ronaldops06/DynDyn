@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
@@ -62,10 +63,34 @@ namespace Data.Repository
 
                 attribute.Options?.RemoveAll((i => !newIds.Contains(i.Id)));
 
+                // Atualiza os que já existem
+                if (attribute.Options != null && item.Options != null)
+                {
+                    foreach (var source in item.Options)
+                    {
+                        var target = attribute.Options.FirstOrDefault(i => i.Id == source.Id);
+
+                        if (target != null)
+                        {
+                            target.Label = source.Label;
+                            target.Status = source.Status;
+                            target.IsDefault = source.IsDefault;
+                            target.DataCriacao = source.DataCriacao;
+                            target.DataAlteracao = DateTime.Now;
+                        }
+                    }
+                }
+                
                 var existIds = attribute.Options?.Select(i => i.Id).ToHashSet();
 
-                attribute.Options?.AddRange(
-                    item.Options?.FindAll(i => !existIds.Contains(i.Id)));
+                var add = item.Options?.FindAll(i => !existIds.Contains(i.Id));
+                foreach (var option in add)
+                {
+                    option.DataCriacao = item.DataCriacao ?? DateTime.Now;
+                    option.DataAlteracao = item.DataAlteracao ?? DateTime.Now;
+                }
+                
+                attribute.Options?.AddRange(add);
 
                 await _context.SaveChangesAsync();
             }
@@ -180,7 +205,8 @@ namespace Data.Repository
 
         protected IQueryable<AttributeEntity> QueryableIncludeRelations(IQueryable<AttributeEntity> query)
         {
-            query = query.Include(usr => usr.User).AsTracking();
+            query = query.Include(t => t.Options);
+            query = query.Include(usr => usr.User);
 
             return query;
         }

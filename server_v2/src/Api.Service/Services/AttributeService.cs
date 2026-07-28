@@ -95,7 +95,7 @@ namespace Api.Service.Services
             model.UserId = user.Id;
             foreach (var option in model.Options)
             {
-                option.User = user;
+                option.User = null;
                 option.UserId = user.Id;
             }
             
