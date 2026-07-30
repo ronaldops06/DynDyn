@@ -62,7 +62,7 @@ jobs:
         run: chmod +x android/gradlew
 
       - name: Build AAB
-          working-directory: mobile/android
+        working-directory: mobile/android
         run: ./gradlew bundleRelease
 
       - name: Upload to Google Play Closed Testing
