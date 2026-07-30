@@ -24,6 +24,7 @@ jobs:
         with:
           node-version: 22.14.0
           cache: npm
+          cache-dependency-path: mobile/package-lock.json
 
       - name: Install dependencies
         working-directory: mobile
@@ -58,8 +59,8 @@ jobs:
           echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}' > mobile/android/play-account.json
 
       - name: Grant execute permission
-        working-directory: mobile
-        run: chmod +x android/gradlew
+        working-directory: mobile/android
+        run: chmod +x gradlew
 
       - name: Build AAB
         working-directory: mobile/android
