@@ -72,5 +72,5 @@ jobs:
           serviceAccountJson: mobile/android/play-account.json
           packageName: com.sagemoney
           releaseFiles: mobile/android/app/build/outputs/bundle/release/app-release.aab
-          track: closed
+          track: alpha
           status: completed
