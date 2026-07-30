@@ -49,7 +49,7 @@ jobs:
 
       - name: Configure Signing
         run: |
-          echo "MYAPP_UPLOAD_STORE_FILE=app/release.keystore" >> mobile/android/gradle.properties
+          echo "MYAPP_UPLOAD_STORE_FILE=release.keystore" >> mobile/android/gradle.properties
           echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> mobile/android/gradle.properties
           echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> mobile/android/gradle.properties
           echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> mobile/android/gradle.properties
