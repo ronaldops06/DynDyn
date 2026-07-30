@@ -1,0 +1,75 @@
+name: Android Closed Testing
+
+on:
+  push:
+    branches:
+      - develop
+    paths:
+      - 'mobile/**'
+      - '.github/workflows/android-develop.yml'
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.14.0
+          cache: npm
+
+      - name: Install dependencies
+        working-directory: mobile
+        run: npm ci --legacy-peer-deps
+
+      - name: Install Gradle dependencies
+        working-directory: mobile/android
+        run: ./gradlew dependencies
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE }}" | base64 -d > mobile/android/app/release.keystore
+
+      - name: Configure Signing
+        run: |
+          echo "MYAPP_UPLOAD_STORE_FILE=app/release.keystore" >> mobile/android/gradle.properties
+          echo "MYAPP_UPLOAD_STORE_PASSWORD=${{ secrets.KEYSTORE_PASSWORD }}" >> mobile/android/gradle.properties
+          echo "MYAPP_UPLOAD_KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> mobile/android/gradle.properties
+          echo "MYAPP_UPLOAD_KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> mobile/android/gradle.properties
+
+      - name: Create Google Play Service Account
+        run: |
+          echo '${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT }}' > mobile/android/play-account.json
+
+      - name: Grant execute permission
+        working-directory: mobile
+        run: chmod +x android/gradlew
+
+      - name: Build AAB
+          working-directory: mobile/android
+        run: ./gradlew bundleRelease
+
+      - name: Upload to Google Play Closed Testing
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: mobile/android/play-account.json
+          packageName: com.sagemoney
+          releaseFiles: mobile/android/app/build/outputs/bundle/release/app-release.aab
+          track: closed
+          status: completed
