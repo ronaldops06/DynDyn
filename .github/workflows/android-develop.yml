@@ -62,9 +62,22 @@ jobs:
         working-directory: mobile/android
         run: chmod +x gradlew
 
+      - name: Calculate version
+        run: |
+          TAG=$(git describe --tags --abbrev=0)
+
+          VERSION_NAME=$(echo "$TAG" | sed 's/^v//' | cut -d+ -f1)
+          VERSION_CODE=$(echo "$TAG" | cut -d+ -f2)
+
+          echo "VERSION_NAME=$VERSION_NAME" >> $GITHUB_ENV
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+
       - name: Build AAB
         working-directory: mobile/android
-        run: ./gradlew bundleRelease
+        run: |
+          ./gradlew bundleRelease \
+            -PVERSION_NAME=${{ env.VERSION_NAME }} \
+            -PVERSION_CODE=${{ env.VERSION_CODE }}
 
       - name: Upload to Google Play Closed Testing
         uses: r0adkll/upload-google-play@v1

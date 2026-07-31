@@ -12,8 +12,7 @@ import {
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
 import {getUserLoginEncrypt} from "../utils.ts";
 import Moment from "moment/moment";
-import {deleteCategory} from "../services/category.api.ts";
-import {getAttributes, postAttribute, putAttribute} from "../services/attribute.api.ts";
+import {deleteAttribute, getAttributes, postAttribute, putAttribute} from "../services/attribute.api.ts";
 
 export const loadAllAttributeInternal = async (pageNumber: Number | null, activated: number | null): Promise<I.Response> => {
     let response = {} as I.Response;
@@ -117,7 +116,7 @@ export const excludeAttribute = async (attributeId: number, attributeInternalId:
     
     let login = await getUserLoginEncrypt();
 
-    response = await deleteCategory(attributeId);
+    response = await deleteAttribute(attributeId);
 
     if (response && !response.isLogged)
         return response;
