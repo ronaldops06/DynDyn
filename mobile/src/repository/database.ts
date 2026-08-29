@@ -25,3 +25,26 @@ export const openDatabase = async (): Promise<SQLite.SQLiteDatabase> => {
         throw error;
     }
 };
+
+export const addColumnIfNotExists = async (db: SQLite.SQLiteDatabase, table: string, column: string, definition: string) => {
+    const [result] = await db.executeSql(
+        `PRAGMA table_info(${table})`
+    );
+
+    let exists = false;
+
+    for (let i = 0; i < result.rows.length; i++) {
+        const row = result.rows.item(i);
+
+        if (row.name === column) {
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists) {
+        await db.executeSql(
+            `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+        );
+    }
+}

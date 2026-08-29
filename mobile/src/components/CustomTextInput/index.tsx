@@ -8,7 +8,7 @@ interface CustomTextInputParams {
     text: string;
     isMoveText?: boolean | undefined;
     value: string;
-    setValue: any;
+    setValue: (value: string) => void;
     messageText?: string | undefined;
     secureTextEntry?: boolean | undefined;
     icon?: any | undefined;

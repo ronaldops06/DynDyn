@@ -75,7 +75,7 @@ const Filter = (props: FiltersProps) => {
         setSituation(Situation.All);
         setCategory(0);
         setParentPortfolio(0);
-        setValue(null);
+        setValue({} as I.ValueFilter);
     }
 
     const handleApply = () => {

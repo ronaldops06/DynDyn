@@ -1,12 +1,10 @@
-import React, {useEffect, useState} from "react";
-import AccountIcon from "../../assets/account.svg";
+import React, {useEffect, useRef, useState} from "react";
 import ExpandIcon from "../../assets/expand.svg";
 import ExpandLessIcon from "../../assets/expand_less.svg";
-import {ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {ActivityIndicator, ScrollView, Text, TouchableOpacity, View} from "react-native";
 
 import * as I from "../../interfaces/interfaces.tsx";
-import {PageProcess, PageSpecial} from "../../components/Page";
-import {constants as pageConstants} from "../../components/Page/constants";
+import {PageSpecial} from "../../components/Page";
 
 import {useTheme} from "../../contexts/ThemeContext.tsx";
 import {getStyle} from "../../styles/styles.ts";
@@ -14,107 +12,91 @@ import {constants} from "../../constants";
 import {getPortfolioStyle} from "./styles";
 import Icon from "../../components/Icon";
 import AuxiliaryButton from "../../components/AuxiliaryButton";
-import PortfolioView from "./View";
+import {loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller.tsx";
+import {validateLogin} from "../../utils.ts";
+import {loadAllBalance} from "../../controller/balance.controller.tsx";
+import {useFocusEffect} from "@react-navigation/native";
 
-const Portfolio = ({navigation, route}) => {
+const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const portfolioStyle = getPortfolioStyle(theme);
-
-    let portfolios: I.Portfolio[] = [{
-        Id: 1,
-        InternalId: 1,
-        Name: "CDB",
-        Type: 1,
-        Group: 2,
-        Status: 1,
-        Category: {
-            Id: 1,
-            InternalId: 1,
-            Name: "Investimentos",
-            Type: 1,
-            Status: 1,
-            DataCriacao: "",
-            DataAlteracao: ""
-        },
-        ParentPortfolio: null,
-        DataCriacao: "",
-        DataAlteracao: "",
-        BalanceTotals: {
-            Value: 15000
-        }
-    },
-        {
-            Id: 2,
-            InternalId: 2,
-            Name: "Apartamento 01",
-            Type: 2,
-            Group: 52,
-            Status: 1,
-            Category: {
-                Id: 1,
-                InternalId: 1,
-                Name: "Investimentos",
-                Type: 1,
-                Status: 1,
-                DataCriacao: "",
-                DataAlteracao: ""
-            },
-            ParentPortfolio: null,
-            DataCriacao: "",
-            DataAlteracao: "",
-            BalanceTotals: {
-                Value: 380000
-            }
-        },
-        {
-            Id: 3,
-            InternalId: 3,
-            Name: "Garagem 01",
-            Type: 2,
-            Group: 52,
-            Status: 1,
-            Category: {
-                Id: 1,
-                InternalId: 1,
-                Name: "Investimentos",
-                Type: 1,
-                Status: 1,
-                DataCriacao: "",
-                DataAlteracao: ""
-            },
-            ParentPortfolio: null,
-            DataCriacao: "",
-            DataAlteracao: "",
-            BalanceTotals: {
-                Value: 10500
-            }
-        }];
-
+    
     const [portfolioType, setPortfolioType] = useState(constants.portfolioType.ativo);
-    const [groupTypes, setGroupTypes] = useState<I.SymbolStringView[]>([]);
+    const [groupTypes, setGroupTypes] = useState<I.SymbolNumberView[]>([]);
+    const isFirstRender = useRef(true);
+    const [loading, setLoading] = useState(true);
+    const [isLoadInternal, setIsLoadInternal] = useState(true);
+    const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
 
+    useFocusEffect(
+        React.useCallback(() => {
+            if (route.params?.actionNavigation === constants.actionNavigation.reload) {
+                isFirstRender.current = false;
+                setIsLoadInternal(true);
+                setPortfolios([]);
+            }
+        }, [route.params?.actionNavigation])
+    );
+        
     useEffect(() => {
-        if (groupTypes.length === 0)
+        //Faz com que não execute na abertura da tela (renderização)
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+        
+        if (portfolios.length === 0) {
+            loadPortfolios();
+        }
+    }, [portfolios])
+    
+    useEffect(() => {
+        if (groupTypes.length === 0) {
             getGroupTypes();
+            setPortfolios([]);
+        }
     }, [])
+    
+    const loadPortfolios = async () => {
+        setLoading(true);
+
+        let responsePortfolios = null;
+
+        if (isLoadInternal) {
+            responsePortfolios = await loadAllPortfolioInternal(null, null, null);
+        } else {
+            responsePortfolios = await loadAllPortfolio(null, null, null);
+            validateLogin(responsePortfolios, navigation);
+
+            let response = await loadAllBalance(null);
+
+            //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
+            responsePortfolios = await loadAllPortfolioInternal(null, null, null);
+        }
+
+        setPortfolios(responsePortfolios?.data ?? []);
+
+        setLoading(false);
+        setIsLoadInternal(true);
+    };
 
     const getGroupTypes = () => {
-        let keys: I.SymbolStringView[] = Object.values(constants.portfolioGroupType.ativo);
+        let keys: I.SymbolNumberView[] = Object.values(constants.portfolioGroupType.ativo);
         keys.push(...Object.values(constants.portfolioGroupType.passivo));
 
         setGroupTypes(keys);
     }
 
     const getTotal = (type: number) => {
-        return portfolios?.filter(x => x.Type === type).reduce((acc, item) => acc + Number(item.BalanceTotals.Value), 0);
+        return portfolios?.filter(x => x.Type === type && x.ParentPortfolio === null).reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0);
     }
 
     const getTotalPercentage = (type: number) => {
-        let total = portfolios?.reduce((acc, item) => acc + Number(item.BalanceTotals.Value), 0);
+        let total = portfolios?.reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0);
         let totalType = getTotal(type);
 
-        return (totalType * 100) / total;
+        return (totalType * 100) / total ?? 1;
     }
 
     const getButtonStyle = (type: number) => {
@@ -132,20 +114,20 @@ const Portfolio = ({navigation, route}) => {
     const handleBackClick = () => {
         navigation.goBack();
     };
-
+    
     const handleNewClick = () => {
         navigation.navigate("PortfolioRegister", {
             isEditing: false, data: null
         });
     }
-    
+
     const handleItemClick = (data: I.Portfolio) => {
         navigation.navigate("PortfolioView", {
             data: data
         });
     }
 
-    const handleClickIsVisible = (groupType: I.SymbolStringView) => {
+    const handleClickIsVisible = (groupType: I.SymbolNumberView) => {
         groupType.IsVisible = !groupType.IsVisible;
 
         setGroupTypes((prevGroupType) =>
@@ -156,11 +138,13 @@ const Portfolio = ({navigation, route}) => {
     }
 
     const _renderGroup = () => {
-        if (!portfolios) return null;
+        if (portfolios.length === 0) return null;
+
         return (
             groupTypes.filter(x => x.Type === portfolioType.Id).map(type => {
-                let portfoliosGroup = portfolios.filter(x => x.Group === type.Id && x.Type === portfolioType.Id);
-                let totalValue = portfoliosGroup?.reduce((acc, item) => acc + Number(item.BalanceTotals.Value), 0);
+                let portfoliosGroup = portfolios.filter(x => x.Group === type.Id && x.Type === portfolioType.Id && x.ParentPortfolio === null);
+                let totalValue = portfoliosGroup?.reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0);
+
                 return (
                     <View key={type.Id} style={portfolioStyle.portfolioGroup}>
                         <View style={portfolioStyle.portfolioGroupHeader}>
@@ -201,12 +185,13 @@ const Portfolio = ({navigation, route}) => {
             <>
                 {portfoliosRendering.map(item => {
                         return (
-                            <View onTouchEndCapture={() => handleItemClick(item)} key={portfolioGroup} style={portfolioStyle.portfolioGroupItens}>
+                            <View onTouchEndCapture={() => handleItemClick(item)} key={portfolioGroup}
+                                  style={portfolioStyle.portfolioGroupItens}>
                                 <View key={`${portfolioGroup}-${item.Id}`} style={style.row}>
                                     <Text style={style.textPrimary16}>{item.Name}</Text>
                                     <View style={style.row}>
-                                        <Text style={style.textPrimary16}>R$ {item.BalanceTotals.Value.toFixed(2)}</Text>
-                                        <Icon name="next" size="24" color={theme.colors.quaternaryIcon}/>
+                                        <Text style={style.textPrimary16}>R$ {item.BalanceTotals?.Value?.toFixed(2) ?? "0.00"}</Text>
+                                        <Icon name="next" size={24} color={theme.colors.quaternaryIcon}/>
                                     </View>
                                 </View>
                             </View>
@@ -265,10 +250,15 @@ const Portfolio = ({navigation, route}) => {
                             style={getTextButtonStyle(constants.portfolioType.passivo.Id)}>Passivo</Text>
                     </TouchableOpacity>
                 </View>
-                <ScrollView
-                    style={portfolioStyle.scroll}>
-                    {_renderGroup()}
-                </ScrollView>
+                {loading ?
+                    <View style={portfolioStyle.loading}>
+                        <ActivityIndicator size="large" color={theme.colors.primaryBaseColor}/> 
+                    </View>:
+                    <ScrollView
+                        style={portfolioStyle.scroll}>
+                        {!loading && _renderGroup()}
+                    </ScrollView>
+                }
             </View>
         </PageSpecial>
     )

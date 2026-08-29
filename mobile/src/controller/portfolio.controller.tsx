@@ -45,7 +45,7 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
     return internalPortfolio;
 }
 
-export const loadAllPortfolioInternal = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolioInternal = async (pageNumber: Number | null, groupsPortfolios:number[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
@@ -87,7 +87,7 @@ export const synchronizationAllPortfolio= async (): Promise<I.Response | null> =
             portfolio = await insertPortfolio(login, item);
         } else {
             item.InternalId = portfolio.InternalId;
-            portfolio = await updatePortfolio(item);
+            portfolio = await updatePortfolio(login, item);
         }
     }
 
@@ -97,7 +97,7 @@ export const synchronizationAllPortfolio= async (): Promise<I.Response | null> =
     return response;
 }
 
-export const loadAllPortfolio = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolio = async (pageNumber: Number | null, groupsPortfolios:number[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = await synchronizationAllPortfolio();
     if (response && !response.isLogged)
         return response;
@@ -130,7 +130,8 @@ export const alterPortfolio = async (portfolio: I.Portfolio): Promise<I.Response
     populateInternalFields(portfolio, response);
 
     if (response.data !== null) {
-        portfolio = await updatePortfolio(response.data);
+        let login = await getUserLoginEncrypt();
+        portfolio = await updatePortfolio(login, response.data);
     }
 
     return response;

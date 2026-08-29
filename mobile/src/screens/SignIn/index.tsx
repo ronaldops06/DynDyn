@@ -20,7 +20,7 @@ import {StatusHttp} from "../../enums/enums.tsx";
 
 import FingerPrintIcon from "../../assets/fingerprint.svg";
 
-const SignIn = ({navigation}) => {
+const SignIn = ({navigation}: {navigation: any}) => {
     const { theme } = useTheme();
     const style = getStyle(theme);
     const signInStyle = getSignInStyle(theme);

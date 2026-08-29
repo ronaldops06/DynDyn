@@ -80,7 +80,7 @@ export interface AttributeOption {
     Label: string,
     IsDefault: number,
     Status: number,
-    tempId?: string,
+    tempId?: string | null,
     DataCriacao: Date | null,
     DataAlteracao: Date | null
 }
@@ -92,7 +92,7 @@ export interface Attribute {
     Description?: string,
     DataType: number,
     Status: number,
-    Options?: AttributeOption[],
+    Options?: AttributeOption[] | null,
     DataCriacao: Date | null,
     DataAlteracao: Date | null
 }
@@ -107,15 +107,35 @@ export interface CategoryFilter {
     Situation: number
 }
 
+export interface PortfolioAttribute {
+    InternalId: number,
+    Id: number,
+    ValueNumber?: number | null,
+    ValueText?: string | null,
+    ValueBoolean?: number | null,
+    ValueDate?: Date | null,
+    AttributeOption?: AttributeOption | null,
+    Attribute: Attribute,
+    ActionType: number,
+    Status: number,
+    DataCriacao: Date | null,
+    DataAlteracao: Date | null,
+}
+
 export interface Portfolio {
     InternalId: number,
     Id: number,
     Name: string,
+    Description: string,
+    CurrencyCode: string,
+    AcquisitionCost?: number | null,
+    EndDate?: Date | null,
     Type: number,
     Group: number,
     Status: number,
     Category: Category,
     ParentPortfolio: Portfolio | null,
+    Attributes?: PortfolioAttribute[],
     DataCriacao: Date,
     DataAlteracao: Date,
     BalanceTotals: BalanceTotals | null
@@ -283,10 +303,20 @@ export interface SymbolString {
 export interface SymbolStringView {
     Id: string,
     Name: string,
+    Icon: string,
+    Type: number,
     IsVisible: boolean
 }
 
 export interface SymbolNumber {
     Id: number,
     Name: string,
+}
+
+export interface SymbolNumberView {
+    Id: number,
+    Name: string,
+    Icon: string,
+    Type: number,
+    IsVisible: boolean
 }

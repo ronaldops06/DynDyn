@@ -15,6 +15,8 @@ import {ActivityIndicator, ScrollView, View} from "react-native";
 import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import FieldFilterValue from "../../../components/FieldFilterValue";
 import Select from "../../../components/Select";
+import { constants } from "../../../constants.js";
+import {SelectItemRow} from "../../../components/Select/SelectItem";
 
 interface FiltersProps {
     filter: TransactionFilter
@@ -83,7 +85,7 @@ const Filter = (props: FiltersProps) => {
         setCategory(0);
         setPortfolio(0);
         setOperation(0);
-        setValue(null);
+        setValue({} as I.ValueFilter);
     }
 
     const handleApply = () => {

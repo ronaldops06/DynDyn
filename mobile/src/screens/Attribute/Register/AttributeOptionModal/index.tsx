@@ -9,7 +9,6 @@ import {useTheme} from "../../../../contexts/ThemeContext";
 import {getStyleCadastro} from "../../../../styles/styles.cadastro.ts";
 import {getAttributeOptionModalStyle} from "./styles";
 import CheckBox from "../../../../components/CheckBox";
-import {getStyle} from "../../../../styles/styles.ts";
 
 const MAX_LENGTH = 100;
 
@@ -30,7 +29,6 @@ const AttributeOptionModal = ({
                               }: AttributeOptionModalProps) => {
     const {theme} = useTheme();
     const attributeOptionModalStyle = getAttributeOptionModalStyle(theme);
-    const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
 
     const [label, setLabel] = useState("");
@@ -93,7 +91,7 @@ const AttributeOptionModal = ({
 
     return (
         <BottomModal show={show} setShow={setShow}>
-            <View style={style.areaFields}>
+            <View style={styleCadastro.areaFields}>
                 <View style={attributeOptionModalStyle.field}>
                     <TextInput
                         text="Label"

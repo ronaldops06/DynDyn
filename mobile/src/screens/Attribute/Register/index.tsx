@@ -18,7 +18,7 @@ import AttributeOptionModal from "./AttributeOptionModal";
 import AttributeOptionItem from "./AttributeOptionItem";
 import AuxiliaryButton from "../../../components/AuxiliaryButton";
 
-const AttributeCreate = ({navigation, route}) => {
+const AttributeCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const styleCadastro = getStyleCadastro(theme);
     const attributeCreateStyle = getAttributeCreateStyle(theme);
@@ -211,7 +211,7 @@ const AttributeCreate = ({navigation, route}) => {
                 />
                 <Select
                     label={"Tipo de dado"}
-                    value={dataType}
+                    value={dataType ?? 1}
                     setValue={setDataType}
                     data={Object.values(constants.attributeDataType)}
                 />

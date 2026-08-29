@@ -23,7 +23,7 @@ import {PageProcess} from "../../components/Page";
 import {Situation} from "../../enums/enums.tsx";
 import Filter from "../Category/Filter";
 
-const Category = ({navigation, route}) => {
+const Category = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
 
     const [loading, setLoading] = useState(false);

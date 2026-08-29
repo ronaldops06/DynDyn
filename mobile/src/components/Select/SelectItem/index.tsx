@@ -25,7 +25,7 @@ const SelectItem = (props: SelectItemProps) => {
                 onTouchEndCapture={props.onPress}>
                 <View style={cardStyle.rowFooter}>
                     <Text style={cardStyle.textName}>
-                        {props.data.Name}
+                        {props.item.Name}
                     </Text>
                 </View>
             </View>

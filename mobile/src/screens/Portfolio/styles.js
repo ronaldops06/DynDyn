@@ -71,6 +71,9 @@ export const getPortfolioStyle = (theme) => StyleSheet.create({
     textButtonDefault: {
         color: theme.colors.secondaryTextColor,
     },
+    loading: {
+        marginTop: 20  
+    },
     scroll: {
         paddingVertical: 10,
     },

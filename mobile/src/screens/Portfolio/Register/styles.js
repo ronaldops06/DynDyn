@@ -142,5 +142,44 @@ export const getPortfolioRegisterStyle = (theme) => StyleSheet.create({
         color: theme.colors.dangerTextColor,
         fontFamily: "Open Sans",
         fontSize: 15
+    },
+    box: {
+        marginVertical: 10,
+        borderWidth: 1,
+        borderColor: theme.colors.primaryBorderColor + "46",
+        borderRadius: 20,
+        padding: 10
+    },
+    infoRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: theme.colors.primaryBorderColor,
+    },
+    infoLabel: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        flex: 0.8,
+        gap: 9
+    },
+    infoLabelText: {
+        fontSize: 14,
+        color: theme.colors.primaryTextColor,
+        fontFamily: 'Open Sans',
+    },
+    infoValue: {
+        fontSize: 14,
+        fontWeight: '600',
+        color: theme.colors.primaryTextColor,
+        fontFamily: 'Open Sans',
+        textAlign: 'right',
+        flex: 0.8
+    },
+    infoAction: {
+        flex: 0.2,
+        alignItems: 'flex-end',
+        marginRight: 5
     }
 });

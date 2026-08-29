@@ -81,6 +81,10 @@ export const constants = {
             veiculos: {Id: 56, Name: 'Veículos', IsVisible: false, Icon: 'home', Type: 2},
         }
     },
+    portfolioActionType: {
+        informed: {Id: 1, Name: 'Informado'},
+        calculated: {Id: 2, Name: 'Calculado'},
+    },
     operators: [
         {Id: 1, Name: 'Igual', Key: '='},
         {Id: 2, Name: 'Maior', Key: '>'},

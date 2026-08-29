@@ -11,7 +11,6 @@ import TextInput from "../../../components/CustomTextInput";
 import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
 import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
-import RuleIcon from "../../../assets/rule.svg";
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyle} from "../../../styles/styles.ts";
@@ -24,7 +23,7 @@ import Select from "../../../components/Select";
 import AuxiliaryButton from "../../../components/AuxiliaryButton";
 
 
-const OperationCreate = ({navigation, route}) => {
+const OperationCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
@@ -40,7 +39,6 @@ const OperationCreate = ({navigation, route}) => {
     const [type, setType] = useState<number>(constants.operationType.revenue.Id);
     const [category, setCategory] = useState(0);
     const [isRecurrent, setIsRecurrent] = useState<boolean>(false);
-    const [isSalary, setIsSalary] = useState<boolean>(false);
     const [status, setStatus] = useState<boolean>(true);
     const [operationRoles, setOperationRoles] = useState<I.OperationRole[]>([]);
     const [categories, setCategories] = useState<I.Category[]>([]);
@@ -88,7 +86,6 @@ const OperationCreate = ({navigation, route}) => {
             setType(data.Type);
             setStatus(data.Status === constants.status.active.Id);
             setCategory(data.Category.Id);
-            setIsSalary(data.Salary);
             setIsRecurrent(data.Recurrent);
             setOperationRoles(data.OperationRoles);
         }
@@ -149,7 +146,7 @@ const OperationCreate = ({navigation, route}) => {
         operationDTO.Type = type;
         operationDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
         operationDTO.Recurrent = isRecurrent;
-        operationDTO.Salary = isSalary ?? false;
+        operationDTO.Salary = false;
         operationDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
         operationDTO.OperationRoles = operationRoles;
 
@@ -234,15 +231,6 @@ const OperationCreate = ({navigation, route}) => {
                         <Text
                             style={styleCadastro.textCheckbox}>Recorrente</Text>
                     </View>
-                    <View style={operationCreateStyle.areaCard}>
-                        <CheckBox
-                            value={isSalary}
-                            onValueChange={setIsSalary}
-                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                        />
-                        <Text
-                            style={styleCadastro.textCheckbox}>Salário</Text>
-                    </View>
                 </View>
                 <View style={operationCreateStyle.areaCard}>
                     <CheckBox
@@ -267,7 +255,7 @@ const OperationCreate = ({navigation, route}) => {
                                 onClose={() => removeOperationRole(item)}
                                 mode="flat"
                                 style={{marginVertical: 4, marginLeft: 8}}
-                                iconClose="close"
+                                closeIcon="close"
                             >
                                 {item.Name}
                             </Chip>

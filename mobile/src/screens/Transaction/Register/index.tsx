@@ -33,7 +33,7 @@ import AuxiliaryButton from "../../../components/AuxiliaryButton";
 import {useFocusEffect} from "@react-navigation/native";
 import Select from "../../../components/Select";
 
-const TransactionCreate = ({navigation, route}) => {
+const TransactionCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const styleCadastro = getStyleCadastro(theme);
     const transactionCreateStyle = getTransactionCreateStyle(theme);
@@ -179,7 +179,7 @@ const TransactionCreate = ({navigation, route}) => {
             setValueConsolidated(true);
         } else {
             setValueConsolidated(false);
-            setValueCategory(null);
+            setValueCategory(0);
             setValueDestPortfolio(0);
         }
         stepInput.current.focus();

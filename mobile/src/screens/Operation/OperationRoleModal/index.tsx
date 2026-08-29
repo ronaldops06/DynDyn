@@ -30,7 +30,6 @@ const OperationRoleModal = (props: OperationRoleProps) => {
 
     const [loading, setLoading] = useState(false);
     const [isScrolling, setIsScrolling] = useState(false);
-    const [isLoadInternal, setIsLoadInternal] = useState(false);
     const [operationsRoles, setOperationsRoles] = useState<I.OperationRole[]>([]);
     const [pageNumber, setPageNumber] = useState(1);
     const [totalPages, setTotalPages] = useState(1);

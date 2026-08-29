@@ -23,7 +23,7 @@ import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {getAccountCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
 
-const PortfolioCreate = ({navigation, route}) => {
+const PortfolioCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
@@ -161,7 +161,7 @@ const PortfolioCreate = ({navigation, route}) => {
         portfolioDTO.InternalId = portfolioInternalId;
         portfolioDTO.Name = name;
         portfolioDTO.Type = type;
-        portfolioDTO.Group = constants.portfolioGroupType.contasBancarias.Id;
+        portfolioDTO.Group = constants.portfolioGroupType.ativo.contasBancarias.Id;
         portfolioDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
         portfolioDTO.ParentPortfolio = (parentPortfolio > 0) ? portfolios.find(x => x.Id === parentPortfolio) ?? null : null;
         portfolioDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;

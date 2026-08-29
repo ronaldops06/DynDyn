@@ -24,7 +24,7 @@ import PageProcess from "../../components/Page/Process";
 import {Situation} from "../../enums/enums.tsx";
 import Filter from "./Filter";
 
-const Portfolio = ({navigation, route}) => {
+const Portfolio = ({navigation, route}: {navigation: any, route: any}) => {
     const { theme } = useTheme();
     const style = getStyle(theme);
     const accountStyle = getAccountStyle(theme);
@@ -226,7 +226,6 @@ const Portfolio = ({navigation, route}) => {
                 pageNumber={pageNumber}
                 handlePageNumber={setPageNumber}
                 handleScrolling={setIsScrolling}
-                styles={accountStyle.scroll}
                 renderItem={({item}) => (
                     <AccountItem
                         data={item}

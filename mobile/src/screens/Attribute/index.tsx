@@ -21,7 +21,7 @@ import {PageSpecial} from "../../components/Page";
 import AuxiliaryButton from "../../components/AuxiliaryButton";
 import {getAttributeStyle} from "./styles";
 
-const Attribute = ({navigation, route}) => {
+const Attribute = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const attributeStyle = getAttributeStyle(theme);
 

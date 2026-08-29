@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const getStyleCadastro = (theme) => StyleSheet.create({
+export const getStyleCadastro = (theme: any) => StyleSheet.create({
     viewHeaderCadastro: {
         width: "100%",
         backgroundColor: theme.colors.primaryBaseColor,
@@ -25,6 +25,9 @@ export const getStyleCadastro = (theme) => StyleSheet.create({
     },
     buttonTrash: {
         marginRight: 15
+    },
+    areaField: {
+        marginVertical: 10
     },
     areaFields: {
         flex: 1,

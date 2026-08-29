@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const getPortfolioViewStyle = (theme) => StyleSheet.create({
+export const getPortfolioViewStyle = (theme: any) => StyleSheet.create({
     container: {
         paddingHorizontal: 10,   
         paddingVertical: 10,
@@ -38,6 +38,12 @@ export const getPortfolioViewStyle = (theme) => StyleSheet.create({
         color: theme.colors.secondaryTextColor,
         fontFamily: 'Open Sans',
         marginTop: 2,
+    },
+    textLink: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 16,
+        fontFamily: "Open Sans",
+        textDecorationLine: "underline"
     },
     statusTag: {
         marginTop: 5,

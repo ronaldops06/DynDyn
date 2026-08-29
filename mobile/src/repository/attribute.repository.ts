@@ -164,7 +164,7 @@ export const updateAttributeOption = async (attributeOption: AttributeOption, db
     } = attributeOption;
 
     await db.executeSql(
-        'UPDATE categories '
+        'UPDATE attribute_option '
         + 'SET id = ?'
         + ', label = ?'
         + ', is_default = ?'

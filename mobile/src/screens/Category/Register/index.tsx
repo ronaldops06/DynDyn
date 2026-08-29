@@ -15,7 +15,7 @@ import {getStyle} from "../../../styles/styles.ts";
 import {getCategoryCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
 
-const CategoryCreate = ({navigation, route}) => {
+const CategoryCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
@@ -29,7 +29,7 @@ const CategoryCreate = ({navigation, route}) => {
 
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
-    const [type, setType] = useState<number>();
+    const [type, setType] = useState<number>(1);
     const [status, setStatus] = useState<boolean>(true);
 
     useEffect(() => {

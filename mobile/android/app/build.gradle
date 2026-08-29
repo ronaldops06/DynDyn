@@ -82,8 +82,8 @@ android {
         applicationId "com.sagemoney"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode project.hasProperty("VERSION_CODE") ? VERSION_CODE.toInteger() : 1
-        versionName project.hasProperty("VERSION_NAME") ? VERSION_NAME : "0.0.0"
+        versionCode project.hasProperty("VERSION_CODE") ? VERSION_CODE.toInteger() : 29
+        versionName project.hasProperty("VERSION_NAME") ? VERSION_NAME : "1.0.7"
     }
     signingConfigs {
         debug {

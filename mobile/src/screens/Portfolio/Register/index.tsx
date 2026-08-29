@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Alert, Switch, Text, TouchableOpacity, View} from "react-native";
+import {Alert, Switch, Text, TouchableOpacity, View} from "react-native";
 import {useFocusEffect} from "@react-navigation/native";
-
-import CameraIcon from "../../../assets/portfolio.svg";
-import PlusIcon from "../../../assets/plus.svg";
 import TextInputCustom from "../../../components/CustomTextInput";
 import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
@@ -18,10 +15,18 @@ import {
 } from "../../../controller/portfolio.controller.tsx";
 import {constants} from "../../../constants";
 import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
+import {getCurrentStack, toLocalDate, validateLogin, validateSuccess} from "../../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
 import {getPortfolioRegisterStyle} from "./styles";
 import Button from "../../../components/Button";
+import AuxiliaryButton from "../../../components/AuxiliaryButton";
+import Moment from "moment";
+import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
+import {TypesCategory} from "../../../enums/enums.tsx";
+import {CustomAlert} from "../../../components/CustomAlert";
+import {PortfolioAttribute} from "../../../interfaces/interfaces.tsx";
+import PortfolioAttributeModal from "../PortfolioAttributeModal";
+import Icon from "../../../components/Icon";
 
 interface ExampleAttribute {
     Id: number;
@@ -43,23 +48,27 @@ const PortfolioRegister = ({navigation, route}: any) => {
     const [name, setName] = useState("");
     const [type, setType] = useState(constants.portfolioType.ativo.Id);
     const [group, setGroup] = useState(0);
+    const [category, setCategory] = useState(0);
     const [parentPortfolio, setParentPortfolio] = useState(0);
     const [description, setDescription] = useState("");
     const [acquisitionDate, setAcquisitionDate] = useState("");
     const [saleDate, setSaleDate] = useState("");
-    const [acquisitionValue, setAcquisitionValue] = useState("");
-    const [currentValue, setCurrentValue] = useState("");
+    const [acquisitionValue, setAcquisitionValue] = useState<number>();
     const [currency, setCurrency] = useState(1);
-    const [financialNotes, setFinancialNotes] = useState("");
     const [status, setStatus] = useState(true);
+    const [portfolioAttributes, setPortfolioAttributes] = useState<I.PortfolioAttribute[]>([] as I.PortfolioAttribute[]);
     const [portfolios, setPortfolios] = useState<I.Portfolio[]>([]);
+    const [categories, setCategories] = useState<I.Category[]>([]);
+    const [showModalAttributeView, setShowModalAttributeView] = useState(false);
+    const [isEditingAttribute, setIsEditingAttribute] = useState(false);
+    const [portfolioAtrributeSelected, setPortfolioAtrributeSelected] = useState<I.PortfolioAttribute>();
 
     useFocusEffect(
         React.useCallback(() => {
-            /*if (route.params?.referenceId !== undefined && route.params?.reference === constants.operations.category) {
+            if (route.params?.referenceId !== undefined && route.params?.reference === constants.operations.category) {
                 getCategories();
                 setCategory(route.params.referenceId);
-            }*/
+            }
         }, [route.params?.actionNavigation])
     );
 
@@ -77,12 +86,20 @@ const PortfolioRegister = ({navigation, route}: any) => {
         let groupsPortfolios = [];
         groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
         groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
-        
+
         const responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, true);
         validateLogin(responsePortfolios, navigation);
         setPortfolios(responsePortfolios?.data ?? []);
+
+        await getCategories();
     };
-    
+
+    const getCategories = async () => {
+        const responseCategories = await loadAllCategoryInternal(TypesCategory.Account, null, true);
+        validateLogin(responseCategories, navigation);
+        setCategories(responseCategories?.data ?? []);
+    }
+
     const loadDataScreen = () => {
         const data = route.params?.data;
 
@@ -90,8 +107,14 @@ const PortfolioRegister = ({navigation, route}: any) => {
             setName(data.Name);
             setType(data.Type);
             setGroup(data.Group);
+            setCategory(data.Category.Id);
+            setDescription(data.Description);
             setParentPortfolio(data.ParentPortfolio?.Id ?? 0);
             setStatus(data.Status === constants.status.active.Id);
+            setAcquisitionDate(data.DataCriacao);
+            setAcquisitionValue(data.AcquisitionCost);
+            setSaleDate(data.EndDate);
+            setCurrency(data.CurrencyCode);
         }
     };
 
@@ -117,7 +140,7 @@ const PortfolioRegister = ({navigation, route}: any) => {
             Alert.alert("Atenção!", "O nome do portfólio deve ser informado.");
             return false;
         }
-        
+
         if (group === 0) {
             Alert.alert("Atenção!", "O grupo deve ser selecionado.");
             return false;
@@ -141,48 +164,50 @@ const PortfolioRegister = ({navigation, route}: any) => {
     };
 
     const handleTrashClick = async () => {
-        Alert.alert("Atenção!",
-            "Este portfólio será excluído. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        const response = await excludePortfolio(portfolioId, portfolioInternalId);
-                        validateLogin(response, navigation);
-                        validateSuccess(response, navigation, sourceScreen);
-                    }
-                }
-            ],
-            {cancelable: false}
+        await CustomAlert("Atenção!",
+            "Este patrimônio será excluído. Deseja continuar?",
+            async () => {
+                let response = await excludePortfolio(portfolioId, portfolioInternalId);
+                validateLogin(response, navigation);
+                validateSuccess(response, navigation, sourceScreen);
+            }
         );
     };
+
+    const handleEditClick = (item: I.PortfolioAttribute) => {
+        setIsEditingAttribute(true);
+        setPortfolioAtrributeSelected(item);
+        setShowModalAttributeView(true);
+    }
 
     const handleSaveClick = async () => {
         if (!validateRequiredFields()) return;
 
         setLoading(true);
 
-        const portfolioDTO = {} as I.Portfolio;
-        portfolioDTO.Id = portfolioId;
-        portfolioDTO.InternalId = portfolioInternalId;
-        portfolioDTO.Name = name;
-        portfolioDTO.Type = type;
-        portfolioDTO.Group = group;
-        //portfolioDTO.Category = categories.find(item => item.Id === category) ?? {} as I.Category;
-        portfolioDTO.ParentPortfolio = parentPortfolio > 0
+        const portfolioDto = {} as I.Portfolio;
+        portfolioDto.Id = portfolioId;
+        portfolioDto.InternalId = portfolioInternalId;
+        portfolioDto.Name = name;
+        portfolioDto.Type = type;
+        portfolioDto.Group = group;
+        portfolioDto.Category = categories.find(item => item.Id === category) ?? {} as I.Category;
+        portfolioDto.ParentPortfolio = parentPortfolio > 0
             ? portfolios.find(item => item.Id === parentPortfolio) ?? null
             : null;
-        portfolioDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
+        portfolioDto.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
+        portfolioDto.Description = description;
+        portfolioDto.EndDate = toLocalDate(saleDate);
+        portfolioDto.DataCriacao = toLocalDate(acquisitionDate);
+        portfolioDto.AcquisitionCost = acquisitionValue;
+        portfolioDto.CurrencyCode = currencies.find(x => x.Id === currency)?.Code ?? "";
+        portfolioDto.Attributes = portfolioAttributes;
 
         let response = {} as I.Response;
         if (isEditing)
-            response = await alterPortfolio(portfolioDTO);
+            response = await alterPortfolio(portfolioDto);
         else
-            response = await createPortfolio(portfolioDTO);
+            response = await createPortfolio(portfolioDto);
 
         setLoading(false);
 
@@ -190,10 +215,18 @@ const PortfolioRegister = ({navigation, route}: any) => {
         validateSuccess(response, navigation, sourceScreen, reference);
     };
 
-    const handleTypeChange = (value: number) => {
-        setType(value);
-        setGroup(0);
-    };
+    const addPortfolioAttribute = (item: I.PortfolioAttribute) => {
+        let index = portfolioAttributes.findIndex(x => x.Attribute.InternalId === item.InternalId);
+
+        if (index > 0) {
+            portfolioAttributes.splice(index, 1);
+        }
+
+        portfolioAttributes.push(item);
+        setPortfolioAttributes(portfolioAttributes);
+        setIsEditingAttribute(false);
+        setPortfolioAtrributeSelected(undefined);
+    }
 
     const renderSectionTitle = (title: string) => (
         <View style={styles.divider}>
@@ -201,15 +234,40 @@ const PortfolioRegister = ({navigation, route}: any) => {
         </View>
     );
 
+    const getValueAttribute = (portfolioAttribute: PortfolioAttribute) => {
+
+        return (
+            <>
+                {(() => {
+                    switch (portfolioAttribute.Attribute.DataType) {
+                        case constants.attributeDataType.text.Id:
+                            return <Text style={styles.infoValue}>{portfolioAttribute.ValueText ?? ""}</Text>;
+                        case constants.attributeDataType.number.Id:
+                            return <Text style={styles.infoValue}>{portfolioAttribute.ValueNumber ?? "0.00"}</Text>;
+                        case constants.attributeDataType.boolean.Id:
+                            return <Text
+                                style={styles.infoValue}>{(portfolioAttribute.ValueBoolean) ? 'Verdadeiro' : 'Falso'}</Text>;
+                        case constants.attributeDataType.date.Id:
+                            return <Text
+                                style={styles.infoValue}>{portfolioAttribute.ValueDate ? Moment(portfolioAttribute.ValueDate).format('DD/MM/YYYY') : "-"}</Text>;
+                        case constants.attributeDataType.listOptions.Id:
+                            return <Text
+                                style={styles.infoValue}>{portfolioAttribute.AttributeOption?.Label}</Text>
+                    }
+                })()}
+            </>
+        );
+    }
+
     const currencies = [
-        {Id: 1, Name: "BRL - Real"},
-        {Id: 2, Name: "USD - Dólar"},
-        {Id: 3, Name: "EUR - Euro"}
+        {Id: 1, Name: "BRL - Real", Code: "BRL"},
+        {Id: 2, Name: "USD - Dólar", Code: "USD"},
+        {Id: 3, Name: "EUR - Euro", Code: "EUR"}
     ];
-    
+
     return (
         <PageSpecial
-            title={isEditing ? "Editar Portfólio" : "Novo Portfólio"}
+            title={isEditing ? "Editar Patrimônio" : "Novo Patrimônio"}
             helpType="portfolio_register"
             onBackClick={handleBackClick}
         >
@@ -222,16 +280,16 @@ const PortfolioRegister = ({navigation, route}: any) => {
                         disabled={false}
                     />
                 </View>
-                
+
                 {renderSectionTitle("Informações básicas")}
-                                
+
                 <TextInputCustom
                     text="Nome *"
                     isMoveText={false}
                     value={name}
                     setValue={setName}
                 />
-                
+
                 <Select
                     label="Grupo *"
                     value={group as any}
@@ -240,13 +298,12 @@ const PortfolioRegister = ({navigation, route}: any) => {
                 />
 
                 <Select
-                    label="Portfólio pai"
-                    value={parentPortfolio as any}
-                    setValue={setParentPortfolio}
-                    data={portfolios.filter(item => item.Id !== portfolioId)}
-                    parentScreen={stack}
+                    label="Categoria *"
+                    value={category}
+                    setValue={setCategory}
+                    data={categories}
                 />
-                
+
                 <TextArea
                     label="Descrição"
                     value={description}
@@ -277,22 +334,14 @@ const PortfolioRegister = ({navigation, route}: any) => {
                     dateValue={saleDate}
                     setDateValue={setSaleDate}
                 />
-                
+
                 {renderSectionTitle("Informações financeiras")}
 
                 <TextInputCustom
                     text="Valor de aquisição (R$) *"
                     isMoveText={false}
-                    value={acquisitionValue}
+                    value={acquisitionValue?.toString() ?? ""}
                     setValue={setAcquisitionValue}
-                    keyboardType="numeric"
-                />
-
-                <TextInputCustom
-                    text="Valor atual (R$)"
-                    isMoveText={false}
-                    value={currentValue}
-                    setValue={setCurrentValue}
                     keyboardType="numeric"
                 />
 
@@ -302,17 +351,36 @@ const PortfolioRegister = ({navigation, route}: any) => {
                     setValue={setCurrency}
                     data={currencies}
                 />
-                                
+
                 {renderSectionTitle("Atributos personalizados")}
                 <Text style={styles.helperText}>
-                    Crie campos personalizados para armazenar informações específicas deste portfólio.
+                    Defina campos personalizados para armazenar informações específicas deste patrimônio.
                 </Text>
 
-                <TouchableOpacity style={styles.attributeButton}>
-                    <PlusIcon width="22" height="22" fill={theme.colors.primaryTextColor}/>
-                    <Text style={styles.attributeButtonText}>Adicionar atributo</Text>
-                </TouchableOpacity>
-                
+                <View style={styles.box}>
+                    {portfolioAttributes?.map((attr: I.PortfolioAttribute, index: number) => (
+                        <View key={index} style={styles.infoRow}>
+                            <View style={styles.infoLabel}>
+                                <Text style={styles.infoLabelText}>{attr.Attribute.Name}</Text>
+                            </View>
+                            {getValueAttribute(attr)}
+                            <TouchableOpacity 
+                                style={styles.infoAction}
+                                onPress={() => handleEditClick(attr)}>
+                                <Icon name="edit" size={20} color={theme.colors.quaternaryIcon}/> 
+                            </TouchableOpacity>
+                        </View>
+                    ))}
+                </View>
+
+                <AuxiliaryButton
+                    text="Adicionar atributo"
+                    onPress={() => setShowModalAttributeView(true)}
+                    icon="plus"
+                    iconColor={theme.colors.primaryTextColor}
+                    type="secondary"
+                />
+
                 <View style={styles.actions}>
                     <Button
                         label={"Salvar"}
@@ -325,10 +393,17 @@ const PortfolioRegister = ({navigation, route}: any) => {
                             style={styles.deleteButton}
                             onPress={handleTrashClick}
                         >
-                            <Text style={styles.deleteText}>Excluir portfólio</Text>
+                            <Text style={styles.deleteText}>Excluir patrimônio</Text>
                         </TouchableOpacity>}
                 </View>
             </View>
+            <PortfolioAttributeModal
+                show={showModalAttributeView}
+                setShow={setShowModalAttributeView}
+                addPortfolioAttribute={addPortfolioAttribute}
+                isEditing={isEditingAttribute}
+                portfolioAttribute={portfolioAtrributeSelected}
+            />
         </PageSpecial>
     );
 };

@@ -23,7 +23,7 @@ import Filter from "../Operation/Filter";
 import OperationItem from "./OperationItem";
 import {useTheme} from '../../contexts/ThemeContext';
 
-const Operation = ({navigation, route}) => {
+const Operation = ({navigation, route}: {navigation: any, route: any}) => {
     const { theme } = useTheme();
       
     const [loading, setLoading] = useState(false);

@@ -227,8 +227,7 @@ export const del = async (path: string) => {
         responseRequest.status = response.data.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log('erro', error?.response?.data);
-        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.error = formatErrors(error);
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });

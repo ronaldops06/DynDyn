@@ -11,11 +11,16 @@ interface CheckBoxProps {
     onValueChange: (value: boolean) => void;
     label: string;
     description?: string | undefined;
+    disabled?: boolean | undefined;
 }
 
 const CheckBox = (props: CheckBoxProps) => {
     const {theme} = useTheme();
     const styleCheckBox = getCheckBoxStyle(theme);
+
+    const {
+        disabled = false
+    } = props;
 
     const getAreaCheckboxStyle = () => {
         return props.value ? styleCheckBox.areaCheckboxChecked : styleCheckBox.areaCheckboxUnchecked;
@@ -38,7 +43,9 @@ const CheckBox = (props: CheckBoxProps) => {
                             false: theme.colors.secondaryBaseColor,
                             true: theme.colors.primaryBaseColor,
                         }}
-                        thumbColor={props.value ? theme.colors.secondaryBaseColor : theme.colors.primaryBaseColor}/>
+                        thumbColor={props.value ? theme.colors.secondaryBaseColor : theme.colors.primaryBaseColor}
+                        disabled={disabled}
+                />
             </View>
         </View>
     );

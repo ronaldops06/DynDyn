@@ -116,30 +116,7 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
         setMoveX(0);
         setMoveY(0);
     };
-
-    /*const onTouchMove = (e: any) => {
-        let auxMoveX = touchX - e.nativeEvent.pageX;
-        let auxMoveY = touchY - e.nativeEvent.pageY;
-
-        if (auxMoveX >= 0) {
-            executeSwipeLeft(auxMoveX);
-        } else {
-            executeSwipeRight(auxMoveX);
-        }
-
-        setMoveY(auxMoveY);
-    };
-
-    const onTouchEnd = async (e: any) => {
-        setExecuteSwipe(false);
-
-        if ((moveX > -5 && moveX < 5) && (moveY > -1 && moveY < 1)) {
-            props.onPress(props.data)
-        }
-        setMoveX(0);
-        setMoveY(0);
-    };*/
-
+    
     const renderDateAlert = (data: I.Transaction) => {
         let dateNow = new Date(moment().utc(true).format('YYYY-MM-DDTHH:mm:ss.SSS'));
         let alertDate = new Date(moment(dateNow.setDate(dateNow.getDate() - 5)).format('YYYY-MM-DDTHH:mm:ss.SSS'));
@@ -165,13 +142,6 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
                     marginLeft: moveX,
                     marginRight: moveX * -1
                 }, props.data.IsSelectedItem ? transactionItemStyle.cardSelected : null]}
-                /*onTouchStart={e => {
-                    setTouchX(e.nativeEvent.pageX);
-                    setTouchY(e.nativeEvent.pageY);
-                }}
-                onTouchEnd={e => onTouchEnd(e)}
-                onTouchCancel={e => onTouchEnd(e)}
-                onTouchMove={e => onTouchMove(e)}*/
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}

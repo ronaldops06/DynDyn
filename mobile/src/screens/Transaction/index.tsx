@@ -44,7 +44,7 @@ const months = [
     'Dezembro'
 ];
 
-const Transaction = ({navigation, route}) => {
+const Transaction = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const transactionStyle = getTransactionStyle(theme);

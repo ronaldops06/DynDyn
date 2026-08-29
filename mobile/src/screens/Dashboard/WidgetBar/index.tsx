@@ -31,6 +31,31 @@ const WidgetBar = (props: WidgetBarProps) => {
         setShowModalFilter(false);
     }
     
+    const getNormalizedData = () => {
+        const data = props.data?.sort((a, b) => b?.Value ?? 0 - a?.Value ?? 0);
+
+        const chartData = data.map(item => ({
+            ...item,
+            Value: Number(item.Value?.toFixed(2))
+        }));
+        
+        return chartData;
+    }
+
+    const normalizedData = getNormalizedData()
+        .map(item => ({
+            ...item,
+            Label: item?.Label ?? '',
+            Value: Number.isFinite(Number(item?.Value))
+                ? Number(item.Value)
+                : 0,
+        }))
+        .filter(item => item.Label !== '');
+
+    const tickValues = [...normalizedData]
+        .sort((a, b) => b.Value - a.Value)
+        .map(item => item.Label);
+    
     return(
         <View style={dashboardStyle.widgetArea}>
             <View style={dashboardStyle.widgetHeader}>
@@ -42,13 +67,21 @@ const WidgetBar = (props: WidgetBarProps) => {
             </View>
             <VictoryChart
                 style={{
-                    background: {fill: theme.colors.secondaryBaseColor},
+                    background: {
+                        fill: theme.colors.secondaryBaseColor,
+                    },
                 }}
-                padding={{top: 40, bottom: 180, left: 50, right: 50}}
+                padding={{
+                    top: 40,
+                    bottom: 180,
+                    left: 50,
+                    right: 50,
+                }}
                 theme={VictoryTheme.material}
-                domainPadding={{x: 30}}>
+                domainPadding={{x: 30}}
+            >
                 <VictoryAxis
-                    tickValues={props.data?.sort((a, b) => b?.Value - a?.Value).map(d => d?.Label)}
+                    tickValues={tickValues}
                     style={{
                         tickLabels: {
                             fontSize: 14,
@@ -58,35 +91,29 @@ const WidgetBar = (props: WidgetBarProps) => {
                             textAnchor: 'end',
                             verticalAnchor: 'start',
                             dy: -10,
-                        }
+                        },
                     }}
-
                 />
-                <VictoryAxis dependentAxis/>
+
+                <VictoryAxis dependentAxis />
 
                 <VictoryBar
-                    data={props.data?.sort((a, b) => b?.Value - a?.Value)}
+                    data={normalizedData}
                     x="Label"
                     y="Value"
-                    labels={({datum}) =>
-                        typeof datum?.Value === 'number'
-                            ? `R$ ${datum?.Value?.toFixed(2)?.toString()}`
-                            : ''
-                    }
+                    labels={({ datum }) => `R$ ${String(datum.Value)}`}
                     barWidth={10}
                     alignment="middle"
                     style={{
-                        data: {fill: theme.colors.secondaryMonetaryColor},
+                        data: {
+                            fill: theme.colors.secondaryMonetaryColor,
+                        },
                         labels: {
                             fill: theme.colors.primaryMonetaryColor,
                             fontSize: 14,
                         },
                     }}
-                    animate={{
-                        duration: 600,
-                        easing: 'quadInOut',
-                    }}
-                    labelComponent={<VictoryTooltip/>}
+                    labelComponent={<VictoryTooltip />}
                 />
             </VictoryChart>
             <CenterModal

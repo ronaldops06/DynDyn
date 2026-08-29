@@ -14,7 +14,7 @@ import * as I from "../../interfaces/interfaces.tsx";
 
 interface SelectProps {
     label: string;
-    value: SelectItemRow;
+    value: number;
     setValue: any;
     required?: boolean | undefined;
     valueDefault?: number | undefined;
@@ -25,6 +25,7 @@ interface SelectProps {
     navigation?: any | undefined;
     reference?: string | undefined;
     data: SelectItemRow[];
+    isEditing?: boolean | undefined;
 }
 
 const Select = (props: SelectProps) => {
@@ -39,10 +40,11 @@ const Select = (props: SelectProps) => {
         required = false,
         valueDefault = 0,
         width = '100%',
+        isEditing = false
     } = props;
 
-    const handleItemClick = (value) => {
-        props.setValue(value.Id);
+    const handleItemClick = (value: number) => {
+        props.setValue(value);
         setShow(false);
     }
 
@@ -61,7 +63,7 @@ const Select = (props: SelectProps) => {
                 <Text style={selectStyle.label}>{props.label}</Text>
                 <TouchableOpacity
                     style={selectStyle.containerInput}
-                    onPress={() => setShow(true)}>
+                    onPress={() => !isEditing && setShow(true)}>
                     <TextInput
                         autoCapitalize={"none"}
                         style={selectStyle.input}
@@ -82,7 +84,7 @@ const Select = (props: SelectProps) => {
                 />
                 <CustomScroll
                     styles={{}}
-                    data={props.data.filter(x => x.Name.toUpperCase().includes(search.toUpperCase()))}
+                    data={props.data?.filter(x => x.Name.toUpperCase().includes(search.toUpperCase()))}
                     loading={false}
                     totalPages={1}
                     pageNumber={1}
@@ -92,8 +94,8 @@ const Select = (props: SelectProps) => {
                     }}
                     renderItem={({item}) => (
                         <SelectItem
-                            data={item}
-                            onPress={() => handleItemClick(item)}
+                            item={item}
+                            onPress={() => handleItemClick(item.Id)}
                         />
                     )}
                 />
