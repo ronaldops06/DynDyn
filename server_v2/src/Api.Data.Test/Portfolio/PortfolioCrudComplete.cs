@@ -23,6 +23,10 @@ namespace Api.Data.Test.Portfolio
         {
             Assert.NotNull(portfolioEntityDest);
             Assert.Equal(portfolioEntitySource.Name, portfolioEntityDest.Name);
+            Assert.Equal(portfolioEntitySource.Description, portfolioEntityDest.Description);
+            Assert.Equal(portfolioEntitySource.CurrencyCode, portfolioEntityDest.CurrencyCode);
+            Assert.Equal(portfolioEntitySource.EndDate, portfolioEntityDest.EndDate);
+            Assert.Equal(portfolioEntitySource.AcquisitionCost, portfolioEntityDest.AcquisitionCost);
             Assert.Equal(portfolioEntitySource.Status, portfolioEntityDest.Status);
             Assert.Equal(portfolioEntitySource.CategoryId, portfolioEntityDest.CategoryId);
             Assert.Equal(portfolioEntitySource.Category.Id, portfolioEntityDest.Category.Id);
@@ -81,6 +85,9 @@ namespace Api.Data.Test.Portfolio
                 PortfolioEntity portfolioEntity = new PortfolioEntity()
                 {
                     Name = "Cash",
+                    Description = Faker.Lorem.Paragraph(3),
+                    CurrencyCode = "BRL",
+                    AcquisitionCost = 1500.50,
                     Status = StatusType.Ativo,
                     CategoryId = _categoryCreated.Id,
                     Category = _categoryCreated,

@@ -25,6 +25,10 @@ namespace Api.Application.Test.Portfolio.WhenRequestUpdate
             var resultValue = ((CreatedResult)result).Value as PortfolioResponseDto;
             Assert.NotNull(resultValue);
             Assert.Equal(PortfolioRequestDto.Id, resultValue.Id);
+            Assert.Equal(PortfolioRequestDto.Description, resultValue.Description);
+            Assert.Equal(PortfolioRequestDto.CurrencyCode, resultValue.CurrencyCode);
+            Assert.Equal(PortfolioRequestDto.AcquisitionCost, resultValue.AcquisitionCost);
+            Assert.Equal(PortfolioRequestDto.EndDate, resultValue.EndDate);
             Assert.Equal(PortfolioRequestDto.Name, resultValue.Name);
             Assert.Equal(PortfolioRequestDto.Status, resultValue.Status);
             Assert.Equal(PortfolioRequestDto.Category.Id, resultValue.Category.Id);

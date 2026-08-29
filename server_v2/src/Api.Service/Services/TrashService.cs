@@ -44,7 +44,7 @@ namespace Service.Services
             if (trashEntityAux != null)
                 throw new Exception("Registro não disponível.");
             
-            model.User = user;
+            model.User = null;
             model.UserId = user.Id;
             var trashEntity = _mapper.Map<TrashEntity>(model);
             _repository.UnchangedParentTrash(trashEntity);

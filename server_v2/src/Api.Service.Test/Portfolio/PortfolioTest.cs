@@ -60,6 +60,10 @@ namespace Api.Service.Test.Portfolio
                 {
                     Id = i,
                     Name = Faker.Name.FullName(),
+                    Description = Faker.Lorem.Paragraph(3),
+                    CurrencyCode = "BRL",
+                    AcquisitionCost = 1500.50,
+                    EndDate = DateTime.UtcNow.AddMonths(2),
                     Status = GetStatusTypeRandom(),
                     ParentPortfolioId = parentModel.Id,
                     ParentPortfolio = parentModel,
@@ -95,6 +99,10 @@ namespace Api.Service.Test.Portfolio
             {
                 Id = PortfolioModel.Id,
                 Name = PortfolioModel.Name,
+                Description = PortfolioModel.Description,
+                CurrencyCode = PortfolioModel.CurrencyCode,
+                AcquisitionCost = PortfolioModel.AcquisitionCost,
+                EndDate = PortfolioModel.EndDate,
                 Status = PortfolioModel.Status,
                 ParentPortfolioId = PortfolioModel.ParentPortfolioId,
                 ParentPortfolio = PortfolioModel.ParentPortfolio,
@@ -110,6 +118,10 @@ namespace Api.Service.Test.Portfolio
             {
                 Id = PortfolioModel.Id,
                 Name = "Carteira",
+                Description = Faker.Lorem.Paragraph(4),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 3000.50,
+                EndDate = DateTime.UtcNow.AddMonths(4),
                 Status = StatusType.Inativo,
                 ParentPortfolioId = parentModel.Id,
                 ParentPortfolio = parentModel,
@@ -123,6 +135,10 @@ namespace Api.Service.Test.Portfolio
             {
                 Id = PortfolioModelUpdate.Id,
                 Name = PortfolioModelUpdate.Name,
+                Description = PortfolioModelUpdate.Description,
+                CurrencyCode = PortfolioModelUpdate.CurrencyCode,
+                AcquisitionCost = PortfolioModelUpdate.AcquisitionCost,
+                EndDate = PortfolioModelUpdate.EndDate,
                 Status = PortfolioModelUpdate.Status,
                 ParentPortfolioId = PortfolioModelUpdate.ParentPortfolioId,
                 ParentPortfolio = PortfolioModelUpdate.ParentPortfolio,
@@ -148,6 +164,10 @@ namespace Api.Service.Test.Portfolio
             Assert.True(PortfolioModelSource.UserId > 0);
             Assert.Equal(PortfolioModelSource.Id, PortfolioModelDest.Id);
             Assert.Equal(PortfolioModelSource.Name, PortfolioModelDest.Name);
+            Assert.Equal(PortfolioModelSource.Description, PortfolioModelDest.Description);
+            Assert.Equal(PortfolioModelSource.CurrencyCode, PortfolioModelDest.CurrencyCode);
+            Assert.Equal(PortfolioModelSource.AcquisitionCost, PortfolioModelDest.AcquisitionCost);
+            Assert.Equal(PortfolioModelSource.EndDate, PortfolioModelDest.EndDate);
             Assert.Equal(PortfolioModelSource.Status, PortfolioModelDest.Status);
             Assert.Equal(PortfolioModelSource.CategoryId, PortfolioModelDest.CategoryId);
             Assert.Equal(PortfolioModelSource.Category.Id, PortfolioModelDest.Category.Id);

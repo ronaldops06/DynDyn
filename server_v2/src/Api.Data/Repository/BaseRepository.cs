@@ -15,7 +15,7 @@ namespace Data.Repository
     public class BaseRepository<T> : IRepository<T> where T : BaseEntity
     {
         protected readonly SomniaContext _context;
-        private DbSet<T> _dataset;
+        protected readonly DbSet<T> _dataset;
 
         public BaseRepository(SomniaContext context)
         {
@@ -23,7 +23,7 @@ namespace Data.Repository
             _dataset = context.Set<T>();
         }
 
-        public async Task<T> InsertAsync(T item)
+        public virtual async Task<T> InsertAsync(T item)
         {
             try
             {

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Api.Domain.Dtos.Category;
@@ -26,6 +27,28 @@ namespace Api.Domain.Dtos.Portfolio
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         [StringLength(100, ErrorMessage = "{0} deve ter no máximo {1} caracteres")]
         public string Name { get; set; }
+        
+        /// <summary>
+        /// Descrição do portfólio.
+        /// </summary>
+        [StringLength(250, ErrorMessage = "{0} deve ter no máximo {1} caracteres")]
+        public string Description { get; set; }
+        
+        /// <summary>
+        /// Código da moeda do portfólio.
+        /// </summary>
+        [StringLength(3, ErrorMessage = "{0} deve ter no máximo {1} caracteres")]
+        public string CurrencyCode { get; set; }
+        
+        /// <summary>
+        /// Valor de aquisição do portfólio.
+        /// </summary>
+        public double? AcquisitionCost { get; set; }
+        
+        /// <summary>
+        /// Data de encerramento do portfólio.
+        /// </summary>
+        public DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Status da conta <see cref="StatusType"/>.

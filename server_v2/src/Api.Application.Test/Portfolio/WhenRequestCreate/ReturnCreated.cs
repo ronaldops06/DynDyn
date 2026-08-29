@@ -33,6 +33,10 @@ namespace Api.Application.Test.Portfolio.WhenRequestCreate
             Assert.NotNull(resultValue);
             Assert.True(resultValue.Id > 0);
             Assert.Equal(PortfolioRequestDto.Name, resultValue.Name);
+            Assert.Equal(PortfolioRequestDto.Description, resultValue.Description);
+            Assert.Equal(PortfolioRequestDto.CurrencyCode, resultValue.CurrencyCode);
+            Assert.Equal(PortfolioRequestDto.AcquisitionCost, resultValue.AcquisitionCost);
+            Assert.Equal(PortfolioRequestDto.EndDate, resultValue.EndDate);
             Assert.Equal(PortfolioRequestDto.Status, resultValue.Status);
             Assert.Equal(PortfolioRequestDto.Category.Id, resultValue.Category.Id);
             Assert.Equal(PortfolioRequestDto.ParentPortfolio.Id, resultValue.ParentPortfolio.Id);

@@ -76,6 +76,9 @@ namespace Api.Data.Test.Portfolio
                     PortfolioEntity _entity = new PortfolioEntity
                     {
                         Name = Faker.Name.FullName(),
+                        Description = Faker.Lorem.Paragraph(3),
+                        CurrencyCode = "BRL",
+                        AcquisitionCost = 1500.50,
                         Status = GetStatusTypeRandom(),
                         CategoryId = _categoryCreated.Id,
                         Category = _categoryCreated,

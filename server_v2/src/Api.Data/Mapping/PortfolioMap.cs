@@ -25,6 +25,16 @@ namespace Data.Mapping
             builder.Property(u => u.Name)
                 .IsRequired()
                 .HasMaxLength(100);
+            
+            builder.Property(u => u.Description)
+                .HasMaxLength(250);
+            
+            builder.Property(u => u.CurrencyCode)
+                .HasMaxLength(3);
+            
+            builder.Property(u => u.AcquisitionCost);
+            
+            builder.Property(u => u.EndDate);
 
             builder.Property(u => u.Status)
                 .IsRequired();

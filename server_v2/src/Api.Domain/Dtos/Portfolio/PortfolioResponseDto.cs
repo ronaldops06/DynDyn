@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Entities;
@@ -20,6 +21,26 @@ namespace Api.Domain.Dtos.Portfolio
         /// Nome da conta.
         /// </summary>
         public string Name { get; set; }
+        
+        /// <summary>
+        /// Descrição do portfólio.
+        /// </summary>
+        public string Description { get; set; }
+        
+        /// <summary>
+        /// Código da moeda do portfólio.
+        /// </summary>
+        public string CurrencyCode { get; set; }
+        
+        /// <summary>
+        /// Valor de aquisição do portfólio.
+        /// </summary>
+        public double? AcquisitionCost { get; set; }
+        
+        /// <summary>
+        /// Data de encerramento do portfólio.
+        /// </summary>
+        public DateTime? EndDate { get; set; }
 
         /// <summary>
         /// Status da conta <see cref="StatusType"/>.
