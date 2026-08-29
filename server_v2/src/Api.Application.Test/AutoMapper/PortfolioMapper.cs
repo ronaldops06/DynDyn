@@ -34,6 +34,10 @@ namespace Api.Application.Test.AutoMapper
             {
                 Id = 2,
                 Name = "Cash",
+                Description = Faker.Lorem.Paragraph(3),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 1500.50,
+                EndDate = DateTime.UtcNow.AddMonths(2),
                 Status = (int)StatusType.Ativo,
                 ParentPortfolio = parentDto,
                 Category = categoryRequestDto
@@ -85,6 +89,10 @@ namespace Api.Application.Test.AutoMapper
                 {
                     Id = i,
                     Name = Name.FullName(),
+                    Description = Faker.Lorem.Paragraph(3),
+                    CurrencyCode = "BRL",
+                    AcquisitionCost = 1500.50,
+                    EndDate = DateTime.UtcNow.AddMonths(2),
                     Status = StatusType.Ativo,
                     ParentPortfolioId = parentModel.Id,
                     ParentPortfolio = parentModel,
@@ -106,6 +114,10 @@ namespace Api.Application.Test.AutoMapper
             {
                 Assert.Equal(listDto[i].Id, listModel[i].Id);
                 Assert.Equal(listDto[i].Name, listModel[i].Name);
+                Assert.Equal(listDto[i].Description, listModel[i].Description);
+                Assert.Equal(listDto[i].CurrencyCode, listModel[i].CurrencyCode);
+                Assert.Equal(listDto[i].AcquisitionCost, listModel[i].AcquisitionCost);
+                Assert.Equal(listDto[i].EndDate, listModel[i].EndDate);
                 Assert.Equal(listDto[i].Status, (int)listModel[i].Status);
                 Assert.Equal(listDto[i].ParentPortfolio.Id, listModel[i].ParentPortfolio.Id);
                 Assert.Equal(listDto[i].Category.Id, listModel[i].Category.Id);
@@ -122,6 +134,10 @@ namespace Api.Application.Test.AutoMapper
             {
                 Assert.Equal(listResponseDto[i].Id, listModel[i].Id);
                 Assert.Equal(listResponseDto[i].Name, listModel[i].Name);
+                Assert.Equal(listResponseDto[i].Description, listModel[i].Description);
+                Assert.Equal(listResponseDto[i].CurrencyCode, listModel[i].CurrencyCode);
+                Assert.Equal(listResponseDto[i].AcquisitionCost, listModel[i].AcquisitionCost);
+                Assert.Equal(listResponseDto[i].EndDate, listModel[i].EndDate);
                 Assert.Equal(listResponseDto[i].Status, (int)listModel[i].Status);
                 Assert.Equal(listResponseDto[i].ParentPortfolio.Id, listModel[i].ParentPortfolio.Id);
                 Assert.Equal(listResponseDto[i].Category.Id, listModel[i].Category.Id);

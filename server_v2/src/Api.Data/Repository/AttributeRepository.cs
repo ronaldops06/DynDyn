@@ -42,6 +42,36 @@ namespace Data.Repository
             return true;
         }
         
+        public override async Task<AttributeEntity> InsertAsync(AttributeEntity item)
+        {
+            try
+            {
+                item.DataCriacao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                item.DataAlteracao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+
+                foreach (var option in item.Options)
+                {
+                    option.DataCriacao = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                    option.DataAlteracao = DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                }
+                
+                _dataset.Add(item);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                var message = ex.Message;
+                
+                if (ex.InnerException != null)
+                    message = $"Inner Exception: {ex.InnerException.Message}";
+                
+                //Log.Info<BaseRepository<T>>(message);
+                throw new Exception(message);
+            }
+
+            return item;
+        }
+        
         public override async Task<AttributeEntity> UpdateAsync(AttributeEntity item)
         {
             try
@@ -86,8 +116,8 @@ namespace Data.Repository
                 var add = item.Options?.FindAll(i => !existIds.Contains(i.Id));
                 foreach (var option in add)
                 {
-                    option.DataCriacao = item.DataCriacao ?? DateTime.Now;
-                    option.DataAlteracao = item.DataAlteracao ?? DateTime.Now;
+                    option.DataCriacao = option.DataCriacao ?? DateTime.Now;
+                    option.DataAlteracao = option.DataAlteracao ?? DateTime.Now;
                 }
                 
                 attribute.Options?.AddRange(add);

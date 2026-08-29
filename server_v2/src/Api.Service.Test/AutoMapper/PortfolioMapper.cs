@@ -37,6 +37,10 @@ namespace Api.Service.Test.AutoMapper
             {
                 Id = 2,
                 Name = "Cash",
+                Description = Faker.Lorem.Paragraph(3),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 1500.50,
+                EndDate = DateTime.UtcNow.AddMonths(2),
                 Status = StatusType.Ativo,
                 ParentPortfolioId = parentModel.Id,
                 ParentPortfolio = parentModel,
@@ -50,6 +54,11 @@ namespace Api.Service.Test.AutoMapper
             var entity = Mapper.Map<PortfolioEntity>(model);
             Assert.Equal(entity.Id, model.Id);
             Assert.Equal(entity.Name, model.Name);
+            Assert.Equal(entity.Description, model.Description);
+            Assert.Equal(entity.CurrencyCode, model.CurrencyCode);
+            Assert.Equal(entity.AcquisitionCost, model.AcquisitionCost);
+            Assert.Equal(entity.EndDate, model.EndDate);
+            Assert.Equal(entity.Name, model.Name);
             Assert.Equal(entity.Status, model.Status);
             Assert.Equal(entity.CategoryId, model.CategoryId);
             Assert.Equal(entity.Category.Id, model.Category.Id);
@@ -62,6 +71,10 @@ namespace Api.Service.Test.AutoMapper
             var portfolioModel = Mapper.Map<PortfolioEntity>(entity);
             Assert.Equal(portfolioModel.Id, entity.Id);
             Assert.Equal(portfolioModel.Name, entity.Name);
+            Assert.Equal(portfolioModel.Description, entity.Description);
+            Assert.Equal(portfolioModel.CurrencyCode, entity.CurrencyCode);
+            Assert.Equal(portfolioModel.AcquisitionCost, entity.AcquisitionCost);
+            Assert.Equal(portfolioModel.EndDate, entity.EndDate);
             Assert.Equal(portfolioModel.Status, entity.Status);
             Assert.Equal(portfolioModel.CategoryId, entity.CategoryId);
             Assert.Equal(portfolioModel.Category.Id, entity.Category.Id);
@@ -106,6 +119,10 @@ namespace Api.Service.Test.AutoMapper
                 {
                     Id = i,
                     Name = Faker.Name.FullName(),
+                    Description = Faker.Lorem.Paragraph(3),
+                    CurrencyCode = "BRL",
+                    AcquisitionCost = 1500.50,
+                    EndDate = DateTime.UtcNow.AddMonths(2),
                     Status = StatusType.Ativo,
                     ParentPortfolioId = parentEntity.Id,
                     ParentPortfolio = parentEntity,
@@ -129,6 +146,10 @@ namespace Api.Service.Test.AutoMapper
             {
                 Assert.Equal(listModel[i].Id, listEntity[i].Id);
                 Assert.Equal(listModel[i].Name, listEntity[i].Name);
+                Assert.Equal(listModel[i].Description, listEntity[i].Description);
+                Assert.Equal(listModel[i].CurrencyCode, listEntity[i].CurrencyCode);
+                Assert.Equal(listModel[i].AcquisitionCost, listEntity[i].AcquisitionCost);
+                Assert.Equal(listModel[i].EndDate, listEntity[i].EndDate);
                 Assert.Equal(listModel[i].Status, listEntity[i].Status);
                 Assert.Equal(listModel[i].CategoryId, listEntity[i].CategoryId);
                 Assert.Equal(listModel[i].Category.Id, listEntity[i].Category.Id);

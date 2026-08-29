@@ -41,6 +41,10 @@ namespace Api.Application.Test.Portfolio
             {
                 Id = 1,
                 Name = Name.FullName(),
+                Description = Faker.Lorem.Paragraph(3),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 1500.50,
+                EndDate = DateTime.UtcNow.AddMonths(2),
                 Status = GetStatusTypeRandom(),
                 ParentPortfolioId = parentModel.Id,
                 ParentPortfolio = parentModel,
@@ -56,6 +60,10 @@ namespace Api.Application.Test.Portfolio
             {
                 Id = 2,
                 Name = Name.FullName(),
+                Description = Faker.Lorem.Paragraph(2),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 2500.50,
+                EndDate = DateTime.UtcNow.AddMonths(5),
                 Status = GetStatusTypeRandom(),
                 ParentPortfolioId = parentModel.Id,
                 ParentPortfolio = parentModel,

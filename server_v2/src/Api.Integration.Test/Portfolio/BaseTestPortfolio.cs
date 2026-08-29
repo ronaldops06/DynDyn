@@ -105,6 +105,10 @@ namespace Api.Integration.Test.Portfolio
             {
                 Id = PortfolioBaseDto.Id,
                 Name = PortfolioBaseDto.Name,
+                Description = Faker.Lorem.Paragraph(3),
+                CurrencyCode = "BRL",
+                AcquisitionCost = 1500.50,
+                EndDate = DateTime.UtcNow.AddMonths(2),
                 Type = PortfolioBaseDto.Type,
                 Group = PortfolioBaseDto.Group,
                 Status = PortfolioBaseDto.Status,

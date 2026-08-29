@@ -19,7 +19,7 @@ namespace Api.Domain.Dtos.Portfolio
         /// <summary>
         /// Valor booleano do atributo (usado para atributos do tipo Boolean).
         /// </summary>
-        public bool? ValueBoolean { get; set; }
+        public SituationType? ValueBoolean { get; set; }
 
         /// <summary>
         /// Valor de data do atributo (usado para atributos do tipo Date).

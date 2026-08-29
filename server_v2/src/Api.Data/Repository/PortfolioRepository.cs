@@ -63,11 +63,46 @@ namespace Api.Data.Repository
                 var newIds = item.Attributes?.Select(i => i.AttributeId).ToHashSet();
 
                 portfolio.Attributes?.RemoveAll((i => !newIds.Contains(i.AttributeId)));
+                
+                // Atualiza os que já existem
+                if (portfolio.Attributes != null && item.Attributes != null)
+                {
+                    foreach (var source in item.Attributes)
+                    {
+                        var target = portfolio.Attributes.FirstOrDefault(i => i.Id == source.Id);
 
+                        if (target != null)
+                        {
+                            target.ActionType = source.ActionType;
+                            target.ValueBoolean = source.ValueBoolean;
+                            target.ValueNumber = source.ValueNumber;
+                            target.ValueText = source.ValueText;
+                            target.ValueDate = source.ValueDate;
+                            target.Attribute = source.Attribute;
+                            target.AttributeOption = source.AttributeOption;
+                            target.AttributeOptionId = source.AttributeOptionId;
+                            target.Portfolio = source.Portfolio;
+                            target.PortfolioId = source.PortfolioId;
+                            target.AttributeId = source.AttributeId;
+                            target.Status = source.Status;
+                            target.DataCriacao = source.DataCriacao;
+                            target.DataAlteracao = DateTime.Now;
+                            target.User = source.User;
+                            target.UserId = source.UserId;
+                        }
+                    }
+                }
+                
                 var existIds = portfolio.Attributes?.Select(i => i.AttributeId).ToHashSet();
 
-                portfolio.Attributes?.AddRange(
-                    item.Attributes?.FindAll(i => !existIds.Contains(i.AttributeId)));
+                var add = item.Attributes?.FindAll(i => !existIds.Contains(i.AttributeId));
+                foreach (var attribute in add)
+                {
+                    attribute.DataCriacao = item.DataCriacao ?? DateTime.Now;
+                    attribute.DataAlteracao = item.DataAlteracao ?? DateTime.Now;
+                }
+
+                portfolio.Attributes?.AddRange(add);
 
                 await _context.SaveChangesAsync();
             }

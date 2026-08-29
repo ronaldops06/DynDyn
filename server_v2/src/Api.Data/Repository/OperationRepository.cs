@@ -62,7 +62,7 @@ namespace Api.Data.Repository
                 var newIds = item.OperationRoles?.Select(i => i.OperationRoleId).ToHashSet();
 
                 operation.OperationRoles?.RemoveAll((i => !newIds.Contains(i.OperationRoleId)));
-
+                
                 var existIds = operation.OperationRoles?.Select(i => i.OperationRoleId).ToHashSet();
 
                 operation.OperationRoles?.AddRange(

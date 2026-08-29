@@ -3,6 +3,7 @@ apply plugin: 'com.google.firebase.crashlytics'
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
+
 /**
  * This is the configuration block to customize your React Native Android app.
  * By default you don't need to apply any configuration, just uncomment the lines you need.
@@ -81,8 +82,8 @@ android {
         applicationId "com.sagemoney"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 28
-        versionName "1.0.7"
+        versionCode project.hasProperty("VERSION_CODE") ? VERSION_CODE.toInteger() : 1
+        versionName project.hasProperty("VERSION_NAME") ? VERSION_NAME : "0.0.0"
     }
     signingConfigs {
         debug {

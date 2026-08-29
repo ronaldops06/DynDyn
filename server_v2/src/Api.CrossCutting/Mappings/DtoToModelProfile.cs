@@ -62,10 +62,12 @@ namespace CrossCutting.Mappings
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
                 .ForMember(dest => dest.ActionType, opt => opt.MapFrom(src => src.ActionType.ToEnum<AttributeActionType>()))
                 .ForMember(dest => dest.AttributeId, opt => opt.MapFrom(src => src.Attribute.Id))
-                .ForMember(dest => dest.AttributeOptionId, opt => opt.MapFrom(src => src.AttributeOption.Id)) ;
+                .ForMember(dest => dest.AttributeOptionId, opt => opt.MapFrom(src => src.AttributeOption.Id))
+                .ForMember(dest => dest.ValueBoolean, opt => opt.MapFrom(src => src.ValueBoolean == SituationType.Sim));
             CreateMap<PortfolioAttributeModel, PortfolioAttributeResponseDto>()
                 .ForMember(dest => dest.Status, opt => opt.MapFrom(src => (int)src.Status))
-                .ForMember(dest => dest.ActionType, opt => opt.MapFrom(src => (int)src.ActionType));
+                .ForMember(dest => dest.ActionType, opt => opt.MapFrom(src => (int)src.ActionType))
+                .ForMember(dest => dest.ValueBoolean, opt => opt.MapFrom(src => src.ValueBoolean ?? false ? SituationType.Sim : SituationType.Nao));;
             
             CreateMap<OperationRequestDto, OperationModel>()
             .ForMember(dest => dest.Status, opt => opt.MapFrom(src => src.Status.ToEnum<StatusType>()))
@@ -82,8 +84,6 @@ namespace CrossCutting.Mappings
             .ForMember(dest => dest.ParentTransactionId, opt => opt.MapFrom(src => (src.ParentTransaction != null) ? src.ParentTransaction.Id : _intNullable))
             .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id))
             .ForMember(dest => dest.DestinationPortfolioId, opt => opt.MapFrom(src => (src.DestinationPortfolio != null) ? src.DestinationPortfolio.Id : _intNullable))
-            .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
-            .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
             .ForMember(dest => dest.OperationId, opt => opt.MapFrom(src => src.Operation.Id))
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => src.Consolidated ? 1 : 0));
             CreateMap<TransactionModel, TransactionResponseDto>()
