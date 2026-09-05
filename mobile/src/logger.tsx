@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import RNFS from "react-native-fs";
+import { Dirs, FileSystem } from 'react-native-file-access';
 
 const STORAGE_KEY = 'sagemoney_logs';
 const isDev = __DEV__; 
@@ -46,16 +46,16 @@ export async function clearLogs() {
 }
 
 export const exportLogs = async () => {
-    const path = `${RNFS.ExternalDirectoryPath}/log.txt`;
+    //const path = `${RNFS.ExternalDirectoryPath}/log.txt`;
 
-    await RNFS.writeFile(path, getLogs().toString(), 'utf8');
+    //await RNFS.writeFile(path, getLogs().toString(), 'utf8');
 
-    console.log('Arquivo salvo em:', path);
+    //console.log('Arquivo salvo em:', path);
 };
 
 export const logInFile = async (message: string) => {
     const timestamp = new Date().toISOString();
-    const path = `${RNFS.ExternalDirectoryPath}/log.txt`;
+    //const path = `${RNFS.ExternalDirectoryPath}/log.txt`;
 
-    await RNFS.writeFile(path, `[LOG - ${timestamp}]${message}\n`, 'utf8');
+    //await RNFS.writeFile(path, `[LOG - ${timestamp}]${message}\n`, 'utf8');
 }

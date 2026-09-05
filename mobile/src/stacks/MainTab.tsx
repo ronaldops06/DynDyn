@@ -8,8 +8,8 @@ import {
     HomeStack,
     OperationStack,
     TransactionStack
-} from './MainStack.tsx'
-import {hideTabOnScreens} from "./navigation.utils.ts";
+} from './MainStack'
+import {hideTabOnScreens} from "./navigation.utils";
 
 type TabNavigatorParamList = {
     Home: undefined,

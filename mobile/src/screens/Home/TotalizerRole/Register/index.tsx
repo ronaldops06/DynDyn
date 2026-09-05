@@ -1,25 +1,23 @@
 import React, {useEffect, useState} from "react";
-import {validateLogin, validateSuccess} from "../../../../utils.ts";
-import {CustomAlert} from "../../../../components/CustomAlert";
-import {
-    alterTotalizerRole,
-    createTotalizerRole,
-    excludeTotalizerRole,
-    loadTotalizerRoleByCodeAndType
-} from "../../../../controller/totalizer.role.controller.ts";
-import * as I from "../../../../interfaces/interfaces.tsx";
-import {SymbolNumber, SymbolString} from "../../../../interfaces/interfaces.tsx";
-import {PageRegister} from "../../../../components/Page";
-import {useTheme} from "../../../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../../../styles/styles.ts";
-import {getStyleCadastro} from "../../../../styles/styles.cadastro.ts";
 import {Alert, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {CustomAlert} from "../../../../components/CustomAlert";
+import {PageRegister} from "../../../../components/Page";
 import Picker from "../../../../components/CustomPicker";
-import {constants} from "../../../../constants";
-import RuleIcon from "../../../../assets/rule.svg";
-import {getTotalizerRoleRegisterStyles} from "./styles";
-import OperationRoleModal from "../../../Operation/OperationRoleModal";
 import {Chip} from "react-native-paper";
+import RuleIcon from "../../../../assets/rule.svg";
+
+import OperationRoleModal from "../../../Operation/OperationRoleModal";
+
+import * as I from "../../../../interfaces/interfaces";
+import {constants} from "../../../../constants";
+import {validateLogin, validateSuccess} from "../../../../utils";
+
+import {alterTotalizerRole, createTotalizerRole, excludeTotalizerRole, loadTotalizerRoleByCodeAndType} from "../../../../controller/totalizer.role.controller";
+
+import {useTheme} from "../../../../contexts/ThemeContext";
+import {getStyle} from "../../../../styles/styles";
+import {getStyleCadastro} from "../../../../styles/styles.cadastro";
+import {getTotalizerRoleRegisterStyles} from "./styles";
 
 const TotalizerRoleCreate = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -68,13 +66,13 @@ const TotalizerRoleCreate = ({navigation, route}) => {
         );
     };
 
-    const getTotalizerCodes = (): SymbolString[] => {
-        const keys: SymbolString[] = Object.values(constants.totalizerCode);
+    const getTotalizerCodes = (): I.SymbolString[] => {
+        const keys: I.SymbolString[] = Object.values(constants.totalizerCode);
         return keys;
     }
 
-    const getTotalizerTypes = (): SymbolNumber[] => {
-        const keys: SymbolNumber[] = Object.values(constants.totalizerType);
+    const getTotalizerTypes = (): I.SymbolNumber[] => {
+        const keys: I.SymbolNumber[] = Object.values(constants.totalizerType);
         return keys;
     }
     

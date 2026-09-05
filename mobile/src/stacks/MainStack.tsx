@@ -20,10 +20,10 @@ import Preload from '../screens/Preload';
 
 import SignIn from '../screens/SignIn';
 import SignUp from '../screens/SignUp';
-import Validation from "../screens/SignUp/validation.tsx";
-import RecoveryLogin from "../screens/SignUp/Recovery/recovery.login.tsx"
-import RecoveryValidation from "../screens/SignUp/Recovery/recovery.validation.tsx"
-import RecoveryPassword from "../screens/SignUp/Recovery/recovery.password.tsx"
+import Validation from "../screens/SignUp/validation";
+import RecoveryLogin from "../screens/SignUp/Recovery/recovery.login"
+import RecoveryValidation from "../screens/SignUp/Recovery/recovery.validation"
+import RecoveryPassword from "../screens/SignUp/Recovery/recovery.password"
 import Transaction from '../screens/Transaction';
 import TransactionCreate from '../screens/Transaction/Register';
 import TotalizerRole from "../screens/Home/TotalizerRole";

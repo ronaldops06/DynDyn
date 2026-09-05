@@ -5,6 +5,7 @@ export const LightTheme = {
         secondaryBaseColor: '#F1F1F1',
         tertiaryBaseColor: '#D4DBE6',
         quaternaryBaseColor: '#4CA346',
+        quintenaryBaseColor: '#a19627',
         dangerBaseColor: '#F06868',
         primaryBorderColor: '#DCDCDC',
         secondaryBorderColor: '#D4DBE6',

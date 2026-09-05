@@ -109,15 +109,24 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextColor,
     },
     areaTimes: {
-        flexDirection: "column",
-        width: "40%",
-        marginLeft: 60
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+        marginHorizontal: 20
     },
     areaChecks: {
-        flexDirection: "row"
+        marginTop: 15,
     },
     areaMoreActions: {
         marginHorizontal: 30,
         marginBottom: 20
+    },
+    textTotal: {
+        fontSize: 16,
+        fontFamily: "Open Sans",
+        color: theme.colors.secondaryTextColor,
+        textAlign: "left",
+        width: "40%",
+        alignSelf: "center"
     }
 });

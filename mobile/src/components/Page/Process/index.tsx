@@ -1,17 +1,19 @@
-import {SafeAreaView, Text, TouchableOpacity, View} from "react-native";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../../styles/styles.ts";
-import {constants} from "../constants";
 import React, {ReactNode, useCallback, useState} from "react";
+import {SafeAreaView, Text, TouchableOpacity, View} from "react-native";
+import Help from "../../Help";
+import BottomModal from "../../BottomModal";
+import {useFocusEffect} from "@react-navigation/native";
 import PlusIcon from "../../../assets/plus.svg";
 import HelpIcon from "../../../assets/help_outline.svg";
 import FilterIcon from "../../../assets/filter_list.svg";
 import FilterActivatedIcon from "../../../assets/filter_activated.svg";
-import Help from "../../Help";
-import BottomModal from "../../BottomModal";
 import DeselectIcon from "../../../assets/deselect.svg";
-import {isInternetConnected} from "../../../utils.ts";
-import {useFocusEffect} from "@react-navigation/native";
+
+import {constants} from "../constants";
+import {isInternetConnected} from "../../../utils";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
 
 interface FilterBaseProps {
     onClose?: () => void;

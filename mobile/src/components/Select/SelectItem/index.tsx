@@ -1,7 +1,8 @@
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getCardStyle} from "../../../styles/styles.card.ts";
-import {Text, View} from "react-native";
 import React from "react";
+import {Text, View} from "react-native";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getCardStyle} from "../../../styles/styles.card";
 
 export interface SelectItemRow {
     Id: number | string;

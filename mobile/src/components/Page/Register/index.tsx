@@ -1,16 +1,18 @@
 import React, {ReactNode, useCallback, useState} from "react";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
 import {SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
+import Button from "../../Button";
+import Help from "../../Help";
 import PrevIcon from "../../../assets/nav_prev.svg";
 import TrashIcon from "../../../assets/trash.svg";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {getStyle} from "../../../styles/styles.ts";
-import Button from "../../Button";
 import HelpIcon from "../../../assets/help_outline.svg";
-import Help from "../../Help";
 import BottomModal from "../../BottomModal";
-import {isInternetConnected} from "../../../utils.ts";
-import {useFocusEffect} from "@react-navigation/native";
+
+import {isInternetConnected} from "../../../utils";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
 
 interface PageRegisterProps {
     onTrashClick: any;

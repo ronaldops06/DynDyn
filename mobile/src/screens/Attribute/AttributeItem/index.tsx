@@ -1,14 +1,14 @@
 import React from "react";
 import {Text, View} from "react-native";
-
 import Icon from "../../../components/Icon";
+import Tag from "../../../components/Tag";
 
-import * as I from "../../../interfaces/interfaces.tsx";
+import * as I from "../../../interfaces/interfaces";
 import {constants} from "../../../constants";
+import {getDescriptionStatus} from "../../../utils";
+
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getCardStyle} from "../../../styles/styles.card";
-import Tag from "../../../components/Tag";
-import {getDescriptionStatus} from "../../../utils.ts";
 
 interface AttributeItemParms {
     data: I.Attribute,
@@ -64,7 +64,7 @@ const AttributeItem = (props: AttributeItemParms) => {
                     </View>
                 </View>
                 <View>
-                    <Icon name="next" size="35" color={theme.colors.quaternaryIcon}/>
+                    <Icon name="next" size={35} color={theme.colors.quaternaryIcon}/>
                 </View>
             </View>
         </View>

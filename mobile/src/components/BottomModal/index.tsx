@@ -1,10 +1,10 @@
+import React, {ReactNode} from "react";
 import {Modal, TouchableOpacity, View} from "react-native";
 import ExpandIcon from "../../assets/expand.svg";
-import React, {ReactNode} from "react";
 
 import {useTheme} from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles";
 import {getBottomModalStyle} from "./styles";
-import {getStyle} from "../../styles/styles.ts";
 
 interface ModalProps {
     show: boolean;

@@ -1,8 +1,9 @@
-import React, {ReactNode} from "react";
+import React from "react";
 import {Text, TouchableOpacity} from "react-native";
-import {useTheme} from "../../contexts/ThemeContext.tsx";
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
 import Icon from "../Icon";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
 
 interface AuxiliaryButtonProps {
     text: string;

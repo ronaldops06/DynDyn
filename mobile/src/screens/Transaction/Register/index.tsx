@@ -1,37 +1,34 @@
-import CheckBox from '@react-native-community/checkbox';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import Moment from 'moment';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import Moment from 'moment';
 import CurrencyInput from 'react-native-currency-input';
-
+import ButtonSelectBar, {ButtonsSelectedProps} from '../../../components/ButtonSelectBar';
+import {useFocusEffect} from "@react-navigation/native";
 import {PageRegister} from "../../../components/Page";
+import TextInput from '../../../components/CustomTextInput';
+import Calculator from "../../../components/Calculator";
+import AuxiliaryButton from "../../../components/AuxiliaryButton";
+import Select from "../../../components/Select";
+import CheckBox from "../../../components/CheckBox";
 import ClockIcon from '../../../assets/clock.svg';
 import TodayIcon from '../../../assets/today.svg';
 import HistoryIcon from '../../../assets/history.svg';
 import CalculatorIcon from '../../../assets/calculate.svg';
-import CopyIcon from '../../../assets/copy.svg';
-import ButtonSelectBar, {ButtonsSelectedProps} from '../../../components/ButtonSelectBar';
-import Picker from '../../../components/CustomPicker';
-import TextInput from '../../../components/CustomTextInput';
-import OperationModal from '../OperationModal';
-import {TypesCategory, TypesTransaction} from '../../../enums/enums';
+
 import * as I from '../../../interfaces/interfaces';
+import {TypesCategory, TypesTransaction} from '../../../enums/enums';
+import {constants} from "../../../constants";
+import {getCurrentStack, getDate, toLocalDate, validateLogin, validateSuccess} from "../../../utils";
 
 import {alterTransaction, createTransaction, excludeTransaction} from '../../../controller/transaction.controller';
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
-
-import {constants} from "../../../constants";
-import {getCurrentStack, getDate, toLocalDate, validateLogin, validateSuccess} from "../../../utils.ts";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller";
+import OperationModal from '../OperationModal';
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyleCadastro} from '../../../styles/styles.cadastro';
 import {getTransactionCreateStyle} from './styles';
-import Calculator from "../../../components/Calculator";
-import AuxiliaryButton from "../../../components/AuxiliaryButton";
-import {useFocusEffect} from "@react-navigation/native";
-import Select from "../../../components/Select";
 
 const TransactionCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
@@ -485,31 +482,21 @@ const TransactionCreate = ({navigation, route}: {navigation: any, route: any}) =
                 {!typeSelectedIsTransference() &&
                     <>
                         <View style={transactionCreateStyle.areaChecks}>
-                            <View style={styleCadastro.areaCard}>
                                 <CheckBox
                                     value={isRecurrent}
                                     onValueChange={setIsRecurrent}
-                                    tintColors={{
-                                        true: theme.colors.primaryBaseColor,
-                                        false: theme.colors.primaryBaseColor
-                                    }}
+                                    label="Recorrente"
                                     disabled={operation.Id !== undefined}
                                 />
-                                <Text style={styleCadastro.textCheckbox}>Recorrente</Text>
-                            </View>
                         </View>
-                        <View style={transactionCreateStyle.areaRepeat}>
-                            <View style={styleCadastro.areaCard}>
+                        <View >
+                            <View style={transactionCreateStyle.areaChecks}>
                                 <CheckBox
                                     value={isPaindInstallments}
                                     onValueChange={handlePaindInstallmentSelect}
-                                    tintColors={{
-                                        true: theme.colors.primaryBaseColor,
-                                        false: theme.colors.primaryBaseColor
-                                    }}
+                                    label="Parcelado"
                                     disabled={isEditing || isRecurrent}
                                 />
-                                <Text style={styleCadastro.textCheckbox}>Parcelado</Text>
                             </View>
                             {isPaindInstallments &&
                                 <View style={transactionCreateStyle.areaTimes}>
@@ -518,21 +505,22 @@ const TransactionCreate = ({navigation, route}: {navigation: any, route: any}) =
                                         isMoveText={false}
                                         value={valueTimes?.toString() ?? ""}
                                         setValue={setValueTimes}
-                                        width={"100%"}
+                                        width={"50%"}
                                         editable={!isEditing}
-                                        messageText={(valueTimes != 0) ? `Total: R$ ${(valueValue * valueTimes).toFixed(2)}` : ""}
+                                        //messageText={(valueTimes != 0) ? `Total: R$ ${(valueValue * valueTimes).toFixed(2)}` : ""}
                                     />
+                                    <Text style={transactionCreateStyle.textTotal}>
+                                        {(valueTimes != 0) ? `Total: \nR$ ${(valueValue * valueTimes).toFixed(2)}` : ""}
+                                    </Text>
                                 </View>
                             }
                         </View>
-                        <View style={styleCadastro.areaCard}>
+                        <View style={transactionCreateStyle.areaChecks}>
                             <CheckBox
                                 value={valueConsolidated}
                                 onValueChange={setValueConsolidated}
-                                tintColors={{true: theme.colors.primaryBaseColor, false: theme.colors.primaryBaseColor}}
+                                label={(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}
                             />
-                            <Text
-                                style={styleCadastro.textCheckbox}>{(typeSelected == 1) ? "Recebido" : (typeSelected == 2) ? "Pago" : ""}</Text>
                         </View>
                     </>
                 }

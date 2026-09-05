@@ -1,24 +1,23 @@
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
-
 import TextInput from '../../components/CustomTextInput';
-import * as I from '../../interfaces/interfaces';
-import {login} from '../../services/user.api';
-
-import {encrypt, getUserByStorage} from "../../utils.ts";
+import Button from "../../components/Button";
+import FingerPrintIcon from "../../assets/fingerprint.svg";
 import VisibilityIcon from "../../assets/visibility.svg";
 import VisibilityOffIcon from "../../assets/visibility_off.svg";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import * as I from '../../interfaces/interfaces';
+import {StatusHttp} from "../../enums/enums";
+import SecureStorage from '../../secureStorage';
+import {encrypt, getUserByStorage} from "../../utils";
+
+import {login} from '../../services/user.api';
+import {updateTokenCloudMessaging} from "../../controller/firebase.controller";
+
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getSignInStyle} from './styles';
-import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
-import Button from "../../components/Button";
-import {StatusHttp} from "../../enums/enums.tsx";
-
-import FingerPrintIcon from "../../assets/fingerprint.svg";
 
 const SignIn = ({navigation}: {navigation: any}) => {
     const { theme } = useTheme();
@@ -39,7 +38,7 @@ const SignIn = ({navigation}: {navigation: any}) => {
     const validateBiometricActivated = async () => {
         await getUserByStorage();
         
-        let isBiometricActivatedAux = await EncryptedStorage.getItem("biometrics");
+        let isBiometricActivatedAux = await SecureStorage.get("biometrics");
         setIsBiometricActivated(isBiometricActivatedAux ?? "no");
         
         if (isBiometricActivatedAux === "yes") {
@@ -70,7 +69,7 @@ const SignIn = ({navigation}: {navigation: any}) => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        await EncryptedStorage.setItem("biometrics", "yes");
+                        await SecureStorage.set("biometrics", "yes");
                     }
                 }
             ],
@@ -79,7 +78,7 @@ const SignIn = ({navigation}: {navigation: any}) => {
     }
 
     const setUserInStorage = async (userStorage: I.User) => {
-        await EncryptedStorage.setItem(
+        await SecureStorage.set(
             "user_session",
             JSON.stringify(userStorage)
         );
@@ -119,8 +118,8 @@ const SignIn = ({navigation}: {navigation: any}) => {
                 routes: [{name: 'MainTab'}]
             });
         } else if (userResponse.status === StatusHttp.BadRequest || userResponse.status === StatusHttp.Unauthorized) {
-            await EncryptedStorage.removeItem("user_session");
-            await EncryptedStorage.removeItem("biometrics");
+            await SecureStorage.remove("user_session");
+            await SecureStorage.remove("biometrics");
         }
     }
 

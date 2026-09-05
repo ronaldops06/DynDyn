@@ -1,25 +1,25 @@
 import React, {useEffect, useState} from "react";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
-import {loadAllOperationInternal} from "../../../controller/operation.controller.tsx";
+import {ActivityIndicator, ScrollView, View} from "react-native";
+import Button from "../../../components/Button";
 import Picker from "../../../components/CustomPicker";
 import TextItem from "../../../components/CustomTextInput";
-import {TypesCategory} from "../../../enums/enums.tsx";
-import {Situation} from "../../../enums/enums.tsx";
-import {TransactionFilter} from "../../../interfaces/interfaces.tsx";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getFilterStyles} from "./styles";
-import Button from "../../../components/Button";
-import {ActivityIndicator, ScrollView, View} from "react-native";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import FieldFilterValue from "../../../components/FieldFilterValue";
 import Select from "../../../components/Select";
-import { constants } from "../../../constants.js";
-import {SelectItemRow} from "../../../components/Select/SelectItem";
+
+import * as I from "../../../interfaces/interfaces";
+import {Situation, TypesCategory} from "../../../enums/enums";
+import {constants} from "../../../constants.js";
+
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller";
+import {loadAllOperationInternal} from "../../../controller/operation.controller";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getFilterStyles} from "./styles";
 
 interface FiltersProps {
-    filter: TransactionFilter
+    filter: I.TransactionFilter
     setFilter: (filter: I.TransactionFilter) => void;
     onClose: () => void;
 }
@@ -89,7 +89,7 @@ const Filter = (props: FiltersProps) => {
     }
 
     const handleApply = () => {
-        let transactionFilter = {} as TransactionFilter;
+        let transactionFilter = {} as I.TransactionFilter;
         transactionFilter.Search = search?.toLowerCase() ?? "";
         transactionFilter.Situation = situation;
         transactionFilter.CategoryId = category;

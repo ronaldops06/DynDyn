@@ -2,32 +2,26 @@ import React, {useEffect, useRef, useState, useMemo} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import {Situation, TypesTransaction} from '../../enums/enums';
-import * as I from '../../interfaces/interfaces';
-
+import CustomScroll from "../../components/CustomScroll";
+import {PageProcess} from "../../components/Page";
+import {constants as pageConstants} from "../../components/Page/constants";
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import CurrencyExchangeIcon from '../../assets/currency_exchange.svg';
-import {
-    alterTransaction,
-    excludeTransaction,
-    executeRecurringTransaction,
-    generateTotalsTransactions,
-    loadAllTransactionsInternal,
-    loadAndPersistAll
-} from '../../controller/transaction.controller';
-import CustomScroll from "../../components/CustomScroll";
-import {filterDynamic, hasAnyFilter, validateLogin} from "../../utils.ts";
-import {constants} from "../../constants";
-import {constants as pageConstants} from "../../components/Page/constants";
-import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
+
+import * as I from '../../interfaces/interfaces';
+import {Situation, TypesTransaction} from '../../enums/enums';
+import {filterDynamic, hasAnyFilter, validateLogin} from "../../utils";
+import {constants} from "../../constants";
+
+import {alterTransaction, excludeTransaction, executeRecurringTransaction, generateTotalsTransactions, loadAllTransactionsInternal, loadAndPersistAll} from '../../controller/transaction.controller';
+import TransactionItem from "./TransactionItem";
+import Filter from './Filter';
 
 import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getTransactionStyle} from './styles';
-import {PageProcess} from "../../components/Page";
-import Filter from './Filter';
 
 const months = [
     'Janeiro',

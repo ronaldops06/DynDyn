@@ -1,9 +1,11 @@
-import {SymbolString} from "../../interfaces/interfaces.tsx";
-import RadioGroup, {RadioButtonProps} from "react-native-radio-buttons-group";
-import {getRadioGroupStyles} from "./styles";
-import {useTheme} from "../../contexts/ThemeContext.tsx";
 import React from "react";
 import {Text, View} from "react-native";
+import RadioGroup, {RadioButtonProps} from "react-native-radio-buttons-group";
+
+import {SymbolString} from "../../interfaces/interfaces";
+
+import {getRadioGroupStyles} from "./styles";
+import {useTheme} from "../../contexts/ThemeContext";
 
 interface RadioGroupCustomProps {
     label: string;

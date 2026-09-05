@@ -1,13 +1,14 @@
 import React, {ReactNode, useState} from "react";
 import {Text, TouchableOpacity, View} from "react-native";
 import {VictoryAxis, VictoryBar, VictoryChart, VictoryTheme, VictoryTooltip} from "victory-native";
-
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../../styles/styles.ts";
-import {getDashboardStyle} from "../styles";
-import * as I from "../../../interfaces/interfaces.tsx";
-import MoreIcon from "../../../assets/more.svg";
 import CenterModal from "../../../components/Modal/CenterModal";
+import MoreIcon from "../../../assets/more.svg";
+
+import * as I from "../../../interfaces/interfaces";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
+import {getDashboardStyle} from "../styles";
 
 interface WidgetBarProps {
     description: string;

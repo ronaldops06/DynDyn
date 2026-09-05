@@ -11,12 +11,11 @@ import {
     updateOperationRole
 } from '../repository/operation.role.repository';
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
-import {deleteOperationRole, getOperationsRoles, postOperationRole, putOperationRole} from "../services/operation.role.api.ts";
+import {deleteOperationRole, getOperationsRoles, postOperationRole, putOperationRole} from "../services/operation.role.api";
 import {Alert} from "react-native";
-//import {existsTransactionRelationshipOperationRole} from "../repository/transaction.repository.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
-import {existsOperationRelationshipOperationRole} from "../repository/operation.repository.tsx";
-import {existsTotalizerRelationshipOperationRole} from "../repository/totalizer.role.repository.ts";
+import {getUserLoginEncrypt} from "../utils";
+import {existsOperationRelationshipOperationRole} from "../repository/operation.repository";
+import {existsTotalizerRelationshipOperationRole} from "../repository/totalizer.role.repository";
 
 /**
  * Método responsável por retornar a papeis de transação persistida internamente para ser utilizada como referência.

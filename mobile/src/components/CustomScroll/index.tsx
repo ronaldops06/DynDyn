@@ -1,8 +1,8 @@
-import React from "react";
+import React, {JSX} from "react";
 import {ActivityIndicator, FlatList, TextStyle} from "react-native";
 
 import { useTheme } from '../../contexts/ThemeContext';
-import {getStyle} from "../../styles/styles.ts";
+import {getStyle} from "../../styles/styles";
 
 interface CustomScrollParams {
     data: any[];

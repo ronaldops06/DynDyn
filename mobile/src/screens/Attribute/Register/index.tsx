@@ -2,21 +2,22 @@ import React, {useEffect, useState} from "react";
 import {Alert, ScrollView, Text, View} from 'react-native';
 import TextInput from "../../../components/CustomTextInput";
 import Select from "../../../components/Select";
-
-import * as I from "../../../interfaces/interfaces.tsx";
-import {alterAttribute, createAttribute, excludeAttribute} from "../../../controller/attribute.controller.tsx";
-import {validateLogin, validateSuccess} from "../../../utils.ts";
-
-import {constants} from "../../../constants";
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyleCadastro} from '../../../styles/styles.cadastro';
-import {getAttributeCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
 import CheckBox from "../../../components/CheckBox";
 import TextArea from "../../../components/TextArea";
+import AuxiliaryButton from "../../../components/AuxiliaryButton";
+
+import {constants} from "../../../constants";
+import * as I from "../../../interfaces/interfaces";
+import {alterAttribute, createAttribute, excludeAttribute} from "../../../controller/attribute.controller";
+import {validateLogin, validateSuccess} from "../../../utils";
+
 import AttributeOptionModal from "./AttributeOptionModal";
 import AttributeOptionItem from "./AttributeOptionItem";
-import AuxiliaryButton from "../../../components/AuxiliaryButton";
+
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyleCadastro} from '../../../styles/styles.cadastro';
+import {getAttributeCreateStyle} from "./styles";
 
 const AttributeCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();

@@ -1,14 +1,14 @@
 import Moment from 'moment';
-
-import {Alert} from 'react-native';
 import {constants} from '../constants';
 import * as I from '../interfaces/interfaces';
+import {DashboardItem} from '../interfaces/interfaces';
 import {
     deleteInternalTransaction,
     deleteInternalTransactionByExternalId,
     insertTransaction,
     selectAllTransactions,
-    selectContAll, selectDashboardTransactionGroupByMonthAndCategory,
+    selectContAll,
+    selectDashboardTransactionGroupByMonthAndCategory,
     selectTransactionById,
     selectTransactionsTotals,
     updateTransaction
@@ -23,12 +23,10 @@ import {
 import {loadInternalPortfolio} from './portfolio.controller';
 import {loadInternalOperation} from './operation.controller';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
-import {calculateBalanceByTransactionFromUpdate} from "./balance.controller.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
-import {DashboardItem} from "../interfaces/interfaces";
-import {selectTotalizerRoleByCode} from "../repository/totalizer.role.repository.ts";
-import {calculateTotals} from "./calculate.totalizer.ts";
-import {synchronizationAllTotalizerRole} from "./totalizer.role.controller.ts";
+import {calculateBalanceByTransactionFromUpdate} from "./balance.controller";
+import {getUserLoginEncrypt} from "../utils";
+import {selectTotalizerRoleByCode} from "../repository/totalizer.role.repository";
+import {calculateTotals} from "./calculate.totalizer";
 
 /**
  * Método responsável por retornar a transação persistida internamente para ser utilizada como referência.

@@ -1,8 +1,9 @@
-import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
 import DoneIcon from "../../../assets/done.svg";
+
 import {constants} from "../../../constants";
+import * as I from "../../../interfaces/interfaces";
 
 import { useTheme } from '../../../contexts/ThemeContext';
 import {getCardStyle} from "../../../styles/styles.card";

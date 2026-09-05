@@ -1,4 +1,4 @@
-import * as I from "../interfaces/interfaces.tsx";
+import * as I from "../interfaces/interfaces";
 import {constants} from "../constants";
 
 export const calculateIgnored = (transactions: I.Transaction[], totalizerRole: I.TotalizerRole[]): void=> {

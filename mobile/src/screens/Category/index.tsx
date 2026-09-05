@@ -2,26 +2,22 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Alert} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import * as I from "../../interfaces/interfaces.tsx";
-import CategoryItem from "./CategoryItem";
-import {
-    alterCategory,
-    excludeCategory,
-    loadAllCategory,
-    loadAllCategoryInternal
-} from "../../controller/category.controller.tsx";
-
-import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
 import CarouselSelection from "../../components/CarouselSelection";
-import {hasAnyFilter, validateLogin} from "../../utils.ts";
+import {constants as pageConstants} from "../../components/Page/constants";
 import CategoryIcon from '../../assets/category.svg';
 
-import {useTheme} from '../../contexts/ThemeContext';
-import {constants as pageConstants} from "../../components/Page/constants";
-import {PageProcess} from "../../components/Page";
-import {Situation} from "../../enums/enums.tsx";
+import * as I from "../../interfaces/interfaces";
+import {Situation} from "../../enums/enums";
+import {hasAnyFilter, validateLogin} from "../../utils";
+import {constants} from "../../constants";
+
+import {alterCategory, excludeCategory, loadAllCategory, loadAllCategoryInternal } from "../../controller/category.controller";
+import CategoryItem from "./CategoryItem";
 import Filter from "../Category/Filter";
+
+import {useTheme} from '../../contexts/ThemeContext';
+import {PageProcess} from "../../components/Page";
 
 const Category = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();

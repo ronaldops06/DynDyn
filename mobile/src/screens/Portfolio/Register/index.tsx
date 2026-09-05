@@ -1,37 +1,29 @@
 import React, {useEffect, useState} from "react";
 import {Alert, Switch, Text, TouchableOpacity, View} from "react-native";
 import {useFocusEffect} from "@react-navigation/native";
+import Moment from "moment";
 import TextInputCustom from "../../../components/CustomTextInput";
 import Select from "../../../components/Select";
 import TextArea from "../../../components/TextArea";
 import DateTimeInput from "../../../components/DateTimeInput";
 import {PageSpecial} from "../../../components/Page";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {
-    alterPortfolio,
-    createPortfolio,
-    excludePortfolio,
-    loadAllPortfolioInternal
-} from "../../../controller/portfolio.controller.tsx";
-import {constants} from "../../../constants";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getCurrentStack, toLocalDate, validateLogin, validateSuccess} from "../../../utils.ts";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
-import {getPortfolioRegisterStyle} from "./styles";
 import Button from "../../../components/Button";
 import AuxiliaryButton from "../../../components/AuxiliaryButton";
-import Moment from "moment";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {TypesCategory} from "../../../enums/enums.tsx";
 import {CustomAlert} from "../../../components/CustomAlert";
-import {PortfolioAttribute} from "../../../interfaces/interfaces.tsx";
-import PortfolioAttributeModal from "../PortfolioAttributeModal";
 import Icon from "../../../components/Icon";
 
-interface ExampleAttribute {
-    Id: number;
-    Name: string;
-}
+import * as I from "../../../interfaces/interfaces";
+import {TypesCategory} from "../../../enums/enums";
+import {constants} from "../../../constants";
+import {getCurrentStack, toLocalDate, validateLogin, validateSuccess} from "../../../utils";
+
+import {alterPortfolio, createPortfolio, excludePortfolio, loadAllPortfolioInternal} from "../../../controller/portfolio.controller";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+import PortfolioAttributeModal from "../PortfolioAttributeModal";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getPortfolioRegisterStyle} from "./styles";
 
 const PortfolioRegister = ({navigation, route}: any) => {
     const {theme} = useTheme();
@@ -234,7 +226,7 @@ const PortfolioRegister = ({navigation, route}: any) => {
         </View>
     );
 
-    const getValueAttribute = (portfolioAttribute: PortfolioAttribute) => {
+    const getValueAttribute = (portfolioAttribute: I.PortfolioAttribute) => {
 
         return (
             <>

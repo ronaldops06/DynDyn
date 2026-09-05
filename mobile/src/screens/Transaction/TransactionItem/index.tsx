@@ -1,9 +1,7 @@
-import Moment from 'moment';
 import React, {useRef, useState} from 'react';
 import {GestureResponderEvent, Pressable, Text, View} from 'react-native';
-
-import {TypesTransaction} from '../../../enums/enums';
-import * as I from '../../../interfaces/interfaces';
+import Moment from 'moment';
+import moment from "moment/moment";
 import DoneIcon from '../../../assets/done.svg';
 import MoneyInIcon from '../../../assets/money_in.svg';
 import MoneyOutIcon from '../../../assets/money_out.svg';
@@ -11,9 +9,11 @@ import MoneyTransfIcon from '../../../assets/money_transf.svg';
 import WarningIcon from '../../../assets/warning.svg';
 import EventBusyIcon from '../../../assets/event_busy.svg';
 
+import * as I from '../../../interfaces/interfaces';
+import {TypesTransaction} from '../../../enums/enums';
+
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getTransactionItemStyle} from './styles';
-import moment from "moment/moment";
 
 interface TransactionItemParms {
     data: I.Transaction,

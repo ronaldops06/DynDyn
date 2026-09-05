@@ -6,27 +6,27 @@ import {
     selectSynchronizationByCreationsDateAndOperation,
     updateSynchronization
 } from "../repository/synchronization.repository";
-import {getUserLoginEncrypt} from "../utils.ts";
-import {processActionCategory, synchronizationAllCategory} from "./category.controller.tsx";
-import {processActionPortfolio, synchronizationAllPortfolio} from "./portfolio.controller.tsx";
-import {processActionOperation, synchronizationAllOperation} from "./operation.controller.tsx";
-import {processActionBalance, synchronizationAllBalance} from "./balance.controller.tsx";
-import {processActionTransaction, synchronizationAllOTransaction} from "./transaction.controller.tsx";
+import {getUserLoginEncrypt} from "../utils";
+import {processActionCategory, synchronizationAllCategory} from "./category.controller";
+import {processActionPortfolio, synchronizationAllPortfolio} from "./portfolio.controller";
+import {processActionOperation, synchronizationAllOperation} from "./operation.controller";
+import {processActionBalance, synchronizationAllBalance} from "./balance.controller";
+import {processActionTransaction, synchronizationAllOTransaction} from "./transaction.controller";
 import {constants} from "../constants";
 import Moment from "moment/moment";
-import {getTrashs} from "../services/trash.api.ts";
-import * as I from "../interfaces/interfaces.tsx";
-import {deleteAllBalances} from "../repository/balance.repository.tsx";
-import {deleteAllTransactions} from "../repository/transaction.repository.tsx";
-import {deleteAllPortfolios} from "../repository/portfolio.repository.tsx";
-import {deleteAllOperations} from "../repository/operation.repository.tsx";
+import {getTrashs} from "../services/trash.api";
+import * as I from "../interfaces/interfaces";
+import {deleteAllBalances} from "../repository/balance.repository";
+import {deleteAllTransactions} from "../repository/transaction.repository";
+import {deleteAllPortfolios} from "../repository/portfolio.repository";
+import {deleteAllOperations} from "../repository/operation.repository";
 import {deleteAllCategories} from "../repository/category.repository";
-import {processActionOperationRole, synchronizationAllOperationRole} from "./operation.role.controller.ts";
-import {processActionTotalizerRole, synchronizationAllTotalizerRole} from "./totalizer.role.controller.ts";
-import {processActionAttribute, synchronizationAllAttribute} from "./attribute.controller.tsx";
-import {deleteAllAttributes} from "../repository/attribute.repository.ts";
-import {deleteAllTotalizerRoles} from "../repository/totalizer.role.repository.ts";
-import {deleteAllOperationRoles} from "../repository/operation.role.repository.ts";
+import {processActionOperationRole, synchronizationAllOperationRole} from "./operation.role.controller";
+import {processActionTotalizerRole, synchronizationAllTotalizerRole} from "./totalizer.role.controller";
+import {processActionAttribute, synchronizationAllAttribute} from "./attribute.controller";
+import {deleteAllAttributes} from "../repository/attribute.repository";
+import {deleteAllTotalizerRoles} from "../repository/totalizer.role.repository";
+import {deleteAllOperationRoles} from "../repository/operation.role.repository";
 
 export const loadSynchronizationByCreationsDateAndOperation = async (startCreationDate: Date | null, endCreationDate: Date | null, operation: string): Promise<Synchronization> => {
     let login = await getUserLoginEncrypt();

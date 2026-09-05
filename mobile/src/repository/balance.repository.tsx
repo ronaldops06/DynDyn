@@ -1,5 +1,5 @@
-import {openDatabase} from "./database.ts";
-import {Balance, BalanceTotals, DashboardItem} from "../interfaces/interfaces.tsx";
+import {openDatabase} from "./database";
+import {Balance, BalanceTotals, DashboardItem} from "../interfaces/interfaces";
 import {constants} from "../constants";
 import {ResultSet, Transaction} from "react-native-sqlite-storage";
 

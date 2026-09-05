@@ -1,28 +1,24 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {Alert} from 'react-native';
 import {useFocusEffect} from "@react-navigation/native";
-
-import * as I from "../../interfaces/interfaces.tsx";
-import {
-    alterPortfolio,
-    excludePortfolio,
-    loadAllPortfolio,
-    loadAllPortfolioInternal
-} from "../../controller/portfolio.controller.tsx";
-import {loadAllBalance} from "../../controller/balance.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
-import AccountItem from "./AccountItem";
-import {constants} from "../../constants";
-import {constants as pageConstants} from "../../components/Page/constants";
-import {filterDynamic, hasAnyFilter, validateLogin} from '../../utils.ts';
 import AccountIcon from '../../assets/account.svg';
+import {constants as pageConstants} from "../../components/Page/constants";
+import PageProcess from "../../components/Page/Process";
+
+import {constants} from "../../constants";
+import Filter from "./Filter";
+import AccountItem from "./AccountItem";
+
+import * as I from "../../interfaces/interfaces";
+import {Situation} from "../../enums/enums";
+import {filterDynamic, hasAnyFilter, validateLogin} from '../../utils';
+import {loadAllBalance} from "../../controller/balance.controller";
+import {alterPortfolio, excludePortfolio, loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller";
 
 import {useTheme} from '../../contexts/ThemeContext';
-import {getStyle} from "../../styles/styles.ts";
+import {getStyle} from "../../styles/styles";
 import {getAccountStyle} from './styles';
-import PageProcess from "../../components/Page/Process";
-import {Situation} from "../../enums/enums.tsx";
-import Filter from "./Filter";
 
 const Portfolio = ({navigation, route}: {navigation: any, route: any}) => {
     const { theme } = useTheme();

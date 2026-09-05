@@ -1,10 +1,12 @@
 import * as I from '../interfaces/interfaces';
-import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
+import {DashboardItem} from '../interfaces/interfaces';
+import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller";
 import {constants} from "../constants";
 import Moment from "moment";
-import {loadInternalPortfolio} from "./portfolio.controller.tsx";
+import {loadInternalPortfolio} from "./portfolio.controller";
 import {
     deleteInternalBalance,
+    deleteInternalBalanceByExternalId,
     insertBalance,
     saveBalances,
     selectAllBalances,
@@ -12,13 +14,10 @@ import {
     selectContAllBalances,
     selectDashboardBalanceGroupByMonth,
     updateBalance
-} from "../repository/balance.repository.tsx";
-import {deleteBalance, getBalances, postBalance, putBalance} from "../services/balance.api.ts";
-import {Alert} from "react-native";
+} from "../repository/balance.repository";
+import {deleteBalance, getBalances, postBalance, putBalance} from "../services/balance.api";
 import moment from "moment/moment";
-import {DashboardItem} from "../interfaces/interfaces";
-import {getUserLoginEncrypt} from "../utils.ts";
-import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
+import {getUserLoginEncrypt} from "../utils";
 
 export const loadDashboardBalanceGroupByMonth = async (year: number, month: number): Promise<DashboardItem[]> => {
     let login = await getUserLoginEncrypt();

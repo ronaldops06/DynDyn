@@ -2,25 +2,21 @@ import React, {useEffect, useRef, useState} from "react";
 import {Alert} from "react-native";
 import {useFocusEffect} from "@react-navigation/native";
 import _ from 'lodash';
-import * as I from "../../interfaces/interfaces.tsx";
-import HistoryIcon from '../../assets/history.svg';
-import {
-    alterOperation,
-    excludeOperation,
-    loadAllOperation,
-    loadAllOperationInternal
-} from "../../controller/operation.controller.tsx";
 import CustomScroll from "../../components/CustomScroll";
-import {constants} from "../../constants";
 import CarouselSelection from "../../components/CarouselSelection";
-import {hasAnyFilter, validateLogin} from "../../utils.ts";
-
 import {PageProcess} from "../../components/Page";
-import {Situation} from "../../enums/enums.tsx";
 import {constants as pageConstants} from "../../components/Page/constants";
+import HistoryIcon from '../../assets/history.svg';
 
+import * as I from "../../interfaces/interfaces";
+import {Situation} from "../../enums/enums";
+import {constants} from "../../constants";
+import {hasAnyFilter, validateLogin} from "../../utils";
+
+import {alterOperation, excludeOperation, loadAllOperation, loadAllOperationInternal} from "../../controller/operation.controller";
 import Filter from "../Operation/Filter";
 import OperationItem from "./OperationItem";
+
 import {useTheme} from '../../contexts/ThemeContext';
 
 const Operation = ({navigation, route}: {navigation: any, route: any}) => {

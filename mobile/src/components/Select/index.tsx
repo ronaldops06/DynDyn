@@ -1,16 +1,16 @@
 import React, {useState} from "react";
-import {Text, TouchableOpacity, View, TextInput} from "react-native";
-import ExpandIcon from "../../assets/expand.svg";
+import {Text, TextInput, TouchableOpacity, View} from "react-native";
 import BottomModal from "../BottomModal";
 import CustomScroll from "../CustomScroll";
-import SelectItem, {SelectItemRow} from "./SelectItem";
 import TextItem from "../CustomTextInput";
+import ExpandIcon from "../../assets/expand.svg";
 import AddIcon from "../../assets/plus.svg";
 
-import {useTheme} from "../../contexts/ThemeContext.tsx";
+import SelectItem, {SelectItemRow} from "./SelectItem";
+
+import {useTheme} from "../../contexts/ThemeContext";
 import {getSelectStyle} from "./styles";
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
-import * as I from "../../interfaces/interfaces.tsx";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
 
 interface SelectProps {
     label: string;

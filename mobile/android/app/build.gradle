@@ -78,6 +78,12 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "com.sagemoney"
+    compileSdk 36
+    ndkVersion "27.2.12479018"
+    
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId "com.sagemoney"
         minSdkVersion rootProject.ext.minSdkVersion
@@ -107,7 +113,7 @@ android {
         debug {
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
         release {
             signingConfig signingConfigs.release

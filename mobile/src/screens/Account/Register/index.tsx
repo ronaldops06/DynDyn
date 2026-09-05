@@ -1,27 +1,23 @@
 import React, {useCallback, useEffect, useState} from "react";
-import {useFocusEffect} from "@react-navigation/native";
 import {Alert, Text, View} from "react-native";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {TypesCategory} from "../../../enums/enums.tsx";
-import {
-    alterPortfolio,
-    createPortfolio,
-    excludePortfolio,
-    loadAllPortfolioInternal
-} from "../../../controller/portfolio.controller.tsx";
+import {useFocusEffect} from "@react-navigation/native";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
 import TextInput from "../../../components/CustomTextInput";
-import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
 import Select from "../../../components/Select";
-
-import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
-import {constants} from "../../../constants";
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyle} from "../../../styles/styles.ts";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {getAccountCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
+import CheckBox from "../../../components/CheckBox";
+
+import * as I from "../../../interfaces/interfaces";
+import {TypesCategory} from "../../../enums/enums";
+import { alterPortfolio, createPortfolio, excludePortfolio, loadAllPortfolioInternal} from "../../../controller/portfolio.controller";
+import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils";
+import {constants} from "../../../constants";
+
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyle} from "../../../styles/styles";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getAccountCreateStyle} from "./styles";
 
 const PortfolioCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
@@ -219,14 +215,12 @@ const PortfolioCreate = ({navigation, route}: {navigation: any, route: any}) => 
                     data={portfolios}
                     parentScreen={stack}
                 />
-                <View style={accountCreateStyle.areaCard}>
-                    <CheckBox
-                        value={status}
-                        onValueChange={setStatus}
-                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                    />
-                    <Text
-                        style={styleCadastro.textCheckbox}>Ativo</Text>
+                <View style={accountCreateStyle.areaField}>
+                <CheckBox
+                    value={status}
+                    onValueChange={setStatus}
+                    label="Ativo"
+                />
                 </View>
             </View>
         </PageRegister>

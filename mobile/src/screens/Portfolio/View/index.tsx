@@ -1,16 +1,18 @@
 import React, {useState} from 'react';
 import {ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import Moment from "moment/moment";
 import {PageSpecial} from '../../../components/Page';
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyle} from '../../../styles/styles';
-import {getPortfolioViewStyle} from './styles';
 import Icon from '../../../components/Icon';
 import DocumentIcon from '../../../assets/copy.svg';
 import PlusIcon from '../../../assets/plus.svg';
 import Tag from "../../../components/Tag";
+
+import {PortfolioAttribute} from "../../../interfaces/interfaces";
 import {constants} from "../../../constants";
-import {PortfolioAttribute} from "../../../interfaces/interfaces.tsx";
-import Moment from "moment/moment";
+
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyle} from '../../../styles/styles';
+import {getPortfolioViewStyle} from './styles';
 
 const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();

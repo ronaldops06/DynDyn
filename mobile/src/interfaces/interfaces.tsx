@@ -1,4 +1,4 @@
-import {Operator} from "../utils.ts";
+import {Operator} from "../utils";
 
 export interface Response {
     data: any,

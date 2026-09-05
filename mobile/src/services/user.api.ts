@@ -1,9 +1,8 @@
-import * as I from "../interfaces/interfaces.tsx";
-import {del, postPasswordRecovery, post, postParamQuery, postValidateUser, postLogin} from "./api.ts";
-import {validateLogin} from "./helper.api.ts";
-import {Action, StatusHttp} from "../enums/enums.tsx";
 import {Alert} from "react-native";
-import {PasswordRecreation} from "../interfaces/interfaces.tsx";
+import * as I from "../interfaces/interfaces";
+import {post, postLogin, postParamQuery, postPasswordRecovery, postValidateUser} from "./api";
+import {validateLogin} from "./helper.api";
+import {Action, StatusHttp} from "../enums/enums";
 
 export const validateResponse = (action: Action, response: I.Response) => {
     if (!response.success) {

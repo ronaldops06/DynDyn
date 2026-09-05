@@ -3,19 +3,17 @@ import {Alert, TextInput, TouchableOpacity, View} from "react-native";
 import BottomModal from "../../../components/BottomModal";
 import OperationRoleItem from "./OperationRoleItem";
 import CustomScroll from "../../../components/CustomScroll";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {
-    alterOperationRole,
-    createOperationRole,
-    excludeOperationRole,
-    loadAllOperationRoleInternal
-} from "../../../controller/operation.role.controller.ts";
-import {validateLogin} from "../../../utils.ts";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getOperationRoleModalStyle} from "./styles";
 import PlusIcon from "../../../assets/plus.svg"
 import DoneIcon from "../../../assets/done.svg";
 import {CustomAlert} from "../../../components/CustomAlert";
+
+import * as I from "../../../interfaces/interfaces";
+import {validateLogin} from "../../../utils";
+
+import {alterOperationRole, createOperationRole, excludeOperationRole, loadAllOperationRoleInternal} from "../../../controller/operation.role.controller";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getOperationRoleModalStyle} from "./styles";
 
 interface OperationRoleProps {
     show: boolean;

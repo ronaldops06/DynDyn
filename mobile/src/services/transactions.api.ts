@@ -2,7 +2,7 @@ import { Alert } from 'react-native';
 import { Action, StatusHttp } from '../enums/enums';
 import * as I from '../interfaces/interfaces';
 import {del, get, getPaginated, post, put} from './api';
-import {validateLogin} from "./helper.api.ts";
+import {validateLogin} from "./helper.api";
 
 export const validateResponse = (action: Action, response: I.Response) => {
     if (!response.success) {

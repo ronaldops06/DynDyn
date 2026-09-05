@@ -1,10 +1,11 @@
-import * as I from "../../../interfaces/interfaces.tsx";
 import React, {useState} from "react";
 import {Text, View} from "react-native";
-import {constants} from "../../../constants";
 import DoneIcon from "../../../assets/done.svg";
 import PaymentIcon from "../../../assets/payments.svg";
 import CurrencyExchangeIcon from "../../../assets/currency_exchange.svg";
+
+import * as I from "../../../interfaces/interfaces";
+import {constants} from "../../../constants";
 
 import { useTheme } from '../../../contexts/ThemeContext';
 import {getCardStyle} from "../../../styles/styles.card"

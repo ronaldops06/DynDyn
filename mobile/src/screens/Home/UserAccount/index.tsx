@@ -1,10 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Alert, SafeAreaView, Switch, Text, TouchableOpacity, View} from "react-native";
 import DeviceInfo from 'react-native-device-info';
-
-import {getAccountUserStyles} from "./styles";
-import {getStyle} from "../../../styles/styles.ts";
-import {useTheme} from '../../../contexts/ThemeContext';
 import PrevIcon from "../../../assets/nav_prev.svg";
 import NextIcon from "../../../assets/nav_next.svg";
 import LockIcon from "../../../assets/lock.svg";
@@ -14,9 +10,14 @@ import HelpIcon from "../../../assets/help_center.svg";
 import TrashIcon from "../../../assets/trash.svg";
 import LogoutIcon from "../../../assets/logout.svg";
 
-import {User} from "../../../interfaces/interfaces.tsx";
-import {getUserByStorage} from "../../../utils.ts";
-import EncryptedStorage from "react-native-encrypted-storage";
+import {User} from "../../../interfaces/interfaces";
+import {getUserByStorage} from "../../../utils";
+
+import SecureStorage from "../../../secureStorage";
+
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyle} from "../../../styles/styles";
+import {getAccountUserStyles} from "./styles";
 
 const UserAccount = ({navigation, route}) => {
     const {theme, toggleTheme} = useTheme();
@@ -59,8 +60,8 @@ const UserAccount = ({navigation, route}) => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        await EncryptedStorage.removeItem("user_session");
-                        await EncryptedStorage.removeItem("biometrics");
+                        await SecureStorage.remove("user_session");
+                        await SecureStorage.remove("biometrics");
                         navigation.navigate("SignIn");
                     }
                 }

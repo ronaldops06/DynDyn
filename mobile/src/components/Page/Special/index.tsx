@@ -1,8 +1,9 @@
 import React, {ReactNode} from "react";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../../styles/styles.ts";
 import {SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
 import PrevIcon from "../../../assets/nav_prev.svg";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
 import {getStyleSpecial} from "../../../styles/styles.special";
 
 interface PageSpecialProps {

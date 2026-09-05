@@ -1,15 +1,18 @@
 import React, {useEffect, useState} from "react";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
+import {ActivityIndicator, View} from "react-native";
 import Picker from "../../../components/CustomPicker";
 import TextItem from "../../../components/CustomTextInput";
-import {Situation, TypesCategory} from "../../../enums/enums.tsx";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getFilterStyles} from "./styles";
 import Button from "../../../components/Button";
-import {ActivityIndicator, View} from "react-native";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import Select from "../../../components/Select";
+
+import * as I from "../../../interfaces/interfaces";
+import {Situation, TypesCategory} from "../../../enums/enums";
+
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getFilterStyles} from "./styles";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
 
 interface FiltersProps {
     filter: I.OperationFilter

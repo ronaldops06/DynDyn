@@ -3,7 +3,7 @@ import {Switch, Text, View} from "react-native";
 
 import CheckboxIcon from "../../assets/check_box.svg"
 
-import {useTheme} from "../../contexts/ThemeContext.tsx";
+import {useTheme} from "../../contexts/ThemeContext";
 import {getCheckBoxStyle} from "./styles";
 
 interface CheckBoxProps {

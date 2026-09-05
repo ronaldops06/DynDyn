@@ -1,24 +1,20 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {Alert, View} from 'react-native';
+import { View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import * as I from "../../interfaces/interfaces.tsx";
-import AttributeItem from "./AttributeItem";
-import {
-    alterAttribute,
-    excludeAttribute,
-    loadAllAttribute,
-    loadAllAttributeInternal
-} from "../../controller/attribute.controller.tsx";
-
-import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
-import {validateLogin} from "../../utils.ts";
-
-import {useTheme} from '../../contexts/ThemeContext';
-import {Situation} from "../../enums/enums.tsx";
 import {PageSpecial} from "../../components/Page";
 import AuxiliaryButton from "../../components/AuxiliaryButton";
+
+import {constants} from "../../constants";
+import * as I from "../../interfaces/interfaces";
+import {Situation} from "../../enums/enums";
+import {validateLogin} from "../../utils";
+
+import {loadAllAttribute, loadAllAttributeInternal} from "../../controller/attribute.controller";
+import AttributeItem from "./AttributeItem";
+
+import {useTheme} from '../../contexts/ThemeContext';
 import {getAttributeStyle} from "./styles";
 
 const Attribute = ({navigation, route}: {navigation: any, route: any}) => {

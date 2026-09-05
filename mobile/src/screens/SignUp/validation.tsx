@@ -1,18 +1,19 @@
-import {Image, TextInput, SafeAreaView, Text, View, TouchableOpacity, Alert, ActivityIndicator} from "react-native";
-import React, {useState, useRef, useEffect} from "react";
-import {postUser, userValidate} from "./signup.api.tsx";
-import * as I from "../../interfaces/interfaces.tsx";
-import EncryptedStorage from "react-native-encrypted-storage";
+import React, {useEffect, useRef, useState} from "react";
+import {Alert, Image, SafeAreaView, Text, TextInput, View} from "react-native";
 import ReactNativeBiometrics from "react-native-biometrics";
-
-import { setUserInStorage } from "../../utils.ts";
-
-import { useTheme } from '../../contexts/ThemeContext';
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
-import {getValidationStyle} from "./validation.styles";
-import { getStyle } from "../../styles/styles"
-import {updateTokenCloudMessaging} from "../../controller/firebase.controller.tsx";
 import Button from "../../components/Button";
+
+import * as I from "../../interfaces/interfaces";
+import {setUserInStorage} from "../../utils";
+import SecureStorage from "../../secureStorage";
+
+import {postUser, userValidate} from "./signup.api";
+import {updateTokenCloudMessaging} from "../../controller/firebase.controller";
+
+import {useTheme} from '../../contexts/ThemeContext';
+import {getStyle} from "../../styles/styles"
+import {getStyleCadastro} from "../../styles/styles.cadastro";
+import {getValidationStyle} from "./validation.styles";
 
 const Validation = ({navigation, route}) => {
     const { theme } = useTheme();
@@ -72,7 +73,7 @@ const Validation = ({navigation, route}) => {
                 {
                     text: "Sim",
                     onPress: async () => {
-                        await EncryptedStorage.setItem("biometrics", "yes");
+                        await SecureStorage.set("biometrics", "yes");
                     }
                 }
             ],

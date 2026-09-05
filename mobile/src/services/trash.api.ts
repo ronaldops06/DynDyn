@@ -1,8 +1,8 @@
-import * as I from "../interfaces/interfaces.tsx";
-import {getPaginated} from "./api.ts";
-import {validateLogin} from "./helper.api.ts";
-import {Action} from "../enums/enums.tsx";
 import {Alert} from "react-native";
+import * as I from "../interfaces/interfaces";
+import {getPaginated} from "./api";
+import {validateLogin} from "./helper.api";
+import {Action} from "../enums/enums";
 
 export const validateResponse = (action: Action, response: I.Response) => {
     if (!response.success) {

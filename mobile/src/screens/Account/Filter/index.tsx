@@ -1,18 +1,20 @@
 import React, {useEffect, useState} from "react";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
+import {ActivityIndicator, View} from "react-native";
 import Picker from "../../../components/CustomPicker";
 import TextItem from "../../../components/CustomTextInput";
-import {Situation, TypesCategory} from "../../../enums/enums.tsx";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getFilterStyles} from "./styles";
 import Button from "../../../components/Button";
-import {ActivityIndicator, View} from "react-native";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller.tsx";
 import FieldFilterValue from "../../../components/FieldFilterValue";
 import Select from "../../../components/Select";
+
+import * as I from "../../../interfaces/interfaces";
+import {loadAllPortfolioInternal} from "../../../controller/portfolio.controller";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+import {Situation, TypesCategory} from "../../../enums/enums";
 import {constants} from "../../../constants";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getFilterStyles} from "./styles";
 
 interface FiltersProps {
     filter: I.PortfolioFilter

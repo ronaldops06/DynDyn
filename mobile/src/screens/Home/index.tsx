@@ -1,7 +1,6 @@
 import React, {useRef, useState} from "react";
 import {ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from "react-native";
-import * as I from "../../interfaces/interfaces.tsx"
-import {Response, User} from "../../interfaces/interfaces.tsx"
+import {useFocusEffect} from "@react-navigation/native";
 
 import UserIcon from "../../assets/user.svg";
 import VisibilityIcon from "../../assets/visibility.svg";
@@ -14,20 +13,20 @@ import HistoryIcon from '../../assets/history.svg';
 import DashboardIcon from '../../assets/dashboard.svg';
 import PortfolioIcon from '../../assets/portfolio.svg';
 import AttributeIcon from '../../assets/attribute.svg';
+import PlusIcon from "../../assets/plus.svg";
+import NextIcon from "../../assets/nav_next.svg";
 
-import {getUserByStorage, validateLogin} from "../../utils.ts";
-import {loadAllBalance} from '../../controller/balance.controller.tsx'
-import {loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller.tsx";
+import * as I from "../../interfaces/interfaces"
+import {constants} from "../../constants";
+import {getUserByStorage, validateLogin} from "../../utils";
+
+import {loadAllPortfolioInternal} from "../../controller/portfolio.controller";
+import {loadTotalsTransactions} from "../../controller/transaction.controller";
+import {executeFullSynchronization} from "../../controller/synchronization.controller";
 
 import {useTheme} from '../../contexts/ThemeContext';
-import {getStyle} from "../../styles/styles.ts";
+import {getStyle} from "../../styles/styles";
 import {getHomeStyle} from "./styles";
-import {constants} from "../../constants";
-import {loadTotalsTransactions} from "../../controller/transaction.controller.tsx";
-import PlusIcon from "../../assets/plus.svg";
-import {useFocusEffect} from "@react-navigation/native";
-import {executeFullSynchronization} from "../../controller/synchronization.controller.tsx";
-import NextIcon from "../../assets/nav_next.svg";
 
 const Home = ({navigation, route}) => {
     const {theme} = useTheme();
@@ -36,7 +35,7 @@ const Home = ({navigation, route}) => {
 
     const isFirstRender = useRef(true);
     const [loading, setLoading] = useState(false);
-    const [user, setUser] = useState<User>({} as User);
+    const [user, setUser] = useState<I.User>({} as I.User);
     const [balanceTotal, setBalanceTotal] = useState<number>(0);
     const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>({} as I.TransactionTotals);
     const [showValue, setShowValue] = useState(false);
@@ -92,7 +91,7 @@ const Home = ({navigation, route}) => {
         setLoading(false);
     };
 
-    const sumBalanceTotal = (response: Response): number => {
+    const sumBalanceTotal = (response: I.Response): number => {
         return response.data.reduce((soma, item) => {
             return item.ParentPortfolio === null ? soma + item.BalanceTotals.Value : soma
         }, 0);

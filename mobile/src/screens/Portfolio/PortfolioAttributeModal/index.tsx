@@ -1,22 +1,23 @@
 import React, {useEffect, useState} from "react";
 import {ScrollView, View} from "react-native";
 import BottomModal from "../../../components/BottomModal";
-
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {Attribute, PortfolioAttribute, SymbolString} from "../../../interfaces/interfaces.tsx";
-import {loadAllAttributeInternal} from "../../../controller/attribute.controller.tsx";
 import Select from "../../../components/Select";
 import CheckBox from "../../../components/CheckBox";
-import {getPortfolioAttributeStyle} from "./styles";
-import {constants} from "../../../constants";
 import RadioGroupCustom from "../../../components/RarioGroupCustom";
 import Button from "../../../components/Button";
-import Moment from "moment";
 import DateTimeInput from "../../../components/DateTimeInput";
 import TextInput from "../../../components/CustomTextInput";
 import {SelectItemRow} from "../../../components/Select/SelectItem";
-import { toLocalDate } from "../../../utils.ts";
+
+import {Attribute, PortfolioAttribute, SymbolString} from "../../../interfaces/interfaces";
+import {constants} from "../../../constants";
+import {toLocalDate} from "../../../utils";
+
+import {loadAllAttributeInternal} from "../../../controller/attribute.controller";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getPortfolioAttributeStyle} from "./styles";
 
 interface PortfolioAttributeModalProps {
     show: boolean;
@@ -114,7 +115,7 @@ const PortfolioAttributeModal = (props: PortfolioAttributeModalProps) => {
                             />
                         case constants.attributeDataType.listOptions.Id:
 
-                            const attributeOptions: SelectItemRow[] = attributes?.find(x => x.Id === attribute ?? 0)?.Options?.map(item => {
+                            const attributeOptions: SelectItemRow[] = attributes?.find(x => x.Id === attribute)?.Options?.map(item => {
                                 return {
                                     Id: item.Id,
                                     Name: item.Label
@@ -167,7 +168,7 @@ const PortfolioAttributeModal = (props: PortfolioAttributeModalProps) => {
         portfolioAttributeResponse.ValueNumber = valueNumber;
         portfolioAttributeResponse.ValueDate = toLocalDate(valueDate ?? "");
         portfolioAttributeResponse.ValueBoolean = valueBoolean ? 1 : 0;
-        portfolioAttributeResponse.AttributeOption = attributes?.find(x => x.Id === attribute ?? 0)?.Options?.find(x => x.Id === valueAttributeOption);
+        portfolioAttributeResponse.AttributeOption = attributes?.find(x => x.Id === attribute)?.Options?.find(x => x.Id === valueAttributeOption);
 
         props.addPortfolioAttribute(portfolioAttributeResponse);
         props.setShow(false);

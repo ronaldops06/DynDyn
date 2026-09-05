@@ -1,19 +1,19 @@
 import React, {useState} from 'react';
-import {Alert, Image, SafeAreaView, ScrollView, Text, TouchableOpacity, View, ActivityIndicator} from 'react-native';
-
+import {Alert, Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import Button from "../../components/Button";
 import TextInput from '../../components/CustomTextInput';
-import * as I from '../../interfaces/interfaces';
-import {postUser} from './signup.api';
-import {encrypt} from "../../utils.ts";
-
 import VisibilityIcon from "../../assets/visibility.svg";
 import VisibilityOffIcon from "../../assets/visibility_off.svg";
 
-import { useTheme } from '../../contexts/ThemeContext';
+import * as I from '../../interfaces/interfaces';
+import {encrypt} from "../../utils";
+
+import {postUser} from './signup.api';
+
+import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
 import {getSignUpStyle} from './styles';
-import Button from "../../components/Button";
 
 const SignUp = ({navigation}) => {
     const { theme } = useTheme();

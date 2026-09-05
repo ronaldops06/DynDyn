@@ -1,31 +1,30 @@
 import React, {useCallback, useEffect, useState} from "react";
+import {Alert, ScrollView, View} from 'react-native';
 import {useFocusEffect} from "@react-navigation/native";
-import {Alert, ScrollView, Text, View} from 'react-native';
 import {Chip} from 'react-native-paper';
-import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller.tsx";
-import {constants} from "../../../constants";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {TypesCategory} from "../../../enums/enums.tsx";
 import TextInput from "../../../components/CustomTextInput";
-import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
-import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
 
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyle} from "../../../styles/styles.ts";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {getOperationCreateStyle} from "./styles";
-import {PageRegister} from "../../../components/Page";
-import OperationRoleModal from "../OperationRoleModal";
+import * as I from "../../../interfaces/interfaces";
+import {constants} from "../../../constants";
+import {TypesCategory} from "../../../enums/enums";
+import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils";
 import {CustomAlert} from "../../../components/CustomAlert";
 import Select from "../../../components/Select";
 import AuxiliaryButton from "../../../components/AuxiliaryButton";
+import CheckBox from "../../../components/CheckBox";
 
+import OperationRoleModal from "../OperationRoleModal";
+import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
+
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getOperationCreateStyle} from "./styles";
+import {PageRegister} from "../../../components/Page";
 
 const OperationCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
-    const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const operationCreateStyle = getOperationCreateStyle(theme);
 
@@ -226,20 +225,17 @@ const OperationCreate = ({navigation, route}: {navigation: any, route: any}) => 
                         <CheckBox
                             value={isRecurrent}
                             onValueChange={setIsRecurrent}
-                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                            label="Recorrente"
+                            description="Operaçãos recorrentes são geradas em todos os meses."
                         />
-                        <Text
-                            style={styleCadastro.textCheckbox}>Recorrente</Text>
                     </View>
                 </View>
-                <View style={operationCreateStyle.areaCard}>
+                <View style={operationCreateStyle.areaField}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}
-                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                        label="Ativo"
                     />
-                    <Text
-                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
                 <AuxiliaryButton
                     text="Papéis de Operações"

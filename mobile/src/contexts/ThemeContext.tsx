@@ -1,14 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { Appearance } from 'react-native';
-import { LightTheme, DarkTheme } from '../styles/themes.ts';
-import EncryptedStorage from "react-native-encrypted-storage";
+import { LightTheme, DarkTheme } from '../styles/themes';
+import SecureStorage from "../secureStorage";
 
 const ThemeContext = createContext({
     theme: LightTheme,
     toggleTheme: () => {},
 });
 
-export const ThemeContextProvider = ({ children }) => {
+export const ThemeContextProvider = ({ children }: {children: any}) => {
     const colorScheme = Appearance.getColorScheme();
     const [theme, setTheme] = useState(
         colorScheme === 'dark' ? DarkTheme : LightTheme
@@ -16,7 +16,7 @@ export const ThemeContextProvider = ({ children }) => {
  
     useEffect(() => {
         const validateTheme = async () => {
-            const userTheme = await EncryptedStorage.getItem("theme");
+            const userTheme = await SecureStorage.get("theme");
 
             if (userTheme)
                 setTheme(userTheme === 'dark' ? DarkTheme : LightTheme);
@@ -27,7 +27,7 @@ export const ThemeContextProvider = ({ children }) => {
         validateTheme();
         
         const subscription = Appearance.addChangeListener( async ({ colorScheme }) => {
-            const userTheme = await EncryptedStorage.getItem("theme");
+            const userTheme = await SecureStorage.get("theme");
             
             if (userTheme)
                 setTheme(userTheme === 'dark' ? DarkTheme : LightTheme);
@@ -39,7 +39,7 @@ export const ThemeContextProvider = ({ children }) => {
     }, []);
 
     useEffect(() => {
-        EncryptedStorage.setItem("theme", theme.dark ? "dark" : "light");
+        SecureStorage.set("theme", theme.dark ? "dark" : "light");
     }, [theme]);
 
     const toggleTheme = async () => {

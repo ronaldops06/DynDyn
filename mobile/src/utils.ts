@@ -1,8 +1,8 @@
-import * as I from "./interfaces/interfaces.tsx";
+import * as I from "./interfaces/interfaces";
 import sha256 from 'crypto-js/sha256';
 import {constants} from "./constants";
 import Moment from "moment/moment";
-import EncryptedStorage from "react-native-encrypted-storage";
+import SecureStorage from "./secureStorage";
 import NetInfo from '@react-native-community/netinfo';
 
 export function isEndScroll(event: any) {
@@ -33,14 +33,14 @@ export const validateSuccess = (response: I.Response, navigation: any, screem: s
 }
 
 export const setUserInStorage = async (userStorage: I.User) => {
-    await EncryptedStorage.setItem(
+    await SecureStorage.set(
         "user_session",
         JSON.stringify(userStorage)
     );
 };
 
 export const getUserByStorage = async (): Promise<I.User | null> => {
-    const session = await EncryptedStorage.getItem("user_session");
+    const session = await SecureStorage.get("user_session");
 
     if (session) {
         let userStorage = JSON.parse(session);

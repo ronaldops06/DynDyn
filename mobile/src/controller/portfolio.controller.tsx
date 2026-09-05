@@ -10,14 +10,14 @@ import {
     updatePortfolio
 } from '../repository/portfolio.repository';
 import {loadInternalCategory} from './category.controller';
-import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
+import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller";
 import {constants} from "../constants";
 import Moment from "moment/moment";
-import {deletePortfolio, getPortfolios, postPortfolio, putPortfolio} from "../services/portfolio.api.ts";
+import {deletePortfolio, getPortfolios, postPortfolio, putPortfolio} from "../services/portfolio.api";
 import {Alert} from "react-native";
-import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository.tsx";
-import {selectTotalsByTreePortfolio} from "../repository/balance.repository.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
+import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository";
+import {selectTotalsByTreePortfolio} from "../repository/balance.repository";
+import {getUserLoginEncrypt} from "../utils";
 
 /**
  * Método responsável por retornar a conta persistida internamente para ser utilizada como referência.

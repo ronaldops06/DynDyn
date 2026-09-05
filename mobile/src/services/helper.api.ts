@@ -1,5 +1,5 @@
-import * as I from "../interfaces/interfaces.tsx";
-import {StatusHttp} from "../enums/enums.tsx";
+import * as I from "../interfaces/interfaces";
+import {StatusHttp} from "../enums/enums";
 
 export const validateLogin = (response: I.Response): I.Response => {
     response.isLogged = true;

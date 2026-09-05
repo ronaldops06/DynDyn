@@ -1,7 +1,8 @@
+import React from "react";
 import {ActivityIndicator, Text, TouchableOpacity} from "react-native";
-import React, {useState} from "react";
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
-import {useTheme} from "../../contexts/ThemeContext.tsx";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
 
 interface ButtonProps {
     label: string,

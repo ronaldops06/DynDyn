@@ -1,21 +1,22 @@
 import React, {useEffect, useRef, useState} from "react";
+import {ActivityIndicator, ScrollView, Text, TouchableOpacity, View} from "react-native";
+import {useFocusEffect} from "@react-navigation/native";
 import ExpandIcon from "../../assets/expand.svg";
 import ExpandLessIcon from "../../assets/expand_less.svg";
-import {ActivityIndicator, ScrollView, Text, TouchableOpacity, View} from "react-native";
-
-import * as I from "../../interfaces/interfaces.tsx";
 import {PageSpecial} from "../../components/Page";
-
-import {useTheme} from "../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../styles/styles.ts";
-import {constants} from "../../constants";
-import {getPortfolioStyle} from "./styles";
-import Icon from "../../components/Icon";
 import AuxiliaryButton from "../../components/AuxiliaryButton";
-import {loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller.tsx";
-import {validateLogin} from "../../utils.ts";
-import {loadAllBalance} from "../../controller/balance.controller.tsx";
-import {useFocusEffect} from "@react-navigation/native";
+import Icon from "../../components/Icon";
+
+import * as I from "../../interfaces/interfaces";
+import {constants} from "../../constants";
+import {validateLogin} from "../../utils";
+
+import {loadAllPortfolio, loadAllPortfolioInternal} from "../../controller/portfolio.controller";
+import {loadAllBalance} from "../../controller/balance.controller";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyle} from "../../styles/styles";
+import {getPortfolioStyle} from "./styles";
 
 const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
     const {theme} = useTheme();

@@ -8,15 +8,14 @@ import {
     deleteInternalOperation, deleteInternalOperationByExternalId
 } from '../repository/operation.repository';
 import { loadInternalCategory } from './category.controller';
-import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
+import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller";
 import {constants} from "../constants";
 import Moment from "moment";
-import {getOperations, postOperation, putOperation, deleteOperation} from "../services/operation.api.ts";
+import {getOperations, postOperation, putOperation, deleteOperation} from "../services/operation.api";
 import {Alert} from "react-native";
-import {existsTransactionRelationshipOperation} from "../repository/transaction.repository.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
-import {deleteInternalBalanceByExternalId} from "../repository/balance.repository.tsx";
-import {loadInternalOperationRole} from "./operation.role.controller.ts";
+import {existsTransactionRelationshipOperation} from "../repository/transaction.repository";
+import {getUserLoginEncrypt} from "../utils";
+import {loadInternalOperationRole} from "./operation.role.controller";
 
 /**
  * Método responsável por retornar a operação persistida internamente para ser utilizada como referência.

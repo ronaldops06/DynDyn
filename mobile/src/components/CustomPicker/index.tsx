@@ -1,6 +1,6 @@
-import { Picker } from '@react-native-picker/picker';
 import React, { useEffect, useRef } from 'react';
 import { Animated, Text, View } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
 
 import { useTheme } from '../../contexts/ThemeContext';
 import { getCustomPickerStyle } from './styles';
