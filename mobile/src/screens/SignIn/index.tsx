@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
 import ReactNativeBiometrics from 'react-native-biometrics';
+import {BiometryTypes} from "react-native-biometrics/index";
 import TextInput from '../../components/CustomTextInput';
 import Button from "../../components/Button";
 import FingerPrintIcon from "../../assets/fingerprint.svg";
@@ -45,10 +46,11 @@ const SignIn = ({navigation}: {navigation: any}) => {
             await handleAuthenticateByBiometric();
             setBiometricAvailable(true);
         } else {
-            await ReactNativeBiometrics.isSensorAvailable()
+            const reactNativeBiometrics = new ReactNativeBiometrics();
+            await reactNativeBiometrics.isSensorAvailable()
                 .then((result) => {
                     const { available, biometryType } = result;
-                    if (available && biometryType === ReactNativeBiometrics.Biometrics) {
+                    if (available && biometryType === BiometryTypes.Biometrics) {
                         setBiometricAvailable(true);
                     }
                 })
@@ -85,7 +87,8 @@ const SignIn = ({navigation}: {navigation: any}) => {
     };
     
     const handleAuthenticateByBiometric = async () => {
-        const {success} = await ReactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'});
+        const reactNativeBiometrics = new ReactNativeBiometrics();
+        const {success} = await reactNativeBiometrics.simplePrompt({promptMessage: 'Autenticação biométrica'});
         
         if (success) {
             let user = await getUserByStorage();
