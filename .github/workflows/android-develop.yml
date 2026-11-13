@@ -33,15 +33,15 @@ jobs:
         working-directory: mobile
         run: npm ci --legacy-peer-deps
 
-      - name: Install Gradle dependencies
-        working-directory: mobile/android
-        run: ./gradlew dependencies
-
       - name: Setup Java
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: 21
+
+      - name: Install Gradle dependencies
+        working-directory: mobile/android
+        run: ./gradlew dependencies
 
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
