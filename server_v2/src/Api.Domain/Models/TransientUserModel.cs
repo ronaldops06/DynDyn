@@ -8,6 +8,7 @@ namespace Domain.Models
         public string Login { get; set; }
         public string Password { get; set; }
         public string AccessToken { get; set; }
+        public string Role { get; set; }
         public int? VerificationCode { get; set; }
         public string VerificationToken { get; set; }
         public DateTime? ExpirationDate { get; set; }

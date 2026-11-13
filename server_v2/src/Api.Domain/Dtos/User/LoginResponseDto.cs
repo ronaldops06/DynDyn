@@ -7,5 +7,6 @@ namespace Domain.Dtos.User
         public string Name { get; set; }
         public string Login { get; set; }
         public string AccessToken { get; set; }
+        public string Role { get; set; }
     }
 }
