@@ -39,7 +39,7 @@ const Home = ({navigation, route}) => {
     const [balanceTotal, setBalanceTotal] = useState<number>(0);
     const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>({} as I.TransactionTotals);
     const [showValue, setShowValue] = useState(false);
-    
+
     useFocusEffect(
         React.useCallback(() => {
             const fetchData = async () => {
@@ -57,11 +57,11 @@ const Home = ({navigation, route}) => {
         setLoading(true);
 
         let responsePortfolios = {} as I.Response;
-        
+
         //Bloco para buscar do server ao abrir o app, assim irá carregar atualizações. Posteriormente só irá buscar internamente. 
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            
+
             //Carrega os portfólios somente para que possa buscar os saldos posteriormente, pois saldo depende de portfolio
             /*let responsePortfolios = await loadAllPortfolio(1, null);
             validateLogin(responsePortfolios, navigation);
@@ -74,7 +74,7 @@ const Home = ({navigation, route}) => {
         let groupsPortfolios = [];
         groupsPortfolios.push(constants.portfolioGroupType.ativo.contasBancarias.Id);
         groupsPortfolios.push(constants.portfolioGroupType.passivo.contasBancarias.Id);
-        
+
         //Carrega as contas novamente para pegar os saldos atualizados, na primeira página
         responsePortfolios = await loadAllPortfolioInternal(null, groupsPortfolios, null);
 
@@ -87,7 +87,7 @@ const Home = ({navigation, route}) => {
         let mountDateFim = new Date(date.getFullYear(), date.getMonth() + 1, 4, 23, 59, 59);
         let responseTotalsTransactions = await loadTotalsTransactions(mountDateInicio, mountDateFim, false, false);
         setTransactionTotals(responseTotalsTransactions);
-        
+
         setLoading(false);
     };
 
@@ -198,7 +198,11 @@ const Home = ({navigation, route}) => {
                                     <CashRegisterIcon width="28" height="28" fill={theme.colors.quaternaryIcon}/>
                                     <TouchableOpacity
                                         style={homeStyle.featureButtonPlus}
-                                        onPress={() => goToChildren('Home', 'TransactionCreate', {isEditing: false, data: null, sourceScreen: 'Home'})}>
+                                        onPress={() => goToChildren('Home', 'TransactionCreate', {
+                                            isEditing: false,
+                                            data: null,
+                                            sourceScreen: 'Home'
+                                        })}>
                                         <PlusIcon width="28" height="28" fill={theme.colors.quaternaryIcon}/>
                                     </TouchableOpacity>
                                 </View>
@@ -240,7 +244,7 @@ const Home = ({navigation, route}) => {
                             </TouchableOpacity>
                         </View>
                         <View style={homeStyle.featureRow}>
-                             <TouchableOpacity
+                            <TouchableOpacity
                                 style={homeStyle.auxiliaryItem}
                                 onPress={() => goTo('TotalizerRole')}>
                                 <View style={homeStyle.auxiliaryIconItem}>
@@ -248,24 +252,28 @@ const Home = ({navigation, route}) => {
                                 </View>
                                 <Text style={homeStyle.auxiliaryTextItem}>Regras de Totalizadores</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity
-                                style={homeStyle.auxiliaryItem}
-                                onPress={() => goTo('Attribute')}>
-                                <View style={homeStyle.auxiliaryIconItem}>
-                                    <AttributeIcon width="32" height="32" color={theme.colors.quintenaryIcon}/>
-                                </View>
-                                <Text style={homeStyle.auxiliaryTextItem}>Atributos</Text>
-                            </TouchableOpacity>
+                            {user.Role === constants.userRoleAdmin &&
+                                <TouchableOpacity
+                                    style={homeStyle.auxiliaryItem}
+                                    onPress={() => goTo('Attribute')}>
+                                    <View style={homeStyle.auxiliaryIconItem}>
+                                        <AttributeIcon width="32" height="32" color={theme.colors.quintenaryIcon}/>
+                                    </View>
+                                    <Text style={homeStyle.auxiliaryTextItem}>Atributos</Text>
+                                </TouchableOpacity>
+                            }
                         </View>
                     </View>
-                    <View style={homeStyle.areaDashboard} onTouchEndCapture={() => goTo('Portfolio')}>
-                        <View style={homeStyle.row}>
-                            <PortfolioIcon width="32" height="32" fill={theme.colors.primaryIconDashboard}/>
-                            <Text style={homeStyle.textDashboard}>R$ 2.000.000,00</Text>
+                    {user.Role === constants.userRoleAdmin &&
+                        <View style={homeStyle.areaDashboard} onTouchEndCapture={() => goTo('Portfolio')}>
+                            <View style={homeStyle.row}>
+                                <PortfolioIcon width="32" height="32" fill={theme.colors.primaryIconDashboard}/>
+                                <Text style={homeStyle.textDashboard}>R$ 2.000.000,00</Text>
+                            </View>
+                            <NextIcon style={homeStyle.iconNext} width="40" height="40"
+                                      fill={theme.colors.primaryIconDashboard}/>
                         </View>
-                        <NextIcon style={homeStyle.iconNext} width="40" height="40"
-                                  fill={theme.colors.primaryIconDashboard}/>
-                    </View>
+                    }
                     <View style={homeStyle.areaChart}>
                     </View>
                 </View>

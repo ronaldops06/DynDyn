@@ -18,6 +18,8 @@ import Filter from "../Category/Filter";
 
 import {useTheme} from '../../contexts/ThemeContext';
 import {PageProcess} from "../../components/Page";
+import {CustomAlert} from "../../components/CustomAlert";
+import {excludeOperationRole} from "../../controller/operation.role.controller.ts";
 
 const Category = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
@@ -129,55 +131,35 @@ const Category = ({navigation, route}: {navigation: any, route: any}) => {
             });
     }
 
-    const onSwipeLeft = (data: I.Category) => {
-        Alert.alert("Atenção!",
-            "Esta categoria terá o status alterado. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
-                        let response = await alterCategory(data);
-                        validateLogin(response, navigation);
+    const onSwipeLeft = async (data: I.Category) => {
+        await CustomAlert("Atenção!",
+            "Esta categoria será excluída. Deseja continuar?",
+            async () => {
+                let response = await excludeCategory(data.Id, data.InternalId);
+                validateLogin(response, navigation);
 
-                        setCategories((prevCategories) =>
-                            prevCategories.map((item) =>
-                                item.Id === data.Id ? data : item
-                            )
-                        );
-                    }
+                if (response.success) {
+                    setIsLoadInternal(true);
+                    setCategories([]);
                 }
-            ],
-            {cancelable: false}
+            }
         );
     }
 
-    const onSwipeRight = (data: I.Category) => {
-        Alert.alert("Atenção!",
-            "Esta categoria será excluída. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        let response = await excludeCategory(data.Id, data.InternalId);
-                        validateLogin(response, navigation);
+    const onSwipeRight = async (data: I.Category) => {
+        await CustomAlert("Atenção!",
+            "Esta categoria terá o status alterado. Deseja continuar?",
+            async () => {
+                data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
+                let response = await alterCategory(data);
+                validateLogin(response, navigation);
 
-                        if (response.success) {
-                            setIsLoadInternal(true);
-                            setCategories([]);
-                        }
-                    }
-                }
-            ],
-            {cancelable: false}
+                setCategories((prevCategories) =>
+                    prevCategories.map((item) =>
+                        item.Id === data.Id ? data : item
+                    )
+                );
+            }
         );
     }
 

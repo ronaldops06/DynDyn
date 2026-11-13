@@ -1,6 +1,7 @@
 export const constants = {
     pageSizeRequest: 20,
     pageSize: 150,
+    userRoleAdmin: 'admin',
     operations: {
         attribute: 'attribute',
         category: 'category',
@@ -84,6 +85,14 @@ export const constants = {
     portfolioActionType: {
         informed: {Id: 1, Name: 'Informado'},
         calculated: {Id: 2, Name: 'Calculado'},
+    },
+    transactionImpactType: {
+        deduction: { Id: 1, Name: 'Abatimento', },
+        incidence: { Id: 2, Name: 'Incidência' }
+    },
+    transactionImpactOperationType: {
+        addition: { Id: 1, Name: 'Adição', },
+        subtraction: { Id: 2, Name: 'Subtração' }
     },
     operators: [
         {Id: 1, Name: 'Igual', Key: '='},

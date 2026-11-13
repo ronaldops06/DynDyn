@@ -20,7 +20,8 @@ export interface User {
     Login: string,
     Name: string,
     Password: string,
-    AccessToken: string
+    AccessToken: string,
+    Role: string
 }
 
 export interface ChangePasswordUser {
@@ -208,26 +209,54 @@ export interface Transaction {
     ParentTransaction: Transaction | null,
     DataCriacao: Date,
     DataAlteracao: Date,
+    Impacts?: TransactionImpact[],
     IsSelectedItem: boolean | null
+}
+
+export interface TransactionImpact {
+    InternalId: number,
+    Id: number,
+    Value: number,
+    Portfolio: Portfolio,
+    PortfolioAttribute: PortfolioAttribute,
+    ImpactType: number,
+    OperationType: number,
+    DataCriacao?: Date | null,
+    DataAlteracao?: Date | null
 }
 
 export interface TransactionView {
     InternalId: number,
     Id: number,
-    DataCriacao: Date,
+    Value: number,
+    Observation: string,
+    Consolidated: boolean,
     Installment: number,
     TotalInstallments: number,
-    Value: number,
-    Consolidated: boolean,
-    OperationType: number,
-    OperationName: string,
-    PortfolioName: string,
-    DestinationPortfolioName: string | null
+    DataCriacao: Date,
+    IsSelectedItem: boolean,
+    Operation: {
+        Id: number,
+        Name: string,
+        Type: number,
+        Roles: string | null,
+        Category: {
+            Id: number
+        }
+    },
+    Portfolio: {
+        Id: number,
+        Name: string
+    },
+    DestinationPortfolio: {
+        Id: number,
+        Name: string
+    } | null
 }
 
 export interface TransactionsGroup {
     date: string,
-    transactions: Transaction[]
+    transactions: TransactionView[]
 }
 
 export interface TransactionTotals {

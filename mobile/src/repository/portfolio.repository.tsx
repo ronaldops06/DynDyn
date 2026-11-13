@@ -327,23 +327,26 @@ export const deleteAllPortfolios = async (userLogin: string) => {
 }
 
 export const selectAllPortfolios = async (userLogin: string, groupsPortfolios:number[] | null, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
+    return selectPortfolios(userLogin, groupsPortfolios, null, pageNumber, activated);
+};
+
+export const selectAllPortfoliosExcludingInternalIds = async (userLogin: string, excludedInternalIds: number[] | null, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
+    return selectPortfolios(userLogin, null, excludedInternalIds, pageNumber, activated);
+};
+
+const selectPortfolios = async (userLogin: string, groupsPortfolios: number[] | null, excludedInternalIds: number[] | null, pageNumber: number | null, activated: boolean | null): Promise<Portfolio[]> => {
     const db = await openDatabase();
     
     let query = queryBase();
     
-    let params = [];
-    params.push(userLogin);
+    let params: any[] = [userLogin];
     
     if (activated !== null) {
         query += ' AND act.status = ?';
         params.push(activated);
     }
 
-    if (groupsPortfolios !== null && groupsPortfolios.length > 0) {
-        const placeholders = groupsPortfolios.map(() => '?').join(',');
-        query += ` AND act.group_portfolio IN (${placeholders})`;
-        params.push(...groupsPortfolios);
-    }
+    query = addPortfolioFilters(query, params, groupsPortfolios, excludedInternalIds, 'act.');
     
     let results: ResultSet[];
     if (pageNumber) {
@@ -370,21 +373,15 @@ export const selectAllPortfolios = async (userLogin: string, groupsPortfolios:nu
     return portfolios;
 };
 
-export const selectContAllPortfolios = async (userLogin: string, groupsPortfolios:number[] | null): Promise<number> => {
+export const selectContAllPortfolios = async (userLogin: string, groupsPortfolios:number[] | null, excludedInternalIds: number[] | null = null): Promise<number> => {
     const db = await openDatabase();
     
     let query = 'SELECT * ' +
         '  FROM portfolios' +
         ' WHERE reference = ?';
     
-    let params = [];
-    params.push(userLogin);
-
-    if (groupsPortfolios !== null && groupsPortfolios.length > 0) {
-        const placeholders = groupsPortfolios.map(() => '?').join(',');
-        query += ` AND group_portfolio IN (${placeholders})`;
-        params.push(...groupsPortfolios);
-    }
+    let params: any[] = [userLogin];
+    query = addPortfolioFilters(query, params, groupsPortfolios, excludedInternalIds, '');
 
     const results = await db.executeSql(query, params);
 
@@ -394,6 +391,22 @@ export const selectContAllPortfolios = async (userLogin: string, groupsPortfolio
     });
 
     return count
+};
+
+const addPortfolioFilters = (query: string, params: any[], groupsPortfolios: number[] | null, excludedInternalIds: number[] | null, columnPrefix: string): string => {
+    if (groupsPortfolios !== null && groupsPortfolios.length > 0) {
+        const placeholders = groupsPortfolios.map(() => '?').join(',');
+        query += ` AND ${columnPrefix}group_portfolio IN (${placeholders})`;
+        params.push(...groupsPortfolios);
+    }
+
+    if (excludedInternalIds !== null && excludedInternalIds.length > 0) {
+        const placeholders = excludedInternalIds.map(() => '?').join(',');
+        query += ` AND ${columnPrefix}internal_id NOT IN (${placeholders})`;
+        params.push(...excludedInternalIds);
+    }
+
+    return query;
 };
 
 export const selectPortfolioById = async (userLogin: string, id: number): Promise<Portfolio | undefined> => {
@@ -406,6 +419,19 @@ export const selectPortfolioById = async (userLogin: string, id: number): Promis
         portfolio.Attributes = await selectAttributeByPortfolioInternalId(portfolio.InternalId);
     }
         
+    return portfolio;
+}
+
+export const selectPortfolioByInternalId = async (userLogin: string, internalId: number): Promise<Portfolio | undefined> => {
+    const db = await openDatabase();
+    const result = await db.executeSql(queryBase() + ' AND act.internal_id = ?', [userLogin, internalId]);
+
+    let portfolio = undefined;
+    if (result[0]?.rows.length > 0) {
+        portfolio = formatResult(result[0].rows.item(0));
+        portfolio.Attributes = await selectAttributeByPortfolioInternalId(portfolio.InternalId);
+    }
+
     return portfolio;
 }
 
@@ -578,12 +604,12 @@ export const selectAttributeByPortfolioInternalId = async (portfolioInternalId: 
 
 const formatResultAttribute = (item: any): PortfolioAttribute => {
     const attribute: PortfolioAttribute = {
-        InternalId: item.internal_id,
-        Id: item.id,
-        ValueText: item.value_text,
-        ValueNumber: item.value_number,
-        ValueDate: item.value_date,
-        ValueBoolean: item.value_boolean,
+        InternalId: item.port_attr_internal_id,
+        Id: item.port_attr_id,
+        ValueText: item.port_attr_value_text,
+        ValueNumber: item.port_attr_value_number,
+        ValueDate: item.port_attr_value_date,
+        ValueBoolean: item.port_attr_value_boolean,
         AttributeOption: {
             InternalId: item.attr_opt_internal_id,
             Id: item.attr_opt_id,
@@ -594,7 +620,7 @@ const formatResultAttribute = (item: any): PortfolioAttribute => {
             DataAlteracao: item.attr_opt_data_alteracao,
             tempId: ""
         },
-        ActionType: item.action_type,
+        ActionType: item.port_attr_action_type,
         Attribute: {
             InternalId: item.attr_internal_id,
             Id: item.attr_id,
@@ -606,9 +632,9 @@ const formatResultAttribute = (item: any): PortfolioAttribute => {
             DataAlteracao: item.attr_data_alteracao,
             Options: null
         },
-        Status: item.status,
-        DataCriacao: item.data_criacao,
-        DataAlteracao: item.data_alteracao
+        Status: item.port_attr_status,
+        DataCriacao: item.port_attr_data_criacao,
+        DataAlteracao: item.port_attr_data_alteracao
     };
 
     return attribute;

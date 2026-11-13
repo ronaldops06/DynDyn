@@ -31,6 +31,8 @@ const CustomScroll = (props: CustomScrollParams) => {
             style={props.styles ? props.styles : style.scroll}
             keyExtractor={(item) => item.Id.toString()}
             renderItem={props.renderItem}
+            onScrollBeginDrag={() => props.handleScrolling(true)}
+            onScrollEndDrag={() => props.handleScrolling(false)}
             onMomentumScrollBegin={() => props.handleScrolling(true)}
             onMomentumScrollEnd={() => props.handleScrolling(false)}
             onEndReached={reloadPage}

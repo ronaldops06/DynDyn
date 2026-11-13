@@ -26,6 +26,7 @@ import RecoveryValidation from "../screens/SignUp/Recovery/recovery.validation"
 import RecoveryPassword from "../screens/SignUp/Recovery/recovery.password"
 import Transaction from '../screens/Transaction';
 import TransactionCreate from '../screens/Transaction/Register';
+import TransactionIncidence from '../screens/Transaction/Register/Incidence';
 import TotalizerRole from "../screens/Home/TotalizerRole";
 import TotalizerRoleCreate from "../screens/Home/TotalizerRole/Register";
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -55,6 +56,7 @@ export const TransactionStack = () => (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="TransactionHome" component={Transaction}/>
         <Stack.Screen name="TransactionCreate" component={TransactionCreate}/>
+        <Stack.Screen name="TransactionIncidence" component={TransactionIncidence}/>
         <Stack.Screen name="CategoryCreate" component={CategoryCreate} />
         <Stack.Screen name="AccountCreate" component={AccountCreate}/>
     </Stack.Navigator>

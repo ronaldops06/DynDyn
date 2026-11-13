@@ -1,7 +1,11 @@
 import * as I from "../interfaces/interfaces";
 import {constants} from "../constants";
 
-export const calculateIgnored = (transactions: I.Transaction[], totalizerRole: I.TotalizerRole[]): void=> {
+type TransactionTotalItem = Pick<I.Transaction, "Id" | "Value"> & {
+    Operation: Pick<I.Operation, "Roles" | "Type">
+};
+
+export const calculateIgnored = (transactions: TransactionTotalItem[], totalizerRole: I.TotalizerRole[]): void=> {
     try {
         for (const totalizer of totalizerRole.filter(x => x.Type === constants.totalizerType.ignore.Id)) {
 
@@ -19,7 +23,7 @@ export const calculateIgnored = (transactions: I.Transaction[], totalizerRole: I
 }
 
 //Somar na receita
-export const calculateGroupedRevenue = (transactions: I.Transaction[], totalizerRole: I.TotalizerRole[], transactionTotals: I.TransactionTotals): void => {
+export const calculateGroupedRevenue = (transactions: TransactionTotalItem[], totalizerRole: I.TotalizerRole[], transactionTotals: I.TransactionTotals): void => {
     for (const totalizer of totalizerRole.filter(x => x.Type === constants.totalizerType.groupedRevenue.Id)) {
 
         const totalizerRoles = new Set(
@@ -40,7 +44,7 @@ export const calculateGroupedRevenue = (transactions: I.Transaction[], totalizer
 }
 
 //Discriminar
-export const calculateDiscrimineted = (transactions: I.Transaction[], totalizerRole: I.TotalizerRole[], transactionTotals: I.TransactionTotals): void => {
+export const calculateDiscrimineted = (transactions: TransactionTotalItem[], totalizerRole: I.TotalizerRole[], transactionTotals: I.TransactionTotals): void => {
     for (const totalizer of totalizerRole.filter(x => x.Type === constants.totalizerType.discriminated.Id)){
 
         const totalizerRoles = new Set(
@@ -56,7 +60,7 @@ export const calculateDiscrimineted = (transactions: I.Transaction[], totalizerR
     }
 }
 
-export const calculateTotals = (transactions: I.Transaction[], totalizerRole: I.TotalizerRole[]): I.TransactionTotals => {
+export const calculateTotals = (transactions: TransactionTotalItem[], totalizerRole: I.TotalizerRole[]): I.TransactionTotals => {
     let transactionTotals: I.TransactionTotals = {} as I.TransactionTotals;
 
     transactionTotals.CreditTotal = 0;

@@ -107,6 +107,7 @@ const PortfolioRegister = ({navigation, route}: any) => {
             setAcquisitionValue(data.AcquisitionCost);
             setSaleDate(data.EndDate);
             setCurrency(data.CurrencyCode);
+            setPortfolioAttributes(data.Attributes)
         }
     };
 
@@ -235,7 +236,7 @@ const PortfolioRegister = ({navigation, route}: any) => {
                         case constants.attributeDataType.text.Id:
                             return <Text style={styles.infoValue}>{portfolioAttribute.ValueText ?? ""}</Text>;
                         case constants.attributeDataType.number.Id:
-                            return <Text style={styles.infoValue}>{portfolioAttribute.ValueNumber ?? "0.00"}</Text>;
+                            return <Text style={styles.infoValue}>{portfolioAttribute.ValueNumber?.toString() ?? "0.00"}</Text>;
                         case constants.attributeDataType.boolean.Id:
                             return <Text
                                 style={styles.infoValue}>{(portfolioAttribute.ValueBoolean) ? 'Verdadeiro' : 'Falso'}</Text>;

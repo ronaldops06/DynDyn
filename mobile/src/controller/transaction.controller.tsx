@@ -7,9 +7,13 @@ import {
     deleteInternalTransactionByExternalId,
     insertTransaction,
     selectAllTransactions,
+    selectAllTransactionsView,
     selectContAll,
     selectDashboardTransactionGroupByMonthAndCategory,
     selectTransactionById,
+    selectTransactionByInternalId,
+    selectTransactionInternalIdByExternalId,
+    selectTransactionsByOperationInternalId,
     selectTransactionsTotals,
     updateTransaction
 } from '../repository/transaction.repository';
@@ -78,6 +82,36 @@ export const loadAllTransactionsInternal = async (mountDateInicio: Date, mountDa
     return responseTransactions;
 }
 
+export const loadAllTransactionsViewInternal = async (
+    mountDateInicio: Date,
+    mountDateFim: Date,
+    pageNumber: number
+): Promise<I.Response> => {
+    let responseTransactions = {} as I.Response;
+
+    let login = await getUserLoginEncrypt();
+    responseTransactions.isLogged = true;
+    responseTransactions.data = await selectAllTransactionsView(login, mountDateInicio, mountDateFim, pageNumber);
+    let totalRecords = await selectContAll(login, mountDateInicio, mountDateFim);
+
+    responseTransactions.totalPages = Math.ceil(totalRecords / constants.pageSize);
+
+    return responseTransactions;
+}
+
+export const loadTransactionByInternalId = async (internalId: number): Promise<I.Transaction | undefined> => {
+    let login = await getUserLoginEncrypt();
+    return await selectTransactionByInternalId(login, internalId);
+}
+
+export const loadTransactionsByOperationInternalId = async (
+    operationInternalId: number,
+    onlyLast: boolean = false
+): Promise<I.Transaction[]> => {
+    let login = await getUserLoginEncrypt();
+    return await selectTransactionsByOperationInternalId(login, operationInternalId, onlyLast);
+}
+
 export const synchronizationAllOTransaction = async (mountDateInicio: Date, mountDateFim: Date): Promise<I.Response | null> => {
     console.log("inicio sync transaction");
     let synchronization = await loadSynchronizationByCreationsDateAndOperation(mountDateInicio, mountDateFim, constants.operations.transaction);
@@ -102,12 +136,12 @@ export const synchronizationAllOTransaction = async (mountDateInicio: Date, moun
         if (item.ParentTransaction !== undefined && item.ParentTransaction !== null)
             item.ParentTransaction = await loadInternalTransaction(item.ParentTransaction ?? {} as I.Transaction);
 
-        let transaction = await selectTransactionById(login, item.Id);
-        if (transaction === undefined) {
-            transaction = await insertTransaction(login, item);
+        let transactionInternalId = await selectTransactionInternalIdByExternalId(login, item.Id);
+        if (transactionInternalId === undefined) {
+            await insertTransaction(login, item);
         } else {
-            item.InternalId = transaction.InternalId;
-            transaction = await updateTransaction(item);
+            item.InternalId = transactionInternalId;
+            await updateTransaction(item);
         }
     }
 
@@ -124,6 +158,18 @@ export const loadAndPersistAll = async (mountDateInicio: Date, mountDateFim: Dat
         return response;
     
     return await loadAllTransactionsInternal(mountDateInicio, mountDateFim, pageNumber);
+}
+
+export const loadAndPersistAllView = async (
+    mountDateInicio: Date,
+    mountDateFim: Date,
+    pageNumber: number
+): Promise<I.Response> => {
+    let response = await synchronizationAllOTransaction(mountDateInicio, mountDateFim);
+    if (response && !response.isLogged)
+        return response;
+
+    return await loadAllTransactionsViewInternal(mountDateInicio, mountDateFim, pageNumber);
 }
 
 export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim: Date, expandSalary: boolean, consolidated: boolean | null = null): Promise<I.TransactionTotals> => {
@@ -144,7 +190,10 @@ export const loadTotalsTransactions = async (mountDateInicio: Date, mountDateFim
     return totals;
 }
 
-export const generateTotalsTransactions = async (transactions: I.Transaction[], totalizerCode: string): Promise<I.TransactionTotals> => {
+export const generateTotalsTransactions = async (
+    transactions: I.Transaction[] | I.TransactionView[],
+    totalizerCode: string
+): Promise<I.TransactionTotals> => {
     if (transactions.length === 0)
         return I.TransactionTotals = {} as I.TransactionTotals;
 
@@ -220,6 +269,35 @@ export const excludeTransaction = async (transaction: I.Transaction): Promise<I.
     }
 
     return response;
+}
+
+const transactionNotFoundResponse = (): I.Response => {
+    let response = {} as I.Response;
+    response.data = null;
+    response.error = 'Transação não encontrada.';
+    response.success = false;
+    response.isLogged = true;
+    return response;
+}
+
+export const excludeTransactionFromList = async (internalId: number): Promise<I.Response> => {
+    let transaction = await loadTransactionByInternalId(internalId);
+    if (!transaction)
+        return transactionNotFoundResponse();
+
+    return await excludeTransaction(transaction);
+}
+
+export const alterTransactionStatusFromList = async (
+    internalId: number,
+    consolidated: boolean
+): Promise<I.Response> => {
+    let sourceTransaction = await loadTransactionByInternalId(internalId);
+    if (!sourceTransaction)
+        return transactionNotFoundResponse();
+
+    let transaction = {...sourceTransaction, Consolidated: consolidated};
+    return await alterTransaction(sourceTransaction, transaction);
 }
 
 export const executeRecurringTransaction = async (mountDateInicio: Date): Promise<I.Response> => {

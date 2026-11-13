@@ -5,6 +5,7 @@ import {
     existsPortfolioRelationshipPortfolio,
     insertPortfolio,
     selectAllPortfolios,
+    selectAllPortfoliosExcludingInternalIds,
     selectContAllPortfolios,
     selectPortfolioById,
     updatePortfolio
@@ -18,6 +19,7 @@ import {Alert} from "react-native";
 import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository";
 import {selectTotalsByTreePortfolio} from "../repository/balance.repository";
 import {getUserLoginEncrypt} from "../utils";
+import {PortfolioAttribute} from "../interfaces/interfaces";
 
 /**
  * Método responsável por retornar a conta persistida internamente para ser utilizada como referência.
@@ -58,6 +60,23 @@ export const loadAllPortfolioInternal = async (pageNumber: Number | null, groups
 
     let totalRecords = await selectContAllPortfolios(login, groupsPortfolios);
     response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
+
+    return response;
+}
+
+export const loadAllPortfolioInternalExcludingInternalIds = async (pageNumber: number | null, excludedInternalIds: number[] | null, activated: boolean | null): Promise<I.Response> => {
+    let response = {} as I.Response;
+
+    let login = await getUserLoginEncrypt();
+    response.isLogged = true;
+    response.data = await selectAllPortfoliosExcludingInternalIds(login, excludedInternalIds, pageNumber, activated);
+
+    for (let portfolio of response.data) {
+        portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
+    }
+
+    let totalRecords = await selectContAllPortfolios(login, null, excludedInternalIds);
+    response.totalPages = Math.ceil(totalRecords / constants.pageSize);
 
     return response;
 }
@@ -146,6 +165,12 @@ const populateInternalFields = (portfolio: I.Portfolio, response: I.Response) =>
 
     if (portfolio.ParentPortfolio !== null)
         response.data.ParentPortfolio.InternalId = portfolio.ParentPortfolio?.InternalId;
+console.log("externo", response.data.Attributes);
+console.log("local", portfolio.Attributes);
+    for (const attribute: I.PortfolioAttribute of response.data.Attributes) {
+        let attributeSrc = portfolio.Attributes?.find(x => x.Attribute.Id === attribute.Attribute.Id);
+        attribute.Attribute.InternalId = attributeSrc.Attribute.InternalId;
+    }
 
 }
 

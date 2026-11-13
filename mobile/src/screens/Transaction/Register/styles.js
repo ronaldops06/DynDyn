@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
 
 export const getTransactionCreateStyle = (theme) => StyleSheet.create({
+    loading: {
+        minHeight: 300,
+        alignItems: "center",
+        justifyContent: "center"
+    },
     areaButtonType: {
         marginTop: 10,
         marginLeft: 25,
@@ -113,6 +118,9 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         justifyContent: "space-between",
         marginTop: 10,
         marginHorizontal: 20
+    },
+    areaButtonAdd: {
+        marginTop: 15  
     },
     areaChecks: {
         marginTop: 15,

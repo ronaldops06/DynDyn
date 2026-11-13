@@ -70,6 +70,9 @@ export const encrypt = async (value: string): Promise<string> => {
 
 export const getDate = (): Date => new Date(Moment().utc(true).format('YYYY-MM-DD HH:mm:ss'));
 
+export const formatDate = (date: Date): string => Moment(date).format('DD/MM/YYYY');
+
+export const formatDateTime = (date: Date): string => Moment(date).format('DD/MM/YYYY HH:mm:ss');
 export const toLocalDate = (date): Date => Moment.parseZone(date, 'DD/MM/YYYY HH:mm:ss').toDate();
 
 export const isInternetConnected = async (): Promise<boolean> => {

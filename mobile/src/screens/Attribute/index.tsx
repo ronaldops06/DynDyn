@@ -138,13 +138,13 @@ const Attribute = ({navigation, route}: {navigation: any, route: any}) => {
             onBackClick={handleBackClick}
         >
             <View style={attributeStyle.areaButtonAdd}>
-            <AuxiliaryButton
-                text="Adicionar Patrimônio"
-                onPress={handleNewClick}
-                icon="plus"
-                iconColor={theme.colors.quaternaryIcon}
-                type="secondary"
-            />
+                <AuxiliaryButton
+                    text="Adicionar Patrimônio"
+                    onPress={handleNewClick}
+                    icon="plus"
+                    iconColor={theme.colors.quaternaryIcon}
+                    type="secondary"
+                />
             </View>
             <View>
                 <CustomScroll

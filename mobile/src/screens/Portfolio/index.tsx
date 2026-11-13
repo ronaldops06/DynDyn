@@ -61,7 +61,7 @@ const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
     
     const loadPortfolios = async () => {
         setLoading(true);
-
+        
         let responsePortfolios = null;
 
         if (isLoadInternal) {
@@ -83,21 +83,24 @@ const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
     };
 
     const getGroupTypes = () => {
-        let keys: I.SymbolNumberView[] = Object.values(constants.portfolioGroupType.ativo);
-        keys.push(...Object.values(constants.portfolioGroupType.passivo));
+        let keysAtivos: I.SymbolNumberView[] = Object.values(constants.portfolioGroupType.ativo);
+        let keysPassivos: I.SymbolNumberView[] = Object.values(constants.portfolioGroupType.passivo);
+        
+        let keys: I.SymbolNumberView[] = keysAtivos;
+        keys.push(...keysPassivos);
 
         setGroupTypes(keys);
     }
 
     const getTotal = (type: number) => {
-        return portfolios?.filter(x => x.Type === type && x.ParentPortfolio === null).reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0);
+        return portfolios?.filter(x => x.Type === type && x.ParentPortfolio === null).reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0) ?? 0;
     }
 
     const getTotalPercentage = (type: number) => {
-        let total = portfolios?.reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0);
+        let total = portfolios?.reduce((acc, item) => acc + Number(item.BalanceTotals?.Value), 0) ?? 1;
         let totalType = getTotal(type);
 
-        return (totalType * 100) / total ?? 1;
+        return (totalType * 100) / total;
     }
 
     const getButtonStyle = (type: number) => {
@@ -157,7 +160,7 @@ const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
                                 <Text style={style.textPrimary16}>R$ {totalValue.toFixed(2)}</Text>
                                 <TouchableOpacity
                                     onPress={() => handleClickIsVisible(type)}
-                                    disabled={portfoliosGroup.length === 0}
+                                    disabled={portfolios.filter(x => x.Group === type.Id && x.Type === portfolioType.Id).length === 0}
                                 >
                                     {type.IsVisible ?
                                         <ExpandLessIcon width="24" height="24" fill={theme.colors.quaternaryIcon}/> :
@@ -186,7 +189,7 @@ const Portfolio = ({navigation, route}: { navigation: any, route: any }) => {
             <>
                 {portfoliosRendering.map(item => {
                         return (
-                            <View onTouchEndCapture={() => handleItemClick(item)} key={portfolioGroup}
+                            <View onTouchEndCapture={() => handleItemClick(item)} key={`${portfolioGroup}-${item.Id}`}
                                   style={portfolioStyle.portfolioGroupItens}>
                                 <View key={`${portfolioGroup}-${item.Id}`} style={style.row}>
                                     <Text style={style.textPrimary16}>{item.Name}</Text>

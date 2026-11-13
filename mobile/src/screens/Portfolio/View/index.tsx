@@ -13,6 +13,7 @@ import {constants} from "../../../constants";
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyle} from '../../../styles/styles';
 import {getPortfolioViewStyle} from './styles';
+import Box from "../../../components/Box";
 
 const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
@@ -62,7 +63,7 @@ const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
                         case constants.attributeDataType.text.Id:
                             return <Text style={portfolioViewStyle.infoValue}>{portfolioAttribute.ValueText}</Text>;
                         case constants.attributeDataType.number.Id:
-                            return <Text style={portfolioViewStyle.infoValue}>{portfolioAttribute.ValueNumber}</Text>;
+                            return <Text style={portfolioViewStyle.infoValue}>{portfolioAttribute.ValueNumber?.toString() ?? "0.00"}</Text>;
                         case constants.attributeDataType.boolean.Id:
                             return <Text
                                 style={portfolioViewStyle.infoValue}>{(portfolioAttribute.ValueBoolean) ? 'Verdadeiro' : 'Falso'}</Text>;
@@ -190,8 +191,9 @@ const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
 
     const renderGeneralInfo = () => {
         return (
-            <View style={portfolioViewStyle.box}>
-                <Text style={portfolioViewStyle.sectionHeader}>Informações gerais</Text>
+            
+                <Box
+                    title="Informações gerais">
                 <View style={portfolioViewStyle.infoRow}>
                     <View style={portfolioViewStyle.infoLabel}>
                         <Icon name={getPortfolioGroupById(data.Group)?.Icon ?? 'account'} size={20}
@@ -233,35 +235,37 @@ const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
                     </Text>
                 </View>
 
-            </View>
+            </Box>
         );
     };
 
     const renderCustomAttributes = () => {
         return (
-            <View style={portfolioViewStyle.box}>
-                <Text style={portfolioViewStyle.sectionHeader}>Atributos personalizados</Text>
+            <Box
+                style={portfolioViewStyle.box}
+                title="Atributos personalizados">
                 {data.Attributes?.length > 0 ? 
                 data.Attributes?.map((attr: PortfolioAttribute, index: number) => (
                     <View key={index} style={portfolioViewStyle.infoRow}>
                         <View style={portfolioViewStyle.infoLabel}>
                             <Text style={portfolioViewStyle.infoLabelText}>{attr.Attribute.Name}</Text>
                         </View>
-                        getValueAttribute(attr);
+                        {getValueAttribute(attr)}
                     </View>
                 )) :
                     <Text style={portfolioViewStyle.actionItemSubtitle}>
                         Este Patrimônio não possui atributos personalizados.
                     </Text>
                 }
-            </View>
+            </Box>
         );
     };
 
     const renderTransactionHistory = () => {
         return (
-            <View style={portfolioViewStyle.box}>
-                <Text style={portfolioViewStyle.sectionHeader}>Histórico de transações</Text>
+            <Box
+                style={portfolioViewStyle.box}    
+                title="Histórico de transações">
                 {transactionHistory.map((transaction, index) => (
                     <View key={index} style={portfolioViewStyle.transactionHistoryItem}>
                         <View style={portfolioViewStyle.transactionLeft}>
@@ -284,7 +288,7 @@ const PortfolioView = ({navigation, route}: {navigation: any, route: any}) => {
                 <View style={portfolioViewStyle.viewAllButton}>
                     <Text style={portfolioViewStyle.viewAllText}>Ver todas</Text>
                 </View>
-            </View>
+            </Box>
         );
     };
 

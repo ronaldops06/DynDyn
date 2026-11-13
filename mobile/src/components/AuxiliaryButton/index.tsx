@@ -11,6 +11,7 @@ interface AuxiliaryButtonProps {
     icon: string;
     iconColor: string;
     type?: string | undefined;
+    disabled?: boolean | undefined;
 }
 
 const AuxiliaryButton = (props: AuxiliaryButtonProps) => {
@@ -18,13 +19,16 @@ const AuxiliaryButton = (props: AuxiliaryButtonProps) => {
     const styleCadastro = getStyleCadastro(theme);
     
     const {
-        type = 'primary'
+        type = 'primary',
+        disabled = false
     } = props;
     
     return(
         <TouchableOpacity
             style={type === 'primary' ? styleCadastro.primaryAuxiliaryButton : styleCadastro.secondaryAuxiliaryButton}
-            onPress={props.onPress}>
+            onPress={props.onPress}
+            disabled={disabled}
+        >
             <Icon name={props.icon} size={30} color={props.iconColor} />
             <Text style={type === 'primary' ? styleCadastro.textButtonSave : styleCadastro.textSecondaryButton }>{props.text}</Text>
         </TouchableOpacity>

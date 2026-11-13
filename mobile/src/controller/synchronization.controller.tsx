@@ -11,7 +11,6 @@ import {processActionCategory, synchronizationAllCategory} from "./category.cont
 import {processActionPortfolio, synchronizationAllPortfolio} from "./portfolio.controller";
 import {processActionOperation, synchronizationAllOperation} from "./operation.controller";
 import {processActionBalance, synchronizationAllBalance} from "./balance.controller";
-import {processActionTransaction, synchronizationAllOTransaction} from "./transaction.controller";
 import {constants} from "../constants";
 import Moment from "moment/moment";
 import {getTrashs} from "../services/trash.api";
@@ -101,6 +100,7 @@ export const executeFullSynchronization = async (): Promise<I.Response> => {
     let date = new Date();
     let mountDateInicio = new Date(date.getFullYear(), date.getMonth() - 1, 5, 0, 0, 0);
     let mountDateFim = new Date(date.getFullYear(), date.getMonth() + 2, 4, 23, 59, 59);
+    const {synchronizationAllOTransaction} = await import("./transaction.controller");
     response = await synchronizationAllOTransaction(mountDateInicio, mountDateFim);
 
     console.log('Final Sincronização');
@@ -133,6 +133,7 @@ export const executeExcludeEntity = async (trash: Trash) => {
     } else if (trash && trash.Reference === constants.operations.balance) {
         await processActionBalance(constants.acao.delete, trash.ReferenceId);
     } else if (trash && trash.Reference === constants.operations.transaction) {
+        const {processActionTransaction} = await import("./transaction.controller");
         await processActionTransaction(constants.acao.delete, trash.ReferenceId);
     } else if (trash && trash.Reference === constants.operations.operationRole) {
         await processActionOperationRole(constants.acao.delete, trash.ReferenceId);

@@ -1,4 +1,5 @@
 import * as I from '../interfaces/interfaces';
+import TransactionIncidence from "./Transaction/Register/Incidence";
 
 export type RootStackParamList = { 
     Preload: undefined; 
@@ -19,7 +20,8 @@ export type RootStackParamList = {
     Account: undefined;
     AccountCreate: { isEditing: boolean, data: I.Portfolio | null, sourceScreen: string | null, reference: string } | undefined;
     Transaction: undefined;
-    TransactionCreate: {isEditing: boolean, data: I.Transaction | null } | undefined;
+    TransactionCreate: {isEditing: boolean, internalId: number | null, sourceScreen?: string } | undefined;
+    TransactionIncidence: {isEditing: boolean, data: I.Transaction | null } | undefined;
     Category: { actionNavigation: string } | undefined;
     CategoryCreate: {isEditing: boolean, data: I.Category | null, sourceScreen: string | null, reference: string } | undefined;
     Attribute: { actionNavigation: string } | undefined;
