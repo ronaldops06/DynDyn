@@ -1,10 +1,10 @@
 import {ReactNode} from "react";
 import {Modal, Pressable, View} from "react-native";
-
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getCenterModalStyle} from "./styles";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import Button from "../../Button";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getCenterModalStyle} from "./styles";
 
 interface CenterModalProps {
     show: boolean;

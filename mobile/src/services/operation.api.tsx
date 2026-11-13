@@ -1,8 +1,8 @@
 import { Alert } from 'react-native';
-import {Action, StatusHttp} from "../enums/enums.tsx";
-import * as I from "../interfaces/interfaces.tsx";
-import {del, get, post, put} from "./api.ts";
-import {validateLogin} from "./helper.api.ts";
+import {Action, StatusHttp} from "../enums/enums";
+import * as I from "../interfaces/interfaces";
+import {del, get, post, put} from "./api";
+import {validateLogin} from "./helper.api";
 
 export const validateResponse = (action: Action, response: I.Response) => {
     if (!response.success) {

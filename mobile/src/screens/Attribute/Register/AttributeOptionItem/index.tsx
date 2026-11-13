@@ -1,11 +1,12 @@
 import React from "react";
 import {Text, View} from "react-native";
-
-import * as I from "../../../../interfaces/interfaces.tsx";
-import {constants} from "../../../../constants";
-import {useTheme} from "../../../../contexts/ThemeContext";
 import Tag from "../../../../components/Tag";
-import {getDescriptionStatus} from "../../../../utils.ts";
+
+import * as I from "../../../../interfaces/interfaces";
+import {constants} from "../../../../constants";
+import {getDescriptionStatus} from "../../../../utils";
+
+import {useTheme} from "../../../../contexts/ThemeContext";
 import {getAttributeOptionItemStyle} from "./styles";
 
 interface AttributeOptionItemProps {

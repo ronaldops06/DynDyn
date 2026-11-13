@@ -1,32 +1,30 @@
 import React, {useCallback, useEffect, useState} from "react";
+import {Alert, ScrollView, View} from 'react-native';
 import {useFocusEffect} from "@react-navigation/native";
-import {Alert, ScrollView, Text, View} from 'react-native';
 import {Chip} from 'react-native-paper';
-import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller.tsx";
-import {constants} from "../../../constants";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {loadAllCategoryInternal} from "../../../controller/category.controller.tsx";
-import {TypesCategory} from "../../../enums/enums.tsx";
 import TextInput from "../../../components/CustomTextInput";
-import CheckBox from "@react-native-community/checkbox";
 import ButtonSelectBar, {ButtonsSelectedProps} from "../../../components/ButtonSelectBar";
-import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils.ts";
-import RuleIcon from "../../../assets/rule.svg";
 
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyle} from "../../../styles/styles.ts";
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
-import {getOperationCreateStyle} from "./styles";
-import {PageRegister} from "../../../components/Page";
-import OperationRoleModal from "../OperationRoleModal";
+import * as I from "../../../interfaces/interfaces";
+import {constants} from "../../../constants";
+import {TypesCategory} from "../../../enums/enums";
+import {getCurrentStack, validateLogin, validateSuccess} from "../../../utils";
 import {CustomAlert} from "../../../components/CustomAlert";
 import Select from "../../../components/Select";
 import AuxiliaryButton from "../../../components/AuxiliaryButton";
+import CheckBox from "../../../components/CheckBox";
 
+import OperationRoleModal from "../OperationRoleModal";
+import {alterOperation, createOperation, excludeOperation} from "../../../controller/operation.controller";
+import {loadAllCategoryInternal} from "../../../controller/category.controller";
 
-const OperationCreate = ({navigation, route}) => {
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyleCadastro} from "../../../styles/styles.cadastro";
+import {getOperationCreateStyle} from "./styles";
+import {PageRegister} from "../../../components/Page";
+
+const OperationCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
-    const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
     const operationCreateStyle = getOperationCreateStyle(theme);
 
@@ -40,7 +38,6 @@ const OperationCreate = ({navigation, route}) => {
     const [type, setType] = useState<number>(constants.operationType.revenue.Id);
     const [category, setCategory] = useState(0);
     const [isRecurrent, setIsRecurrent] = useState<boolean>(false);
-    const [isSalary, setIsSalary] = useState<boolean>(false);
     const [status, setStatus] = useState<boolean>(true);
     const [operationRoles, setOperationRoles] = useState<I.OperationRole[]>([]);
     const [categories, setCategories] = useState<I.Category[]>([]);
@@ -88,7 +85,6 @@ const OperationCreate = ({navigation, route}) => {
             setType(data.Type);
             setStatus(data.Status === constants.status.active.Id);
             setCategory(data.Category.Id);
-            setIsSalary(data.Salary);
             setIsRecurrent(data.Recurrent);
             setOperationRoles(data.OperationRoles);
         }
@@ -149,7 +145,7 @@ const OperationCreate = ({navigation, route}) => {
         operationDTO.Type = type;
         operationDTO.Category = categories.find(x => x.Id === category) ?? {} as I.Category;
         operationDTO.Recurrent = isRecurrent;
-        operationDTO.Salary = isSalary ?? false;
+        operationDTO.Salary = false;
         operationDTO.Status = status ? constants.status.active.Id : constants.status.inactive.Id;
         operationDTO.OperationRoles = operationRoles;
 
@@ -229,29 +225,17 @@ const OperationCreate = ({navigation, route}) => {
                         <CheckBox
                             value={isRecurrent}
                             onValueChange={setIsRecurrent}
-                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                            label="Recorrente"
+                            description="Operaçãos recorrentes são geradas em todos os meses."
                         />
-                        <Text
-                            style={styleCadastro.textCheckbox}>Recorrente</Text>
-                    </View>
-                    <View style={operationCreateStyle.areaCard}>
-                        <CheckBox
-                            value={isSalary}
-                            onValueChange={setIsSalary}
-                            tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
-                        />
-                        <Text
-                            style={styleCadastro.textCheckbox}>Salário</Text>
                     </View>
                 </View>
-                <View style={operationCreateStyle.areaCard}>
+                <View style={operationCreateStyle.areaField}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}
-                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                        label="Ativo"
                     />
-                    <Text
-                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
                 <AuxiliaryButton
                     text="Papéis de Operações"
@@ -267,7 +251,7 @@ const OperationCreate = ({navigation, route}) => {
                                 onClose={() => removeOperationRole(item)}
                                 mode="flat"
                                 style={{marginVertical: 4, marginLeft: 8}}
-                                iconClose="close"
+                                closeIcon="close"
                             >
                                 {item.Name}
                             </Chip>

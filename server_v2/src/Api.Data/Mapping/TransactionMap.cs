@@ -54,6 +54,10 @@ namespace Api.Data.Mapping
                   .OnDelete(DeleteBehavior.Restrict)
                   .IsRequired();
             
+            builder.HasMany(u => u.Impacts)
+                .WithOne(l => l.Transaction)
+                .HasForeignKey(l => l.TransactionId);
+            
             builder.HasOne(u => u.User)
                 .WithMany()
                 .HasForeignKey(e => e.UserId)

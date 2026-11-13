@@ -1,4 +1,4 @@
-import {Operator} from "../utils.ts";
+import {Operator} from "../utils";
 
 export interface Response {
     data: any,
@@ -20,7 +20,8 @@ export interface User {
     Login: string,
     Name: string,
     Password: string,
-    AccessToken: string
+    AccessToken: string,
+    Role: string
 }
 
 export interface ChangePasswordUser {
@@ -80,7 +81,7 @@ export interface AttributeOption {
     Label: string,
     IsDefault: number,
     Status: number,
-    tempId?: string,
+    tempId?: string | null,
     DataCriacao: Date | null,
     DataAlteracao: Date | null
 }
@@ -92,7 +93,7 @@ export interface Attribute {
     Description?: string,
     DataType: number,
     Status: number,
-    Options?: AttributeOption[],
+    Options?: AttributeOption[] | null,
     DataCriacao: Date | null,
     DataAlteracao: Date | null
 }
@@ -107,15 +108,35 @@ export interface CategoryFilter {
     Situation: number
 }
 
+export interface PortfolioAttribute {
+    InternalId: number,
+    Id: number,
+    ValueNumber?: number | null,
+    ValueText?: string | null,
+    ValueBoolean?: number | null,
+    ValueDate?: Date | null,
+    AttributeOption?: AttributeOption | null,
+    Attribute: Attribute,
+    ActionType: number,
+    Status: number,
+    DataCriacao: Date | null,
+    DataAlteracao: Date | null,
+}
+
 export interface Portfolio {
     InternalId: number,
     Id: number,
     Name: string,
+    Description: string,
+    CurrencyCode: string,
+    AcquisitionCost?: number | null,
+    EndDate?: Date | null,
     Type: number,
     Group: number,
     Status: number,
     Category: Category,
     ParentPortfolio: Portfolio | null,
+    Attributes?: PortfolioAttribute[],
     DataCriacao: Date,
     DataAlteracao: Date,
     BalanceTotals: BalanceTotals | null
@@ -188,26 +209,54 @@ export interface Transaction {
     ParentTransaction: Transaction | null,
     DataCriacao: Date,
     DataAlteracao: Date,
+    Impacts?: TransactionImpact[],
     IsSelectedItem: boolean | null
+}
+
+export interface TransactionImpact {
+    InternalId: number,
+    Id: number,
+    Value: number,
+    Portfolio: Portfolio,
+    PortfolioAttribute: PortfolioAttribute,
+    ImpactType: number,
+    OperationType: number,
+    DataCriacao?: Date | null,
+    DataAlteracao?: Date | null
 }
 
 export interface TransactionView {
     InternalId: number,
     Id: number,
-    DataCriacao: Date,
+    Value: number,
+    Observation: string,
+    Consolidated: boolean,
     Installment: number,
     TotalInstallments: number,
-    Value: number,
-    Consolidated: boolean,
-    OperationType: number,
-    OperationName: string,
-    PortfolioName: string,
-    DestinationPortfolioName: string | null
+    DataCriacao: Date,
+    IsSelectedItem: boolean,
+    Operation: {
+        Id: number,
+        Name: string,
+        Type: number,
+        Roles: string | null,
+        Category: {
+            Id: number
+        }
+    },
+    Portfolio: {
+        Id: number,
+        Name: string
+    },
+    DestinationPortfolio: {
+        Id: number,
+        Name: string
+    } | null
 }
 
 export interface TransactionsGroup {
     date: string,
-    transactions: Transaction[]
+    transactions: TransactionView[]
 }
 
 export interface TransactionTotals {
@@ -283,10 +332,20 @@ export interface SymbolString {
 export interface SymbolStringView {
     Id: string,
     Name: string,
+    Icon: string,
+    Type: number,
     IsVisible: boolean
 }
 
 export interface SymbolNumber {
     Id: number,
     Name: string,
+}
+
+export interface SymbolNumberView {
+    Id: number,
+    Name: string,
+    Icon: string,
+    Type: number,
+    IsVisible: boolean
 }

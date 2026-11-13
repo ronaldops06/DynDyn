@@ -67,6 +67,9 @@ export const getAttributeCreateStyle = (theme) => StyleSheet.create({
         fontSize: 13,
         textAlign: "center",
     },
+    optionsBox: {
+        marginTop: 26
+    },
     scrollOptions: {
         maxHeight: 150
     },

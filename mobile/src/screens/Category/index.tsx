@@ -2,28 +2,26 @@ import React, {useEffect, useRef, useState} from 'react';
 import {Alert} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import * as I from "../../interfaces/interfaces.tsx";
-import CategoryItem from "./CategoryItem";
-import {
-    alterCategory,
-    excludeCategory,
-    loadAllCategory,
-    loadAllCategoryInternal
-} from "../../controller/category.controller.tsx";
-
-import {constants} from "../../constants";
 import CustomScroll from "../../components/CustomScroll";
 import CarouselSelection from "../../components/CarouselSelection";
-import {hasAnyFilter, validateLogin} from "../../utils.ts";
+import {constants as pageConstants} from "../../components/Page/constants";
 import CategoryIcon from '../../assets/category.svg';
 
-import {useTheme} from '../../contexts/ThemeContext';
-import {constants as pageConstants} from "../../components/Page/constants";
-import {PageProcess} from "../../components/Page";
-import {Situation} from "../../enums/enums.tsx";
+import * as I from "../../interfaces/interfaces";
+import {Situation} from "../../enums/enums";
+import {hasAnyFilter, validateLogin} from "../../utils";
+import {constants} from "../../constants";
+
+import {alterCategory, excludeCategory, loadAllCategory, loadAllCategoryInternal } from "../../controller/category.controller";
+import CategoryItem from "./CategoryItem";
 import Filter from "../Category/Filter";
 
-const Category = ({navigation, route}) => {
+import {useTheme} from '../../contexts/ThemeContext';
+import {PageProcess} from "../../components/Page";
+import {CustomAlert} from "../../components/CustomAlert";
+import {excludeOperationRole} from "../../controller/operation.role.controller.ts";
+
+const Category = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
 
     const [loading, setLoading] = useState(false);
@@ -133,55 +131,35 @@ const Category = ({navigation, route}) => {
             });
     }
 
-    const onSwipeLeft = (data: I.Category) => {
-        Alert.alert("Atenção!",
-            "Esta categoria terá o status alterado. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
-                        let response = await alterCategory(data);
-                        validateLogin(response, navigation);
+    const onSwipeLeft = async (data: I.Category) => {
+        await CustomAlert("Atenção!",
+            "Esta categoria será excluída. Deseja continuar?",
+            async () => {
+                let response = await excludeCategory(data.Id, data.InternalId);
+                validateLogin(response, navigation);
 
-                        setCategories((prevCategories) =>
-                            prevCategories.map((item) =>
-                                item.Id === data.Id ? data : item
-                            )
-                        );
-                    }
+                if (response.success) {
+                    setIsLoadInternal(true);
+                    setCategories([]);
                 }
-            ],
-            {cancelable: false}
+            }
         );
     }
 
-    const onSwipeRight = (data: I.Category) => {
-        Alert.alert("Atenção!",
-            "Esta categoria será excluída. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        let response = await excludeCategory(data.Id, data.InternalId);
-                        validateLogin(response, navigation);
+    const onSwipeRight = async (data: I.Category) => {
+        await CustomAlert("Atenção!",
+            "Esta categoria terá o status alterado. Deseja continuar?",
+            async () => {
+                data.Status = (data.Status === constants.status.active.Id) ? constants.status.inactive.Id : constants.status.active.Id;
+                let response = await alterCategory(data);
+                validateLogin(response, navigation);
 
-                        if (response.success) {
-                            setIsLoadInternal(true);
-                            setCategories([]);
-                        }
-                    }
-                }
-            ],
-            {cancelable: false}
+                setCategories((prevCategories) =>
+                    prevCategories.map((item) =>
+                        item.Id === data.Id ? data : item
+                    )
+                );
+            }
         );
     }
 

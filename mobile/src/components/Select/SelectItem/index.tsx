@@ -1,7 +1,8 @@
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getCardStyle} from "../../../styles/styles.card.ts";
-import {Text, View} from "react-native";
 import React from "react";
+import {Text, View} from "react-native";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getCardStyle} from "../../../styles/styles.card";
 
 export interface SelectItemRow {
     Id: number | string;
@@ -25,7 +26,7 @@ const SelectItem = (props: SelectItemProps) => {
                 onTouchEndCapture={props.onPress}>
                 <View style={cardStyle.rowFooter}>
                     <Text style={cardStyle.textName}>
-                        {props.data.Name}
+                        {props.item.Name}
                     </Text>
                 </View>
             </View>

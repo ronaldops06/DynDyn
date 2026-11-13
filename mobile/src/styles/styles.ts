@@ -1,6 +1,6 @@
 import {StyleSheet} from 'react-native';
 
-export const getStyle = (theme) => StyleSheet.create({
+export const getStyle = (theme: any) => StyleSheet.create({
     row: {
         flexDirection: "row",
         justifyContent: "space-between",

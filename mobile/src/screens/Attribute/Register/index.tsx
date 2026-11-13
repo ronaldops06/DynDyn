@@ -2,23 +2,25 @@ import React, {useEffect, useState} from "react";
 import {Alert, ScrollView, Text, View} from 'react-native';
 import TextInput from "../../../components/CustomTextInput";
 import Select from "../../../components/Select";
-
-import * as I from "../../../interfaces/interfaces.tsx";
-import {alterAttribute, createAttribute, excludeAttribute} from "../../../controller/attribute.controller.tsx";
-import {validateLogin, validateSuccess} from "../../../utils.ts";
-
-import {constants} from "../../../constants";
-import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyleCadastro} from '../../../styles/styles.cadastro';
-import {getAttributeCreateStyle} from "./styles";
 import {PageRegister} from "../../../components/Page";
 import CheckBox from "../../../components/CheckBox";
 import TextArea from "../../../components/TextArea";
+import AuxiliaryButton from "../../../components/AuxiliaryButton";
+import Box from "../../../components/Box";
+
+import {constants} from "../../../constants";
+import * as I from "../../../interfaces/interfaces";
+import {alterAttribute, createAttribute, excludeAttribute} from "../../../controller/attribute.controller";
+import {validateLogin, validateSuccess} from "../../../utils";
+
 import AttributeOptionModal from "./AttributeOptionModal";
 import AttributeOptionItem from "./AttributeOptionItem";
-import AuxiliaryButton from "../../../components/AuxiliaryButton";
 
-const AttributeCreate = ({navigation, route}) => {
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyleCadastro} from '../../../styles/styles.cadastro';
+import {getAttributeCreateStyle} from "./styles";
+
+const AttributeCreate = ({navigation, route}: { navigation: any, route: any }) => {
     const {theme} = useTheme();
     const styleCadastro = getStyleCadastro(theme);
     const attributeCreateStyle = getAttributeCreateStyle(theme);
@@ -211,20 +213,16 @@ const AttributeCreate = ({navigation, route}) => {
                 />
                 <Select
                     label={"Tipo de dado"}
-                    value={dataType}
+                    value={dataType ?? 1}
                     setValue={setDataType}
                     data={Object.values(constants.attributeDataType)}
                 />
                 {isListOptions ? (
-                    <View style={attributeCreateStyle.optionsSection}>
-                        <View style={attributeCreateStyle.optionsHeader}>
-                            <View style={attributeCreateStyle.optionsHeaderText}>
-                                <Text style={attributeCreateStyle.optionsTitle}>Opções</Text>
-                                <Text style={attributeCreateStyle.optionsDescription}>
-                                    Cadastre as opções disponíveis para este atributo.
-                                </Text>
-                            </View>
-                        </View>
+                    <Box 
+                        style={attributeCreateStyle.optionsBox}
+                        title="Opções" 
+                        description="Cadastre as opções disponíveis para este atributo."
+                        borderType="dashed">
                         <View style={attributeCreateStyle.areaButtonAdd}>
                             <AuxiliaryButton
                                 text="Adicionar opção"
@@ -253,7 +251,7 @@ const AttributeCreate = ({navigation, route}) => {
                             </View>
                         )}
 
-                    </View>
+                    </Box>
                 ) : null}
                 <View style={attributeCreateStyle.areaCard}>
                     <CheckBox

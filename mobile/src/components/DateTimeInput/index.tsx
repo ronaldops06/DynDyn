@@ -1,12 +1,12 @@
-import DateTimePicker from "@react-native-community/datetimepicker";
-import Moment from "moment";
 import React, {useState} from "react";
 import {View} from "react-native";
-
+import DateTimePicker from "@react-native-community/datetimepicker";
+import Moment from "moment";
 import ClockIcon from "../../assets/clock.svg";
 import TodayIcon from "../../assets/today.svg";
-import {useTheme} from "../../contexts/ThemeContext";
 import TextInput from "../CustomTextInput";
+
+import {useTheme} from "../../contexts/ThemeContext";
 import {getDateTimeInputStyle} from "./styles";
 
 interface DateTimeInputProps {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
@@ -60,6 +61,11 @@ namespace Api.Domain.Dtos.Transaction
         /// </summary>
         [Required(ErrorMessage = "{0} é um campo obrigatório")]
         public OperationRequestDto Operation { get; set; }
+
+        /// <summary>
+        /// Impactos associados ao movimento.
+        /// </summary>
+        public List<TransactionImpactRequestDto> Impacts { get; set; }
         
         /// <summary>
         /// Data de criação da transação.

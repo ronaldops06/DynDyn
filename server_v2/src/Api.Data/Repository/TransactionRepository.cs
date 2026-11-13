@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Api.Domain.Entities;
@@ -12,6 +13,7 @@ using Domain.Helpers;
 using Domain.Interfaces;
 using Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Api.Data.Repository
 {
@@ -39,6 +41,74 @@ namespace Api.Data.Repository
 
             return true;
         }
+        
+        /*public override async Task<TransactionEntity> UpdateAsync(TransactionEntity item)
+        {
+            try
+            {
+                var transaction = await _context.Transaction
+                    .Include(t => t.Impacts)
+                    .SingleOrDefaultAsync(t => t.Id == item.Id);
+    
+                if (transaction == null)
+                    throw new Exception("No data found");
+                
+                item.DataCriacao = item.DataCriacao ?? transaction.DataCriacao;
+                item.DataAlteracao = DateTime.Now;
+
+                // atualiza campos do portfolio
+                _context.Entry(transaction).CurrentValues.SetValues(item);
+
+                var newIds = item.Impacts?.Select(i => i.Id).ToHashSet();
+
+                transaction.Impacts?.RemoveAll((i => !newIds.Contains(i.Id)));
+                
+                // Atualiza os que já existem
+                if (transaction.Impacts != null && item.Impacts != null)
+                {
+                    foreach (var source in item.Impacts)
+                    {
+                        var target = transaction.Impacts.FirstOrDefault(i => i.Id == source.Id);
+
+                        if (target != null)
+                        {
+                            target.TransactionId = source.TransactionId;
+                            target.Transaction = source.Transaction;
+                            target.OperationType = source.OperationType;
+                            target.ImpactType = source.ImpactType;
+                            target.PortfolioAttribute = source.PortfolioAttribute;
+                            target.PortfolioAttributeId = source.PortfolioAttributeId;
+                            target.Portfolio = source.Portfolio;
+                            target.PortfolioId = source.PortfolioId;
+                            target.Value = source.Value;
+                            target.DataCriacao = source.DataCriacao;
+                            target.DataAlteracao = DateTime.Now;
+                            target.User = source.User;
+                            target.UserId = source.UserId;
+                        }
+                    }
+                }
+                
+                var existIds = transaction.Impacts?.Select(i => i.Id).ToHashSet();
+
+                var add = item.Impacts?.FindAll(i => !existIds.Contains(i.Id));
+                foreach (var impact in add)
+                {
+                    impact.DataCriacao = item.DataCriacao ?? DateTime.Now;
+                    impact.DataAlteracao = item.DataAlteracao ?? DateTime.Now;
+                }
+
+                transaction.Impacts?.AddRange(add);
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return item;
+        }*/
         
         public override async Task<IEnumerable<TransactionEntity>> SelectAsync(int userId)
         {
@@ -202,6 +272,67 @@ namespace Api.Data.Repository
             return result;
         }
 
+        public override async Task<TransactionEntity> UpdateAsync(TransactionEntity item)
+        {
+            try
+            {
+                var transaction = await _context.Transaction
+                    .Include(t => t.Impacts)
+                    .SingleOrDefaultAsync(t => t.Id == item.Id);
+
+                if (transaction == null)
+                    throw new Exception("No data found");
+
+                item.DataCriacao = item.DataCriacao ?? transaction.DataCriacao;
+                item.DataAlteracao = DateTime.Now;
+
+                _context.Entry(transaction).CurrentValues.SetValues(item);
+
+                var impacts = item.Impacts ?? new List<TransactionImpactEntity>();
+                var newIds = impacts.Select(i => i.Id).ToHashSet();
+
+                transaction.Impacts?.RemoveAll(i => !newIds.Contains(i.Id));
+
+                var existIds = transaction.Impacts?.Select(i => i.Id).ToHashSet() ?? new HashSet<int>();
+                var newImpacts = impacts.FindAll(i => !existIds.Contains(i.Id));
+
+                foreach (var impact in impacts.Where(i => existIds.Contains(i.Id)))
+                {
+                    var currentImpact = transaction.Impacts.First(i => i.Id == impact.Id);
+                    impact.TransactionId = item.Id;
+                    _context.Entry(currentImpact).CurrentValues.SetValues(impact);
+
+                    if (impact.Portfolio != null)
+                        _context.Entry(impact.Portfolio).State = EntityState.Unchanged;
+
+                    if (impact.PortfolioAttribute != null)
+                        _context.Entry(impact.PortfolioAttribute).State = EntityState.Unchanged;
+                }
+
+                foreach (var impact in newImpacts)
+                {
+                    impact.TransactionId = item.Id;
+                    impact.Transaction = null;
+
+                    if (impact.Portfolio != null)
+                        _context.Entry(impact.Portfolio).State = EntityState.Unchanged;
+
+                    if (impact.PortfolioAttribute != null)
+                        _context.Entry(impact.PortfolioAttribute).State = EntityState.Unchanged;
+                }
+
+                transaction.Impacts?.AddRange(newImpacts);
+
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+
+            return item;
+        }
+
         public async Task<List<TransactionEntity>> SelectByPendingInstallments(int userId, Period period)
         {
             var result = new List<TransactionEntity>();
@@ -234,7 +365,15 @@ namespace Api.Data.Repository
                     _context.Entry(transactionEntity.ParentTransaction).State = EntityState.Unchanged;
 
                 if (transactionEntity.Portfolio != null)
+                {
+                    var existingEntry = _context.ChangeTracker.Entries<PortfolioEntity>()
+                        .FirstOrDefault(e => e.Entity.Id == transactionEntity.Portfolio.Id);
+
+                    if (existingEntry != null)
+                        _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
                     _context.Entry(transactionEntity.Portfolio).State = EntityState.Unchanged;
+                }
 
                 if (transactionEntity.DestinationPortfolio != null)
                     _context.Entry(transactionEntity.DestinationPortfolio).State = EntityState.Unchanged;
@@ -260,7 +399,30 @@ namespace Api.Data.Repository
 
                     _context.Entry(transactionEntity.User).State = EntityState.Unchanged;
                 }
-            }
+
+                /*if (transactionEntity.Impacts != null)
+                {
+                    foreach (var impact in transactionEntity.Impacts)
+                    {
+                        if (impact.Portfolio != null)
+                        {
+                            var existingEntry = _context.ChangeTracker.Entries<PortfolioEntity>()
+                                .FirstOrDefault(e => e.Entity.Id == impact.Portfolio.Id);
+
+                            if (existingEntry != null)
+                                _context.Entry(existingEntry.Entity).State = EntityState.Detached;
+
+                            _context.Entry(impact.Portfolio).State = EntityState.Unchanged;
+                        }
+
+                        if (impact.PortfolioAttribute != null)
+                            _context.Entry(impact.PortfolioAttribute).State = EntityState.Unchanged;
+                        
+                        if (impact.User != null)
+                            _context.Entry(impact.User).State = EntityState.Unchanged;
+                    }
+                }*/
+            } 
             catch (Exception ex)
             {
                 throw ex;
@@ -277,6 +439,10 @@ namespace Api.Data.Repository
             query = query.Include(p => p.Portfolio.Category);
             query = query.Include(cta => cta.DestinationPortfolio);
             query = query.Include(cat => cat.DestinationPortfolio.Category);
+            query = query.Include(imp => imp.Impacts)
+                .ThenInclude(i => i.Portfolio);
+            query = query.Include(imp => imp.Impacts)
+                .ThenInclude(i => i.PortfolioAttribute);
             query = query.Include(usr => usr.User);
 
             return query;

@@ -1,8 +1,8 @@
-import { Operation, OperationRole, Transaction} from "../interfaces/interfaces";
+import {Operation, OperationRole} from "../interfaces/interfaces";
 import {openDatabase} from "./database";
 import SQLite, {ResultSet} from "react-native-sqlite-storage";
 import {constants} from "../constants";
-import {selectOperationRoleByOperationInternalId} from "./operation.role.repository.ts";
+import {selectOperationRoleByOperationInternalId} from "./operation.role.repository";
 
 export const createTableOperation = async () => {
     const db = await openDatabase();

@@ -11,11 +11,11 @@ import {
     updateCategory
 } from '../repository/category.repository';
 import { loadSynchronizationByCreationsDateAndOperation, setLastSynchronization } from './synchronization.controller';
-import {deleteCategory, getCategories, postCategory, putCategory} from "../services/category.api.ts";
+import {deleteCategory, getCategories, postCategory, putCategory} from "../services/category.api";
 import {Alert} from "react-native";
-import {existsPortfolioRelationshipCategory} from "../repository/portfolio.repository.tsx";
-import {existsOperationRelationshipCategory} from "../repository/operation.repository.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
+import {existsPortfolioRelationshipCategory} from "../repository/portfolio.repository";
+import {existsOperationRelationshipCategory} from "../repository/operation.repository";
+import {getUserLoginEncrypt} from "../utils";
 
 /**
  * Método responsável por retornar a categoria persistida internamente para ser utilizada como referência.

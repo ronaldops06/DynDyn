@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
 
@@ -58,5 +59,10 @@ namespace Api.Domain.Dtos.Transaction
         /// Operação utilizada no movimento.
         /// </summary>
         public OperationResponseDto Operation { get; set; }
+
+        /// <summary>
+        /// Impactos associados ao movimento.
+        /// </summary>
+        public List<TransactionImpactResponseDto> Impacts { get; set; }
     }
 }

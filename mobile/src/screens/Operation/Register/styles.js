@@ -19,6 +19,10 @@ export const getOperationCreateStyle = (theme) => StyleSheet.create({
         ...getStyleCadastro(theme).areaCard,
         marginTop: 30,
     },
+    areaField: {
+        marginTop: 30,
+        marginBottom: 30  
+    },
     scrollRoles: {
         minHeight: 50,
         maxHeight: 150

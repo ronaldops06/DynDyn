@@ -6,11 +6,15 @@ import {
     DashboardItem,
     Operation,
     Portfolio,
+    PortfolioAttribute,
     Transaction,
+    TransactionImpact,
     TransactionTotals,
     TransactionView
 } from "../interfaces/interfaces";
 import {openDatabase} from "./database";
+import SQLite from "react-native-sqlite-storage";
+import {selectPortfolioByInternalId} from "./portfolio.repository";
 
 export const createTableTransaction = async () => {
     const db = await openDatabase();
@@ -40,6 +44,32 @@ export const createTableTransaction = async () => {
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_portfolio_id ON transactions (portfolio_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_operation_id ON transactions (operation_id);`);
     await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transactions_data_criacao ON transactions (data_criacao);`);
+
+    await db.executeSql(`
+        CREATE TABLE IF NOT EXISTS transaction_impact
+        (
+            internal_id                   INTEGER PRIMARY KEY AUTOINCREMENT,
+            id                            NUMBER,
+            value                         NUMBER,
+            transaction_id                NUMBER NOT NULL,
+            portfolio_id                  NUMBER NOT NULL,
+            portfolio_attribute_id        NUMBER NOT NULL,
+            impact_type                   NUMBER,
+            operation_type                NUMBER,
+            data_criacao                  TEXT,
+            data_alteracao                TEXT,
+            reference                     TEXT,
+            FOREIGN KEY (transaction_id) REFERENCES transactions (internal_id) ON DELETE CASCADE,
+            FOREIGN KEY (portfolio_id) REFERENCES portfolios (internal_id) ON DELETE CASCADE,
+            FOREIGN KEY (portfolio_attribute_id) REFERENCES portfolio_attribute (internal_id) ON DELETE CASCADE
+        );
+    `);
+
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transaction_impact_id ON transaction_impact (id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transaction_impact_reference ON transaction_impact (reference);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transaction_impact_transaction_id ON transaction_impact (transaction_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transaction_impact_portfolio_id ON transaction_impact (portfolio_id);`);
+    await db.executeSql(`CREATE INDEX IF NOT EXISTS idx_transaction_impact_portfolio_attribute_id ON transaction_impact (portfolio_attribute_id);`);
 };
 
 export const insertTransaction = async (userLogin: string, transaction: Transaction): Promise<Transaction> => {
@@ -91,7 +121,11 @@ export const insertTransaction = async (userLogin: string, transaction: Transact
     );
 
     transaction.InternalId = result[0].insertId;
-    
+
+    for (const impact of transaction.Impacts ?? []) {
+        await insertTransactionImpact(userLogin, transaction.InternalId, impact, db);
+    }
+
     return transaction;
 };
 
@@ -143,12 +177,70 @@ export const updateTransaction = async (transaction: Transaction): Promise<Trans
             InternalId
         ]
     );
-    
+
+    if (transaction.Impacts !== undefined) {
+        const referenceResult = await db.executeSql(
+            'SELECT reference ' +
+            '  FROM transactions ' +
+            ' WHERE internal_id = ?',
+            [InternalId]
+        );
+        const userLogin = referenceResult[0]?.rows.length > 0
+            ? referenceResult[0].rows.item(0).reference
+            : undefined;
+
+        if (userLogin === undefined) {
+            throw new Error(`Transaction ${InternalId} was not found while updating impacts.`);
+        }
+
+        const currentImpacts = await db.executeSql(
+            'SELECT internal_id, id ' +
+            '  FROM transaction_impact ' +
+            ' WHERE reference = ? ' +
+            '   AND transaction_id = ?',
+            [userLogin, InternalId]
+        );
+        const currentRows = currentImpacts[0]?.rows;
+        const retainedIds = new Set<number>();
+
+        for (const impact of transaction.Impacts) {
+            let currentInternalId: number | undefined;
+            for (let i = 0; i < (currentRows?.length ?? 0); i++) {
+                const current = currentRows.item(i);
+                if (current.id === impact.Id || (impact.InternalId > 0 && current.internal_id === impact.InternalId)) {
+                    currentInternalId = current.internal_id;
+                    break;
+                }
+            }
+
+            if (currentInternalId === undefined) {
+                await insertTransactionImpact(userLogin, InternalId, impact, db);
+            } else {
+                retainedIds.add(currentInternalId);
+                impact.InternalId = currentInternalId;
+                await updateTransactionImpact(userLogin, InternalId, impact, db);
+            }
+        }
+
+        for (let i = 0; i < (currentRows?.length ?? 0); i++) {
+            const current = currentRows.item(i);
+            if (!retainedIds.has(current.internal_id)
+                && !transaction.Impacts.some(impact => impact.Id === current.id)) {
+                await deleteTransactionImpact(userLogin, InternalId, current.internal_id, db);
+            }
+        }
+    }
+
     return transaction;
 };
 
 export const deleteInternalTransactionByExternalId = async (userLogin: string, id: number) => {
     const db = await openDatabase();
+    await db.executeSql(
+        'DELETE FROM transaction_impact' +
+        ' WHERE reference = ?' +
+        '   AND transaction_id IN (SELECT internal_id FROM transactions WHERE reference = ? AND id = ?)',
+        [userLogin, userLogin, id]);
     await db.executeSql(
         'DELETE FROM transactions' +
         ' WHERE reference = ?' +
@@ -160,6 +252,11 @@ export const deleteInternalTransactionByExternalId = async (userLogin: string, i
 export const deleteInternalTransaction = async (internalId: number) => {
     const db = await openDatabase();
     await db.executeSql(
+        'DELETE ' +
+        '  FROM transaction_impact ' +
+        ' WHERE transaction_id = ?',
+        [internalId]);
+    await db.executeSql(
         'DELETE'
         + '  FROM transactions'
         + ' WHERE internal_id = ?', [internalId]);
@@ -167,6 +264,11 @@ export const deleteInternalTransaction = async (internalId: number) => {
 
 export const deleteAllTransactions = async (userLogin: string) => {
     const db = await openDatabase();
+    await db.executeSql(
+        'DELETE ' +
+        '  FROM transaction_impact ' +
+        ' WHERE reference = ?',
+        [userLogin]);
     await db.executeSql(
         'DELETE' +
         '  FROM transactions' +
@@ -178,7 +280,7 @@ export const selectAllTransactions = async (userLogin: string, dateInicio: Date,
 
     const results = await db.executeSql(
         queryBase()
-        + '   AND strftime(\'%Y-%m-%d %H:%M:%S\', trn.data_criacao) BETWEEN ? AND ?'
+        + '   AND trn.data_criacao BETWEEN ? AND ?'
         + ' ORDER BY trn.data_criacao DESC'
         + '  LIMIT ? '
         + '  OFFSET ?',
@@ -196,6 +298,69 @@ export const selectAllTransactions = async (userLogin: string, dateInicio: Date,
         }
     });
 
+    for (const transaction of transactions) {
+        await populateTransactionImpacts(transaction, userLogin);
+    }
+
+    return transactions;
+};
+
+export const selectAllTransactionsView = async (
+    userLogin: string,
+    dateInicio: Date,
+    dateFim: Date,
+    pageNumber: number
+): Promise<TransactionView[]> => {
+    const db = await openDatabase();
+
+    const results = await db.executeSql(
+        queryBaseView()
+        + '   AND trn.data_criacao BETWEEN ? AND ?'
+        + ' ORDER BY trn.data_criacao DESC'
+        + '  LIMIT ?'
+        + '  OFFSET ?',
+        [
+            userLogin,
+            Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
+            Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
+            constants.pageSize,
+            (pageNumber - 1) * constants.pageSize
+        ]);
+
+    const transactions: TransactionView[] = [];
+    results.forEach(result => {
+        for (let i = 0; i < result.rows.length; i++) {
+            transactions.push(formatResultView(result.rows.item(i)));
+        }
+    });
+
+    return transactions;
+};
+
+export const selectTransactionsByOperationInternalId = async (
+    userLogin: string,
+    operationInternalId: number,
+    onlyLast: boolean = false
+): Promise<Transaction[]> => {
+    const db = await openDatabase();
+    const results = await db.executeSql(
+        queryBase()
+        + '   AND ope.internal_id = ?'
+        + ' ORDER BY trn.data_criacao DESC'
+        + (onlyLast ? ' LIMIT 1' : ''),
+        [userLogin, operationInternalId]);
+
+    const transactions: Transaction[] = [];
+    results.forEach(result => {
+        for (let i = 0; i < result.rows.length; i++) {
+            transactions.push(formatResult(result.rows.item(i)));
+        }
+    });
+
+    for (const transaction of transactions) {
+        await populateTransactionImpacts(transaction, userLogin);
+    }
+
     return transactions;
 };
 
@@ -203,21 +368,18 @@ export const selectContAll = async (userLogin: string, dateInicio: Date, dateFim
     const db = await openDatabase();
 
     const results = await db.executeSql(
-        'SELECT * '
+        'SELECT COUNT(*) AS total_records'
         + '  FROM transactions '
         + ' WHERE reference = ?'
-        + '   AND strftime(\'%Y-%m-%d %H:%M:%S\', data_criacao) BETWEEN ? AND ?',
+        + '   AND data_criacao BETWEEN ? AND ?',
         [userLogin,
             Moment(dateInicio).format('YYYY-MM-DD HH:mm:ss'),
             Moment(dateFim).format('YYYY-MM-DD HH:mm:ss'),
         ]);
 
-    let count: number = 0;
-    results.forEach(result => {
-        count += result.rows.length;
-    });
-
-    return count
+    return results[0]?.rows.length > 0
+        ? results[0].rows.item(0).total_records
+        : 0;
 };
 
 export const selectTransactionsTotals = async (userLogin: string, dateInicio: Date, dateFim: Date, consolidated: boolean | null = null): Promise<TransactionTotals> => {
@@ -271,15 +433,188 @@ export const selectTransactionById = async (userLogin: string, id: number): Prom
     const db = await openDatabase();
     const result = await db.executeSql(queryBase() + '   AND trn.id = ?', [userLogin, id]);
 
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    if (result[0]?.rows.length === 0) {
+        return undefined;
+    }
+
+    const transaction = formatResult(result[0].rows.item(0));
+    return transaction;
 }
+
+export const selectTransactionInternalIdByExternalId = async (
+    userLogin: string,
+    id: number
+): Promise<number | undefined> => {
+    const db = await openDatabase();
+    const result = await db.executeSql(
+        'SELECT trn.internal_id'
+        + '  FROM transactions trn'
+        + ' WHERE trn.reference = ?'
+        + '   AND trn.id = ?'
+        + ' LIMIT 1',
+        [userLogin, id]);
+
+    return result[0]?.rows.length > 0
+        ? result[0].rows.item(0).internal_id
+        : undefined;
+};
 
 export const selectTransactionByInternalId = async (userLogin: string, internalId: number): Promise<Transaction | undefined> => {
     const db = await openDatabase();
     const result = await db.executeSql(queryBase() + '   AND trn.internal_id = ?', [userLogin, internalId]);
 
-    return result[0]?.rows.length > 0 ? formatResult(result[0]?.rows?.item(0)) : undefined;
+    if (result[0]?.rows.length === 0) {
+        return undefined;
+    }
+
+    const transaction = formatResult(result[0].rows.item(0));
+    await populateTransactionImpacts(transaction, userLogin);
+    return transaction;
 }
+
+export const selectTransactionImpactsByTransactionInternalId = async (
+    userLogin: string,
+    transactionInternalId: number
+): Promise<TransactionImpact[]> => {
+    const db = await openDatabase();
+    const results = await db.executeSql(
+        'SELECT * FROM transaction_impact' +
+        ' WHERE reference = ?' +
+        '   AND transaction_id = ?' +
+        ' ORDER BY internal_id',
+        [userLogin, transactionInternalId]
+    );
+
+    const impacts: TransactionImpact[] = [];
+    const portfolios = new Map<number, Portfolio>();
+
+    for (const result of results) {
+        for (let i = 0; i < result.rows.length; i++) {
+            const item = result.rows.item(i);
+            let portfolio = portfolios.get(item.portfolio_id);
+            if (!portfolio) {
+                portfolio = await selectPortfolioByInternalId(userLogin, item.portfolio_id);
+                if (!portfolio) {
+                    throw new Error(`Portfolio ${item.portfolio_id} referenced by transaction impact was not found.`);
+                }
+                portfolios.set(item.portfolio_id, portfolio);
+            }
+
+            const portfolioAttribute = portfolio.Attributes?.find(attribute => attribute.InternalId === item.portfolio_attribute_id);
+            if (!portfolioAttribute) {
+                throw new Error(`Portfolio attribute ${item.portfolio_attribute_id} referenced by transaction impact was not found.`);
+            }
+
+            impacts.push(formatResultTransactionImpact(item, portfolio, portfolioAttribute));
+        }
+    }
+
+    return impacts;
+}
+
+const insertTransactionImpact = async (
+    userLogin: string,
+    transactionInternalId: number,
+    impact: TransactionImpact,
+    db: SQLite.SQLiteDatabase
+) => {
+    const result = await db.executeSql(
+        'INSERT INTO transaction_impact' +
+        ' (id, value, transaction_id, portfolio_id, portfolio_attribute_id, impact_type, operation_type, data_criacao, data_alteracao, reference)' +
+        ' VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [
+            impact.Id,
+            impact.Value,
+            transactionInternalId,
+            impact.Portfolio.InternalId,
+            impact.PortfolioAttribute.InternalId,
+            impact.ImpactType,
+            impact.OperationType,
+            impact.DataCriacao,
+            impact.DataAlteracao,
+            userLogin
+        ]
+    );
+
+    impact.InternalId = result[0].insertId;
+};
+
+const updateTransactionImpact = async (
+    userLogin: string,
+    transactionInternalId: number,
+    impact: TransactionImpact,
+    db: SQLite.SQLiteDatabase
+) => {
+    await db.executeSql(
+        'UPDATE transaction_impact' +
+        ' SET id = ?' +
+        '   , value = ?' +
+        '   , portfolio_id = ?' +
+        '   , portfolio_attribute_id = ?' +
+        '   , impact_type = ?' +
+        '   , operation_type = ?' +
+        '   , data_criacao = ?' +
+        '   , data_alteracao = ?' +
+        ' WHERE reference = ?' +
+        '   AND transaction_id = ?' +
+        '   AND internal_id = ?',
+        [
+            impact.Id,
+            impact.Value,
+            impact.Portfolio.InternalId,
+            impact.PortfolioAttribute.InternalId,
+            impact.ImpactType,
+            impact.OperationType,
+            impact.DataCriacao,
+            impact.DataAlteracao,
+            userLogin,
+            transactionInternalId,
+            impact.InternalId
+        ]
+    );
+};
+
+const deleteTransactionImpact = async (
+    userLogin: string,
+    transactionInternalId: number,
+    impactInternalId: number,
+    db: SQLite.SQLiteDatabase
+) => {
+    await db.executeSql(
+        'DELETE FROM transaction_impact' +
+        ' WHERE reference = ?' +
+        '   AND transaction_id = ?' +
+        '   AND internal_id = ?',
+        [userLogin, transactionInternalId, impactInternalId]
+    );
+};
+
+const populateTransactionImpacts = async (transaction: Transaction, userLogin: string) => {
+    transaction.Impacts = await selectTransactionImpactsByTransactionInternalId(userLogin, transaction.InternalId);
+
+    if (transaction.ParentTransaction) {
+        transaction.ParentTransaction.Impacts = await selectTransactionImpactsByTransactionInternalId(
+            userLogin,
+            transaction.ParentTransaction.InternalId
+        );
+    }
+};
+
+const formatResultTransactionImpact = (
+    item: any,
+    portfolio: Portfolio,
+    portfolioAttribute: PortfolioAttribute
+): TransactionImpact => ({
+    InternalId: item.internal_id,
+    Id: item.id,
+    Value: item.value,
+    Portfolio: portfolio,
+    PortfolioAttribute: portfolioAttribute,
+    ImpactType: item.impact_type,
+    OperationType: item.operation_type,
+    DataCriacao: item.data_criacao,
+    DataAlteracao: item.data_alteracao
+});
 
 export const selectDashboardTransactionGroupByMonthAndCategory = async (userLogin: string, dateInicio: Date, dateFim: Date, operationType: number): Promise<DashboardItem[]> => {
     const db = await openDatabase();
@@ -422,19 +757,32 @@ const queryBase = () => {
 const queryBaseView = () => {
     return 'SELECT trn.internal_id'
         + '     , trn.id'
+        + '     , trn.value'
+        + '     , trn.observation'
+        + '     , trn.consolidated'
+        + '     , trn.destination_portfolio_id AS destination_portfolio_internal_id'
         + '     , trn.data_criacao'
         + '     , trn.installment'
         + '     , trn.total_installments'
-        + '     , trn.value'
-        + '     , trn.consolidated'
+        + '     , ope.id AS operation_id'
         + '     , ope.name AS operation_name'
         + '     , ope.type AS operation_type'
+        + '     , (SELECT group_concat(ope_rol.name, \';\')'
+        + '          FROM operation_roles ope_rol,'
+        + '               operations_roles_link link'
+        + '         WHERE ope_rol.internal_id = link.operation_role_id'
+        + '           AND link.operation_id = ope.internal_id) AS operation_roles'
+        + '     , ope_cat.id AS operation_category_id'
+        + '     , act.id AS portfolio_id'
         + '     , act.name AS portfolio_name'
+        + '     , dest_act.id AS destination_portfolio_id'
         + '     , dest_act.name AS dest_act_name'
         + '  FROM transactions trn'
         + '       INNER JOIN operations ope ON trn.operation_id = ope.internal_id'
+        + '       INNER JOIN categories ope_cat ON ope.category_id = ope_cat.internal_id'
         + '       INNER JOIN portfolios act ON trn.portfolio_id = act.internal_id'
-        + '       LEFT JOIN portfolios dest_act ON dest_act.internal_id = trn.destination_portfolio_id';
+        + '       LEFT JOIN portfolios dest_act ON dest_act.internal_id = trn.destination_portfolio_id'
+        + ' WHERE trn.reference = ?';
 }
 
 const formatResult = (item: any): Transaction => {
@@ -471,6 +819,7 @@ const formatResult = (item: any): Transaction => {
         },
         DestinationPortfolio: null,
         ParentTransaction: null,
+        Impacts: [] as TransactionImpact[],
         Operation: {
             InternalId: item.operation_internal_id,
             Id: item.operation_id,
@@ -529,6 +878,7 @@ const formatResult = (item: any): Transaction => {
             Portfolio: {} as Portfolio,
             DestinationPortfolio: null,
             ParentTransaction: null,
+            Impacts: [] as TransactionImpact[],
             Operation: {} as Operation,
             DataCriacao: item.par_trn_data_criacao,
             DataAlteracao: item.par_trn_data_alteracao,
@@ -543,14 +893,31 @@ const formatResultView = (item: any): TransactionView => {
         InternalId: item.internal_id,
         Id: item.id,
         Value: item.value,
+        Observation: item.observation ?? "",
         Consolidated: (item.consolidated === 1),
         Installment: item.installment,
         TotalInstallments: item.total_installments,
         DataCriacao: item.data_criacao,
-        OperationType: item.operation_type,
-        OperationName: item.operation_name,
-        PortfolioName: item.portfolio_name,
-        DestinationPortfolioName: item.dest_act_name
+        IsSelectedItem: false,
+        Operation: {
+            Id: item.operation_id,
+            Name: item.operation_name,
+            Type: item.operation_type,
+            Roles: item.operation_roles,
+            Category: {
+                Id: item.operation_category_id
+            }
+        },
+        Portfolio: {
+            Id: item.portfolio_id,
+            Name: item.portfolio_name
+        },
+        DestinationPortfolio: item.destination_portfolio_internal_id !== null
+            ? {
+                Id: item.destination_portfolio_id,
+                Name: item.dest_act_name
+            }
+            : null
     };
 
     return transaction;

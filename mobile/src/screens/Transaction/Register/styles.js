@@ -1,6 +1,11 @@
 import { StyleSheet } from "react-native";
 
 export const getTransactionCreateStyle = (theme) => StyleSheet.create({
+    loading: {
+        minHeight: 300,
+        alignItems: "center",
+        justifyContent: "center"
+    },
     areaButtonType: {
         marginTop: 10,
         marginLeft: 25,
@@ -109,15 +114,27 @@ export const getTransactionCreateStyle = (theme) => StyleSheet.create({
         color: theme.colors.primaryTextColor,
     },
     areaTimes: {
-        flexDirection: "column",
-        width: "40%",
-        marginLeft: 60
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 10,
+        marginHorizontal: 20
+    },
+    areaButtonAdd: {
+        marginTop: 15  
     },
     areaChecks: {
-        flexDirection: "row"
+        marginTop: 15,
     },
     areaMoreActions: {
         marginHorizontal: 30,
         marginBottom: 20
+    },
+    textTotal: {
+        fontSize: 16,
+        fontFamily: "Open Sans",
+        color: theme.colors.secondaryTextColor,
+        textAlign: "left",
+        width: "40%",
+        alignSelf: "center"
     }
 });

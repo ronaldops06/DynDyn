@@ -1,22 +1,24 @@
-import Moment from 'moment';
 import React, {useRef, useState} from 'react';
 import {GestureResponderEvent, Pressable, Text, View} from 'react-native';
-
-import {TypesTransaction} from '../../../enums/enums';
-import * as I from '../../../interfaces/interfaces';
+import Moment from 'moment';
+import moment from "moment/moment";
 import DoneIcon from '../../../assets/done.svg';
 import MoneyInIcon from '../../../assets/money_in.svg';
 import MoneyOutIcon from '../../../assets/money_out.svg';
 import MoneyTransfIcon from '../../../assets/money_transf.svg';
 import WarningIcon from '../../../assets/warning.svg';
 import EventBusyIcon from '../../../assets/event_busy.svg';
+import TrashIcon from "../../../assets/trash.svg";
+import StatusIcon from "../../../assets/done.svg";
+
+import * as I from '../../../interfaces/interfaces';
+import {TypesTransaction} from '../../../enums/enums';
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getTransactionItemStyle} from './styles';
-import moment from "moment/moment";
 
 interface TransactionItemParms {
-    data: I.Transaction,
+    data: I.TransactionView,
     isSelectionMode: boolean,
     onPress: any,
     onSwipeLeft?: any,
@@ -28,12 +30,11 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
     const {theme} = useTheme();
     const transactionItemStyle = getTransactionItemStyle(theme);
 
-    const [touchX, setTouchX] = useState(0);
-    const [touchY, setTouchY] = useState(0);
     const [moveX, setMoveX] = useState(0);
-    const [moveY, setMoveY] = useState(0);
     const [executeSipe, setExecuteSwipe] = useState(false);
 
+    const touchStart = useRef({x: 0, y: 0});
+    const touchMoved = useRef(false);
     const longPressTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const longPressTriggered = useRef(false);
 
@@ -56,8 +57,8 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
     };
 
     const onTouchStart = (e: GestureResponderEvent) => {
-        setTouchX(e.nativeEvent.pageX);
-        setTouchY(e.nativeEvent.pageY);
+        touchStart.current = {x: e.nativeEvent.pageX, y: e.nativeEvent.pageY};
+        touchMoved.current = false;
         longPressTriggered.current = false;
 
         // Inicia o temporizador de toque longo
@@ -68,11 +69,12 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
     };
 
     const onTouchMove = (e: GestureResponderEvent) => {
-        const deltaX = e.nativeEvent.pageX - touchX;
-        const deltaY = e.nativeEvent.pageY - touchY;
+        const deltaX = e.nativeEvent.pageX - touchStart.current.x;
+        const deltaY = e.nativeEvent.pageY - touchStart.current.y;
 
         // Cancela o toque longo se houver movimento significativo
-        if (Math.abs(deltaX) > 5 || Math.abs(deltaY) > 5) {
+        if (Math.abs(deltaX) > 8 || Math.abs(deltaY) > 8) {
+            touchMoved.current = true;
             if (longPressTimeout.current) {
                 clearTimeout(longPressTimeout.current);
                 longPressTimeout.current = null;
@@ -87,13 +89,12 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
             }
         }
 
-        setMoveY(deltaY);
         if (!props.isSelectionMode)
             setMoveX(deltaX);
     };
 
 
-    const onTouchEnd = (e: GestureResponderEvent) => {
+    const onTouchEnd = () => {
         setExecuteSwipe(false);
 
         // Cancela o timer se ainda não disparou
@@ -102,45 +103,26 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
             longPressTimeout.current = null;
         }
 
-        // Só executa o clique se não foi long press e não houve movimento
-        if (
-            !longPressTriggered.current &&
-            moveX > -5 &&
-            moveX < 5 &&
-            moveY > -1 &&
-            moveY < 1
-        ) {
+        if (!longPressTriggered.current && !touchMoved.current) {
             props.onPress?.(props.data);
         }
 
+        touchMoved.current = false;
         setMoveX(0);
-        setMoveY(0);
     };
 
-    /*const onTouchMove = (e: any) => {
-        let auxMoveX = touchX - e.nativeEvent.pageX;
-        let auxMoveY = touchY - e.nativeEvent.pageY;
-
-        if (auxMoveX >= 0) {
-            executeSwipeLeft(auxMoveX);
-        } else {
-            executeSwipeRight(auxMoveX);
+    const onTouchCancel = () => {
+        if (longPressTimeout.current) {
+            clearTimeout(longPressTimeout.current);
+            longPressTimeout.current = null;
         }
 
-        setMoveY(auxMoveY);
-    };
-
-    const onTouchEnd = async (e: any) => {
+        touchMoved.current = true;
         setExecuteSwipe(false);
-
-        if ((moveX > -5 && moveX < 5) && (moveY > -1 && moveY < 1)) {
-            props.onPress(props.data)
-        }
         setMoveX(0);
-        setMoveY(0);
-    };*/
-
-    const renderDateAlert = (data: I.Transaction) => {
+    };
+    
+    const renderDateAlert = (data: I.TransactionView) => {
         let dateNow = new Date(moment().utc(true).format('YYYY-MM-DDTHH:mm:ss.SSS'));
         let alertDate = new Date(moment(dateNow.setDate(dateNow.getDate() - 5)).format('YYYY-MM-DDTHH:mm:ss.SSS'));
 
@@ -155,27 +137,67 @@ const TransactionItem = React.memo((props: TransactionItemParms) => {
             </>
         );
     }
-
+    
+    const renderSwipeTrash = () => {
+        return(
+            <View
+                pointerEvents="none"
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    right: 0,
+                    bottom: 0,
+                    width: 64,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: theme.colors.dangerBaseColor
+                }}
+            >
+                <TrashIcon width={24} height={24} fill={theme.colors.primaryIcon}/>
+            </View>
+        );
+    }
+    
+    const renderSwipeStatus = () => {
+        
+        return(
+            <View
+                pointerEvents="none"
+                style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    bottom: 0,
+                    width: 64,
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: theme.colors.octaveIcon
+                }}
+            >
+                <StatusIcon width={24} height={24} fill={theme.colors.primaryIcon}/>
+            </View>
+        );
+    }
+    
     return (
         <Pressable
             key={props.data.InternalId.toString()}
             style={transactionItemStyle.cardBackground}>
+            {moveX < 0 &&
+                (renderSwipeTrash())
+            }
+            {moveX > 0 &&
+                (renderSwipeStatus())
+            }
             <View
                 style={[transactionItemStyle.card, {
                     marginLeft: moveX,
                     marginRight: moveX * -1
                 }, props.data.IsSelectedItem ? transactionItemStyle.cardSelected : null]}
-                /*onTouchStart={e => {
-                    setTouchX(e.nativeEvent.pageX);
-                    setTouchY(e.nativeEvent.pageY);
-                }}
-                onTouchEnd={e => onTouchEnd(e)}
-                onTouchCancel={e => onTouchEnd(e)}
-                onTouchMove={e => onTouchMove(e)}*/
                 onTouchStart={onTouchStart}
                 onTouchMove={onTouchMove}
                 onTouchEnd={onTouchEnd}
-                onTouchCancel={onTouchEnd}
+                onTouchCancel={onTouchCancel}
 
             >
                 <View style={transactionItemStyle.cardType}>

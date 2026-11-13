@@ -1,11 +1,13 @@
 import React, {useEffect, useState} from "react";
 import {View} from "react-native";
 import Picker from "../CustomPicker";
-import {constants} from "../../constants";
-import {useTheme} from "../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../styles/styles.ts";
 import TextItem from "../CustomTextInput";
-import {ValueFilter} from "../../interfaces/interfaces.tsx";
+
+import {ValueFilter} from "../../interfaces/interfaces";
+import {constants} from "../../constants";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyle} from "../../styles/styles";
 
 interface FieldFilterValueProps {
     setValue: (ValueFilter) => void;

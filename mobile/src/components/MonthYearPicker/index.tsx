@@ -1,8 +1,9 @@
 import React, {useMemo} from 'react';
 import {Text, View,} from 'react-native';
-import {getMonthYearPickerStyle} from "./styles";
-import {useTheme} from "../../contexts/ThemeContext.tsx";
 import {Picker} from "@react-native-picker/picker";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getMonthYearPickerStyle} from "./styles";
 
 interface MonthYearSelectorProps {
     text: string;

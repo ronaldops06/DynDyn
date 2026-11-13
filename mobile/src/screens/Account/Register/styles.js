@@ -18,5 +18,8 @@ export const getAccountCreateStyle = (theme) => StyleSheet.create({
     areaCard: {
         ...getStyleCadastro(theme).areaCard,
         marginTop: 30,
+    },
+    areaField: {
+        marginTop: 40,
     }
 });

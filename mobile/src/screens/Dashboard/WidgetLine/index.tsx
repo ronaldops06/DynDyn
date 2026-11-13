@@ -1,12 +1,14 @@
-import * as I from "../../../interfaces/interfaces.tsx";
-import {Text, TouchableOpacity, View} from "react-native";
-import MoreIcon from "../../../assets/more.svg";
-import {VictoryAxis, VictoryChart, VictoryLine, VictoryTheme} from "victory-native";
 import React, {ReactNode, useState} from "react";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getDashboardStyle} from "../styles";
-import {getStyle} from "../../../styles/styles.ts";
+import {Text, TouchableOpacity, View} from "react-native";
+import {VictoryAxis, VictoryChart, VictoryLine, VictoryTheme} from "victory-native";
 import CenterModal from "../../../components/Modal/CenterModal";
+import MoreIcon from "../../../assets/more.svg";
+
+import * as I from "../../../interfaces/interfaces";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
+import {getDashboardStyle} from "../styles";
 
 interface WidgetLineProps {
     description: string;

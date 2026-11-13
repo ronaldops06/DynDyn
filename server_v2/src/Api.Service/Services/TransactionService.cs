@@ -66,14 +66,33 @@ namespace Api.Service.Services
 
             TransferValidate(model);
             await OperacaoNotExists(model);
-
+            
             var transactionEntity = mapper.Map<TransactionEntity>(model);
-
+            
+            foreach (var impact in transactionEntity.Impacts)
+            {
+                impact.Portfolio = null;
+                impact.PortfolioAttribute = null;
+                impact.User = null;
+                impact.UserId = user.Id;
+            }
+            
             _repository.UnchangedParentTransaction(transactionEntity);
+            Console.WriteLine(JsonSerializer.Serialize(transactionEntity));
             transactionEntity = await _repository.InsertAsync(transactionEntity);
-            model = mapper.Map<TransactionModel>(transactionEntity);
 
-            return model;
+            var response = mapper.Map<TransactionModel>(transactionEntity);
+            
+            foreach (var impact in response.Impacts)
+            {
+                var impactReqest = model.Impacts.Find(x =>
+                    x.PortfolioId == impact.PortfolioId &&
+                    x.PortfolioAttributeId == impact.PortfolioAttributeId);
+                impact.Portfolio = impactReqest.Portfolio;
+                impact.PortfolioAttribute = impactReqest.PortfolioAttribute;
+            }
+
+            return response;
         }
 
         public async Task<TransactionModel> Put(TransactionModel model)
@@ -91,12 +110,30 @@ namespace Api.Service.Services
             await OperacaoNotExists(model);
 
             var transactionEntity = mapper.Map<TransactionEntity>(model);
+            foreach (var impact in transactionEntity.Impacts)
+            {
+                impact.Portfolio = null;
+                impact.PortfolioAttribute = null;
+                impact.User = null;
+                impact.UserId = user.Id;
+            }
             
             _repository.UnchangedParentTransaction(transactionEntity);
             Console.WriteLine(JsonSerializer.Serialize(transactionEntity));
             transactionEntity = await _repository.UpdateAsync(transactionEntity);
 
-            return mapper.Map<TransactionModel>(transactionEntity);
+            var response = mapper.Map<TransactionModel>(transactionEntity);
+            
+            foreach (var impact in response.Impacts)
+            {
+                var impactReqest = model.Impacts.Find(x =>
+                    x.PortfolioId == impact.PortfolioId &&
+                    x.PortfolioAttributeId == impact.PortfolioAttributeId);
+                impact.Portfolio = impactReqest.Portfolio;
+                impact.PortfolioAttribute = impactReqest.PortfolioAttribute;
+            }
+
+            return response;
         }
 
         public async Task<bool> Delete(int id)

@@ -1,15 +1,16 @@
 import React, {useState} from "react";
-import {ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-
+import {ActivityIndicator, Alert, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import TextInput from "../../../../components/CustomTextInput";
 import PrevIcon from "../../../../assets/nav_prev.svg";
 
+import {validateLogin, validateSuccess} from "../../../../utils";
+
+import {executeCleanupUserAccount} from "../../../../controller/user.controller";
+
 import {useTheme} from '../../../../contexts/ThemeContext';
+import {getStyle} from "../../../../styles/styles";
 import {getStyleCadastro} from '../../../../styles/styles.cadastro';
-import {getStyle} from "../../../../styles/styles.ts";
 import {getDeleteAccountStyle} from "./styles";
-import TextInput from "../../../../components/CustomTextInput";
-import {executeCleanupUserAccount} from "../../../../controller/user.controller.tsx";
-import {validateLogin, validateSuccess} from "../../../../utils.ts";
 
 const DeleteAccount = ({navigation, route}) => {
     const {theme} = useTheme();

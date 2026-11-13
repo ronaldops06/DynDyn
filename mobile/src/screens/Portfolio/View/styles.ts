@@ -1,9 +1,12 @@
 import {StyleSheet} from 'react-native';
 
-export const getPortfolioViewStyle = (theme) => StyleSheet.create({
+export const getPortfolioViewStyle = (theme: any) => StyleSheet.create({
     container: {
         paddingHorizontal: 10,   
         paddingVertical: 10,
+    },
+    box: { 
+        marginTop: 26
     },
     headerCard: {
         flexDirection: 'row',
@@ -39,6 +42,12 @@ export const getPortfolioViewStyle = (theme) => StyleSheet.create({
         fontFamily: 'Open Sans',
         marginTop: 2,
     },
+    textLink: {
+        color: theme.colors.primaryTextColor,
+        fontSize: 16,
+        fontFamily: "Open Sans",
+        textDecorationLine: "underline"
+    },
     statusTag: {
         marginTop: 5,
         alignSelf: 'flex-start',
@@ -67,9 +76,9 @@ export const getPortfolioViewStyle = (theme) => StyleSheet.create({
     box: {
         marginVertical: 10,
         borderWidth: 1,
-        borderColor: theme.colors.primaryBorderColor + "46",
         borderRadius: 20,
-        padding: 10
+        padding: 10,
+        borderColor: theme.colors.primaryBorderColor
     },
     growthValue: {
         fontSize: 14,

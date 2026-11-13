@@ -1,15 +1,15 @@
-import axios, {AxiosInstance} from 'axios';
-import { Alert } from 'react-native';
+import axios from 'axios';
+import {Alert} from 'react-native';
 
 import * as I from '../interfaces/interfaces';
-import EncryptedStorage from "react-native-encrypted-storage";
+import SecureStorage from "../secureStorage";
 import {constants} from "../constants";
-import {isInternetConnected} from "../utils.ts";
+import {isInternetConnected} from "../utils";
 
 const configUrl = 'https://sagemoney.com.br/config/config.json';
 
 const getToken = async (): Promise<string> => {
-    const session = await EncryptedStorage.getItem("user_session");
+    const session = await SecureStorage.get("user_session");
     
     if (session) 
         return JSON.parse(session).AccessToken;
@@ -39,7 +39,7 @@ export const fetchApiUrl = async (): Promise<string | null> => {
     try {
         //Se estiver executando em modo debug (localmente), usa o endereço local da API.
         if (__DEV__)
-            return "http://192.168.0.8:5000";
+            return "http://192.168.0.13:5000";
         
         const response = await fetch(configUrl);
         if (!response.ok) throw new Error('Erro ao buscar configuração');
@@ -54,7 +54,7 @@ export const fetchApiUrl = async (): Promise<string | null> => {
 }
 
 const getApiInstance = async () => {
-    const apiUrl = await EncryptedStorage.getItem("API_URL");
+    const apiUrl = await SecureStorage.get("API_URL");
 
     return axios.create({
         baseURL: `${apiUrl}/api/v1/`,
@@ -227,8 +227,7 @@ export const del = async (path: string) => {
         responseRequest.status = response.data.status;
         responseRequest.success = true;
     }).catch((error) => {
-        console.log('erro', error?.response?.data);
-        responseRequest.error = error?.response?.data?.errors?.Value.join();
+        responseRequest.error = formatErrors(error);
         responseRequest.status = error.response.status;
         responseRequest.success = false;
     });

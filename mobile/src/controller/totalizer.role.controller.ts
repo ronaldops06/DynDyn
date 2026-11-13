@@ -1,5 +1,5 @@
-import * as I from "../interfaces/interfaces.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
+import * as I from "../interfaces/interfaces";
+import {getUserLoginEncrypt} from "../utils";
 import {
     deleteInternalTotalizerRole,
     deleteInternalTotalizerRoleByExternalId,
@@ -13,7 +13,7 @@ import {constants} from "../constants";
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller";
 import Moment from "moment/moment";
 import {getTotalizersRoles, deleteTotalizerRole, postTotalizerRole, putTotalizerRole} from "../services/totalizer.role.api";
-import {loadInternalOperationRole} from "./operation.role.controller.ts";
+import {loadInternalOperationRole} from "./operation.role.controller";
 
 export const loadAllTotalizerRoleInternal = async (pageNumber: Number | null): Promise<I.Response> => {
     let response = {} as I.Response;

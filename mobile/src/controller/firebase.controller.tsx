@@ -2,8 +2,8 @@ import DeviceInfo from "react-native-device-info";
 import notifee from "@notifee/react-native";
 import messaging, {AuthorizationStatus} from "@react-native-firebase/messaging";
 
-import {postDevice} from "../services/user.api.ts";
-import {Device} from "../interfaces/interfaces.tsx";
+import {postDevice} from "../services/user.api";
+import {Device} from "../interfaces/interfaces";
 
 async function validateUserPermission() {
     const authStatus = await messaging().requestPermission();

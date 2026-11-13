@@ -5,19 +5,21 @@ import {
     existsPortfolioRelationshipPortfolio,
     insertPortfolio,
     selectAllPortfolios,
+    selectAllPortfoliosExcludingInternalIds,
     selectContAllPortfolios,
     selectPortfolioById,
     updatePortfolio
 } from '../repository/portfolio.repository';
 import {loadInternalCategory} from './category.controller';
-import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller.tsx";
+import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from "./synchronization.controller";
 import {constants} from "../constants";
 import Moment from "moment/moment";
-import {deletePortfolio, getPortfolios, postPortfolio, putPortfolio} from "../services/portfolio.api.ts";
+import {deletePortfolio, getPortfolios, postPortfolio, putPortfolio} from "../services/portfolio.api";
 import {Alert} from "react-native";
-import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository.tsx";
-import {selectTotalsByTreePortfolio} from "../repository/balance.repository.tsx";
-import {getUserLoginEncrypt} from "../utils.ts";
+import {existsTransactionRelationshipPortfolio} from "../repository/transaction.repository";
+import {selectTotalsByTreePortfolio} from "../repository/balance.repository";
+import {getUserLoginEncrypt} from "../utils";
+import {PortfolioAttribute} from "../interfaces/interfaces";
 
 /**
  * Método responsável por retornar a conta persistida internamente para ser utilizada como referência.
@@ -45,7 +47,7 @@ export const loadInternalPortfolio = async (portfolio: I.Portfolio): Promise<I.P
     return internalPortfolio;
 }
 
-export const loadAllPortfolioInternal = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolioInternal = async (pageNumber: Number | null, groupsPortfolios:number[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = {} as I.Response;
 
     let login = await getUserLoginEncrypt();
@@ -58,6 +60,23 @@ export const loadAllPortfolioInternal = async (pageNumber: Number | null, groups
 
     let totalRecords = await selectContAllPortfolios(login, groupsPortfolios);
     response.totalPages = Math.ceil(totalRecords/ constants.pageSize);
+
+    return response;
+}
+
+export const loadAllPortfolioInternalExcludingInternalIds = async (pageNumber: number | null, excludedInternalIds: number[] | null, activated: boolean | null): Promise<I.Response> => {
+    let response = {} as I.Response;
+
+    let login = await getUserLoginEncrypt();
+    response.isLogged = true;
+    response.data = await selectAllPortfoliosExcludingInternalIds(login, excludedInternalIds, pageNumber, activated);
+
+    for (let portfolio of response.data) {
+        portfolio.BalanceTotals = await selectTotalsByTreePortfolio(login, portfolio.InternalId);
+    }
+
+    let totalRecords = await selectContAllPortfolios(login, null, excludedInternalIds);
+    response.totalPages = Math.ceil(totalRecords / constants.pageSize);
 
     return response;
 }
@@ -87,7 +106,7 @@ export const synchronizationAllPortfolio= async (): Promise<I.Response | null> =
             portfolio = await insertPortfolio(login, item);
         } else {
             item.InternalId = portfolio.InternalId;
-            portfolio = await updatePortfolio(item);
+            portfolio = await updatePortfolio(login, item);
         }
     }
 
@@ -97,7 +116,7 @@ export const synchronizationAllPortfolio= async (): Promise<I.Response | null> =
     return response;
 }
 
-export const loadAllPortfolio = async (pageNumber: Number | null, groupsPortfolios:[] | null, activated: boolean | null): Promise<I.Response> => {
+export const loadAllPortfolio = async (pageNumber: Number | null, groupsPortfolios:number[] | null, activated: boolean | null): Promise<I.Response> => {
     let response = await synchronizationAllPortfolio();
     if (response && !response.isLogged)
         return response;
@@ -130,7 +149,8 @@ export const alterPortfolio = async (portfolio: I.Portfolio): Promise<I.Response
     populateInternalFields(portfolio, response);
 
     if (response.data !== null) {
-        portfolio = await updatePortfolio(response.data);
+        let login = await getUserLoginEncrypt();
+        portfolio = await updatePortfolio(login, response.data);
     }
 
     return response;
@@ -145,6 +165,12 @@ const populateInternalFields = (portfolio: I.Portfolio, response: I.Response) =>
 
     if (portfolio.ParentPortfolio !== null)
         response.data.ParentPortfolio.InternalId = portfolio.ParentPortfolio?.InternalId;
+console.log("externo", response.data.Attributes);
+console.log("local", portfolio.Attributes);
+    for (const attribute: I.PortfolioAttribute of response.data.Attributes) {
+        let attributeSrc = portfolio.Attributes?.find(x => x.Attribute.Id === attribute.Attribute.Id);
+        attribute.Attribute.InternalId = attributeSrc.Attribute.InternalId;
+    }
 
 }
 

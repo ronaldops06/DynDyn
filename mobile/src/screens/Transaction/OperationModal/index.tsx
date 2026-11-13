@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, ScrollView, TouchableOpacity, View } from 'react-native';
-
+import React, {useEffect, useState} from 'react';
+import {ActivityIndicator, Modal, ScrollView, TouchableOpacity, View} from 'react-native';
 import ExpandIcon from '../../../assets/expand.svg';
-import * as I from '../../../interfaces/interfaces';
 import TextItem from '../../../components/CustomTextInput';
+
+import * as I from '../../../interfaces/interfaces';
+
 import OperationItem from './OperationItem';
+import {loadAllOperationInternal} from "../../../controller/operation.controller";
 
-import {loadAllOperation, loadAllOperationInternal} from "../../../controller/operation.controller";
-
-import { useTheme } from '../../../contexts/ThemeContext';
-import { getStyle } from '../../../styles/styles';
+import {useTheme} from '../../../contexts/ThemeContext';
+import {getStyle} from '../../../styles/styles';
 
 interface OperationModalParams {
     show: boolean,

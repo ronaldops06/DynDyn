@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {Alert, Image, SafeAreaView, Text, View} from "react-native";
-
+import TextInput from "../../../components/CustomTextInput";
 import StepIndicator from "../../../components/StepIndicator";
+import Button from "../../../components/Button";
+
+import {executeLoginPasswordRecovery} from "../../../controller/user.controller";
 
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getRecoveryStyle} from "./styles";
-import TextInput from "../../../components/CustomTextInput";
-import {executeLoginPasswordRecovery} from "../../../controller/user.controller.tsx";
-import Button from "../../../components/Button";
 
 const RecoveryLogin = ({navigation, route}) => {
     const {theme} = useTheme();

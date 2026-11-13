@@ -1,12 +1,11 @@
 import {OperationRole, TotalizerRole} from "../interfaces/interfaces";
-import { openDatabase } from "./database";
+import {openDatabase} from "./database";
 import {constants} from "../constants";
 import SQLite, {ResultSet} from "react-native-sqlite-storage";
 import {
     selectOperationRoleByOperationInternalId,
     selectOperationRoleByTotalizerRoleInternalId
-} from "./operation.role.repository.ts";
-import {deleteOperationRoleLink, insertOperationRoleLink} from "./operation.repository.tsx";
+} from "./operation.role.repository";
 
 export const createTableTotalizerRole = async () => {
     const db = await openDatabase();

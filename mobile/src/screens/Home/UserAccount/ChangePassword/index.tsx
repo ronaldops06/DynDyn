@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {ActivityIndicator, Alert, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
+import React, {useState} from "react";
+import {Alert, SafeAreaView, ScrollView, TouchableOpacity, View} from 'react-native';
 import TextInput from "../../../../components/CustomTextInput";
-
-import PrevIcon from "../../../../assets/nav_prev.svg";
-
-import * as I from "../../../../interfaces/interfaces.tsx";
-import { alterPasswordUser } from "../../../../controller/user.controller.tsx";
-import {encrypt, getUserByStorage, validateLogin, validateSuccess} from "../../../../utils.ts";
-
-import { useTheme } from '../../../../contexts/ThemeContext';
-import {getStyleCadastro} from '../../../../styles/styles.cadastro';
-import {getStyle} from "../../../../styles/styles.ts";
-import {getChangePasswordStyle} from "./styles";
+import Button from "../../../../components/Button";
 import VisibilityOffIcon from "../../../../assets/visibility_off.svg";
 import VisibilityIcon from "../../../../assets/visibility.svg";
-import Button from "../../../../components/Button";
+import PrevIcon from "../../../../assets/nav_prev.svg";
+
+import * as I from "../../../../interfaces/interfaces";
+import {encrypt, getUserByStorage, validateLogin, validateSuccess} from "../../../../utils";
+
+import {alterPasswordUser} from "../../../../controller/user.controller";
+
+import {useTheme} from '../../../../contexts/ThemeContext';
+import {getStyle} from "../../../../styles/styles";
+import {getStyleCadastro} from '../../../../styles/styles.cadastro';
+import {getChangePasswordStyle} from "./styles";
 
 const ChangePassword = ({navigation, route}) => {
     const { theme } = useTheme();

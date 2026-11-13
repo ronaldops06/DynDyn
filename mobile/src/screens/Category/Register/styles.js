@@ -13,5 +13,8 @@ export const getCategoryCreateStyle = (theme) => StyleSheet.create({
     areaCard: {
         ...getStyleCadastro(theme).areaCard,
         marginTop: 30,
-    }
+    },
+    areaField: {
+        marginTop: 30
+    },
 });

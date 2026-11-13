@@ -1,14 +1,14 @@
-import {Alert, Image, SafeAreaView, Text, TextInput, View} from "react-native";
 import React, {useEffect, useRef, useState} from "react";
-import * as I from "../../../interfaces/interfaces.tsx";
+import {Alert, Image, SafeAreaView, Text, TextInput, View} from "react-native";
+import StepIndicator from "../../../components/StepIndicator";
+import Button from "../../../components/Button";
+
+import * as I from "../../../interfaces/interfaces";
+
+import {executePasswordRecoveryValidate} from "../../../controller/user.controller";
 
 import {useTheme} from '../../../contexts/ThemeContext';
-import {getStyleCadastro} from "../../../styles/styles.cadastro.ts";
 import {getRecoveryStyle} from "./styles";
-import {getStyle} from "../../../styles/styles"
-import StepIndicator from "../../../components/StepIndicator";
-import {executePasswordRecoveryValidate} from "../../../controller/user.controller.tsx";
-import Button from "../../../components/Button";
 
 const RecoveryValidation = ({navigation, route}) => {
     const { theme } = useTheme();

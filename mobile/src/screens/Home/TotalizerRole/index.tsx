@@ -1,17 +1,18 @@
 import React, {useEffect, useRef, useState} from "react";
-import {ActivityIndicator, SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native'
+import {ActivityIndicator, ScrollView, Text, TouchableOpacity, View} from 'react-native'
 import {useFocusEffect} from "@react-navigation/native";
-
-import PrevIcon from "../../../assets/nav_prev.svg";
-import * as I from "../../../interfaces/interfaces.tsx";
-import {useTheme} from "../../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../../styles/styles.ts";
-import {getTotalizerRoleStyles} from "./styles";
-import {constants} from "../../../constants";
-import {loadAllTotalizerRole} from "../../../controller/totalizer.role.controller.ts";
-import AddIcon from "../../../assets/plus.svg";
 import {Chip} from "react-native-paper";
 import {PageSpecial} from "../../../components/Page";
+import AddIcon from "../../../assets/plus.svg";
+
+import * as I from "../../../interfaces/interfaces";
+import {constants} from "../../../constants";
+
+import {loadAllTotalizerRole} from "../../../controller/totalizer.role.controller";
+
+import {useTheme} from "../../../contexts/ThemeContext";
+import {getStyle} from "../../../styles/styles";
+import {getTotalizerRoleStyles} from "./styles";
 
 const TotalizerRole = ({navigation, route}) => {
     const {theme} = useTheme();

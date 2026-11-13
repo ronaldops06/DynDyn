@@ -3,13 +3,14 @@ import {Alert, View} from "react-native";
 import BottomModal from "../../../../components/BottomModal";
 import TextInput from "../../../../components/CustomTextInput";
 import Button from "../../../../components/Button";
-import * as I from "../../../../interfaces/interfaces.tsx";
-import {constants} from "../../../../constants";
-import {useTheme} from "../../../../contexts/ThemeContext";
-import {getStyleCadastro} from "../../../../styles/styles.cadastro.ts";
-import {getAttributeOptionModalStyle} from "./styles";
 import CheckBox from "../../../../components/CheckBox";
-import {getStyle} from "../../../../styles/styles.ts";
+
+import * as I from "../../../../interfaces/interfaces";
+import {constants} from "../../../../constants";
+
+import {useTheme} from "../../../../contexts/ThemeContext";
+import {getStyleCadastro} from "../../../../styles/styles.cadastro";
+import {getAttributeOptionModalStyle} from "./styles";
 
 const MAX_LENGTH = 100;
 
@@ -30,7 +31,6 @@ const AttributeOptionModal = ({
                               }: AttributeOptionModalProps) => {
     const {theme} = useTheme();
     const attributeOptionModalStyle = getAttributeOptionModalStyle(theme);
-    const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
 
     const [label, setLabel] = useState("");
@@ -93,7 +93,7 @@ const AttributeOptionModal = ({
 
     return (
         <BottomModal show={show} setShow={setShow}>
-            <View style={style.areaFields}>
+            <View style={styleCadastro.areaFields}>
                 <View style={attributeOptionModalStyle.field}>
                     <TextInput
                         text="Label"

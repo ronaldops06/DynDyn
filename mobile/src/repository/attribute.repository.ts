@@ -1,9 +1,7 @@
-import {Attribute, AttributeOption, Category, Operation, OperationRole} from "../interfaces/interfaces";
-import { openDatabase } from "./database";
+import {Attribute, AttributeOption} from "../interfaces/interfaces";
+import {openDatabase} from "./database";
 import {constants} from "../constants";
 import SQLite, {ResultSet} from "react-native-sqlite-storage";
-import {deleteOperationRoleLink, insertOperationRoleLink} from "./operation.repository.tsx";
-import {selectOperationRoleByOperationInternalId} from "./operation.role.repository.ts";
 
 export const createTableAttribute = async () => {
     const db = await openDatabase();
@@ -164,7 +162,7 @@ export const updateAttributeOption = async (attributeOption: AttributeOption, db
     } = attributeOption;
 
     await db.executeSql(
-        'UPDATE categories '
+        'UPDATE attribute_option '
         + 'SET id = ?'
         + ', label = ?'
         + ', is_default = ?'

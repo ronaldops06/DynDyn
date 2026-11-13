@@ -1,21 +1,24 @@
 import React, {useState} from 'react';
 import {SafeAreaView, ScrollView, Text, TouchableOpacity, View} from 'react-native';
-import {useTheme} from "../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../styles/styles.ts";
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
-import PrevIcon from "../../assets/nav_prev.svg";
-import HelpIcon from "../../assets/help_outline.svg";
 import Help from "../../components/Help";
 import BottomModal from "../../components/BottomModal";
-import {loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller.tsx'
-import * as I from "../../interfaces/interfaces.tsx"
 import {useFocusEffect} from "@react-navigation/native";
-import {loadDashboardTransactionFromCategory} from "../../controller/transaction.controller.tsx";
-import {getDashboardStyle} from "./styles";
-import {constants} from "../../constants";
 import MonthYearSelector from "../../components/MonthYearPicker";
+import PrevIcon from "../../assets/nav_prev.svg";
+import HelpIcon from "../../assets/help_outline.svg";
+
+import * as I from "../../interfaces/interfaces"
+import {constants} from "../../constants";
+
+import {loadDashboardBalanceGroupByMonth} from '../../controller/balance.controller'
+import {loadDashboardTransactionFromCategory} from "../../controller/transaction.controller";
 import WidgetLine from "./WidgetLine";
 import WidgetBar from "./WidgetBar";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyle} from "../../styles/styles";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
+import {getDashboardStyle} from "./styles";
 
 const Dashboard = ({navigation, route}) => {
     const {theme} = useTheme();

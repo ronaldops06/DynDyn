@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Api.Domain.Enums;
 using Domain.Entities;
 
@@ -72,6 +73,11 @@ namespace Api.Domain.Entities
         /// Operação utilizada no movimento.
         /// </summary>
         public OperationEntity Operation { get; set; }
+
+        /// <summary>
+        /// Impactos associados ao movimento.
+        /// </summary>
+        public List<TransactionImpactEntity> Impacts { get; set; }
         
         /// <summary>
         /// Identificador do usuário base.

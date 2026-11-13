@@ -1,8 +1,9 @@
 import React, {useState} from "react";
 import {Text, View} from "react-native";
 
-import * as I from "../../../../interfaces/interfaces.tsx";
-import { useTheme } from '../../../../contexts/ThemeContext.tsx';
+import * as I from "../../../../interfaces/interfaces";
+
+import { useTheme } from '../../../../contexts/ThemeContext';
 import {getCardStyle} from "../../../../styles/styles.card"
 
 interface OperationRoleItemProps {

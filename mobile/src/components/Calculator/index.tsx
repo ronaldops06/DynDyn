@@ -1,16 +1,15 @@
 import React, {useCallback, useState} from "react";
 import {Text, TouchableOpacity, View} from "react-native";
-
-import BottomModal from "../BottomModal";
-import Button from "../Button";
-
-import {useTheme} from "../../contexts/ThemeContext.tsx";
-import {getStyle} from "../../styles/styles.ts";
-import {getStyleCadastro} from "../../styles/styles.cadastro.ts";
-import {getCalculatorStyle} from "./style";
 import {useFocusEffect} from "@react-navigation/native";
 import {StyleProp} from "react-native/Libraries/StyleSheet/StyleSheet";
 import {ViewStyle} from "react-native/Libraries/StyleSheet/StyleSheetTypes";
+import BottomModal from "../BottomModal";
+import Button from "../Button";
+
+import {useTheme} from "../../contexts/ThemeContext";
+import {getStyle} from "../../styles/styles";
+import {getStyleCadastro} from "../../styles/styles.cadastro";
+import {getCalculatorStyle} from "./style";
 
 interface CalculatorProps {
     value: number;

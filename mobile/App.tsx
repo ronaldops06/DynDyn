@@ -11,12 +11,12 @@ import { createTableAttribute } from './src/repository/attribute.repository';
 import { createTableOperation } from './src/repository/operation.repository';
 import { createTableSynchronization } from './src/repository/synchronization.repository';
 import { createTableTransaction } from './src/repository/transaction.repository';
-import { createTableBalance } from "./src/repository/balance.repository.tsx";
-import {createAndroidChannel, setupFirebaseListeners} from "./src/controller/firebase.controller.tsx";
+import { createTableBalance } from "./src/repository/balance.repository";
+import {createAndroidChannel, setupFirebaseListeners} from "./src/controller/firebase.controller";
 import {initBackgroundFetch} from "./src/background/background.fetch";
 import crashlytics from '@react-native-firebase/crashlytics';
-import {createTableOperationRole} from "./src/repository/operation.role.repository.ts";
-import {createTableTotalizerRole} from "./src/repository/totalizer.role.repository.ts";
+import {createTableOperationRole} from "./src/repository/operation.role.repository";
+import {createTableTotalizerRole} from "./src/repository/totalizer.role.repository";
 
 const App = () => {
   

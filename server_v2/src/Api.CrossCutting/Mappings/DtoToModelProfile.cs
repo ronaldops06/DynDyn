@@ -4,7 +4,6 @@ using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Device;
 using Api.Domain.Dtos.Maintenance;
 using Api.Domain.Dtos.Operation;
-using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
 using Api.Domain.Dtos.TotalizerRole;
 using Api.Domain.Dtos.Transaction;
@@ -88,6 +87,14 @@ namespace CrossCutting.Mappings
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => src.Consolidated ? 1 : 0));
             CreateMap<TransactionModel, TransactionResponseDto>()
             .ForMember(dest => dest.Consolidated, opt => opt.MapFrom(src => (src.Consolidated == SituationType.Sim) ? true : false));
+            CreateMap<TransactionImpactRequestDto, TransactionImpactModel>()
+                .ForMember(dest => dest.PortfolioId, opt => opt.MapFrom(src => src.Portfolio.Id))
+                .ForMember(dest => dest.PortfolioAttributeId, opt => opt.MapFrom(src => src.PortfolioAttribute.Id))
+                .ForMember(dest => dest.ImpactType, opt => opt.MapFrom(src => src.ImpactType.ToEnum<TransactionImpactType>()))
+                .ForMember(dest => dest.OperationType, opt => opt.MapFrom(src => src.OperationType.ToEnum<TransactionImpactOperationType>()));
+            CreateMap<TransactionImpactModel, TransactionImpactResponseDto>()
+                .ForMember(dest => dest.ImpactType, opt => opt.MapFrom(src => (int)src.ImpactType))
+                .ForMember(dest => dest.OperationType, opt => opt.MapFrom(src => (int)src.OperationType));
             CreateMap<TransactionTotalModel, TransactionTotalResponseDto>();
             
             CreateMap<BalanceRequestDto, BalanceModel>()

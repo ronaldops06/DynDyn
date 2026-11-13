@@ -1,8 +1,10 @@
 import {useState, useEffect} from 'react';
 import {ScrollView} from "react-native";
-import RNFS from 'react-native-fs';
 import Markdown from 'react-native-markdown-display';
-import {useTheme} from "../../contexts/ThemeContext.tsx";
+
+import {readFileByAsset} from "../../fileAccess";
+
+import {useTheme} from "../../contexts/ThemeContext";
 import {getCustomMarkdownStyle} from "./styles";
 
 interface HelpProps {
@@ -16,7 +18,7 @@ const Help = (props: HelpProps) => {
     const [content, setContent] = useState<string>('Em contrução...');
 
     const loadHelpByType = async (type: string) => {
-        const content = await RNFS.readFileAssets(`help/${type}.md`, 'utf8');
+        const content = await readFileByAsset(`${type}.md`);
         setContent(content);
     };
 

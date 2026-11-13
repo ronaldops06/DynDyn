@@ -10,9 +10,9 @@ import {
     updateAttribute
 } from '../repository/attribute.repository';
 import {loadSynchronizationByCreationsDateAndOperation, setLastSynchronization} from './synchronization.controller';
-import {getUserLoginEncrypt} from "../utils.ts";
+import {getUserLoginEncrypt} from "../utils";
 import Moment from "moment/moment";
-import {deleteAttribute, getAttributes, postAttribute, putAttribute} from "../services/attribute.api.ts";
+import {deleteAttribute, getAttributes, postAttribute, putAttribute} from "../services/attribute.api";
 
 export const loadAllAttributeInternal = async (pageNumber: Number | null, activated: number | null): Promise<I.Response> => {
     let response = {} as I.Response;

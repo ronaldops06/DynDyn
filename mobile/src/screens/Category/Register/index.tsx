@@ -1,21 +1,22 @@
 import React, {useEffect, useState} from "react";
-import {Alert, Text, View} from 'react-native';
+import {Alert, View} from 'react-native';
 import TextInput from "../../../components/CustomTextInput";
-import CheckBox from "@react-native-community/checkbox";
 import Select from "../../../components/Select";
-
-import * as I from "../../../interfaces/interfaces.tsx";
-import {alterCategory, createCategory, excludeCategory} from "../../../controller/category.controller.tsx";
-import {validateLogin, validateSuccess} from "../../../utils.ts";
+import {PageRegister} from "../../../components/Page";
+import CheckBox from "../../../components/CheckBox";
 
 import {constants} from "../../../constants";
+import * as I from "../../../interfaces/interfaces";
+import {validateLogin, validateSuccess} from "../../../utils";
+
+import {alterCategory, createCategory, excludeCategory} from "../../../controller/category.controller";
+
 import {useTheme} from '../../../contexts/ThemeContext';
 import {getStyleCadastro} from '../../../styles/styles.cadastro';
-import {getStyle} from "../../../styles/styles.ts";
+import {getStyle} from "../../../styles/styles";
 import {getCategoryCreateStyle} from "./styles";
-import {PageRegister} from "../../../components/Page";
 
-const CategoryCreate = ({navigation, route}) => {
+const CategoryCreate = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const styleCadastro = getStyleCadastro(theme);
@@ -29,7 +30,7 @@ const CategoryCreate = ({navigation, route}) => {
 
     const [loading, setLoading] = useState(false);
     const [name, setName] = useState<string>("");
-    const [type, setType] = useState<number>();
+    const [type, setType] = useState<number>(1);
     const [status, setStatus] = useState<boolean>(true);
 
     useEffect(() => {
@@ -133,14 +134,12 @@ const CategoryCreate = ({navigation, route}) => {
                     setValue={setType}
                     data={Object.values(constants.categoryType)}
                 />
-                <View style={categoryCreateStyle.areaCard}>
+                <View style={categoryCreateStyle.areaField}>
                     <CheckBox
                         value={status}
                         onValueChange={setStatus}
-                        tintColors={{true: theme.colors.primaryTextColor, false: theme.colors.primaryTextColor}}
+                        label="Ativo"
                     />
-                    <Text
-                        style={styleCadastro.textCheckbox}>Ativo</Text>
                 </View>
             </View>
         </PageRegister>

@@ -2,32 +2,27 @@ import React, {useEffect, useRef, useState, useMemo} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import _ from 'lodash';
-import {Situation, TypesTransaction} from '../../enums/enums';
-import * as I from '../../interfaces/interfaces';
-
+import CustomScroll from "../../components/CustomScroll";
+import {PageProcess} from "../../components/Page";
+import {constants as pageConstants} from "../../components/Page/constants";
 import NavNextIcon from '../../assets/nav_next.svg';
 import NavPrevIcon from '../../assets/nav_prev.svg';
 import CurrencyExchangeIcon from '../../assets/currency_exchange.svg';
-import {
-    alterTransaction,
-    excludeTransaction,
-    executeRecurringTransaction,
-    generateTotalsTransactions,
-    loadAllTransactionsInternal,
-    loadAndPersistAll
-} from '../../controller/transaction.controller';
-import CustomScroll from "../../components/CustomScroll";
-import {filterDynamic, hasAnyFilter, validateLogin} from "../../utils.ts";
-import {constants} from "../../constants";
-import {constants as pageConstants} from "../../components/Page/constants";
-import TransactionItem from "./TransactionItem";
 import CashRegisterIcon from "../../assets/cash-register.svg";
+
+import * as I from '../../interfaces/interfaces';
+import {Situation, TypesTransaction} from '../../enums/enums';
+import {filterDynamic, hasAnyFilter, validateLogin} from "../../utils";
+import {constants} from "../../constants";
+
+import {alterTransactionStatusFromList, excludeTransactionFromList, executeRecurringTransaction, generateTotalsTransactions, loadAllTransactionsViewInternal, loadAndPersistAllView} from '../../controller/transaction.controller';
+import TransactionItem from "./TransactionItem";
+import Filter from './Filter';
 
 import {useTheme} from '../../contexts/ThemeContext';
 import {getStyle} from '../../styles/styles';
 import {getTransactionStyle} from './styles';
-import {PageProcess} from "../../components/Page";
-import Filter from './Filter';
+import { CustomAlert } from "../../components/CustomAlert";
 
 const months = [
     'Janeiro',
@@ -44,15 +39,16 @@ const months = [
     'Dezembro'
 ];
 
-const Transaction = ({navigation, route}) => {
+const Transaction = ({navigation, route}: {navigation: any, route: any}) => {
     const {theme} = useTheme();
     const style = getStyle(theme);
     const transactionStyle = getTransactionStyle(theme);
 
     const [loading, setLoading] = useState(false);
+    const isSynchronizingTransactions = useRef(false);
     const isFirstRender = useRef(true);
     const [filter, setFilter] = useState<I.TransactionFilter>({} as I.TransactionFilter);
-    const [transactions, setTransactions] = useState<I.Transaction[]>([]);
+    const [transactions, setTransactions] = useState<I.TransactionView[]>([]);
     const [transactionsGroup, setTransactionsGroup] = useState<I.TransactionsGroup[]>([]);
     const [transactionTotals, setTransactionTotals] = useState<I.TransactionTotals>({} as I.TransactionTotals);
     const [selectedYear, setSelectedYear] = useState(0);
@@ -74,43 +70,49 @@ const Transaction = ({navigation, route}) => {
         }, [route.params?.actionNavigation])
     );
 
-    const appendTransactions = (data: I.Transaction[]) => {
-        let transactionsNew = transactions;
-        if (data.length > 0) {
-            data.map((item, key) => {
-                transactionsNew.push(item);
-            });
-            setTransactions(transactionsNew);
-        }
+    const appendTransactions = (data: I.TransactionView[]) => {
+        console.log(data);
+        if (data.length > 0)
+            setTransactions(prevTransactions => [...prevTransactions, ...data]);
     };
 
     const loadTransactions = async (page: number, loadTotals: boolean = true) => {
+        if (!isLoadInternal && isSynchronizingTransactions.current)
+            return;
+
         setLoading(true);
 
-        if (selectedYear != 0) {
+        try {
+            if (selectedYear != 0) {
 
-            let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
-            let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
+                let mountDateInicio = new Date(selectedYear, selectedMonth, 5, 0, 0, 0);
+                let mountDateFim = new Date(selectedYear, selectedMonth + 1, 4, 23, 59, 59);
 
-            let responseTransactions = await loadAllTransactionsInternal(mountDateInicio, mountDateFim, page);
+                let responseTransactions: I.Response;
 
-            if (isLoadInternal) {
-                responseTransactions = await loadAllTransactionsInternal(mountDateInicio, mountDateFim, page);
-            } else {
-                responseTransactions = await loadAndPersistAll(mountDateInicio, mountDateFim, page);
-                validateLogin(responseTransactions, navigation);
+                if (isLoadInternal) {
+                    responseTransactions = await loadAllTransactionsViewInternal(mountDateInicio, mountDateFim, page);
+                } else {
+                    isSynchronizingTransactions.current = true;
+                    try {
+                        responseTransactions = await loadAndPersistAllView(mountDateInicio, mountDateFim, page);
+                    } finally {
+                        isSynchronizingTransactions.current = false;
+                    }
+                    validateLogin(responseTransactions, navigation);
+                }
+
+                setTotalPages(responseTransactions?.totalPages ?? 1);
+                appendTransactions(responseTransactions?.data ?? []);
+
+                /*if (loadTotals) {
+                    calculeTotals(transactions);
+                }*/
             }
-
-            setTotalPages(responseTransactions?.totalPages ?? 1);
-            appendTransactions(responseTransactions?.data ?? []);
-
-            /*if (loadTotals) {
-                calculeTotals(transactions);
-            }*/
+        } finally {
+            setIsLoadInternal(false);
+            setLoading(false);
         }
-
-        setIsLoadInternal(false);
-        setLoading(false);
     };
 
     useEffect(() => {
@@ -169,16 +171,16 @@ const Transaction = ({navigation, route}) => {
         setTransactionsGroup(transactionsGroup);
     }
 
-    const sortingData = (transactions: I.Transaction[]): I.Transaction[] => {
+    const sortingData = (transactions: I.TransactionView[]): I.TransactionView[] => {
 
-        let unconsolidated = [...transactions.filter(x => !x.Consolidated ?? false).sort((a, b) => new Date(a.DataCriacao) - new Date(b.DataCriacao))] ?? [];
+        let unconsolidated = [...transactions.filter(x => !x.Consolidated).sort((a, b) => new Date(a.DataCriacao).getTime() - new Date(b.DataCriacao).getTime())];
 
-        let consolidated = [...transactions.filter(x => x.Consolidated).sort((a, b) => new Date(b.DataCriacao) - new Date(b.DataCriacao))] ?? [];
+        let consolidated = [...transactions.filter(x => x.Consolidated).sort((a, b) => new Date(b.DataCriacao).getTime() - new Date(a.DataCriacao).getTime())];
 
         return [...unconsolidated, ...consolidated];
     }
 
-    const filterData = (): I.Transaction[] => {
+    const filterData = (): I.TransactionView[] => {
         let result = transactions.filter((item) => {
             return typeSelected != -1 ? item.Operation.Type == typeSelected : item;
         });
@@ -238,7 +240,7 @@ const Transaction = ({navigation, route}) => {
         setTransactionTotals(responseTotals);
     }
 
-    const filteredTransactions = useMemo(():I.Transaction[]  => {
+    const filteredTransactions = useMemo(():I.TransactionView[]  => {
         return sortingData(filterData());
     }, [transactions, transactions.length > 0, filter, typeSelected]);
 
@@ -284,19 +286,20 @@ const Transaction = ({navigation, route}) => {
         );
     };
 
-    const handleTransactionItemClick = (data: I.Transaction) => {
+    const handleTransactionItemClick = (data: I.TransactionView) => {
         if (!isScrolling) {
             if (isSelectionMode)
                 validateAndAddSelectedItem(data);
-            else
+            else {
                 navigation.navigate("Transaction", {
                     screen: 'TransactionCreate',
-                    params: {isEditing: true, data: data, sourceScreen: 'Transaction'}
+                    params: {isEditing: true, internalId: data.InternalId, sourceScreen: 'Transaction'}
                 });
+            }
         }
     }
 
-    const handleTransactionLongItemClick = (data: I.Transaction) => {
+    const handleTransactionLongItemClick = (data: I.TransactionView) => {
         if (!isScrolling) {
             if (!isSelectionMode) {
                 setTransactionTotals(prev => ({
@@ -311,7 +314,7 @@ const Transaction = ({navigation, route}) => {
         }
     }
 
-    const validateAndAddSelectedItem = (data: I.Transaction) => {
+    const validateAndAddSelectedItem = (data: I.TransactionView) => {
 
         data.IsSelectedItem = !data.IsSelectedItem;
         setTransactions((prevTransactions) =>
@@ -329,66 +332,45 @@ const Transaction = ({navigation, route}) => {
         }));
     }
 
-    const onSwipeLeft = (data: I.Transaction) => {
-        Alert.alert("Atenção!",
-            "Esta transação terá o status alterado. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
+    const onSwipeLeft = async (data: I.TransactionView) => {
+        await CustomAlert("Atenção!",
+            "Esta transação será Excluída. Deseja continuar?",
+            async () => {
+                let response = await excludeTransactionFromList(data.InternalId);
+                validateLogin(response, navigation);
 
-                        var prevTransaction = {...data};
-
-                        data.Consolidated = !data.Consolidated;
-                        let response = await alterTransaction(prevTransaction, data);
-                        validateLogin(response, navigation);
-
-                        //Atualiza a transação alterada para que fique certa na tela e não seja necessário recarregar
-                        setTransactions((prevTransactions) =>
-                            prevTransactions.map((item) =>
-                                item.Id === data.Id ? data : item
-                            )
-                        );
-                    }
+                if (response.success) {
+                    setIsLoadInternal(true);
+                    setTransactions([]);
                 }
-            ],
-            {cancelable: false}
-        );
+            });
     }
 
-    const onSwipeRight = (data: I.Transaction) => {
-        Alert.alert("Atenção!",
-            "Esta transação será excluída. Deseja continuar?",
-            [
-                {
-                    text: "Não",
-                    style: "cancel"
-                },
-                {
-                    text: "Sim",
-                    onPress: async () => {
-                        let response = await excludeTransaction(data);
-                        validateLogin(response, navigation);
+    const onSwipeRight = async (data: I.TransactionView) => {
+        await CustomAlert("Atenção!",
+            "Esta transação terá o status alterado. Deseja continuar?",
+            async () => {
+                let consolidated = !data.Consolidated;
+                let response = await alterTransactionStatusFromList(data.InternalId, consolidated);
+                validateLogin(response, navigation);
 
-                        if (response.success) {
-                            setIsLoadInternal(true);
-                            setTransactions([]);
-                        }
-                    }
+                //Atualiza a transação alterada para que fique certa na tela e não seja necessário recarregar
+                if (response.success) {
+                    setTransactions(prevTransactions =>
+                        prevTransactions.map(item =>
+                            item.InternalId === data.InternalId
+                                ? {...item, Consolidated: consolidated}
+                                : item
+                        )
+                    );
                 }
-            ],
-            {cancelable: false}
-        );
+            });
     }
 
     const handleNewClick = () => {
         navigation.navigate("Transaction", {
             screen: 'TransactionCreate',
-            params: {isEditing: false, data: null, sourceScreen: 'Transaction'}
+            params: {isEditing: false, internalId: null, sourceScreen: 'Transaction'}
         });
     }
 
