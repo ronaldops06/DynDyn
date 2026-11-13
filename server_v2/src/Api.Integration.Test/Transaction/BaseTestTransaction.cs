@@ -1,4 +1,5 @@
-using System.Globalization;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               using System.Globalization;
+using Api.Domain.Dtos.Attribute;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
@@ -54,7 +55,7 @@ namespace Api.Integration.Test.Transaction
 
             TransactionRequestDto = new TransactionRequestDto()
             {
-                Id = 1,
+                Id = 0,
                 Value = random.Next(5000),
                 Observation = "Pago via pix",
                 Consolidated = false,
@@ -86,7 +87,8 @@ namespace Api.Integration.Test.Transaction
                 Id = 1,
                 Name = "Geral",
                 Status = (int)StatusType.Ativo,
-                Category = CategoryAccountRequestDto
+                Category = CategoryAccountRequestDto,
+                Attributes = new List<PortfolioAttributeRequestDto>()
             };
 
             return new PortfolioRequestDto()
@@ -95,7 +97,8 @@ namespace Api.Integration.Test.Transaction
                 Name = name,
                 Status = (int)StatusType.Ativo,
                 Category = CategoryAccountRequestDto,
-                ParentPortfolio = ParentPortfolioAccountRequestDto
+                ParentPortfolio = ParentPortfolioAccountRequestDto,
+                Attributes = new List<PortfolioAttributeRequestDto>()
             };
         }
 
@@ -112,6 +115,74 @@ namespace Api.Integration.Test.Transaction
                 Status = (int)StatusType.Ativo,
                 Category = CategoryOperationRequestDto,
             };
+        }
+        
+        protected AttributeRequestDto GenerateAttributeListOption()
+        {
+            List<AttributeOptionRequestDto> options = new List<AttributeOptionRequestDto>();
+            var option = new AttributeOptionRequestDto
+            {
+                Label = Faker.Lorem.Words(2).Last(),
+                IsDefault = 0,
+                Status = (int)StatusType.Ativo
+            };
+            options.Add(option);
+            
+            option = new AttributeOptionRequestDto
+            {
+                Label = Faker.Lorem.Words(3).Last(),
+                IsDefault = 1,
+                Status = (int)StatusType.Ativo
+            };
+            
+            options.Add(option);
+            
+            return new AttributeRequestDto
+            {
+                Name = Faker.Lorem.Words(1).First(),
+                Description = Faker.Lorem.Sentence(),
+                Status = (int)StatusType.Ativo,
+                DataType = (int)AttributeDataType.ListOptions,
+                Options = options
+            };
+        }
+
+        protected void AddAttributeInPortfolio(
+            PortfolioRequestDto portfolioRequestDto,
+            AttributeRequestDto attributeRequestDto,
+            AttributeOptionRequestDto attributeOptionRequestDto)
+        {
+            List<PortfolioAttributeRequestDto> portfolioAttributes = new List<PortfolioAttributeRequestDto>();
+            var portfolioAttribute = new PortfolioAttributeRequestDto
+            {
+                ActionType = (int)AttributeActionType.Informed,
+                Status = (int)StatusType.Ativo,
+                Attribute = attributeRequestDto,
+                AttributeOption = attributeOptionRequestDto
+            };
+            
+            portfolioAttributes.Add(portfolioAttribute);
+            portfolioRequestDto.Attributes = portfolioAttributes;
+        }
+
+        protected void AddTransactionImpact(
+            PortfolioRequestDto portfolioRequestDto,
+            PortfolioAttributeRequestDto portfolioAttributeRequestDto,
+            int? portfolioId = null)
+        {
+
+            List<TransactionImpactRequestDto> transactionImpacts = new List<TransactionImpactRequestDto>();
+            var transactionImpact = new TransactionImpactRequestDto
+            {
+                Portfolio = portfolioRequestDto,
+                PortfolioAttribute = new PortfolioAttributeRequestDto { Id = portfolioAttributeRequestDto.Id },
+                ImpactType = (int)TransactionImpactType.Incidence,
+                OperationType = (int)TransactionImpactOperationType.Addition,
+                Value = 10
+            };
+
+            transactionImpacts.Add(transactionImpact);
+            TransactionRequestDto.Impacts = transactionImpacts;
         }
     }
 }

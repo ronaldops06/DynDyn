@@ -20,6 +20,7 @@ namespace CrossCutting.Mappings
             CreateMap<AttributeOptionEntity, AttributeOptionModel>().ReverseMap();
             CreateMap<PortfolioModel, PortfolioEntity>().ReverseMap();
             CreateMap<PortfolioAttributeModel, PortfolioAttributeEntity>().ReverseMap();
+            CreateMap<TransactionImpactEntity, TransactionImpactModel>().ReverseMap();
             CreateMap<OperationEntity, OperationModel>()
                 .ForMember(
                     dest => dest.OperationRoles,

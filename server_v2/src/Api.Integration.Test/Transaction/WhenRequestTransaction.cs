@@ -1,6 +1,7 @@
 using System.Net;
 using System.Text;
 using System.Web;
+using Api.Domain.Dtos.Attribute;
 using Api.Domain.Dtos.Category;
 using Api.Domain.Dtos.Operation;
 using Api.Domain.Dtos.Portfolio;
@@ -58,6 +59,28 @@ namespace Api.Integration.Test.Transaction
             Assert.False(registroAccountPost.Id == 0);
 
             ParentPortfolioAccountRequestDto.Id = registroAccountPost.Id;
+            
+            //Post - Attribute lista de opções
+            var attribute = GenerateAttributeListOption();
+            
+            response = await PostJsonAsync(attribute, $"{HostApi}/Attribute", Client);
+            postResult = await response.Content.ReadAsStringAsync();
+            var attributeResponseDto = JsonConvert.DeserializeObject<AttributeResponseDto>(postResult);
+
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.False(attributeResponseDto.Id == 0);
+            
+            //Atributo lista de opção com resposta (opção) para o atributo
+            attribute.Id = attributeResponseDto.Id;
+            var attributeOptionResponseDto = attributeResponseDto.Options.First();
+            var attributeOptionRequestDto = new AttributeOptionRequestDto()
+            {
+              Id  = attributeOptionResponseDto.Id,
+              Label = attributeOptionResponseDto.Label,
+              IsDefault = attributeOptionResponseDto.IsDefault,
+              Status = attributeOptionResponseDto.Status
+            };
+            AddAttributeInPortfolio(PortfolioAccountRequestDto, attribute, attributeOptionRequestDto);
 
             //Post - Account
             response = await PostJsonAsync(PortfolioAccountRequestDto, $"{HostApi}/Portfolio", Client);
@@ -68,6 +91,9 @@ namespace Api.Integration.Test.Transaction
             Assert.False(registroAccountPost.Id == 0);
 
             PortfolioAccountRequestDto.Id = registroAccountPost.Id;
+            var portfolioAttributeResponseDto = registroAccountPost.Attributes.First();
+            var portfolioAttributeRequestDto = PortfolioAccountRequestDto.Attributes.First();
+            portfolioAttributeRequestDto.Id = portfolioAttributeResponseDto.Id;
 
             //Post - Operação não existente
             TransactionRequestDto.Operation.Id = 0;
@@ -96,13 +122,14 @@ namespace Api.Integration.Test.Transaction
 
             OperationRequestDto.Id = registroOperationPost.Id;
 
-            //Post
-            TransactionRequestDto.Id = 2;
+            //Post com impacto
+            TransactionRequestDto.Id = 0;
+            AddTransactionImpact(PortfolioAccountRequestDto, portfolioAttributeRequestDto, 2);
             response = await PostJsonAsync(TransactionRequestDto, $"{HostApi}/Transaction", Client);
             postResult = await response.Content.ReadAsStringAsync();
-            registroPost = JsonConvert.DeserializeObject<TransactionResponseDto>(postResult);
 
-            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
+            Assert.True(response.StatusCode == HttpStatusCode.Created, postResult);
+            registroPost = JsonConvert.DeserializeObject<TransactionResponseDto>(postResult);
             Assert.False(registroPost.Id == 0);
             Assert.Equal(TransactionRequestDto.Value, registroPost.Value);
             Assert.Equal(TransactionRequestDto.Observation, registroPost.Observation);
@@ -110,7 +137,13 @@ namespace Api.Integration.Test.Transaction
             Assert.Equal(TransactionRequestDto.Installment, registroPost.Installment);
             Assert.Equal(TransactionRequestDto.TotalInstallments, registroPost.TotalInstallments);
             Assert.Equal(TransactionRequestDto.Portfolio.Id, registroPost.Portfolio.Id);
-            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);     
+            Assert.Equal(TransactionRequestDto.Operation.Id, registroPost.Operation.Id);
+            Assert.Equal(TransactionRequestDto.Impacts.Count(), registroPost.Impacts.Count());
+            Assert.Equal(TransactionRequestDto.Impacts.First().Portfolio.Id, registroPost.Impacts.First().Portfolio.Id);
+            Assert.Equal(TransactionRequestDto.Impacts.First().PortfolioAttribute.Id, registroPost.Impacts.First().PortfolioAttribute.Id);
+            Assert.Equal(TransactionRequestDto.Impacts.First().ImpactType, registroPost.Impacts.First().ImpactType);
+            Assert.Equal(TransactionRequestDto.Impacts.First().OperationType, registroPost.Impacts.First().OperationType);
+            Assert.Equal(TransactionRequestDto.Impacts.First().Value, registroPost.Impacts.First().Value);
             
             //GetAll
             var builder = new UriBuilder($"{HostApi}/Transaction");

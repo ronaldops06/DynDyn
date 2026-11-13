@@ -27,6 +27,7 @@ namespace Data.Context
         public DbSet<AttributeEntity> Attribute { get; set; }
         public DbSet<AttributeOptionEntity> AttributeOption { get; set; }
         public DbSet<PortfolioAttributeEntity> PortfolioAttribute { get; set; }
+        public DbSet<TransactionImpactEntity> TransactionImpact { get; set; }
 
         public SomniaContext(DbContextOptions<SomniaContext> options) : base(options) { }
 
@@ -50,6 +51,7 @@ namespace Data.Context
             modelBuilder.Entity<AttributeEntity>(new AttributeMap().Configure);
             modelBuilder.Entity<AttributeOptionEntity>(new AttributeOptionMap().Configure);
             modelBuilder.Entity<PortfolioAttributeEntity>(new PortfolioAttributeMap().Configure);
+            modelBuilder.Entity<TransactionImpactEntity>(new TransactionImpactMap().Configure);
             
             modelBuilder.Entity<UserEntity>().HasData(
                 new UserEntity

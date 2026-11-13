@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 
 namespace Data.Repository
 {
@@ -29,7 +30,7 @@ namespace Data.Repository
             {
                 item.DataCriacao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
                 item.DataAlteracao = item.DataCriacao ?? DateTime.ParseExact(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-
+                
                 _dataset.Add(item);
                 await _context.SaveChangesAsync();
             }
